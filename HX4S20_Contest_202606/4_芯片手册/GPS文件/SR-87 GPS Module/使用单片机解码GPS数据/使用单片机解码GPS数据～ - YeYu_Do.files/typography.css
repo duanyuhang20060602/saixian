@@ -1,0 +1,144 @@
+.userpass {
+	BORDER-RIGHT: #a9a98d 1px solid; BORDER-TOP: #a9a98d 1px solid; FONT-SIZE: 12px; BORDER-LEFT: #a9a98d 1px solid; BORDER-BOTTOM: #a9a98d 1px solid; FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif
+}
+.userpass:hover {
+	BORDER-LEFT-COLOR: #a9a98d; BACKGROUND: #ffffee; BORDER-BOTTOM-COLOR: #a9a98d; BORDER-TOP-COLOR: #a9a98d; BORDER-RIGHT-COLOR: #a9a98d
+}
+.userpass:unknown {
+	BORDER-LEFT-COLOR: #a9a98d; BACKGROUND: #ffffee; BORDER-BOTTOM-COLOR: #a9a98d; BORDER-TOP-COLOR: #a9a98d; BORDER-RIGHT-COLOR: #a9a98d
+}
+.inputBox {
+	BORDER-RIGHT: #a9a98d 1px solid; BORDER-TOP: #a9a98d 1px solid; FONT-SIZE: 12px; BORDER-LEFT: #a9a98d 1px solid; BORDER-BOTTOM: #a9a98d 1px solid
+}
+.inputBox:hover {
+	BORDER-LEFT-COLOR: #a9a98d; BACKGROUND: #ffffee; BORDER-BOTTOM-COLOR: #a9a98d; BORDER-TOP-COLOR: #a9a98d; BORDER-RIGHT-COLOR: #a9a98d
+}
+.inputBox:unknown {
+	BORDER-LEFT-COLOR: #a9a98d; BACKGROUND: #ffffee; BORDER-BOTTOM-COLOR: #a9a98d; BORDER-TOP-COLOR: #a9a98d; BORDER-RIGHT-COLOR: #a9a98d
+}
+.userbutton {
+	BORDER-RIGHT: #70990f 1px solid; PADDING-RIGHT: 2px; BORDER-TOP: #70990f 1px solid; PADDING-LEFT: 2px; BACKGROUND: #fff; PADDING-BOTTOM: 0px; BORDER-LEFT: #70990f 4px solid; PADDING-TOP: 3px; BORDER-BOTTOM: #70990f 1px solid; HEIGHT: 20px
+}
+.LinkTable {
+	MARGIN: 5px 10px 5px 0px
+}
+.commentTable {
+	
+}
+.high1 {
+	FONT-WEIGHT: bold; BACKGROUND: #ff0; COLOR: #f00
+}
+.CateIcon {
+	DISPLAY: none
+}
+#Calendar_Body {
+	MARGIN: 5px 10px 5px 0px; LINE-HEIGHT: 120%; FONT-FAMILY: arial
+}
+#Calendar_Body #Calendar_Top {
+	PADDING-RIGHT: 2px; PADDING-LEFT: 2px; FONT-WEIGHT: bold; PADDING-BOTTOM: 0px; PADDING-TOP: 0px; HEIGHT: 18px; TEXT-ALIGN: center
+}
+#Calendar_Body #Calendar_Top #LeftB {
+	BACKGROUND: url(MP.gif) no-repeat 0px 2px; FLOAT: left; OVERFLOW: hidden; WIDTH: 6px; CURSOR: pointer; HEIGHT: 12px
+}
+#Calendar_Body #Calendar_Top #RightB {
+	BACKGROUND: url(MN.gif) no-repeat 0px 2px; FLOAT: right; OVERFLOW: hidden; WIDTH: 6px; CURSOR: pointer; HEIGHT: 12px
+}
+#Calendar_Body #Calendar_week {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 2%; FONT-WEIGHT: bold; PADDING-BOTTOM: 0px; PADDING-TOP: 0px; HEIGHT: 20px; TEXT-ALIGN: center
+}
+UL.Week_UL {
+	PADDING-RIGHT: 0px; DISPLAY: inline; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px; LIST-STYLE-TYPE: none
+}
+UL.Week_UL LI {
+	PADDING-RIGHT: 0px; DISPLAY: inline; PADDING-LEFT: 0px; FLOAT: left; PADDING-BOTTOM: 0px; MARGIN: 3px 0px 2px; WIDTH: 14%; COLOR: #003; PADDING-TOP: 0px
+}
+.Calendar_Day {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 2%; PADDING-BOTTOM: 0px; COLOR: #6b6b52; PADDING-TOP: 0px; HEIGHT: 20px; TEXT-ALIGN: center
+}
+.Calendar_Day UL.Day_UL {
+	DISPLAY: inline; LIST-STYLE-TYPE: none
+}
+.Calendar_Day UL.Day_UL LI {
+	DISPLAY: inline; FLOAT: left; WIDTH: 14%
+}
+.DayA A {
+	BORDER-RIGHT: #fff 0px solid; PADDING-RIGHT: 0px; BORDER-TOP: #fff 0px solid; DISPLAY: block; PADDING-LEFT: 0px; FONT-SIZE: 11px; PADDING-BOTTOM: 3px; BORDER-LEFT: #fff 0px solid; CURSOR: default; PADDING-TOP: 2px; BORDER-BOTTOM: #fff 0px solid; HEIGHT: 13px
+}
+.DayA A:link {
+	COLOR: #3e3e2f
+}
+.DayA A:visited {
+	COLOR: #3e3e2f
+}
+.DayA A:hover {
+	COLOR: #3e3e2f
+}
+.DayA A.click {
+	FONT-WEIGHT: bold; BACKGROUND: #e0e0d7; CURSOR: default
+}
+.DayA A.click:link {
+	FONT-WEIGHT: bold; CURSOR: pointer; COLOR: #3e3e2f; TEXT-DECORATION: none
+}
+.DayA A.click:visited {
+	FONT-WEIGHT: bold; CURSOR: pointer; COLOR: #3e3e2f; TEXT-DECORATION: none
+}
+.DayA A.click:hover {
+	COLOR: #3e3e2f; TEXT-DECORATION: underline
+}
+.DayA A.today {
+	BORDER-RIGHT: #70990f 1px solid; BORDER-TOP: #70990f 1px solid; BACKGROUND: #ffffff; BORDER-LEFT: #70990f 1px solid; CURSOR: default; COLOR: #000; BORDER-BOTTOM: #70990f 1px solid
+}
+.DayA A.otherday {
+	CURSOR: default; COLOR: #ccc; TEXT-DECORATION: none
+}
+.DayA A.otherday:link {
+	CURSOR: default; COLOR: #ccc
+}
+.DayA A.otherday:visited {
+	CURSOR: default; COLOR: #ccc
+}
+.DayA A.otherday:hover {
+	CURSOR: default; COLOR: #999
+}
+.DayA A.haveD {
+	CURSOR: pointer
+}
+.DayA A.haveD:link {
+	FONT-WEIGHT: bold; COLOR: #3e3e2f
+}
+.DayA A.haveD:visited {
+	FONT-WEIGHT: bold; COLOR: #3e3e2f
+}
+.DayA A.haveD:hover {
+	COLOR: #6b6b52
+}
+.DayA A.DayD {
+	CURSOR: pointer
+}
+.DayA A.DayD:link {
+	BORDER-RIGHT: #70990f 1px solid; BORDER-TOP: #70990f 1px solid; FONT-WEIGHT: bold; BACKGROUND: #ffffff; BORDER-LEFT: #70990f 1px solid; COLOR: #000; BORDER-BOTTOM: #70990f 1px solid; TEXT-DECORATION: none
+}
+.DayA A.DayD:visited {
+	BORDER-RIGHT: #70990f 1px solid; BORDER-TOP: #70990f 1px solid; FONT-WEIGHT: bold; BACKGROUND: #ffffff; BORDER-LEFT: #70990f 1px solid; COLOR: #000; BORDER-BOTTOM: #70990f 1px solid; TEXT-DECORATION: none
+}
+.DayA A.DayD:hover {
+	COLOR: #003; TEXT-DECORATION: underline
+}
+.BttnC {
+	PADDING-RIGHT: 0px; MARGIN-TOP: -2px; BACKGROUND: url(Cprevious.gif) no-repeat; FLOAT: right; WIDTH: 15px; CURSOR: pointer; HEIGHT: 16px
+}
+.BttnE {
+	PADDING-RIGHT: 0px; MARGIN-TOP: -2px; BACKGROUND: url(Cnext.gif) no-repeat; FLOAT: right; WIDTH: 15px; CURSOR: pointer; HEIGHT: 16px
+}
+DIV.nicetitle {
+	BORDER-RIGHT: #715208 1px solid; PADDING-RIGHT: 4px; BORDER-TOP: #715208 1px solid; PADDING-LEFT: 4px; FONT-SIZE: 12px; BACKGROUND: url(../../images/nicetitlebg.jpg) #fffbd1; LEFT: 200px; PADDING-BOTTOM: 4px; BORDER-LEFT: #715208 1px solid; WIDTH: 500px; COLOR: #3d2c05; PADDING-TOP: 5px; BORDER-BOTTOM: #715208 1px solid; FONT-FAMILY: "ËÎÌו", Verdana, Helvetica, Arial, sans-serif; POSITION: absolute; TOP: 200px; TEXT-ALIGN: left
+}
+DIV.nicetitle P {
+	PADDING-RIGHT: 3px; PADDING-LEFT: 3px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+}
+DIV.nicetitle P.destination {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 3px; FONT-SIZE: 9px; PADDING-BOTTOM: 0px; COLOR: #715208; PADDING-TOP: 3px; TEXT-ALIGN: left
+}
+#Side_Calendar .Pcontent {
+	
+}

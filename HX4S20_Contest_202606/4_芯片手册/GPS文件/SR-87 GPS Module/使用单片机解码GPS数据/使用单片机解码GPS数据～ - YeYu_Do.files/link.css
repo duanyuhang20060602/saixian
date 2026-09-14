@@ -1,0 +1,93 @@
+A:link {
+	COLOR: #000000; TEXT-DECORATION: none
+}
+A:visited {
+	COLOR: #000000; TEXT-DECORATION: none
+}
+A:hover {
+	COLOR: #80be14; TEXT-DECORATION: none
+}
+.sidepanel A:link {
+	COLOR: #3e3e2f; TEXT-DECORATION: none
+}
+.sidepanel A:visited {
+	COLOR: #3e3e2f; TEXT-DECORATION: none
+}
+.sidepanel A:hover {
+	COLOR: #3e3e2f; TEXT-DECORATION: none
+}
+#container #foot A:link {
+	COLOR: #6b6b52; TEXT-DECORATION: none
+}
+#container #foot A:visited {
+	COLOR: #6b6b52; TEXT-DECORATION: none
+}
+#container #foot A:hover {
+	COLOR: #949472; TEXT-DECORATION: none
+}
+.menuA:link {
+	PADDING-RIGHT: 4px; PADDING-LEFT: 4px; FLOAT: left; PADDING-BOTTOM: 2px; COLOR: #353528; PADDING-TOP: 2px; HEIGHT: 16px; TEXT-ALIGN: center; TEXT-DECORATION: none
+}
+.menuA:visited {
+	PADDING-RIGHT: 4px; PADDING-LEFT: 4px; FLOAT: left; PADDING-BOTTOM: 2px; COLOR: #353528; PADDING-TOP: 2px; HEIGHT: 16px; TEXT-ALIGN: center; TEXT-DECORATION: none
+}
+.menuA:hover {
+	COLOR: #80be14; TEXT-DECORATION: none
+}
+.titleA:link {
+	PADDING-LEFT: 0px; FONT-SIZE: 12px; COLOR: #000000; TEXT-ALIGN: left; TEXT-DECORATION: none
+}
+.titleA:visited {
+	PADDING-LEFT: 0px; FONT-SIZE: 12px; COLOR: #000000; TEXT-ALIGN: left; TEXT-DECORATION: none
+}
+.titleA:hover {
+	PADDING-LEFT: 0px; COLOR: #80be14; TEXT-DECORATION: none
+}
+.sideA:link {
+	DISPLAY: block; PADDING-LEFT: 18px; BACKGROUND: url(arrow.gif) no-repeat 4px 4px; MARGIN-BOTTOM: 2px; OVERFLOW: hidden; WIDTH: 130px; LINE-HEIGHT: 140%; HEIGHT: 18px
+}
+.sideA:visited {
+	DISPLAY: block; PADDING-LEFT: 18px; BACKGROUND: url(arrow.gif) no-repeat 4px 4px; MARGIN-BOTTOM: 2px; OVERFLOW: hidden; WIDTH: 130px; LINE-HEIGHT: 140%; HEIGHT: 18px
+}
+.sideA:hover {
+	PADDING-LEFT: 18px; BACKGROUND: url(arrow.gif) no-repeat 4px 4px; OVERFLOW: hidden; COLOR: #80be14
+}
+.CategoryA:link {
+	TEXT-DECORATION: none
+}
+.CategoryA:visited {
+	TEXT-DECORATION: none
+}
+.CategoryA:hover {
+	TEXT-DECORATION: none
+}
+.more:link {
+	PADDING-LEFT: 18px; BACKGROUND: url(links_more.gif) no-repeat 0px 0px; MARGIN: 5px; TEXT-ALIGN: left; TEXT-DECORATION: none
+}
+.more:visited {
+	PADDING-LEFT: 18px; BACKGROUND: url(links_more.gif) no-repeat 0px 0px; MARGIN: 5px; TEXT-ALIGN: left; TEXT-DECORATION: none
+}
+.more:hover {
+	BACKGROUND: url(links_more.gif) no-repeat 0px -16px
+}
+.ContentLink {
+	PADDING-RIGHT: 3px; BORDER-TOP: #666666 1px solid; PADDING-LEFT: 3px; BACKGROUND: #fbfef5; PADDING-BOTTOM: 1px; LINE-HEIGHT: 180%; PADDING-TOP: 1px; BORDER-BOTTOM: #666666 1px solid
+}
+.ContentLink:link {
+	COLOR: #666666
+}
+.ContentLink:visited {
+	COLOR: #666666
+}
+.ContentLink:hover {
+	BACKGROUND: #d1e7a9; COLOR: #000000
+}
+.FromUrl:link {
+	COLOR: #666; TEXT-DECORATION: none
+}
+.FromUrl:visited {
+	COLOR: #666; TEXT-DECORATION: none
+}
+.FromUrl:hover {
+	COLOR: #80be14; TEXT-DECORATION: none
+}
