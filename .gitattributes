@@ -1,0 +1,28 @@
+# HDL and build sources use LF so all three developers see stable diffs.
+*.v text eol=lf
+*.vh text eol=lf
+*.sv text eol=lf
+*.sdc text eol=lf
+*.adc text eol=lf
+*.tcl text eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+
+# Windows scripts retain CRLF.
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary engineering/reference formats.
+*.pdf binary
+*.docx binary
+*.xlsx binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.wav binary
+*.mif binary
+*.HMI binary
+*.hmi binary
+

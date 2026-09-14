@@ -1,0 +1,46 @@
+# Local tools and dependency caches
+.deps/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Vendor installers, archives and large reference videos remain on local disk.
+# They are not suitable for normal Git history.
+*.exe
+*.msi
+*.zip
+*.rar
+*.7z
+*.mp4
+*.avi
+*.mov
+
+# OS/editor files
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.user
+*.suo
+
+# Anlogic TD generated databases, reports and transient run directories
+**/*_Runs/
+**/*.db
+**/*.qor
+**/*.timing
+**/*.rpt
+**/*.log
+**/*.logw
+**/flow.status
+**/place_flow.status
+**/route_flow.status
+**/td_project/.*.f
+**/td_project/.lock.f
+
+# Generated programming images and HMI download images
+**/*.bit
+**/*.bin
+**/*.tft
+
+# Generated HMI UI previews/resources; editable specifications remain tracked
+**/doc/hmi_ui/*.png
+
