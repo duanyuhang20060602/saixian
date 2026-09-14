@@ -1,0 +1,479 @@
+module saixian_osd_overlay(
+    input  wire        de,
+    input  wire [9:0]  x,
+    input  wire [8:0]  y,
+    input  wire [23:0] rgb_in,
+    input  wire        display_valid,
+    input  wire [3:0]  state,
+    input  wire [1:0]  project_id,
+    input  wire [6:0]  minutes,
+    input  wire [5:0]  seconds,
+    input  wire [3:0]  countdown_value,
+    input  wire [9:0]  ticker_x,
+    input  wire [15:0] source_width_bcd,
+    input  wire [15:0] source_height_bcd,
+    input  wire [2:0]  error_code,
+    input  wire        transition_active,
+    input  wire [5:0]  transition_level,
+    input  wire [7:0]  audio_level,
+    input  wire        settings_mode,
+    input  wire [1:0]  setting_item,
+    input  wire [3:0]  volume_setting,
+    input  wire [3:0]  brightness_setting,
+    input  wire [3:0]  contrast_setting,
+    input  wire [1:0]  sharpness_setting,
+    output reg  [23:0] rgb_out
+);
+
+localparam ST_CAROUSEL = 4'd0;
+localparam ST_PREPARE  = 4'd1;
+localparam ST_COUNT3   = 4'd2;
+localparam ST_COUNT2   = 4'd3;
+localparam ST_COUNT1   = 4'd4;
+localparam ST_START    = 4'd5;
+localparam ST_RUNNING  = 4'd6;
+localparam ST_PAUSED   = 4'd7;
+localparam ST_FINISH   = 4'd8;
+
+reg [6:0] glyph_id;
+reg [3:0] font_row;
+reg [3:0] font_col;
+reg       text_region;
+reg [23:0] text_color;
+reg [3:0] slot;
+reg [9:0] local_x;
+reg [8:0] local_y;
+reg [23:0] base_rgb;
+reg [10:0] curtain_width;
+reg [9:0] progress_width;
+reg [9:0] volume_width;
+reg [3:0] setting_value;
+reg [9:0] setting_bar_width;
+wire [15:0] font_bits;
+wire font_pixel = font_bits[15-font_col];
+
+saixian_font_rom u_font_rom(
+    .glyph_id(glyph_id),
+    .row     (font_row),
+    .bits    (font_bits)
+);
+
+function [6:0] digit_glyph;
+    input [3:0] digit;
+    begin
+        digit_glyph = {3'd0,digit} + 7'd1;
+    end
+endfunction
+
+function [6:0] project_glyph;
+    input [1:0] project;
+    input [3:0] index;
+    begin
+        project_glyph = 7'd0;
+        case (project)
+            2'd0: case (index)
+                0: project_glyph=7'd2; 1: project_glyph=7'd1;
+                2: project_glyph=7'd1; 3: project_glyph=7'd37;
+                default: project_glyph=7'd0;
+            endcase
+            2'd1: case (index)
+                0: project_glyph=7'd38; 1: project_glyph=7'd39;
+                default: project_glyph=7'd0;
+            endcase
+            2'd2: case (index)
+                0: project_glyph=7'd40; 1: project_glyph=7'd41;
+                2: project_glyph=7'd42; 3: project_glyph=7'd40;
+                default: project_glyph=7'd0;
+            endcase
+            default: case (index)
+                0: project_glyph=7'd43; 1: project_glyph=7'd44;
+                2: project_glyph=7'd45; 3: project_glyph=7'd46;
+                default: project_glyph=7'd0;
+            endcase
+        endcase
+    end
+endfunction
+
+function [6:0] state_glyph;
+    input [3:0] current_state;
+    input [3:0] index;
+    begin
+        state_glyph = 7'd0;
+        case (current_state)
+            ST_CAROUSEL: case(index)
+                0:state_glyph=7'd15; 1:state_glyph=7'd16; 2:state_glyph=7'd17;
+                3:state_glyph=7'd18; 4:state_glyph=7'd19; 5:state_glyph=7'd20;
+                default:state_glyph=7'd0;
+            endcase
+            ST_PREPARE: case(index)
+                0:state_glyph=7'd47; 1:state_glyph=7'd48;
+                2:state_glyph=7'd21; 3:state_glyph=7'd22;
+                default:state_glyph=7'd0;
+            endcase
+            ST_COUNT3,ST_COUNT2,ST_COUNT1: case(index)
+                0:state_glyph=7'd23; 1:state_glyph=7'd24; 2:state_glyph=7'd25;
+                default:state_glyph=7'd0;
+            endcase
+            ST_START: case(index)
+                0:state_glyph=7'd70; 1:state_glyph=7'd15;
+                2:state_glyph=7'd26; 3:state_glyph=7'd27;
+                default:state_glyph=7'd0;
+            endcase
+            ST_RUNNING: case(index)
+                0:state_glyph=7'd70; 1:state_glyph=7'd15; 2:state_glyph=7'd28;
+                3:state_glyph=7'd29; 4:state_glyph=7'd30;
+                default:state_glyph=7'd0;
+            endcase
+            ST_PAUSED: case(index)
+                0:state_glyph=7'd70; 1:state_glyph=7'd15;
+                2:state_glyph=7'd31; 3:state_glyph=7'd32;
+                default:state_glyph=7'd0;
+            endcase
+            ST_FINISH: case(index)
+                0:state_glyph=7'd70; 1:state_glyph=7'd15;
+                2:state_glyph=7'd35; 3:state_glyph=7'd36;
+                default:state_glyph=7'd0;
+            endcase
+            default: state_glyph=7'd0;
+        endcase
+    end
+endfunction
+
+function [6:0] ticker_glyph;
+    input [1:0] project;
+    input [3:0] index;
+    begin
+        ticker_glyph = 7'd0;
+        case (index)
+            0: ticker_glyph = 7'd80; // 转
+            1: ticker_glyph = 7'd20; // 播
+            2: ticker_glyph = 7'd11; // :
+            default: begin
+                case (project)
+                    2'd0: case (index)
+                        3:ticker_glyph=7'd2; 4:ticker_glyph=7'd1;
+                        5:ticker_glyph=7'd1; 6:ticker_glyph=7'd37;
+                        default:ticker_glyph=7'd0;
+                    endcase
+                    2'd1: case (index)
+                        3:ticker_glyph=7'd38; 4:ticker_glyph=7'd39;
+                        default:ticker_glyph=7'd0;
+                    endcase
+                    2'd2: case (index)
+                        3:ticker_glyph=7'd40; 4:ticker_glyph=7'd41;
+                        5:ticker_glyph=7'd42; 6:ticker_glyph=7'd40;
+                        default:ticker_glyph=7'd0;
+                    endcase
+                    default: case (index)
+                        3:ticker_glyph=7'd43; 4:ticker_glyph=7'd44;
+                        5:ticker_glyph=7'd45; 6:ticker_glyph=7'd46;
+                        default:ticker_glyph=7'd0;
+                    endcase
+                endcase
+            end
+        endcase
+    end
+endfunction
+
+function [6:0] error_glyph;
+    input [2:0] code;
+    input [3:0] index;
+    begin
+        error_glyph = 7'd0;
+        case (code)
+            3'd1: case(index)
+                0:error_glyph=7'd50; 1:error_glyph=7'd51; 2:error_glyph=7'd49;
+                default:error_glyph=7'd0;
+            endcase
+            3'd2: case(index)
+                0:error_glyph=7'd53; 1:error_glyph=7'd54;
+                2:error_glyph=7'd55; 3:error_glyph=7'd56;
+                default:error_glyph=7'd0;
+            endcase
+            3'd3: case(index)
+                0:error_glyph=7'd57; 1:error_glyph=7'd58; 2:error_glyph=7'd59;
+                default:error_glyph=7'd0;
+            endcase
+            3'd4: case(index)
+                0:error_glyph=7'd60; 1:error_glyph=7'd61;
+                2:error_glyph=7'd55; 3:error_glyph=7'd56;
+                default:error_glyph=7'd0;
+            endcase
+            default: case(index)
+                0:error_glyph=7'd62; 1:error_glyph=7'd63;
+                2:error_glyph=7'd64; 3:error_glyph=7'd63;
+                default:error_glyph=7'd0;
+            endcase
+        endcase
+    end
+endfunction
+
+always @* begin
+    glyph_id   = 7'd0;
+    font_row   = 4'd0;
+    font_col   = 4'd0;
+    text_region = 1'b0;
+    text_color = 24'hFFFFFF;
+    slot       = 4'd0;
+    local_x    = 10'd0;
+    local_y    = 9'd0;
+
+    if (error_code != 0) begin
+        if ((x >= 10'd224) && (x < 10'd416) && (y >= 9'd96) && (y < 9'd160)) begin
+            local_x = x - 10'd224;
+            slot = local_x[9:6];
+            font_col = local_x[5:2];
+            font_row = (y - 9'd96) >> 2;
+            case(slot)
+                0:glyph_id=7'd12;
+                1:glyph_id=7'd1;
+                2:glyph_id=digit_glyph({1'b0,error_code});
+                default:glyph_id=7'd0;
+            endcase
+            text_region=1'b1;
+            text_color=24'hFFD166;
+        end else if ((x >= 10'd192) && (x < 10'd448) && (y >= 9'd208) && (y < 9'd272)) begin
+            local_x = x - 10'd192;
+            slot = local_x[9:6];
+            font_col = local_x[5:2];
+            font_row = (y - 9'd208) >> 2;
+            glyph_id = error_glyph(error_code,slot);
+            text_region=1'b1;
+        end
+    end else if (settings_mode) begin
+        // Settings title: 设置
+        if ((x >= 10'd288) && (x < 10'd352) && (y >= 9'd84) && (y < 9'd116)) begin
+            local_x = x - 10'd288;
+            slot = local_x[8:5];
+            font_col = local_x[4:1];
+            font_row = (y - 9'd84) >> 1;
+            glyph_id = (slot == 0) ? 7'd72 : ((slot == 1) ? 7'd73 : 7'd0);
+            text_region = 1'b1;
+            text_color = 24'h7DE3FF;
+        end else if ((x >= 10'd160) && (x < 10'd224) &&
+                     (((y >= 9'd144) && (y < 9'd176)) ||
+                      ((y >= 9'd200) && (y < 9'd232)) ||
+                      ((y >= 9'd256) && (y < 9'd288)) ||
+                      ((y >= 9'd312) && (y < 9'd344)))) begin
+            local_x = x - 10'd160;
+            slot = local_x[8:5];
+            font_col = local_x[4:1];
+            if (y < 9'd176) begin
+                font_row = (y - 9'd144) >> 1;
+                glyph_id = (slot == 0) ? 7'd74 : ((slot == 1) ? 7'd75 : 7'd0); // 音量
+            end else if (y < 9'd232) begin
+                font_row = (y - 9'd200) >> 1;
+                glyph_id = (slot == 0) ? 7'd76 : ((slot == 1) ? 7'd77 : 7'd0); // 亮度
+            end else if (y < 9'd288) begin
+                font_row = (y - 9'd256) >> 1;
+                glyph_id = (slot == 0) ? 7'd78 : ((slot == 1) ? 7'd70 : 7'd0); // 对比
+            end else begin
+                font_row = (y - 9'd312) >> 1;
+                glyph_id = (slot == 0) ? 7'd79 : ((slot == 1) ? 7'd77 : 7'd0); // 锐度
+            end
+            text_region = 1'b1;
+            text_color = 24'hFFFFFF;
+        end else if ((x >= 10'd464) && (x < 10'd496) &&
+                     (((y >= 9'd144) && (y < 9'd176)) ||
+                      ((y >= 9'd200) && (y < 9'd232)) ||
+                      ((y >= 9'd256) && (y < 9'd288)) ||
+                      ((y >= 9'd312) && (y < 9'd344)))) begin
+            font_col = (x - 10'd464) >> 1;
+            if (y < 9'd176) begin font_row = (y - 9'd144) >> 1; glyph_id = digit_glyph(volume_setting); end
+            else if (y < 9'd232) begin font_row = (y - 9'd200) >> 1; glyph_id = digit_glyph(brightness_setting); end
+            else if (y < 9'd288) begin font_row = (y - 9'd256) >> 1; glyph_id = digit_glyph(contrast_setting); end
+            else begin font_row = (y - 9'd312) >> 1; glyph_id = digit_glyph({2'd0,sharpness_setting}); end
+            text_region = 1'b1;
+            text_color = 24'hFFD166;
+        end
+    end else begin
+        if ((state == ST_CAROUSEL) && (x >= 10'd8) && (x < 10'd136) &&
+            (y >= 9'd432) && (y < 9'd464)) begin
+            local_x = x - 10'd8;
+            slot = local_x[8:5];
+            font_col = local_x[4:1];
+            font_row = (y - 9'd432) >> 1;
+            case (slot)
+                0:glyph_id=7'd15; 1:glyph_id=7'd16;
+                2:glyph_id=7'd17; 3:glyph_id=7'd18;
+                default:glyph_id=7'd0;
+            endcase
+            text_region=1'b1;
+            text_color=24'hFFFFFF;
+        end else if ((state == ST_CAROUSEL) && (x >= ticker_x) && (x < (ticker_x + 10'd224)) &&
+                      (y >= 9'd432) && (y < 9'd464)) begin
+            local_x = x - ticker_x;
+            slot = local_x[8:5];
+            font_col = local_x[4:1];
+            font_row = (y - 9'd432) >> 1;
+            glyph_id = ticker_glyph(project_id,slot);
+            text_region=1'b1;
+            text_color=(slot >= 3) ? 24'hFFD166 : 24'hFFFFFF;
+        end else if ((x >= 10'd20) && (x < 10'd148) && (y >= 9'd16) && (y < 9'd48)) begin
+            local_x = x - 10'd20;
+            slot = local_x[8:5];
+            font_col = local_x[4:1];
+            font_row = (y - 9'd16) >> 1;
+            glyph_id = project_glyph(project_id,slot);
+            text_region=1'b1;
+        end else if ((state != ST_CAROUSEL) && (x >= 10'd460) && (x < 10'd620) && (y >= 9'd16) && (y < 9'd48)) begin
+            local_x = x - 10'd460;
+            slot = local_x[8:5];
+            font_col = local_x[4:1];
+            font_row = (y - 9'd16) >> 1;
+            case(slot)
+                0:glyph_id=digit_glyph(minutes / 10);
+                1:glyph_id=digit_glyph(minutes % 10);
+                2:glyph_id=7'd11;
+                3:glyph_id=digit_glyph(seconds / 10);
+                4:glyph_id=digit_glyph(seconds % 10);
+                default:glyph_id=7'd0;
+            endcase
+            text_region=1'b1;
+        end else if ((state == ST_CAROUSEL) && (x >= 10'd488) && (x < 10'd632) && (y >= 9'd24) && (y < 9'd40)) begin
+            // Source BMP dimensions: four digits, 'x', four digits.
+            local_x = x - 10'd488;
+            slot = local_x[7:4];
+            font_col = local_x[3:0];
+            font_row = y - 9'd24;
+            case(slot)
+                0:glyph_id=(source_width_bcd[15:12] == 0) ? 7'd0 : digit_glyph(source_width_bcd[15:12]);
+                1:glyph_id=((source_width_bcd[15:12] == 0) && (source_width_bcd[11:8] == 0)) ? 7'd0 : digit_glyph(source_width_bcd[11:8]);
+                2:glyph_id=((source_width_bcd[15:8] == 0) && (source_width_bcd[7:4] == 0)) ? 7'd0 : digit_glyph(source_width_bcd[7:4]);
+                3:glyph_id=digit_glyph(source_width_bcd[3:0]);
+                4:glyph_id=7'd71;
+                5:glyph_id=(source_height_bcd[15:12] == 0) ? 7'd0 : digit_glyph(source_height_bcd[15:12]);
+                6:glyph_id=((source_height_bcd[15:12] == 0) && (source_height_bcd[11:8] == 0)) ? 7'd0 : digit_glyph(source_height_bcd[11:8]);
+                7:glyph_id=((source_height_bcd[15:8] == 0) && (source_height_bcd[7:4] == 0)) ? 7'd0 : digit_glyph(source_height_bcd[7:4]);
+                8:glyph_id=digit_glyph(source_height_bcd[3:0]);
+                default:glyph_id=7'd0;
+            endcase
+            text_region=1'b1;
+            text_color=24'h9FE7FF;
+        end else if ((x >= 10'd180) && (x < 10'd372) && (y >= 9'd16) && (y < 9'd48)) begin
+            // Keep the normal state label inside the top OSD bar so carousel
+            // images remain unobstructed. Six 16x16 glyphs are scaled 2x.
+            local_x = x - 10'd180;
+            slot = local_x[8:5];
+            font_col = local_x[4:1];
+            font_row = (y - 9'd16) >> 1;
+            glyph_id = state_glyph(state,slot);
+            text_region=1'b1;
+            case(state)
+                ST_RUNNING: text_color=24'h5CFF8A;
+                ST_PAUSED : text_color=24'hFFD166;
+                ST_FINISH : text_color=24'hFF6B6B;
+                default   : text_color=24'hFFFFFF;
+            endcase
+        end else if ((state >= ST_COUNT3) && (state <= ST_COUNT1) &&
+                     (x >= 10'd256) && (x < 10'd384) && (y >= 9'd210) && (y < 9'd338)) begin
+            local_x = x - 10'd256;
+            font_col = local_x[6:3];
+            font_row = (y - 9'd210) >> 3;
+            glyph_id = digit_glyph(countdown_value);
+            text_region=1'b1;
+            text_color=24'hFFD166;
+        end
+    end
+end
+
+always @* begin
+    curtain_width = transition_level * 11'd20;
+    progress_width = seconds * 10'd8;
+    volume_width = audio_level * 10'd2;
+    setting_value = 4'd0;
+    setting_bar_width = 10'd0;
+
+    if (!de)
+        base_rgb = 24'd0;
+    else if (error_code != 0)
+        base_rgb = {8'h38 + {5'd0,y[4:2]},8'h08,8'h12};
+    else if (!display_valid)
+        base_rgb = {8'h08,8'h18 + {5'd0,y[4:2]},8'h30};
+    else
+        base_rgb = rgb_in;
+
+    rgb_out = base_rgb;
+
+    if (de && transition_active && (x < curtain_width))
+        rgb_out = (x[5] ^ y[5]) ? 24'h1677FF : 24'h0B3A82;
+
+    if (de && settings_mode && (error_code == 0)) begin
+        if ((x >= 10'd112) && (x < 10'd528) && (y >= 9'd64) && (y < 9'd384))
+            rgb_out = 24'h101827;
+
+        if (((y >= 9'd136) && (y < 9'd184)) ||
+            ((y >= 9'd192) && (y < 9'd240)) ||
+            ((y >= 9'd248) && (y < 9'd296)) ||
+            ((y >= 9'd304) && (y < 9'd352))) begin
+            if (y < 9'd184) begin setting_value = volume_setting; setting_bar_width = volume_setting * 10'd24; end
+            else if (y < 9'd240) begin setting_value = brightness_setting; setting_bar_width = brightness_setting * 10'd24; end
+            else if (y < 9'd296) begin setting_value = contrast_setting; setting_bar_width = contrast_setting * 10'd24; end
+            else begin setting_value = {2'd0,sharpness_setting}; setting_bar_width = sharpness_setting * 10'd64; end
+
+            if ((setting_item == 0 && y < 9'd184) ||
+                (setting_item == 1 && y >= 9'd192 && y < 9'd240) ||
+                (setting_item == 2 && y >= 9'd248 && y < 9'd296) ||
+                (setting_item == 3 && y >= 9'd304)) begin
+                if ((x >= 10'd128) && (x < 10'd512)) rgb_out = 24'h203B5A;
+            end
+
+            if ((x >= 10'd248) && (x < 10'd440) &&
+                (((y >= 9'd154) && (y < 9'd166)) ||
+                 ((y >= 9'd210) && (y < 9'd222)) ||
+                 ((y >= 9'd266) && (y < 9'd278)) ||
+                 ((y >= 9'd322) && (y < 9'd334)))) begin
+                if ((x - 10'd248) < setting_bar_width)
+                    rgb_out = 24'h34D6FF;
+                else
+                    rgb_out = 24'h35445A;
+            end
+        end
+    end
+
+    // FPGA-generated lower-third ticker.  It is independent of the BMP frame
+    // buffers, so image swaps cannot leave stale text or tear the banner.
+    if (de && (error_code == 0) && !settings_mode && (state == ST_CAROUSEL) &&
+        (y >= 9'd424) && (y < 9'd472)) begin
+        if (y < 9'd428)
+            rgb_out = 24'h36C7FF;
+        else if (x < 10'd144)
+            rgb_out = 24'hC62828;
+        else
+            rgb_out = {1'b0,rgb_out[23:17],1'b0,rgb_out[15:9],1'b0,rgb_out[7:1]};
+    end
+
+    if (de && (error_code == 0) && !settings_mode) begin
+        if (y < 9'd64)
+            rgb_out = {1'b0,rgb_out[23:17],1'b0,rgb_out[15:9],1'b0,rgb_out[7:1]};
+
+        if ((state == ST_RUNNING || state == ST_PAUSED) &&
+            ((x < 10'd6) || (x > 10'd633) || (y < 9'd6) || (y > 9'd473))) begin
+            if (state == ST_PAUSED || seconds[0])
+                rgb_out = (state == ST_PAUSED) ? 24'hFFB000 : 24'h00D46A;
+        end
+
+        // The progress and audio bars belong to the event UI.  Keep the
+        // carousel image clean until KEY1 starts the event flow.
+        if ((state != ST_CAROUSEL) &&
+            (y >= 9'd398) && (y < 9'd414) && (x >= 10'd80) && (x < 10'd560)) begin
+            if ((state == ST_RUNNING) && ((x - 10'd80) < progress_width))
+                rgb_out = 24'h18E07B;
+            else
+                rgb_out = 24'h243447;
+        end
+
+        if ((state != ST_CAROUSEL) &&
+            (y >= 9'd444) && (y < 9'd468) && (x >= 10'd64) && (x < 10'd576)) begin
+            if ((x - 10'd64) < volume_width)
+                rgb_out = ((x - 10'd64) > 10'd400) ? 24'hFF5964 : 24'h46D9FF;
+            else
+                rgb_out = 24'h132235;
+        end
+    end
+
+    if (de && text_region && font_pixel)
+        rgb_out = text_color;
+end
+
+endmodule
