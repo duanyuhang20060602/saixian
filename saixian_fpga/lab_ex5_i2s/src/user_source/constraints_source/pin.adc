@@ -1,6 +1,11 @@
 # HX4S20C / EG4S20BG256 - Saixian, HDMI_A
 set_pin_assignment { clk } { LOCATION = R7; IOSTANDARD = LVCMOS33; PULLTYPE = NONE; }
 
+# TJC X5 serial screen on J1: pin 1 GPIOA_0 receives screen TX through a
+# 5 V-to-3.3 V level shifter; pin 2 GPIOA_1 drives screen RX directly.
+set_pin_assignment { hmi_uart_rx } { LOCATION = D14; IOSTANDARD = LVCMOS33; PULLTYPE = PULLUP; }
+set_pin_assignment { hmi_uart_tx } { LOCATION = G11; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; PULLTYPE = NONE; }
+
 # HDMI_A (not HDMI_B)
 set_pin_assignment { HDMI_CLK_P } { LOCATION = K1; IOSTANDARD = LVDS33; PULLTYPE = NONE; }
 set_pin_assignment { HDMI_D2_P } { LOCATION = B3; IOSTANDARD = LVDS33; PULLTYPE = NONE; }

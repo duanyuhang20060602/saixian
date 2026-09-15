@@ -90,6 +90,14 @@
                     <Attr Name="CompileOrder" Val="12"/>
                 </FileInfo>
             </File>
+            <File Path="../user_source/hdl_source/saixian_hmi_uart.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&amp;R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="51"/>
+                </FileInfo>
+            </File>
             <File Path="../user_source/hdl_source/top_tf_hdmi_audio.v">
                 <FileInfo>
                     <Attr Name="UsedInSyn" Val="true"/>

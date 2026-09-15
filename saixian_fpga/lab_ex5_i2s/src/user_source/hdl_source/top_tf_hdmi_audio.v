@@ -8,7 +8,8 @@ module top(
     output [7:0] seg_data,
     output HDMI_CLK_P, output HDMI_D2_P, output HDMI_D1_P, output HDMI_D0_P,
     output HDMI_DDC_SCL, inout HDMI_DDC_SDA,
-    output sd_ncs, output sd_dclk, output sd_mosi, input sd_miso
+    output sd_ncs, output sd_dclk, output sd_mosi, input sd_miso,
+    input hmi_uart_rx, output hmi_uart_tx
 );
 
 parameter MEM_DATA_BITS = 32;
@@ -67,6 +68,22 @@ video_delay u_delay(.video_clk(video_clk),.rst(rst_video),.read_en(video_read_en
     .hs(hs0),.vs(vs0),.de(de0),.hs_r(hs),.vs_r(vs),.de_r(de),.vout_data(video_rgb_raw));
 saixian_video_tracker u_tracker(.clk(video_clk),.rst(rst_video),.vs(vs),.de(de),.x(pixel_x),.y(pixel_y),.frame_tick(frame_tick));
 
+wire hmi_start_pulse, hmi_pause_pulse, hmi_finish_pulse;
+wire hmi_prev_pulse, hmi_next_pulse;
+wire hmi_setting_valid, hmi_reset_defaults, hmi_frame_error;
+wire [2:0] hmi_setting_id;
+wire [7:0] hmi_setting_value;
+saixian_hmi_uart #(.CLK_FREQ_HZ(25_000_000),.BAUD_RATE(115_200)) u_hmi_uart(
+    .clk(video_clk),.rst(rst_video),.uart_rx(hmi_uart_rx),
+    .start_pulse(hmi_start_pulse),.pause_pulse(hmi_pause_pulse),
+    .finish_pulse(hmi_finish_pulse),.prev_pulse(hmi_prev_pulse),.next_pulse(hmi_next_pulse),
+    .setting_valid(hmi_setting_valid),.setting_id(hmi_setting_id),.setting_value(hmi_setting_value),
+    .reset_defaults_pulse(hmi_reset_defaults),.frame_error_pulse(hmi_frame_error)
+);
+// Bidirectional status updates can be added later. Keep FPGA TX at the UART
+// idle level for this screen-to-FPGA control revision.
+assign hmi_uart_tx = 1'b1;
+
 wire [3:0] event_state;
 wire [1:0] project_id;
 wire [6:0] minutes;
@@ -75,22 +92,26 @@ wire [3:0] countdown_value, cue_event;
 wire carousel_mode;
 wire settings_mode;
 wire [1:0] setting_item;
-wire [3:0] volume_setting, brightness_setting, contrast_setting;
+wire [3:0] volume_setting, brightness_setting, contrast_setting, saturation_setting;
 wire [1:0] sharpness_setting;
 
 saixian_settings_controller u_settings(
     .clk(video_clk),.rst(rst_video),.carousel_mode(carousel_mode),
     .key_next_item(key1_press),.key_decrease(key2_press),
     .key_enter_exit(key3_press),.key_increase(key4_press),
+    .hmi_setting_valid(hmi_setting_valid),.hmi_setting_id(hmi_setting_id),
+    .hmi_setting_value(hmi_setting_value),.hmi_reset_defaults(hmi_reset_defaults),
     .settings_mode(settings_mode),.setting_item(setting_item),
     .volume_setting(volume_setting),.brightness_setting(brightness_setting),
-    .contrast_setting(contrast_setting),.sharpness_setting(sharpness_setting)
+    .contrast_setting(contrast_setting),.saturation_setting(saturation_setting),
+    .sharpness_setting(sharpness_setting)
 );
 
 saixian_event_controller u_event(
     .clk(video_clk),.rst(rst_video),.frame_start(frame_tick),
-    .key_start(key1_press & ~settings_mode),.key_pause(key2_press & ~settings_mode),
-    .key_end(key3_press & ~settings_mode),.project_switch(project_select),
+    .key_start((key1_press & ~settings_mode) | hmi_start_pulse),
+    .key_pause((key2_press & ~settings_mode) | hmi_pause_pulse),
+    .key_end((key3_press & ~settings_mode) | hmi_finish_pulse),.project_switch(project_select),
     .state(event_state),.project_id(project_id),.minutes(minutes),.seconds(seconds),
     .countdown_value(countdown_value),.cue_event(cue_event),.carousel_mode(carousel_mode)
 );
@@ -115,8 +136,8 @@ reg prev_req_toggle, next_req_toggle;
 always @(posedge video_clk or posedge rst_video) begin
     if (rst_video) begin prev_req_toggle <= 0; next_req_toggle <= 0; end
     else if (carousel_mode && !settings_mode) begin
-        if (key2_press) prev_req_toggle <= ~prev_req_toggle;
-        if (key4_press) next_req_toggle <= ~next_req_toggle;
+        if (key2_press | hmi_prev_pulse) prev_req_toggle <= ~prev_req_toggle;
+        if (key4_press | hmi_next_pulse) next_req_toggle <= ~next_req_toggle;
     end
 end
 
@@ -312,7 +333,7 @@ end
 wire [23:0] adjusted_rgb;
 saixian_picture_adjust u_picture_adjust(.clk(video_clk),.rst(rst_video),.de(de),.x(pixel_x),
     .rgb_in(video_rgb_raw),.brightness_setting(brightness_setting),.contrast_setting(contrast_setting),
-    .sharpness_setting(sharpness_setting),.rgb_out(adjusted_rgb));
+    .saturation_setting(saturation_setting),.sharpness_setting(sharpness_setting),.rgb_out(adjusted_rgb));
 
 wire [23:0] osd_rgb;
 saixian_osd_overlay u_osd(.de(de),.x(pixel_x),.y(pixel_y),.rgb_in(adjusted_rgb),.display_valid(display_valid),
@@ -418,15 +439,35 @@ module saixian_settings_controller #(
     input  wire       key_decrease,
     input  wire       key_enter_exit,
     input  wire       key_increase,
+    input  wire       hmi_setting_valid,
+    input  wire [2:0] hmi_setting_id,
+    input  wire [7:0] hmi_setting_value,
+    input  wire       hmi_reset_defaults,
     output reg        settings_mode,
     output reg [1:0]  setting_item,
     output reg [3:0]  volume_setting,
     output reg [3:0]  brightness_setting,
     output reg [3:0]  contrast_setting,
+    output reg [3:0]  saturation_setting,
     output reg [1:0]  sharpness_setting
 );
 localparam [28:0] TIMEOUT_CYCLES = CLK_FREQ_HZ * TIMEOUT_SECONDS;
 reg [28:0] idle_timer;
+
+function [3:0] quantize_percent;
+    input [7:0] value;
+    begin
+        if      (value <= 8'd6)  quantize_percent = 4'd0;
+        else if (value <= 8'd18) quantize_percent = 4'd1;
+        else if (value <= 8'd31) quantize_percent = 4'd2;
+        else if (value <= 8'd43) quantize_percent = 4'd3;
+        else if (value <= 8'd56) quantize_percent = 4'd4;
+        else if (value <= 8'd68) quantize_percent = 4'd5;
+        else if (value <= 8'd81) quantize_percent = 4'd6;
+        else if (value <= 8'd93) quantize_percent = 4'd7;
+        else                     quantize_percent = 4'd8;
+    end
+endfunction
 
 always @(posedge clk or posedge rst) begin
     if (rst) begin
@@ -435,8 +476,26 @@ always @(posedge clk or posedge rst) begin
         volume_setting     <= 4'd5;
         brightness_setting <= 4'd4;
         contrast_setting   <= 4'd4;
+        saturation_setting <= 4'd4;
         sharpness_setting  <= 2'd1;
         idle_timer         <= 29'd0;
+    end else if (hmi_reset_defaults) begin
+        volume_setting     <= 4'd5;
+        brightness_setting <= 4'd4;
+        contrast_setting   <= 4'd4;
+        saturation_setting <= 4'd4;
+        sharpness_setting  <= 2'd1;
+        idle_timer         <= 29'd0;
+    end else if (hmi_setting_valid) begin
+        idle_timer <= 29'd0;
+        case (hmi_setting_id)
+            3'd0: sharpness_setting  <= (hmi_setting_value > 3) ? 2'd3 : hmi_setting_value[1:0];
+            3'd1: brightness_setting <= quantize_percent(hmi_setting_value);
+            3'd2: contrast_setting   <= quantize_percent(hmi_setting_value);
+            3'd3: saturation_setting <= quantize_percent(hmi_setting_value);
+            3'd4: volume_setting     <= quantize_percent(hmi_setting_value);
+            default: ;
+        endcase
     end else if (!carousel_mode) begin
         settings_mode <= 1'b0;
         idle_timer    <= 29'd0;
@@ -529,6 +588,7 @@ module saixian_picture_adjust(
     input  wire [23:0] rgb_in,
     input  wire [3:0]  brightness_setting,
     input  wire [3:0]  contrast_setting,
+    input  wire [3:0]  saturation_setting,
     input  wire [1:0]  sharpness_setting,
     output reg  [23:0] rgb_out
 );
@@ -536,6 +596,9 @@ reg [23:0] previous_rgb;
 reg signed [12:0] red_work, green_work, blue_work;
 reg signed [11:0] red_delta, green_delta, blue_delta;
 reg signed [10:0] brightness_offset;
+reg [7:0] red_pre, green_pre, blue_pre;
+reg signed [12:0] luma_work;
+reg signed [12:0] red_sat, green_sat, blue_sat;
 
 function signed [12:0] contrast_scale;
     input signed [12:0] value;
@@ -551,6 +614,24 @@ function signed [12:0] contrast_scale;
             4'd6: contrast_scale = value + (value >>> 2);
             4'd7: contrast_scale = value + (value >>> 1);
             default: contrast_scale = value + (value >>> 1) + (value >>> 2);
+        endcase
+    end
+endfunction
+
+function signed [12:0] saturation_scale;
+    input signed [12:0] value;
+    input [3:0] level;
+    begin
+        case (level)
+            4'd0: saturation_scale = 13'sd0;
+            4'd1: saturation_scale = value >>> 2;
+            4'd2: saturation_scale = value >>> 1;
+            4'd3: saturation_scale = value - (value >>> 2);
+            4'd4: saturation_scale = value;
+            4'd5: saturation_scale = value + (value >>> 3);
+            4'd6: saturation_scale = value + (value >>> 2);
+            4'd7: saturation_scale = value + (value >>> 1);
+            default: saturation_scale = value + (value >>> 1) + (value >>> 2);
         endcase
     end
 endfunction
@@ -607,6 +688,14 @@ always @* begin
                  + 13'sd128 + brightness_offset;
     blue_work  = contrast_scale($signed({1'b0,rgb_in[7:0]}) + blue_delta - 13'sd128, contrast_setting)
                  + 13'sd128 + brightness_offset;
-    rgb_out = {clamp_channel(red_work),clamp_channel(green_work),clamp_channel(blue_work)};
+    red_pre   = clamp_channel(red_work);
+    green_pre = clamp_channel(green_work);
+    blue_pre  = clamp_channel(blue_work);
+    luma_work = ($signed({1'b0,red_pre}) + ($signed({1'b0,green_pre}) <<< 1)
+                 + $signed({1'b0,blue_pre})) >>> 2;
+    red_sat   = luma_work + saturation_scale($signed({1'b0,red_pre}) - luma_work, saturation_setting);
+    green_sat = luma_work + saturation_scale($signed({1'b0,green_pre}) - luma_work, saturation_setting);
+    blue_sat  = luma_work + saturation_scale($signed({1'b0,blue_pre}) - luma_work, saturation_setting);
+    rgb_out = {clamp_channel(red_sat),clamp_channel(green_sat),clamp_channel(blue_sat)};
 end
 endmodule
