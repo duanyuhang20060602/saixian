@@ -116,19 +116,38 @@ saixian_event_controller u_event(
     .countdown_value(countdown_value),.cue_event(cue_event),.carousel_mode(carousel_mode)
 );
 
-// Lower-third headline moves one pixel to the right at each frame boundary.
-// Updating only on frame_tick keeps its position constant for the whole frame.
+// Constant-speed left-to-right marquee phase.  Phase 0 places the
+// 224-pixel headline just left of the screen; phase 864 just clears the right.
 reg [9:0] ticker_x;
 always @(posedge video_clk or posedge rst_video) begin
     if (rst_video)
-        ticker_x <= 10'd152;
+        ticker_x <= 10'd0;
     else if (!carousel_mode || settings_mode)
-        ticker_x <= 10'd152;
+        ticker_x <= 10'd0;
     else if (frame_tick) begin
-        if (ticker_x >= 10'd416)
-            ticker_x <= 10'd152;
+        if (ticker_x >= 10'd864)
+            ticker_x <= 10'd0;
         else
             ticker_x <= ticker_x + 10'd1;
+    end
+end
+
+// Rotate the boot indicator at 10 steps per second. display_valid is asserted
+// only after the card scan has completed and the first full frame has reached
+// SDRAM, so the animation covers both discovery and initial image loading.
+reg [2:0] loading_phase;
+reg [2:0] loading_frame_div;
+always @(posedge video_clk or posedge rst_video) begin
+    if (rst_video || display_valid) begin
+        loading_phase     <= 3'd0;
+        loading_frame_div <= 3'd0;
+    end else if (frame_tick) begin
+        if (loading_frame_div == 3'd5) begin
+            loading_frame_div <= 3'd0;
+            loading_phase     <= loading_phase + 1'b1;
+        end else begin
+            loading_frame_div <= loading_frame_div + 1'b1;
+        end
     end
 end
 
@@ -341,6 +360,7 @@ saixian_picture_adjust u_picture_adjust(.clk(video_clk),.rst(rst_video),.de(de),
 
 wire [23:0] osd_rgb;
 saixian_osd_overlay u_osd(.de(de),.x(pixel_x),.y(pixel_y),.rgb_in(adjusted_rgb),.display_valid(display_valid),
+    .loading_phase(loading_phase),
     .state(event_state),.project_id(carousel_mode ? project_select : project_id),.minutes(minutes),.seconds(seconds),.countdown_value(countdown_value),
     .ticker_x(ticker_x),
     .source_width_bcd(source_width_bcd),.source_height_bcd(source_height_bcd),
@@ -349,9 +369,26 @@ saixian_osd_overlay u_osd(.de(de),.x(pixel_x),.y(pixel_y),.rgb_in(adjusted_rgb),
     .volume_setting(volume_setting),.brightness_setting(brightness_setting),
     .contrast_setting(contrast_setting),.sharpness_setting(sharpness_setting),.rgb_out(osd_rgb));
 
+// Register RGB and its timing controls together before AXI conversion.  This
+// preserves pixel alignment while cutting the long combinational OSD path.
+reg [23:0] osd_rgb_pipe;
+reg        de_pipe;
+reg        vs_pipe;
+always @(posedge video_clk or posedge rst_video) begin
+    if (rst_video) begin
+        osd_rgb_pipe <= 24'd0;
+        de_pipe      <= 1'b0;
+        vs_pipe      <= 1'b0;
+    end else begin
+        osd_rgb_pipe <= osd_rgb;
+        de_pipe      <= de;
+        vs_pipe      <= vs;
+    end
+end
+
 wire axis_s_user, axis_s_valid, axis_s_last, axis_s_ready;
 wire [23:0] axis_s_data;
-video_rgb_to_axis_640x480 u_axis(.I_clk(video_clk),.I_rst(rst_video),.I_vs(vs),.I_de(de),.I_rgb(osd_rgb),
+video_rgb_to_axis_640x480 u_axis(.I_clk(video_clk),.I_rst(rst_video),.I_vs(vs_pipe),.I_de(de_pipe),.I_rgb(osd_rgb_pipe),
     .O_video_user(axis_s_user),.O_video_valid(axis_s_valid),.O_video_last(axis_s_last),.O_video_data(axis_s_data));
 
 wire [9:0] tmds_ch0_data, tmds_ch1_data, tmds_ch2_data, tmds_clk_data;

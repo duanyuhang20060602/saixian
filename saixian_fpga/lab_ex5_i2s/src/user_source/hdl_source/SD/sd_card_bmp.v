@@ -44,10 +44,9 @@ reg [31:0] image_sector0, image_sector1, image_sector2, image_sector3;
 reg [15:0] image_width0, image_width1, image_width2, image_width3;
 reg [15:0] image_height0, image_height1, image_height2, image_height3;
 reg [15:0] pending_width, pending_height;
-reg [1:0] current_image, pending_image, current_buf;
+reg [1:0] current_image, pending_image, desired_image, current_buf;
 reg load_busy, source_started, source_done, write_finish_seen, awaiting_commit, display_committed;
-reg request_pending, request_previous;
-reg load_slide_right;
+reg desired_slide_right, load_slide_right;
 reg reload_first_after_scan;
 reg [31:0] init_timer, load_timer, auto_timer, recovery_timer;
 reg [32:0] scan_timer;
@@ -141,10 +140,10 @@ always @(posedge clk or posedge rst) begin
         image_width0 <= 0; image_width1 <= 0; image_width2 <= 0; image_width3 <= 0;
         image_height0 <= 0; image_height1 <= 0; image_height2 <= 0; image_height3 <= 0;
         pending_width <= 0; pending_height <= 0; source_width <= 0; source_height <= 0;
-        current_image <= 0; pending_image <= 0; current_buf <= 0;
+        current_image <= 0; pending_image <= 0; desired_image <= 0; current_buf <= 0;
         ready_buf_idx <= 0; write_buf_idx <= 0;
         load_busy <= 0; source_started <= 0; source_done <= 0; write_finish_seen <= 0; awaiting_commit <= 0; display_committed <= 0;
-        request_pending <= 0; request_previous <= 0; frame_ready_toggle <= 0;
+        desired_slide_right <= 0; frame_ready_toggle <= 0;
         ready_slide_right <= 0; load_slide_right <= 0;
         reload_first_after_scan <= 0;
         sd_init_done_o <= 0; scan_done_o <= 0; image_count <= 0; error_code <= 0;
@@ -163,7 +162,8 @@ always @(posedge clk or posedge rst) begin
             else begin
                 recovery_timer <= 0; op_abort <= 1; error_code <= 0;
                 scan_kicked <= 0; image_count <= 0;
-                load_busy <= 0; awaiting_commit <= 0; request_pending <= 0;
+                load_busy <= 0; awaiting_commit <= 0; desired_image <= 0;
+                desired_slide_right <= 0;
                 source_started <= 0; source_done <= 0; write_finish_seen <= 0;
                 init_timer <= 0; scan_timer <= 0; load_timer <= 0;
                 reload_first_after_scan <= display_committed;
@@ -184,6 +184,8 @@ always @(posedge clk or posedge rst) begin
             scan_start_pulse <= 1;
             scan_kicked <= 1;
             image_count <= 0;
+            desired_image <= 0;
+            desired_slide_right <= 0;
             image_sector0 <= 0; image_sector1 <= 0; image_sector2 <= 0; image_sector3 <= 0;
             image_width0 <= 0; image_width1 <= 0; image_width2 <= 0; image_width3 <= 0;
             image_height0 <= 0; image_height1 <= 0; image_height2 <= 0; image_height3 <= 0;
@@ -207,17 +209,28 @@ always @(posedge clk or posedge rst) begin
 
         if (scan_done && !scan_found_valid && image_count == 0 && scan_kicked && error_code == 0) error_code <= 3'd3;
 
-        if (prev_pulse && carousel_on && image_count != 0) begin
-            request_pending <= 1; request_previous <= 1; auto_timer <= 0;
-        end else if (next_pulse && carousel_on && image_count != 0) begin
-            request_pending <= 1; request_previous <= 0; auto_timer <= 0;
-        end
-
-        if (carousel_on && scan_done && image_count > 1 && !load_busy && !awaiting_commit) begin
+        // Track the desired image independently from the visible one. A TF
+        // transfer can take seconds, so presses received while busy must update
+        // the target instead of being collapsed into one pending direction bit.
+        if (prev_pulse && carousel_on && scan_done && image_count > 1) begin
+            desired_image <= previous_index(desired_image, image_count);
+            desired_slide_right <= 1;
+            auto_timer <= 0;
+        end else if (next_pulse && carousel_on && scan_done && image_count > 1) begin
+            desired_image <= next_index(desired_image, image_count);
+            desired_slide_right <= 0;
+            auto_timer <= 0;
+        end else if (carousel_on && scan_done && image_count > 1 &&
+                     display_committed && !load_busy && !awaiting_commit &&
+                     (desired_image == current_image)) begin
             if (auto_timer == AUTO_CYCLES - 1) begin
-                auto_timer <= 0; request_pending <= 1; request_previous <= 0;
+                auto_timer <= 0;
+                desired_image <= next_index(current_image, image_count);
+                desired_slide_right <= 0;
             end else auto_timer <= auto_timer + 1;
-        end else if (!carousel_on) auto_timer <= 0;
+        end else if (!carousel_on) begin
+            auto_timer <= 0;
+        end
 
         if (scan_done && image_count != 0 && !load_busy && !awaiting_commit && bmp_ready) begin
             if (reload_first_after_scan && display_committed) begin
@@ -232,15 +245,15 @@ always @(posedge clk or posedge rst) begin
                 pending_width <= image_width0; pending_height <= image_height0;
                 load_slide_right <= 0;
                 load_start_pulse <= 1; load_busy <= 1; source_started <= 0; source_done <= 0; write_finish_seen <= 0; load_timer <= 0;
-            end else if (request_pending) begin
-                pending_image <= request_previous ? previous_index(current_image, image_count) : next_index(current_image, image_count);
-                load_sector <= sector_for(request_previous ? previous_index(current_image, image_count) : next_index(current_image, image_count));
-                pending_width <= width_for(request_previous ? previous_index(current_image, image_count) : next_index(current_image, image_count));
-                pending_height <= height_for(request_previous ? previous_index(current_image, image_count) : next_index(current_image, image_count));
+            end else if (desired_image != current_image) begin
+                pending_image <= desired_image;
+                load_sector <= sector_for(desired_image);
+                pending_width <= width_for(desired_image);
+                pending_height <= height_for(desired_image);
                 write_buf_idx <= (current_buf == 0) ? 2'd1 : 2'd0;
-                load_slide_right <= request_previous;
+                load_slide_right <= desired_slide_right;
                 load_start_pulse <= 1; load_busy <= 1; source_started <= 0; source_done <= 0; write_finish_seen <= 0;
-                request_pending <= 0; load_timer <= 0;
+                load_timer <= 0;
             end
         end
 

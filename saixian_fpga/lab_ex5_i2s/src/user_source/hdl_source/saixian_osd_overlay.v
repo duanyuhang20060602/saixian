@@ -4,6 +4,7 @@ module saixian_osd_overlay(
     input  wire [8:0]  y,
     input  wire [23:0] rgb_in,
     input  wire        display_valid,
+    input  wire [2:0]  loading_phase,
     input  wire [3:0]  state,
     input  wire [1:0]  project_id,
     input  wire [6:0]  minutes,
@@ -49,8 +50,11 @@ reg [9:0] progress_width;
 reg [9:0] volume_width;
 reg [3:0] setting_value;
 reg [9:0] setting_bar_width;
+reg       spinner_pixel;
+reg [2:0] spinner_segment;
 wire [15:0] font_bits;
 wire font_pixel = font_bits[15-font_col];
+wire [10:0] ticker_local_x = {1'b0, x} + 11'd224 - {1'b0, ticker_x};
 
 saixian_font_rom u_font_rom(
     .glyph_id(glyph_id),
@@ -240,7 +244,7 @@ always @* begin
             glyph_id = error_glyph(error_code,slot);
             text_region=1'b1;
         end
-    end else if (settings_mode) begin
+    end else if (display_valid && settings_mode) begin
         // Settings title: 设置
         if ((x >= 10'd288) && (x < 10'd352) && (y >= 9'd84) && (y < 9'd116)) begin
             local_x = x - 10'd288;
@@ -286,23 +290,11 @@ always @* begin
             text_region = 1'b1;
             text_color = 24'hFFD166;
         end
-    end else begin
-        if ((state == ST_CAROUSEL) && (x >= 10'd8) && (x < 10'd136) &&
-            (y >= 9'd432) && (y < 9'd464)) begin
-            local_x = x - 10'd8;
-            slot = local_x[8:5];
-            font_col = local_x[4:1];
-            font_row = (y - 9'd432) >> 1;
-            case (slot)
-                0:glyph_id=7'd15; 1:glyph_id=7'd16;
-                2:glyph_id=7'd17; 3:glyph_id=7'd18;
-                default:glyph_id=7'd0;
-            endcase
-            text_region=1'b1;
-            text_color=24'hFFFFFF;
-        end else if ((state == ST_CAROUSEL) && (x >= ticker_x) && (x < (ticker_x + 10'd224)) &&
-                      (y >= 9'd432) && (y < 9'd464)) begin
-            local_x = x - ticker_x;
+    end else if (display_valid) begin
+        if ((state == ST_CAROUSEL) &&
+                     (ticker_local_x < 11'd224) &&
+                     (y >= 9'd432) && (y < 9'd464)) begin
+            local_x = ticker_local_x[9:0];
             slot = local_x[8:5];
             font_col = local_x[4:1];
             font_row = (y - 9'd432) >> 1;
@@ -335,7 +327,8 @@ always @* begin
             local_x = x - 10'd488;
             slot = local_x[7:4];
             font_col = local_x[3:0];
-            font_row = y - 9'd24;
+            // In this branch y is 24..39; this is exactly y-24 without an adder.
+            font_row = {~y[3], y[2:0]};
             case(slot)
                 0:glyph_id=(source_width_bcd[15:12] == 0) ? 7'd0 : digit_glyph(source_width_bcd[15:12]);
                 1:glyph_id=((source_width_bcd[15:12] == 0) && (source_width_bcd[11:8] == 0)) ? 7'd0 : digit_glyph(source_width_bcd[11:8]);
@@ -383,6 +376,8 @@ always @* begin
     volume_width = audio_level * 10'd2;
     setting_value = 4'd0;
     setting_bar_width = 10'd0;
+    spinner_pixel = 1'b0;
+    spinner_segment = 3'd0;
 
     if (!de)
         base_rgb = 24'd0;
@@ -395,10 +390,35 @@ always @* begin
 
     rgb_out = base_rgb;
 
-    if (de && transition_active && (x < curtain_width))
+    // Eight-spoke boot spinner. One bright spoke advances at 10 Hz while the
+    // remaining spokes stay dim, making SD scan/first-frame progress visible.
+    if (de && (error_code == 0) && !display_valid) begin
+        if ((x >= 10'd314) && (x < 10'd326) && (y >= 9'd178) && (y < 9'd204)) begin
+            spinner_pixel = 1'b1; spinner_segment = 3'd0;
+        end else if ((x >= 10'd342) && (x < 10'd360) && (y >= 9'd194) && (y < 9'd212)) begin
+            spinner_pixel = 1'b1; spinner_segment = 3'd1;
+        end else if ((x >= 10'd350) && (x < 10'd376) && (y >= 9'd226) && (y < 9'd238)) begin
+            spinner_pixel = 1'b1; spinner_segment = 3'd2;
+        end else if ((x >= 10'd342) && (x < 10'd360) && (y >= 9'd252) && (y < 9'd270)) begin
+            spinner_pixel = 1'b1; spinner_segment = 3'd3;
+        end else if ((x >= 10'd314) && (x < 10'd326) && (y >= 9'd260) && (y < 9'd286)) begin
+            spinner_pixel = 1'b1; spinner_segment = 3'd4;
+        end else if ((x >= 10'd280) && (x < 10'd298) && (y >= 9'd252) && (y < 9'd270)) begin
+            spinner_pixel = 1'b1; spinner_segment = 3'd5;
+        end else if ((x >= 10'd264) && (x < 10'd290) && (y >= 9'd226) && (y < 9'd238)) begin
+            spinner_pixel = 1'b1; spinner_segment = 3'd6;
+        end else if ((x >= 10'd280) && (x < 10'd298) && (y >= 9'd194) && (y < 9'd212)) begin
+            spinner_pixel = 1'b1; spinner_segment = 3'd7;
+        end
+
+        if (spinner_pixel)
+            rgb_out = (spinner_segment == loading_phase) ? 24'h38E8FF : 24'h23506A;
+    end
+
+    if (de && display_valid && transition_active && (x < curtain_width))
         rgb_out = (x[5] ^ y[5]) ? 24'h1677FF : 24'h0B3A82;
 
-    if (de && settings_mode && (error_code == 0)) begin
+    if (de && display_valid && settings_mode && (error_code == 0)) begin
         if ((x >= 10'd112) && (x < 10'd528) && (y >= 9'd64) && (y < 9'd384))
             rgb_out = 24'h101827;
 
@@ -433,17 +453,15 @@ always @* begin
 
     // FPGA-generated lower-third ticker.  It is independent of the BMP frame
     // buffers, so image swaps cannot leave stale text or tear the banner.
-    if (de && (error_code == 0) && !settings_mode && (state == ST_CAROUSEL) &&
-        (y >= 9'd424) && (y < 9'd472)) begin
+    if (de && display_valid && (error_code == 0) && !settings_mode &&
+        (state == ST_CAROUSEL) && (y >= 9'd424) && (y < 9'd472)) begin
         if (y < 9'd428)
             rgb_out = 24'h36C7FF;
-        else if (x < 10'd144)
-            rgb_out = 24'hC62828;
         else
             rgb_out = {1'b0,rgb_out[23:17],1'b0,rgb_out[15:9],1'b0,rgb_out[7:1]};
     end
 
-    if (de && (error_code == 0) && !settings_mode) begin
+    if (de && display_valid && (error_code == 0) && !settings_mode) begin
         if (y < 9'd64)
             rgb_out = {1'b0,rgb_out[23:17],1'b0,rgb_out[15:9],1'b0,rgb_out[7:1]};
 
@@ -472,7 +490,7 @@ always @* begin
         end
     end
 
-    if (de && text_region && font_pixel)
+    if (de && text_region && font_pixel && (display_valid || (error_code != 0)))
         rgb_out = text_color;
 end
 
