@@ -11,7 +11,7 @@ module sd_card_bmp #(
     output reg sd_init_done_o, output reg scan_done_o,
     output reg [2:0] image_count, output reg [2:0] error_code,
     output reg [15:0] source_width, output reg [15:0] source_height,
-    output reg frame_ready_toggle, output reg [1:0] ready_buf_idx,
+    output reg frame_ready_toggle, output reg [1:0] ready_buf_idx, output reg ready_slide_right,
     output reg [1:0] write_buf_idx,
     input [15:0] bmp_width, input [15:0] bmp_height,
     input write_finish_toggle,
@@ -47,6 +47,7 @@ reg [15:0] pending_width, pending_height;
 reg [1:0] current_image, pending_image, current_buf;
 reg load_busy, source_started, source_done, write_finish_seen, awaiting_commit, display_committed;
 reg request_pending, request_previous;
+reg load_slide_right;
 reg reload_first_after_scan;
 reg [31:0] init_timer, load_timer, auto_timer, recovery_timer;
 reg [32:0] scan_timer;
@@ -144,6 +145,7 @@ always @(posedge clk or posedge rst) begin
         ready_buf_idx <= 0; write_buf_idx <= 0;
         load_busy <= 0; source_started <= 0; source_done <= 0; write_finish_seen <= 0; awaiting_commit <= 0; display_committed <= 0;
         request_pending <= 0; request_previous <= 0; frame_ready_toggle <= 0;
+        ready_slide_right <= 0; load_slide_right <= 0;
         reload_first_after_scan <= 0;
         sd_init_done_o <= 0; scan_done_o <= 0; image_count <= 0; error_code <= 0;
         init_timer <= 0; load_timer <= 0; auto_timer <= 0; recovery_timer <= 0; scan_timer <= 0;
@@ -222,11 +224,13 @@ always @(posedge clk or posedge rst) begin
                 pending_image <= 0; load_sector <= image_sector0;
                 write_buf_idx <= (current_buf == 0) ? 2'd1 : 2'd0;
                 pending_width <= image_width0; pending_height <= image_height0;
+                load_slide_right <= 0;
                 load_start_pulse <= 1; load_busy <= 1; source_started <= 0; source_done <= 0; write_finish_seen <= 0; load_timer <= 0;
                 reload_first_after_scan <= 0;
             end else if (!display_committed) begin
                 pending_image <= 0; load_sector <= image_sector0; write_buf_idx <= 0;
                 pending_width <= image_width0; pending_height <= image_height0;
+                load_slide_right <= 0;
                 load_start_pulse <= 1; load_busy <= 1; source_started <= 0; source_done <= 0; write_finish_seen <= 0; load_timer <= 0;
             end else if (request_pending) begin
                 pending_image <= request_previous ? previous_index(current_image, image_count) : next_index(current_image, image_count);
@@ -234,6 +238,7 @@ always @(posedge clk or posedge rst) begin
                 pending_width <= width_for(request_previous ? previous_index(current_image, image_count) : next_index(current_image, image_count));
                 pending_height <= height_for(request_previous ? previous_index(current_image, image_count) : next_index(current_image, image_count));
                 write_buf_idx <= (current_buf == 0) ? 2'd1 : 2'd0;
+                load_slide_right <= request_previous;
                 load_start_pulse <= 1; load_busy <= 1; source_started <= 0; source_done <= 0; write_finish_seen <= 0;
                 request_pending <= 0; load_timer <= 0;
             end
@@ -254,6 +259,7 @@ always @(posedge clk or posedge rst) begin
             (source_done || (source_started && bmp_ready)) &&
             (write_finish_seen || wrfin_pulse)) begin
             load_busy <= 0; awaiting_commit <= 1; ready_buf_idx <= write_buf_idx;
+            ready_slide_right <= load_slide_right;
             frame_ready_toggle <= ~frame_ready_toggle;
         end
 

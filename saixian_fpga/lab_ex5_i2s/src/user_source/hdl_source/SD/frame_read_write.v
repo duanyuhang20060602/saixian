@@ -45,6 +45,11 @@ module frame_read_write
 	input                            read_en,                    // data read module read request for one data, read_data valid next clock
 	output[READ_DATA_BITS  - 1:0]    read_data,                  // read data
 	output                           read_fifo_empty,            // no pixel available in read_clk domain
+    input                            slide_active,
+    input[1:0]                       slide_old_index,
+    input[1:0]                       slide_new_index,
+    input[9:0]                       slide_offset,
+    input                            slide_right,
 	/*
 	output                           wr_burst_req,               // to external memory controller,send out a burst write request
 	output[BURST_BITS - 1:0]         wr_burst_len,               // to external memory controller,data length of the burst write request, not bytes
@@ -164,7 +169,8 @@ frame_fifo_read
 	.MEM_DATA_BITS              (MEM_DATA_BITS            ),
 	.ADDR_BITS                  (ADDR_BITS                ),
 	.BURST_BITS                 (BURST_BITS               ),
-	.BURST_SIZE                 (BURST_SIZE               )
+	.BURST_SIZE                 (BURST_SIZE               ),
+    .FRAME_WIDTH                (FRAME_WIDTH              )
 )
 frame_fifo_read_m0
 (
@@ -188,6 +194,11 @@ frame_fifo_read_m0
 	.read_addr_3                (read_addr_3              ),
 	.read_addr_index            (read_addr_index          ),    
 	.read_len                   (read_len                 ),
+    .slide_active               (slide_active             ),
+    .slide_old_index            (slide_old_index          ),
+    .slide_new_index            (slide_new_index          ),
+    .slide_offset               (slide_offset             ),
+    .slide_right                (slide_right              ),
 	.fifo_aclr                  (read_fifo_aclr           ),
 	.wrusedw                	(wrusedw                  )
 );

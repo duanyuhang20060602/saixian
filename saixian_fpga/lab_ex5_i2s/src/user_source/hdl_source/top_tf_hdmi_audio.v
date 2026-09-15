@@ -171,8 +171,9 @@ wire [35:0] width_bcd_next = bcd_add3(width_bcd_shift) << 1;
 wire [35:0] height_bcd_next = bcd_add3(height_bcd_shift) << 1;
 reg [2:0] sd_error_sync0, sd_error_sync1;
 wire frame_ready_toggle;
-wire [1:0] ready_buf_idx, write_buf_idx, active_buf_idx;
-wire frame_commit_toggle, transition_active;
+wire [1:0] ready_buf_idx, write_buf_idx, active_buf_idx, slide_new_buf_idx;
+wire frame_commit_toggle, transition_active, ready_slide_right, slide_right;
+wire [9:0] slide_offset;
 wire [5:0] transition_level;
 wire sd_card_write_req, sd_card_write_req_ack, sd_card_write_en;
 wire [31:0] sd_card_write_data;
@@ -226,7 +227,7 @@ sd_card_bmp #(.CLK_FREQ_HZ(100_000_000),.SCAN_START_SECTOR(0),.SCAN_MAX_SECTOR(1
     .carousel_mode(carousel_mode && !settings_mode),.display_commit_toggle(frame_commit_toggle),.state_code(sd_state_code),
     .sd_init_done_o(sd_init_done),.scan_done_o(scan_done),.image_count(image_count),.error_code(sd_error),
     .source_width(source_width_sd),.source_height(source_height_sd),
-    .frame_ready_toggle(frame_ready_toggle),.ready_buf_idx(ready_buf_idx),.write_buf_idx(write_buf_idx),
+    .frame_ready_toggle(frame_ready_toggle),.ready_buf_idx(ready_buf_idx),.ready_slide_right(ready_slide_right),.write_buf_idx(write_buf_idx),
     .bmp_width(16'd640),.bmp_height(16'd480),.write_finish_toggle(frame_write_toggle_mem),
     .write_req(sd_card_write_req),.write_req_ack(sd_card_write_req_ack),.write_en(sd_card_write_en),.write_data(sd_card_write_data),
     .SD_nCS(sd_ncs),.SD_DCLK(sd_dclk),.SD_MOSI(sd_mosi),.SD_MISO(sd_miso)
@@ -234,8 +235,9 @@ sd_card_bmp #(.CLK_FREQ_HZ(100_000_000),.SCAN_START_SECTOR(0),.SCAN_MAX_SECTOR(1
 
 saixian_transition u_transition(
     .clk(video_clk),.rst(rst_video),.frame_tick(frame_tick),.frame_ready_toggle(frame_ready_toggle),.ready_buf_idx(ready_buf_idx),
-    .active_buf_idx(active_buf_idx),.frame_commit_toggle(frame_commit_toggle),.display_valid(display_valid),
-    .transition_active(transition_active),.transition_level(transition_level)
+    .ready_slide_right(ready_slide_right),.active_buf_idx(active_buf_idx),.slide_new_buf_idx(slide_new_buf_idx),
+    .frame_commit_toggle(frame_commit_toggle),.display_valid(display_valid),.transition_active(transition_active),
+    .slide_offset(slide_offset),.slide_right(slide_right),.transition_level(transition_level)
 );
 
 always @(posedge video_clk or posedge rst_video) begin
@@ -262,6 +264,8 @@ frame_read_write #(.WRITE_V_FLIP(1),.FRAME_WIDTH(640),.FRAME_HEIGHT(480)) u_fram
     .read_clk(video_clk),.read_req(video_read_req),.read_req_ack(video_read_req_ack),.read_finish(),
     .read_addr_0(BUF0_ADDR),.read_addr_1(BUF1_ADDR),.read_addr_2(21'd0),.read_addr_3(21'd0),.read_addr_index(active_buf_idx),
     .read_len(FRAME_PIXELS),.read_en(video_read_en),.read_data(video_read_data),.read_fifo_empty(video_read_empty),
+    .slide_active(transition_active),.slide_old_index(active_buf_idx),.slide_new_index(slide_new_buf_idx),
+    .slide_offset(slide_offset),.slide_right(slide_right),
     .App_wr_en(App_wr_en),.App_wr_addr(App_wr_addr),.App_wr_din(App_wr_din),.App_wr_dm(App_wr_dm),
     .write_clk(sd_card_clk),.write_req(sd_card_write_req),.write_req_ack(sd_card_write_req_ack),.write_finish(frame_write_finish),
     .write_addr_0(BUF0_ADDR),.write_addr_1(BUF1_ADDR),.write_addr_2(21'd0),.write_addr_3(21'd0),.write_addr_index(write_buf_idx),
