@@ -17,6 +17,8 @@ module saixian_osd_overlay(
     input  wire        transition_active,
     input  wire [5:0]  transition_level,
     input  wire [7:0]  audio_level,
+    input  wire        spectrum_active,
+    input  wire [4:0]  spectrum_tone_bin,
     input  wire        settings_mode,
     input  wire [1:0]  setting_item,
     input  wire [3:0]  volume_setting,
@@ -47,7 +49,10 @@ reg [8:0] local_y;
 reg [23:0] base_rgb;
 reg [10:0] curtain_width;
 reg [9:0] progress_width;
-reg [9:0] volume_width;
+reg [4:0] spectrum_bin;
+reg [6:0] spectrum_h3;
+reg [7:0] spectrum_h5;
+reg [5:0] spectrum_height;
 reg [3:0] setting_value;
 reg [9:0] setting_bar_width;
 reg       spinner_pixel;
@@ -373,7 +378,10 @@ end
 always @* begin
     curtain_width = transition_level * 11'd20;
     progress_width = seconds * 10'd8;
-    volume_width = audio_level * 10'd2;
+    spectrum_bin = 5'd0;
+    spectrum_h3 = 7'd0;
+    spectrum_h5 = 8'd0;
+    spectrum_height = 6'd0;
     setting_value = 4'd0;
     setting_bar_width = 10'd0;
     spinner_pixel = 1'b0;
@@ -476,17 +484,51 @@ always @* begin
         if ((state != ST_CAROUSEL) &&
             (y >= 9'd398) && (y < 9'd414) && (x >= 10'd80) && (x < 10'd560)) begin
             if ((state == ST_RUNNING) && ((x - 10'd80) < progress_width))
-                rgb_out = 24'h18E07B;
+                rgb_out = {{1'b0,rgb_out[23:17]} + 8'h0C,
+                           {1'b0,rgb_out[15:9]}  + 8'h70,
+                           {1'b0,rgb_out[7:1]}   + 8'h3D};
             else
-                rgb_out = 24'h243447;
+                rgb_out = {{1'b0,rgb_out[23:17]} + 8'h12,
+                           {1'b0,rgb_out[15:9]}  + 8'h1A,
+                           {1'b0,rgb_out[7:1]}   + 8'h23};
         end
 
+        // Lightweight 32-bin spectrum. The cue generator supplies the known
+        // fundamental, while adjacent leakage and the weak odd harmonics of
+        // its triangle wave keep the result sparse and physically plausible.
+        // High frequencies are on the left and low frequencies on the right.
         if ((state != ST_CAROUSEL) &&
-            (y >= 9'd444) && (y < 9'd468) && (x >= 10'd64) && (x < 10'd576)) begin
-            if ((x - 10'd64) < volume_width)
-                rgb_out = ((x - 10'd64) > 10'd400) ? 24'hFF5964 : 24'h46D9FF;
-            else
-                rgb_out = 24'h132235;
+            (y >= 9'd416) && (y < 9'd468) && (x >= 10'd64) && (x < 10'd576)) begin
+            spectrum_bin = 5'd31 - ((x - 10'd64) >> 4);
+            spectrum_h3 = {2'd0,spectrum_tone_bin} + ({2'd0,spectrum_tone_bin} << 1);
+            spectrum_h5 = {3'd0,spectrum_tone_bin} + ({3'd0,spectrum_tone_bin} << 2);
+            spectrum_height = 6'd4;
+            if (spectrum_active && (audio_level != 8'd0)) begin
+                if (spectrum_bin == spectrum_tone_bin)
+                    spectrum_height = 6'd8 + {1'b0,audio_level[7:3]};
+                else if (((spectrum_tone_bin != 5'd0) &&
+                          (spectrum_bin == (spectrum_tone_bin - 5'd1))) ||
+                         ((spectrum_tone_bin != 5'd31) &&
+                          (spectrum_bin == (spectrum_tone_bin + 5'd1))))
+                    spectrum_height = 6'd4 + {2'd0,audio_level[7:4]};
+                else if ((spectrum_h3 <= 7'd31) &&
+                         ({2'd0,spectrum_bin} == spectrum_h3))
+                    spectrum_height = 6'd4 + {3'd0,audio_level[7:5]};
+                else if ((spectrum_h5 <= 8'd31) &&
+                         ({3'd0,spectrum_bin} == spectrum_h5))
+                    spectrum_height = 6'd4 + {4'd0,audio_level[7:6]};
+            end
+            if ((x[3:0] < 4'd12) &&
+                (y >= (9'd468 - {3'd0,spectrum_height}))) begin
+                if (spectrum_bin >= 5'd22)
+                    rgb_out = 24'h37DFFF;
+                else if (spectrum_bin >= 5'd11)
+                    rgb_out = 24'h36E58D;
+                else if (spectrum_bin >= 5'd4)
+                    rgb_out = 24'hFFD05A;
+                else
+                    rgb_out = 24'hFF625F;
+            end
         end
     end
 

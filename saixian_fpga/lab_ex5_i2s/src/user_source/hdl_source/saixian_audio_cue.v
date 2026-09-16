@@ -8,7 +8,9 @@ module saixian_audio_cue #(
     output reg         audio_valid,
     output reg  [23:0] audio_left,
     output reg  [23:0] audio_right,
-    output reg  [7:0]  audio_level
+    output reg  [7:0]  audio_level,
+    output wire        spectrum_active,
+    output wire [4:0]  spectrum_tone_bin
 );
 
 localparam CUE_COUNT  = 4'd1;
@@ -35,6 +37,19 @@ wire sample_tick = (sample_sum >= CLK_FREQ_HZ);
 wire signed [23:0] triangle = phase_acc[31] ?
                               -$signed({1'b0, phase_acc[30:8]}) :
                                $signed({1'b0, phase_acc[30:8]});
+
+// The cue generator already knows the exact tone being played. Export that
+// metadata so the lightweight display can place energy in physical bins
+// without implementing a resource-heavy FFT.
+assign spectrum_active = (samples_left != 17'd0) && (phase_inc != 32'd0);
+assign spectrum_tone_bin =
+    (phase_inc == 32'd29527900)  ? 5'd3  : // 330 Hz
+    (phase_inc == 32'd39370534)  ? 5'd4  : // 440 Hz
+    (phase_inc == 32'd59055800)  ? 5'd5  : // 660 Hz
+    (phase_inc == 32'd78741067)  ? 5'd7  : // 880 Hz
+    (phase_inc == 32'd88583700)  ? 5'd8  : // 990 Hz
+    (phase_inc == 32'd118111600) ? 5'd11 : // 1320 Hz
+                                   5'd0;
 
 function [31:0] frequency_increment;
     input [15:0] hz;

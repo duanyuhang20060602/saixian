@@ -94,6 +94,7 @@ wire settings_mode;
 wire [1:0] setting_item;
 wire [3:0] volume_setting, brightness_setting, contrast_setting, saturation_setting;
 wire [1:0] sharpness_setting;
+wire [7:0] audio_level;
 
 saixian_settings_controller u_settings(
     .clk(video_clk),.rst(rst_video),.carousel_mode(carousel_mode),
@@ -300,12 +301,14 @@ sdram u_sdram(.Clk(ext_mem_clk),.Clk_sft(ext_mem_clk_sft),.Rst(rst_mem),.Sdr_ini
 wire audio_valid;
 wire [23:0] audio_left_raw, audio_right_raw;
 wire [7:0] audio_level_raw;
+wire spectrum_active;
+wire [4:0] spectrum_tone_bin;
 wire [23:0] audio_left_data, audio_right_data;
-wire [7:0] audio_level;
 wire acr_valid;
 wire [19:0] acr_cts, acr_n;
 saixian_audio_cue u_cue(.clk(video_clk),.rst(rst_video),.cue_event(cue_event),.audio_valid(audio_valid),
-    .audio_left(audio_left_raw),.audio_right(audio_right_raw),.audio_level(audio_level_raw));
+    .audio_left(audio_left_raw),.audio_right(audio_right_raw),.audio_level(audio_level_raw),
+    .spectrum_active(spectrum_active),.spectrum_tone_bin(spectrum_tone_bin));
 saixian_audio_volume u_volume(.volume_setting(volume_setting),.audio_left_in(audio_left_raw),
     .audio_right_in(audio_right_raw),.level_in(audio_level_raw),.audio_left_out(audio_left_data),
     .audio_right_out(audio_right_data),.level_out(audio_level));
@@ -365,7 +368,8 @@ saixian_osd_overlay u_osd(.de(de),.x(pixel_x),.y(pixel_y),.rgb_in(adjusted_rgb),
     .ticker_x(ticker_x),
     .source_width_bcd(source_width_bcd),.source_height_bcd(source_height_bcd),
     .error_code(error_code),.transition_active(transition_active),.transition_level(transition_level),
-    .audio_level(audio_level),.settings_mode(settings_mode),.setting_item(setting_item),
+    .audio_level(audio_level),.spectrum_active(spectrum_active),.spectrum_tone_bin(spectrum_tone_bin),
+    .settings_mode(settings_mode),.setting_item(setting_item),
     .volume_setting(volume_setting),.brightness_setting(brightness_setting),
     .contrast_setting(contrast_setting),.sharpness_setting(sharpness_setting),.rgb_out(osd_rgb));
 
