@@ -16,3 +16,14 @@ set_clock_groups -asynchronous \
 
 # Board keys, switches and HPD are explicitly synchronized before use.
 set_false_path -from [get_ports {key[*] sw[*] hdmi_hpd}]
+# por_count[22] is only the asynchronous assertion source for the per-domain
+# reset synchronizers. Reset release is retimed by three destination-clock
+# flip-flops, so recovery/removal timing from the 50 MHz counter into the HDMI
+# serializer domain is intentionally asynchronous. Keep this exception
+# source-specific so ordinary clk-to-hdmi_5x_clk data paths remain analyzed.
+set_false_path -from [get_regs {por_count[22]}] \
+    -to [get_clocks {hdmi_5x_clk}]
+# First stages of the video-to-50MHz status synchronizers are intentional CDC
+# sampling points. Only these first-stage registers are exempt; their second
+# stages and all downstream seven-segment logic remain fully timed.
+set_false_path -to [get_regs {error_code_clk_ff1[*] image_count_clk_ff1[*] event_state_clk_ff1[*]}]

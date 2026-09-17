@@ -2,7 +2,7 @@ module sd_card_bmp #(
     parameter integer CLK_FREQ_HZ       = 100_000_000,
     parameter [31:0]  SCAN_START_SECTOR = 32'd0,
     parameter [31:0]  SCAN_MAX_SECTOR   = 32'd131071,
-    parameter [2:0]   SCAN_TARGET_COUNT = 3'd4
+    parameter [2:0]   SCAN_TARGET_COUNT = 3'd5
 )(
     input clk, input rst,
     input prev_req_toggle, input next_req_toggle, input carousel_mode,
@@ -20,13 +20,16 @@ module sd_card_bmp #(
     output SD_nCS, output SD_DCLK, output SD_MOSI, input SD_MISO
 );
 
-localparam [31:0] INIT_TIMEOUT_CYCLES = CLK_FREQ_HZ * 3;
+// Slow cards can need several seconds to leave idle after ACMD41. The error
+// recovery path automatically resets and retries the controller.
+localparam [31:0] INIT_TIMEOUT_CYCLES = CLK_FREQ_HZ * 8;
 // Reading a 921654-byte BMP uses one CMD17 transaction per sector.  Some
 // large/slow TF cards need more than five seconds even though every transfer
 // is valid, so keep the timeout finite but allow adequate hardware margin.
 localparam [31:0] LOAD_TIMEOUT_CYCLES = CLK_FREQ_HZ * 30;
 localparam [31:0] AUTO_CYCLES = CLK_FREQ_HZ * 5;
-localparam [32:0] SCAN_TIMEOUT_CYCLES = 64'd60 * CLK_FREQ_HZ;
+localparam [32:0] SCAN_TIMEOUT_CYCLES = 64'd30 * CLK_FREQ_HZ;
+localparam [31:0] SCAN_IDLE_CYCLES = CLK_FREQ_HZ * 5;
 localparam [31:0] RECOVERY_CYCLES = CLK_FREQ_HZ * 2;
 
 wire sd_sec_read, sd_sec_read_data_valid, sd_sec_read_end;
@@ -38,17 +41,18 @@ wire [31:0] scan_found_sector;
 wire [15:0] scan_found_width, scan_found_height;
 wire [2:0] scan_found_total, init_stage;
 
-reg scan_start_pulse, load_start_pulse, op_abort, scan_kicked;
+reg scan_start_pulse, scan_stop_req, load_start_pulse, op_abort, scan_kicked;
 reg [31:0] load_sector;
-reg [31:0] image_sector0, image_sector1, image_sector2, image_sector3;
-reg [15:0] image_width0, image_width1, image_width2, image_width3;
-reg [15:0] image_height0, image_height1, image_height2, image_height3;
+reg [31:0] image_sector0, image_sector1, image_sector2, image_sector3, image_sector4;
+reg [15:0] image_width0, image_width1, image_width2, image_width3, image_width4;
+reg [15:0] image_height0, image_height1, image_height2, image_height3, image_height4;
 reg [15:0] pending_width, pending_height;
-reg [1:0] current_image, pending_image, desired_image, current_buf;
+reg [2:0] current_image, pending_image, desired_image;
+reg [1:0] current_buf;
 reg load_busy, source_started, source_done, write_finish_seen, awaiting_commit, display_committed;
 reg desired_slide_right, load_slide_right;
 reg reload_first_after_scan;
-reg [31:0] init_timer, load_timer, auto_timer, recovery_timer;
+reg [31:0] init_timer, load_timer, auto_timer, recovery_timer, scan_idle_timer;
 reg [32:0] scan_timer;
 reg [2:0] prev_sync, next_sync, commit_sync, wrfin_sync;
 reg [1:0] carousel_sync;
@@ -62,65 +66,72 @@ wire carousel_on = carousel_sync[1];
 assign write_en = bmp_data_wr_en;
 assign write_data = {bmp_data[23:16], bmp_data[15:8], bmp_data[7:0], 8'b0};
 
-function [1:0] next_index;
-    input [1:0] cur; input [2:0] count;
+function [2:0] next_index;
+    input [2:0] cur; input [2:0] count;
     begin
         case (count)
-            3'd2: next_index = (cur == 2'd1) ? 2'd0 : cur + 2'd1;
-            3'd3: next_index = (cur == 2'd2) ? 2'd0 : cur + 2'd1;
-            3'd4: next_index = (cur == 2'd3) ? 2'd0 : cur + 2'd1;
-            default: next_index = 2'd0;
+            3'd2: next_index = (cur == 3'd1) ? 3'd0 : cur + 3'd1;
+            3'd3: next_index = (cur == 3'd2) ? 3'd0 : cur + 3'd1;
+            3'd4: next_index = (cur == 3'd3) ? 3'd0 : cur + 3'd1;
+            3'd5: next_index = (cur == 3'd4) ? 3'd0 : cur + 3'd1;
+            default: next_index = 3'd0;
         endcase
     end
 endfunction
 
 function [15:0] width_for;
-    input [1:0] idx;
+    input [2:0] idx;
     begin
         case (idx)
-            2'd0: width_for = image_width0;
-            2'd1: width_for = image_width1;
-            2'd2: width_for = image_width2;
-            default: width_for = image_width3;
+            3'd0: width_for = image_width0;
+            3'd1: width_for = image_width1;
+            3'd2: width_for = image_width2;
+            3'd3: width_for = image_width3;
+            3'd4: width_for = image_width4;
+            default: width_for = image_width0;
         endcase
     end
 endfunction
 
 function [15:0] height_for;
-    input [1:0] idx;
+    input [2:0] idx;
     begin
         case (idx)
-            2'd0: height_for = image_height0;
-            2'd1: height_for = image_height1;
-            2'd2: height_for = image_height2;
-            default: height_for = image_height3;
+            3'd0: height_for = image_height0;
+            3'd1: height_for = image_height1;
+            3'd2: height_for = image_height2;
+            3'd3: height_for = image_height3;
+            3'd4: height_for = image_height4;
+            default: height_for = image_height0;
         endcase
     end
 endfunction
 
-function [1:0] previous_index;
-    input [1:0] cur; input [2:0] count;
+function [2:0] previous_index;
+    input [2:0] cur; input [2:0] count;
     begin
-        if (cur != 0) previous_index = cur - 2'd1;
-        else if (count == 3'd4) previous_index = 2'd3;
-        else if (count == 3'd3) previous_index = 2'd2;
-        else if (count == 3'd2) previous_index = 2'd1;
-        else previous_index = 2'd0;
+        if (cur != 0) previous_index = cur - 3'd1;
+        else if (count == 3'd5) previous_index = 3'd4;
+        else if (count == 3'd4) previous_index = 3'd3;
+        else if (count == 3'd3) previous_index = 3'd2;
+        else if (count == 3'd2) previous_index = 3'd1;
+        else previous_index = 3'd0;
     end
 endfunction
 
 function [31:0] sector_for;
-    input [1:0] idx;
+    input [2:0] idx;
     begin
         case (idx)
-            2'd0: sector_for = image_sector0;
-            2'd1: sector_for = image_sector1;
-            2'd2: sector_for = image_sector2;
-            default: sector_for = image_sector3;
+            3'd0: sector_for = image_sector0;
+            3'd1: sector_for = image_sector1;
+            3'd2: sector_for = image_sector2;
+            3'd3: sector_for = image_sector3;
+            3'd4: sector_for = image_sector4;
+            default: sector_for = image_sector0;
         endcase
     end
 endfunction
-
 always @(posedge clk or posedge rst) begin
     if (rst) begin
         prev_sync <= 0; next_sync <= 0; commit_sync <= 0; wrfin_sync <= 0; carousel_sync <= 0;
@@ -135,10 +146,10 @@ end
 
 always @(posedge clk or posedge rst) begin
     if (rst) begin
-        scan_start_pulse <= 0; load_start_pulse <= 0; op_abort <= 0; load_sector <= 0;
-        scan_kicked <= 0; image_sector0 <= 0; image_sector1 <= 0; image_sector2 <= 0; image_sector3 <= 0;
-        image_width0 <= 0; image_width1 <= 0; image_width2 <= 0; image_width3 <= 0;
-        image_height0 <= 0; image_height1 <= 0; image_height2 <= 0; image_height3 <= 0;
+        scan_start_pulse <= 0; scan_stop_req <= 0; load_start_pulse <= 0; op_abort <= 0; load_sector <= 0;
+        scan_kicked <= 0; image_sector0 <= 0; image_sector1 <= 0; image_sector2 <= 0; image_sector3 <= 0; image_sector4 <= 0;
+        image_width0 <= 0; image_width1 <= 0; image_width2 <= 0; image_width3 <= 0; image_width4 <= 0;
+        image_height0 <= 0; image_height1 <= 0; image_height2 <= 0; image_height3 <= 0; image_height4 <= 0;
         pending_width <= 0; pending_height <= 0; source_width <= 0; source_height <= 0;
         current_image <= 0; pending_image <= 0; desired_image <= 0; current_buf <= 0;
         ready_buf_idx <= 0; write_buf_idx <= 0;
@@ -147,7 +158,7 @@ always @(posedge clk or posedge rst) begin
         ready_slide_right <= 0; load_slide_right <= 0;
         reload_first_after_scan <= 0;
         sd_init_done_o <= 0; scan_done_o <= 0; image_count <= 0; error_code <= 0;
-        init_timer <= 0; load_timer <= 0; auto_timer <= 0; recovery_timer <= 0; scan_timer <= 0;
+        init_timer <= 0; load_timer <= 0; auto_timer <= 0; recovery_timer <= 0; scan_timer <= 0; scan_idle_timer <= 0;
     end else begin
         scan_start_pulse <= 0; load_start_pulse <= 0; op_abort <= 0;
         sd_init_done_o <= sd_init_done;
@@ -162,6 +173,7 @@ always @(posedge clk or posedge rst) begin
             else begin
                 recovery_timer <= 0; op_abort <= 1; error_code <= 0;
                 scan_kicked <= 0; image_count <= 0;
+                scan_stop_req <= 0; scan_idle_timer <= 0;
                 load_busy <= 0; awaiting_commit <= 0; desired_image <= 0;
                 desired_slide_right <= 0;
                 source_started <= 0; source_done <= 0; write_finish_seen <= 0;
@@ -183,12 +195,14 @@ always @(posedge clk or posedge rst) begin
         if (sd_init_done && !scan_kicked && error_code == 0 && bmp_ready) begin
             scan_start_pulse <= 1;
             scan_kicked <= 1;
+            scan_stop_req <= 0;
+            scan_idle_timer <= 0;
             image_count <= 0;
             desired_image <= 0;
             desired_slide_right <= 0;
-            image_sector0 <= 0; image_sector1 <= 0; image_sector2 <= 0; image_sector3 <= 0;
-            image_width0 <= 0; image_width1 <= 0; image_width2 <= 0; image_width3 <= 0;
-            image_height0 <= 0; image_height1 <= 0; image_height2 <= 0; image_height3 <= 0;
+            image_sector0 <= 0; image_sector1 <= 0; image_sector2 <= 0; image_sector3 <= 0; image_sector4 <= 0;
+            image_width0 <= 0; image_width1 <= 0; image_width2 <= 0; image_width3 <= 0; image_width4 <= 0;
+            image_height0 <= 0; image_height1 <= 0; image_height2 <= 0; image_height3 <= 0; image_height4 <= 0;
         end
 
         if (scan_kicked && !scan_done && error_code == 0) begin
@@ -196,15 +210,34 @@ always @(posedge clk or posedge rst) begin
             else begin op_abort <= 1; error_code <= 3'd3; end
         end else scan_timer <= 0;
 
+        // Raw-sector scanning has no FAT directory to identify the last file.
+        // After at least one valid BMP, finish cleanly when five seconds pass
+        // without another match.  Do not reset the SD controller: the images
+        // already collected can then be loaded into SDRAM immediately.
+        if (scan_kicked && !scan_done && error_code == 0) begin
+            if (scan_found_valid)
+                scan_idle_timer <= 0;
+            else if (image_count != 0) begin
+                if (scan_idle_timer < SCAN_IDLE_CYCLES - 1'b1)
+                    scan_idle_timer <= scan_idle_timer + 1'b1;
+                else
+                    scan_stop_req <= 1'b1;
+            end
+        end else begin
+            scan_idle_timer <= 0;
+            scan_stop_req <= 0;
+        end
+
         if (scan_found_valid) begin
             case (image_count)
                 0: begin image_sector0 <= scan_found_sector; image_width0 <= scan_found_width; image_height0 <= scan_found_height; end
                 1: begin image_sector1 <= scan_found_sector; image_width1 <= scan_found_width; image_height1 <= scan_found_height; end
                 2: begin image_sector2 <= scan_found_sector; image_width2 <= scan_found_width; image_height2 <= scan_found_height; end
                 3: begin image_sector3 <= scan_found_sector; image_width3 <= scan_found_width; image_height3 <= scan_found_height; end
+                4: begin image_sector4 <= scan_found_sector; image_width4 <= scan_found_width; image_height4 <= scan_found_height; end
                 default: ;
             endcase
-            if (image_count < 4) image_count <= image_count + 1;
+            if (image_count < 5) image_count <= image_count + 1;
         end
 
         if (scan_done && !scan_found_valid && image_count == 0 && scan_kicked && error_code == 0) error_code <= 3'd3;
@@ -285,7 +318,7 @@ end
 
 bmp_read u_bmp_read(
     .clk(clk), .rst(rst), .op_abort(op_abort), .ready(bmp_ready),
-    .scan_start(scan_start_pulse), .scan_start_sector(SCAN_START_SECTOR),
+    .scan_start(scan_start_pulse), .scan_stop(scan_stop_req), .scan_start_sector(SCAN_START_SECTOR),
     .scan_max_sector(SCAN_MAX_SECTOR), .scan_target_count(SCAN_TARGET_COUNT),
     .scan_done(scan_done), .scan_found_valid(scan_found_valid),
     .scan_found_sector(scan_found_sector), .scan_found_total(scan_found_total),

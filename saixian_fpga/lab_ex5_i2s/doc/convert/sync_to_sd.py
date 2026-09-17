@@ -53,7 +53,7 @@ def clean_drive(target_drive):
             print(f"  [警告] 无法删除 {item_path}: {e}")
     print("驱动器清空完毕。")
 
-def sync_new_images(source_dir, target_drive, max_count=4):
+def sync_new_images(source_dir, target_drive, max_count=5):
     """
     从源文件夹中挑选最多 max_count 张 BMP 图片，复制到目标驱动器。
     """
@@ -95,7 +95,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="FPGA SD卡 图片同步工具 (防物理残留死锁版)")
     parser.add_argument('drive', help='SD 卡所在的盘符 (例如: E: 或 E:\\)')
     parser.add_argument('-s', '--source', help='存放转换好 BMP 图片的源文件夹 (默认: 当前目录的 output_bmp)', default=None)
-    parser.add_argument('-n', '--num', type=int, default=4, help='最多同步的图片数量 (默认: 4)')
+    parser.add_argument('-n', '--num', type=int, default=5, help='最多同步的图片数量 (默认: 5)')
     
     args = parser.parse_args()
 

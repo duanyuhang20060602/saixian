@@ -30,8 +30,9 @@ module frame_fifo_read
     input                            slide_active,
     input [1:0]                      slide_old_index,
     input [1:0]                      slide_new_index,
-    input [9:0]                      slide_offset,
+    input [10:0]                     slide_offset,
     input                            slide_right,
+    input [2:0]                      transition_mode,
     output reg                       fifo_aclr,
     input [BURST_BITS-1:0]           wrusedw
 );
@@ -42,15 +43,16 @@ localparam S_CHECK_FIFO     = 4'd2;
 localparam S_READ_BURST     = 4'd3;
 localparam S_READ_BURST_END = 4'd4;
 localparam S_END            = 4'd5;
-localparam [10:0] FRAME_WIDTH_U = FRAME_WIDTH;
+localparam [11:0] FRAME_WIDTH_U = FRAME_WIDTH;
 
 reg read_req_d0, read_req_d1, read_req_d2;
 reg [ADDR_BITS-1:0] read_len_d0, read_len_d1, read_len_latch;
 reg [1:0] read_addr_index_d0, read_addr_index_d1;
 reg slide_active_d0, slide_active_d1;
 reg [1:0] slide_old_d0, slide_old_d1, slide_new_d0, slide_new_d1;
-reg [9:0] slide_offset_d0, slide_offset_d1;
+reg [10:0] slide_offset_d0, slide_offset_d1;
 reg slide_right_d0, slide_right_d1;
+reg [2:0] transition_mode_d0, transition_mode_d1;
 
 reg [3:0] state;
 reg [ADDR_BITS-1:0] read_cnt;
@@ -60,8 +62,10 @@ reg App_rd_en_r, App_rd_en_d0;
 reg [ADDR_BITS-1:0] App_rd_addr_r;
 
 reg slide_active_latch, slide_right_latch;
-reg [9:0] slide_offset_latch;
-reg [9:0] issue_x;
+reg [2:0] transition_mode_latch;
+reg [10:0] slide_offset_latch;
+reg [10:0] issue_x;
+reg [9:0] issue_y;
 reg [ADDR_BITS-1:0] old_row_base, new_row_base;
 
 wire rd_vld = (state == S_READ_BURST && burst_cnt >= BURST_SIZE);
@@ -84,30 +88,73 @@ function [ADDR_BITS-1:0] select_base;
 endfunction
 
 function [ADDR_BITS-1:0] mapped_address;
-    input [9:0] xpos;
+    input [10:0] xpos;
+    input [9:0] ypos;
     input [ADDR_BITS-1:0] old_base;
     input [ADDR_BITS-1:0] new_base;
     input enabled;
     input move_right;
-    input [9:0] offset;
-    reg [10:0] split;
+    input [2:0] effect;
+    input [10:0] offset;
+    reg [11:0] split;
+    reg [10:0] half_reveal;
+    reg [6:0] blind_local_y;
+    reg [6:0] blind_reveal;
+    reg [11:0] diagonal_position;
+    reg [11:0] diagonal_limit;
+    reg [3:0] dissolve_pattern;
+    reg [4:0] dissolve_level;
+    reg use_new;
     begin
         split = FRAME_WIDTH_U - {1'b0,offset};
+        half_reveal = offset >> 1;
+        blind_reveal = (offset >> 4) + (offset >> 7);
+        if (ypos < 10'd90) blind_local_y = ypos[6:0];
+        else if (ypos < 10'd180) blind_local_y = ypos - 10'd90;
+        else if (ypos < 10'd270) blind_local_y = ypos - 10'd180;
+        else if (ypos < 10'd360) blind_local_y = ypos - 10'd270;
+        else if (ypos < 10'd450) blind_local_y = ypos - 10'd360;
+        else if (ypos < 10'd540) blind_local_y = ypos - 10'd450;
+        else if (ypos < 10'd630) blind_local_y = ypos - 10'd540;
+        else blind_local_y = ypos - 10'd630;
+        diagonal_position = move_right ? ({1'b0,(FRAME_WIDTH_U-1'b1)-xpos} + ypos) :
+                                         ({1'b0,xpos} + ypos);
+        diagonal_limit = ({1'b0,offset} << 1) + (offset >> 1);
+        dissolve_pattern = {xpos[9]^ypos[9], xpos[8]^ypos[8],
+                            xpos[7]^ypos[7], xpos[6]^ypos[6]};
+        dissolve_level = offset >> 6;
+        use_new = 1'b0;
+
+        if (enabled) begin
+            case (effect)
+                3'd1: use_new = ({1'b0,xpos} >= ((FRAME_WIDTH_U>>1)-{1'b0,half_reveal})) &&
+                                 ({1'b0,xpos} <  ((FRAME_WIDTH_U>>1)+{1'b0,half_reveal}));
+                3'd2: use_new = (blind_local_y < ((offset >> 3) + (offset >> 6)));
+                3'd3: use_new = (diagonal_position < diagonal_limit);
+                3'd4: use_new = ({1'b0,(move_right ? ~dissolve_pattern : dissolve_pattern)} < (offset >> 5));
+                3'd5: use_new = ({1'b0,offset} >= (FRAME_WIDTH_U>>1));
+                default: use_new = 1'b0;
+            endcase
+        end
+
         if (!enabled)
             mapped_address = old_base + xpos;
-        else if (!move_right) begin
-            // Next image: old frame moves left, new frame enters at right.
-            if ({1'b0,xpos} < split)
-                mapped_address = old_base + xpos + offset;
-            else
-                mapped_address = new_base + xpos - split;
-        end else begin
-            // Previous image: old frame moves right, new frame enters at left.
-            if (xpos < offset)
-                mapped_address = new_base + xpos + split;
-            else
-                mapped_address = old_base + xpos - offset;
-        end
+        else if (effect == 3'd0) begin
+            if (!move_right) begin
+                if ({1'b0,xpos} < split)
+                    mapped_address = old_base + xpos + offset;
+                else
+                    mapped_address = new_base + xpos - split;
+            end else begin
+                if (xpos < offset)
+                    mapped_address = new_base + xpos + split;
+                else
+                    mapped_address = old_base + xpos - offset;
+            end
+        end else if (use_new)
+            mapped_address = new_base + xpos;
+        else
+            mapped_address = old_base + xpos;
     end
 endfunction
 
@@ -121,6 +168,7 @@ always @(posedge mem_clk or posedge rst) begin
         slide_new_d0 <= 0; slide_new_d1 <= 0;
         slide_offset_d0 <= 0; slide_offset_d1 <= 0;
         slide_right_d0 <= 0; slide_right_d1 <= 0;
+        transition_mode_d0 <= 0; transition_mode_d1 <= 0;
     end else begin
         read_req_d0 <= read_req; read_req_d1 <= read_req_d0; read_req_d2 <= read_req_d1;
         read_len_d0 <= read_len; read_len_d1 <= read_len_d0;
@@ -130,6 +178,7 @@ always @(posedge mem_clk or posedge rst) begin
         slide_new_d0 <= slide_new_index; slide_new_d1 <= slide_new_d0;
         slide_offset_d0 <= slide_offset; slide_offset_d1 <= slide_offset_d0;
         slide_right_d0 <= slide_right; slide_right_d1 <= slide_right_d0;
+        transition_mode_d0 <= transition_mode; transition_mode_d1 <= transition_mode_d0;
     end
 end
 
@@ -146,10 +195,12 @@ always @(posedge mem_clk or posedge rst) begin
         App_rd_addr_r <= 0;
         App_rd_en_d0 <= 0;
         issue_x <= 0;
+        issue_y <= 0;
         old_row_base <= 0;
         new_row_base <= 0;
         slide_active_latch <= 0;
         slide_right_latch <= 0;
+        transition_mode_latch <= 0;
         slide_offset_latch <= 0;
     end else begin
         if (state == S_CHECK_FIFO)
@@ -160,26 +211,30 @@ always @(posedge mem_clk or posedge rst) begin
         if (state == S_ACK) begin
             slide_active_latch <= slide_active_d1;
             slide_right_latch <= slide_right_d1;
+            transition_mode_latch <= transition_mode_d1;
             slide_offset_latch <= slide_offset_d1;
             issue_x <= 0;
+            issue_y <= 0;
             old_row_base <= select_base(slide_active_d1 ? slide_old_d1 : read_addr_index_d1);
             new_row_base <= select_base(slide_new_d1);
-            App_rd_addr_r <= mapped_address(10'd0,
+            App_rd_addr_r <= mapped_address(11'd0, 10'd0,
                 select_base(slide_active_d1 ? slide_old_d1 : read_addr_index_d1),
-                select_base(slide_new_d1), slide_active_d1, slide_right_d1, slide_offset_d1);
+                select_base(slide_new_d1), slide_active_d1, slide_right_d1,
+                transition_mode_d1, slide_offset_d1);
         end else if (App_rd_en) begin
             if (issue_x == FRAME_WIDTH - 1) begin
                 issue_x <= 0;
+                issue_y <= issue_y + 1'b1;
                 old_row_base <= old_row_base + FRAME_WIDTH_U;
                 new_row_base <= new_row_base + FRAME_WIDTH_U;
-                App_rd_addr_r <= mapped_address(10'd0,
+                App_rd_addr_r <= mapped_address(11'd0, issue_y + 1'b1,
                     old_row_base + FRAME_WIDTH_U, new_row_base + FRAME_WIDTH_U,
-                    slide_active_latch, slide_right_latch, slide_offset_latch);
+                    slide_active_latch, slide_right_latch, transition_mode_latch, slide_offset_latch);
             end else begin
                 issue_x <= issue_x + 1'b1;
-                App_rd_addr_r <= mapped_address(issue_x + 1'b1,
+                App_rd_addr_r <= mapped_address(issue_x + 1'b1, issue_y,
                     old_row_base, new_row_base,
-                    slide_active_latch, slide_right_latch, slide_offset_latch);
+                    slide_active_latch, slide_right_latch, transition_mode_latch, slide_offset_latch);
             end
         end
 

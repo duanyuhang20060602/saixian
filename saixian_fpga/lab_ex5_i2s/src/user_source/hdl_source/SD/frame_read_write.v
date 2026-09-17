@@ -48,8 +48,9 @@ module frame_read_write
     input                            slide_active,
     input[1:0]                       slide_old_index,
     input[1:0]                       slide_new_index,
-    input[9:0]                       slide_offset,
+    input[10:0]                      slide_offset,
     input                            slide_right,
+    input[2:0]                       transition_mode,
 	/*
 	output                           wr_burst_req,               // to external memory controller,send out a burst write request
 	output[BURST_BITS - 1:0]         wr_burst_len,               // to external memory controller,data length of the burst write request, not bytes
@@ -199,6 +200,7 @@ frame_fifo_read_m0
     .slide_new_index            (slide_new_index          ),
     .slide_offset               (slide_offset             ),
     .slide_right                (slide_right              ),
+    .transition_mode            (transition_mode          ),
 	.fifo_aclr                  (read_fifo_aclr           ),
 	.wrusedw                	(wrusedw                  )
 );

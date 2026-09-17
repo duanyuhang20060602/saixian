@@ -11,12 +11,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //	Input frequency:               50.000000MHz
-//	Clock multiplication factor: 1
+//	Clock multiplication factor: 3
 //	Clock division factor:       2
 //	Clock information:
 //		Clock name	| Frequency 	| Phase shift
-//		C0        	| 25.000000 MHZ	| 0.0000  DEG  
-//		C1        	| 125.000000MHZ	| 0.0000  DEG  
+//		C0        	| 75.000000 MHZ	| 0.0000  DEG  
+//		C1        	| 375.000000MHZ	| 0.0000  DEG  
 ///////////////////////////////////////////////////////////////////////////////
 `timescale 1 ns / 100 fs
 
@@ -56,14 +56,14 @@ module video_pll (
     .LPF_CAPACITOR(1),
     .LPF_RESISTOR(8),
     .REFCLK_DIV(2),
-    .FBCLK_DIV(1),
+    .FBCLK_DIV(3),
     .CLKC0_ENABLE("ENABLE"),
-    .CLKC0_DIV(40),
-    .CLKC0_CPHASE(39),
+    .CLKC0_DIV(10),
+    .CLKC0_CPHASE(9),
     .CLKC0_FPHASE(0),
     .CLKC1_ENABLE("ENABLE"),
-    .CLKC1_DIV(8),
-    .CLKC1_CPHASE(7),
+    .CLKC1_DIV(2),
+    .CLKC1_CPHASE(1),
     .CLKC1_FPHASE(0) 
   ) pll_inst (
     .refclk(refclk),

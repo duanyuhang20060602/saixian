@@ -94,7 +94,7 @@ E:\Codex\Downloads\qiansai\saixian_fpga\lab_ex5_i2s
 | `SD/frame_fifo_write.v` | SDRAM 写入仲裁，关键组合判断已寄存以改善时序 |
 | `top_tf_hdmi_audio.v` | HDMI、TF、SDRAM、赛事控制、OSD、音频、LED/数码管集成 |
 
-TF 图片限制：最多 4 张，`640×480`、24 位、正高度、`BI_RGB` 非压缩 BMP。控制器按物理扇区扫描，不按 FAT 文件名读取或排序；扫描范围 sector 0 到 131071（前 64 MiB）。
+TF 图片限制：最多 5 张，`1280×720` 至 `1920×1080`、24 位、正高度、`BI_RGB` 非压缩 BMP。控制器按物理扇区扫描，不按 FAT 文件名读取或排序；扫描范围 sector 0 到 131071（前 64 MiB）。
 
 SDRAM 使用两个 `640×480×32-bit` 帧缓冲。新图写完后通过 toggle 跨时钟域握手，在视频帧边界切换显示缓冲；加载期间保持旧图。
 

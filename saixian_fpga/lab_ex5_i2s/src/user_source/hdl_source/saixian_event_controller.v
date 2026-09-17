@@ -35,7 +35,9 @@ localparam CUE_PAUSE   = 4'd3;
 localparam CUE_RESUME  = 4'd4;
 localparam CUE_FINISH  = 4'd5;
 
-reg [24:0] second_counter;
+// 75 MHz needs 75,000,000 clocks per second.  A 25-bit counter rolls over
+// at 33,554,431 and can therefore never reach CLK_FREQ_HZ-1.
+reg [26:0] second_counter;
 reg        second_pending;
 reg [2:0]  state_seconds;
 reg        start_pending;
@@ -54,7 +56,7 @@ always @(posedge clk or posedge rst) begin
         seconds           <= 6'd0;
         countdown_value   <= 4'd0;
         cue_event         <= CUE_NONE;
-        second_counter    <= 25'd0;
+        second_counter    <= 27'd0;
         second_pending    <= 1'b0;
         state_seconds     <= 3'd0;
         start_pending     <= 1'b0;
@@ -75,10 +77,10 @@ always @(posedge clk or posedge rst) begin
             end_pending <= 1'b1;
 
         if (second_counter == CLK_FREQ_HZ - 1) begin
-            second_counter <= 25'd0;
+            second_counter <= 27'd0;
             second_pending <= 1'b1;
         end else begin
-            second_counter <= second_counter + 25'd1;
+            second_counter <= second_counter + 27'd1;
         end
 
         if (frame_start) begin
@@ -94,7 +96,7 @@ always @(posedge clk or posedge rst) begin
                         state           <= ST_PREPARE;
                         project_id      <= project_sync1;
                         start_pending   <= 1'b0;
-                        second_counter  <= 25'd0;
+                        second_counter  <= 27'd0;
                     end
                 end
 
@@ -110,7 +112,7 @@ always @(posedge clk or posedge rst) begin
                         state_seconds     <= 3'd0;
                         start_pending     <= 1'b0;
                         second_pending    <= 1'b0;
-                        second_counter    <= 25'd0;
+                        second_counter    <= 27'd0;
                     end else if (second_pending) begin
                         state_seconds  <= state_seconds + 3'd1;
                         second_pending <= 1'b0;
@@ -185,7 +187,7 @@ always @(posedge clk or posedge rst) begin
                         state         <= ST_PAUSED;
                         cue_event     <= CUE_PAUSE;
                         pause_pending <= 1'b0;
-                        second_counter <= 25'd0;
+                        second_counter <= 27'd0;
                         second_pending <= 1'b0;
                     end else if (second_pending) begin
                         second_pending <= 1'b0;
@@ -213,7 +215,7 @@ always @(posedge clk or posedge rst) begin
                         state         <= ST_RUNNING;
                         cue_event     <= CUE_RESUME;
                         pause_pending <= 1'b0;
-                        second_counter <= 25'd0;
+                        second_counter <= 27'd0;
                     end
                 end
 

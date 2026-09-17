@@ -14,9 +14,14 @@ module top(
 
 parameter MEM_DATA_BITS = 32;
 parameter ADDR_BITS = 21;
-parameter [20:0] FRAME_PIXELS = 21'd307200;
+parameter integer VIDEO_CLK_HZ = 75_000_000;
+parameter HDMI_COMPAT_DIAGNOSTIC = 1'b0;
+// Store two RGB565 pixels in every 32-bit SDRAM word.  The previous
+// one-pixel-per-word layout needed 55.9 Mword/s at 720p60, which is more than
+// the timing-clean 50 MHz SDRAM interface can deliver.
+parameter [20:0] FRAME_WORDS = 21'd460800;
 parameter [20:0] BUF0_ADDR = 21'd0;
-parameter BUF1_ADDR = FRAME_PIXELS;
+parameter BUF1_ADDR = FRAME_WORDS;
 
 wire sd_card_clk, ext_mem_clk, ext_mem_clk_sft, video_clk, hdmi_5x_clk;
 wire sys_pll_lock, video_pll_lock;
@@ -24,6 +29,8 @@ wire pll_locked = sys_pll_lock & video_pll_lock;
 reg [22:0] por_count;
 wire reset_request = ~por_count[22];
 wire rst_clk, rst_sd, rst_mem, rst_video, rst_hdmi;
+reg [26:0] sd_startup_count;
+wire sd_startup_hold = (sd_startup_count < 27'd100000000);
 
 sys_pll u_sys_pll(.refclk(clk), .clk0_out(sd_card_clk), .clk1_out(ext_mem_clk), .clk2_out(ext_mem_clk_sft), .locked(sys_pll_lock), .reset(1'b0));
 video_pll u_video_pll(.refclk(clk), .clk0_out(video_clk), .clk1_out(hdmi_5x_clk), .locked(video_pll_lock), .reset(1'b0));
@@ -42,14 +49,23 @@ saixian_reset_sync u_rst_mem  (.clk(ext_mem_clk),  .arst(reset_request), .rst(rs
 saixian_reset_sync u_rst_video(.clk(video_clk),    .arst(reset_request), .rst(rst_video));
 saixian_reset_sync u_rst_hdmi (.clk(hdmi_5x_clk),  .arst(reset_request), .rst(rst_hdmi));
 
+// Give an already-inserted TF card one full second to reach stable power before
+// starting SPI initialization. The HDMI boot animation remains active.
+always @(posedge sd_card_clk or posedge rst_sd) begin
+    if (rst_sd)
+        sd_startup_count <= 27'd0;
+    else if (sd_startup_hold)
+        sd_startup_count <= sd_startup_count + 27'd1;
+end
+
 wire key1_press, key2_press, key3_press, key4_press;
-saixian_key_debounce #(.CLK_FREQ_HZ(25_000_000),.DEBOUNCE_MS(20)) u_key1(.clk(video_clk),.rst(rst_video),.key_n(key[0]),.press_pulse(key1_press));
-saixian_key_debounce #(.CLK_FREQ_HZ(25_000_000),.DEBOUNCE_MS(20)) u_key2(.clk(video_clk),.rst(rst_video),.key_n(key[1]),.press_pulse(key2_press));
-saixian_key_debounce #(.CLK_FREQ_HZ(25_000_000),.DEBOUNCE_MS(20)) u_key3(.clk(video_clk),.rst(rst_video),.key_n(key[2]),.press_pulse(key3_press));
-saixian_key_debounce #(.CLK_FREQ_HZ(25_000_000),.DEBOUNCE_MS(20)) u_key4(.clk(video_clk),.rst(rst_video),.key_n(key[3]),.press_pulse(key4_press));
+saixian_key_debounce #(.CLK_FREQ_HZ(VIDEO_CLK_HZ),.DEBOUNCE_MS(20)) u_key1(.clk(video_clk),.rst(rst_video),.key_n(key[0]),.press_pulse(key1_press));
+saixian_key_debounce #(.CLK_FREQ_HZ(VIDEO_CLK_HZ),.DEBOUNCE_MS(20)) u_key2(.clk(video_clk),.rst(rst_video),.key_n(key[1]),.press_pulse(key2_press));
+saixian_key_debounce #(.CLK_FREQ_HZ(VIDEO_CLK_HZ),.DEBOUNCE_MS(20)) u_key3(.clk(video_clk),.rst(rst_video),.key_n(key[2]),.press_pulse(key3_press));
+saixian_key_debounce #(.CLK_FREQ_HZ(VIDEO_CLK_HZ),.DEBOUNCE_MS(20)) u_key4(.clk(video_clk),.rst(rst_video),.key_n(key[3]),.press_pulse(key4_press));
 
 wire [1:0] project_select;
-saixian_switch_filter #(.CLK_FREQ_HZ(25_000_000),.FILTER_MS(20)) u_project_switch(
+saixian_switch_filter #(.CLK_FREQ_HZ(VIDEO_CLK_HZ),.FILTER_MS(20)) u_project_switch(
     .clk(video_clk),.rst(rst_video),.switch_in(sw),.switch_out(project_select)
 );
 
@@ -58,12 +74,12 @@ wire video_read_req, video_read_req_ack, video_read_en;
 wire video_read_empty, video_underflow, display_valid;
 wire [31:0] video_read_data;
 wire [23:0] video_rgb_raw;
-wire [9:0] pixel_x;
-wire [8:0] pixel_y;
+wire [10:0] pixel_x;
+wire [9:0] pixel_y;
 wire frame_tick;
 
 video_timing_data u_timing(.video_clk(video_clk),.rst(rst_video),.read_req(video_read_req),.read_req_ack(video_read_req_ack),.hs(hs0),.vs(vs0),.de(de0));
-video_delay u_delay(.video_clk(video_clk),.rst(rst_video),.read_en(video_read_en),.read_data(video_read_data[31:8]),
+video_delay u_delay(.video_clk(video_clk),.rst(rst_video),.read_en(video_read_en),.read_data(video_read_data),
     .read_empty(video_read_empty),.display_valid(display_valid),.underflow_latched(video_underflow),
     .hs(hs0),.vs(vs0),.de(de0),.hs_r(hs),.vs_r(vs),.de_r(de),.vout_data(video_rgb_raw));
 saixian_video_tracker u_tracker(.clk(video_clk),.rst(rst_video),.vs(vs),.de(de),.x(pixel_x),.y(pixel_y),.frame_tick(frame_tick));
@@ -73,7 +89,7 @@ wire hmi_prev_pulse, hmi_next_pulse;
 wire hmi_setting_valid, hmi_reset_defaults, hmi_frame_error;
 wire [2:0] hmi_setting_id;
 wire [7:0] hmi_setting_value;
-saixian_hmi_uart #(.CLK_FREQ_HZ(25_000_000),.BAUD_RATE(115_200)) u_hmi_uart(
+saixian_hmi_uart #(.CLK_FREQ_HZ(VIDEO_CLK_HZ),.BAUD_RATE(115_200)) u_hmi_uart(
     .clk(video_clk),.rst(rst_video),.uart_rx(hmi_uart_rx),
     .start_pulse(hmi_start_pulse),.pause_pulse(hmi_pause_pulse),
     .finish_pulse(hmi_finish_pulse),.prev_pulse(hmi_prev_pulse),.next_pulse(hmi_next_pulse),
@@ -96,7 +112,7 @@ wire [3:0] volume_setting, brightness_setting, contrast_setting, saturation_sett
 wire [1:0] sharpness_setting;
 wire [7:0] audio_level;
 
-saixian_settings_controller u_settings(
+saixian_settings_controller #(.CLK_FREQ_HZ(VIDEO_CLK_HZ)) u_settings(
     .clk(video_clk),.rst(rst_video),.carousel_mode(carousel_mode),
     .key_next_item(key1_press),.key_decrease(key2_press),
     .key_enter_exit(key3_press),.key_increase(key4_press),
@@ -108,7 +124,7 @@ saixian_settings_controller u_settings(
     .sharpness_setting(sharpness_setting)
 );
 
-saixian_event_controller u_event(
+saixian_event_controller #(.CLK_FREQ_HZ(VIDEO_CLK_HZ)) u_event(
     .clk(video_clk),.rst(rst_video),.frame_start(frame_tick),
     .key_start((key1_press & ~settings_mode) | hmi_start_pulse),
     .key_pause((key2_press & ~settings_mode) | hmi_pause_pulse),
@@ -193,14 +209,54 @@ reg [2:0] sd_error_sync0, sd_error_sync1;
 wire frame_ready_toggle;
 wire [1:0] ready_buf_idx, write_buf_idx, active_buf_idx, slide_new_buf_idx;
 wire frame_commit_toggle, transition_active, ready_slide_right, slide_right;
-wire [9:0] slide_offset;
+wire [10:0] slide_offset;
 wire [5:0] transition_level;
-wire sd_card_write_req, sd_card_write_req_ack, sd_card_write_en;
-wire [31:0] sd_card_write_data;
+wire [2:0] transition_mode;
+wire sd_card_write_req, sd_card_write_req_ack;
+wire sd_card_write_en_raw;
+wire [31:0] sd_card_write_data_raw;
+reg sd_card_write_en;
+reg [31:0] sd_card_write_data;
+reg pack_half;
+reg [15:0] pack_first_pixel;
 wire frame_write_finish;
 reg frame_write_toggle_mem;
 wire write_fifo_full;
 reg write_overflow_latched;
+
+function [15:0] rgb888_to_rgb565;
+    input [31:0] pixel;
+    begin
+        rgb888_to_rgb565 = {pixel[31:27],pixel[23:18],pixel[15:11]};
+    end
+endfunction
+
+// BMP reader emits RGB888, one pixel per valid pulse.  Pack adjacent pixels
+// before the asynchronous write FIFO so SDRAM traffic is halved while the
+// framebuffer remains full 1280x720 spatial resolution.
+always @(posedge sd_card_clk or posedge rst_sd) begin
+    if (rst_sd) begin
+        pack_half <= 1'b0;
+        pack_first_pixel <= 16'd0;
+        sd_card_write_en <= 1'b0;
+        sd_card_write_data <= 32'd0;
+    end else if (sd_card_write_req) begin
+        pack_half <= 1'b0;
+        sd_card_write_en <= 1'b0;
+    end else begin
+        sd_card_write_en <= 1'b0;
+        if (sd_card_write_en_raw) begin
+            if (!pack_half) begin
+                pack_first_pixel <= rgb888_to_rgb565(sd_card_write_data_raw);
+                pack_half <= 1'b1;
+            end else begin
+                sd_card_write_data <= {pack_first_pixel,rgb888_to_rgb565(sd_card_write_data_raw)};
+                sd_card_write_en <= 1'b1;
+                pack_half <= 1'b0;
+            end
+        end
+    end
+end
 
 always @(posedge sd_card_clk or posedge rst_sd) begin
     if (rst_sd)
@@ -242,14 +298,17 @@ always @(posedge video_clk or posedge rst_video) begin
     end
 end
 
-sd_card_bmp #(.CLK_FREQ_HZ(100_000_000),.SCAN_START_SECTOR(0),.SCAN_MAX_SECTOR(131071),.SCAN_TARGET_COUNT(4)) u_sd_bmp(
-    .clk(sd_card_clk),.rst(rst_sd),.prev_req_toggle(prev_req_toggle),.next_req_toggle(next_req_toggle),
+// Search the first 256 MiB of the card. Files copied to a fragmented or
+// previously-used FAT volume are often allocated beyond the former 64 MiB
+// window even when only five images are visible in the directory.
+sd_card_bmp #(.CLK_FREQ_HZ(100_000_000),.SCAN_START_SECTOR(0),.SCAN_MAX_SECTOR(524287),.SCAN_TARGET_COUNT(5)) u_sd_bmp(
+    .clk(sd_card_clk),.rst(rst_sd | sd_startup_hold),.prev_req_toggle(prev_req_toggle),.next_req_toggle(next_req_toggle),
     .carousel_mode(carousel_mode && !settings_mode),.display_commit_toggle(frame_commit_toggle),.state_code(sd_state_code),
     .sd_init_done_o(sd_init_done),.scan_done_o(scan_done),.image_count(image_count),.error_code(sd_error),
     .source_width(source_width_sd),.source_height(source_height_sd),
     .frame_ready_toggle(frame_ready_toggle),.ready_buf_idx(ready_buf_idx),.ready_slide_right(ready_slide_right),.write_buf_idx(write_buf_idx),
-    .bmp_width(16'd640),.bmp_height(16'd480),.write_finish_toggle(frame_write_toggle_mem),
-    .write_req(sd_card_write_req),.write_req_ack(sd_card_write_req_ack),.write_en(sd_card_write_en),.write_data(sd_card_write_data),
+    .bmp_width(16'd1280),.bmp_height(16'd720),.write_finish_toggle(frame_write_toggle_mem),
+    .write_req(sd_card_write_req),.write_req_ack(sd_card_write_req_ack),.write_en(sd_card_write_en_raw),.write_data(sd_card_write_data_raw),
     .SD_nCS(sd_ncs),.SD_DCLK(sd_dclk),.SD_MOSI(sd_mosi),.SD_MISO(sd_miso)
 );
 
@@ -257,7 +316,7 @@ saixian_transition u_transition(
     .clk(video_clk),.rst(rst_video),.frame_tick(frame_tick),.frame_ready_toggle(frame_ready_toggle),.ready_buf_idx(ready_buf_idx),
     .ready_slide_right(ready_slide_right),.active_buf_idx(active_buf_idx),.slide_new_buf_idx(slide_new_buf_idx),
     .frame_commit_toggle(frame_commit_toggle),.display_valid(display_valid),.transition_active(transition_active),
-    .slide_offset(slide_offset),.slide_right(slide_right),.transition_level(transition_level)
+    .transition_mode(transition_mode),.slide_offset(slide_offset),.slide_right(slide_right),.transition_level(transition_level)
 );
 
 always @(posedge video_clk or posedge rst_video) begin
@@ -278,18 +337,18 @@ wire [ADDR_BITS-1:0] App_rd_addr, App_wr_addr;
 wire [MEM_DATA_BITS-1:0] Sdr_rd_dout, App_wr_din;
 wire [3:0] App_wr_dm;
 
-frame_read_write #(.WRITE_V_FLIP(1),.FRAME_WIDTH(640),.FRAME_HEIGHT(480)) u_frame_rw(
+frame_read_write #(.WRITE_V_FLIP(1),.FRAME_WIDTH(640),.FRAME_HEIGHT(720)) u_frame_rw(
     .mem_clk(ext_mem_clk),.rst(rst_mem),.Sdr_init_done(Sdr_init_done),.Sdr_init_ref_vld(Sdr_init_ref_vld),.Sdr_busy(Sdr_busy),
     .App_rd_en(App_rd_en),.App_rd_addr(App_rd_addr),.Sdr_rd_en(Sdr_rd_en),.Sdr_rd_dout(Sdr_rd_dout),
     .read_clk(video_clk),.read_req(video_read_req),.read_req_ack(video_read_req_ack),.read_finish(),
     .read_addr_0(BUF0_ADDR),.read_addr_1(BUF1_ADDR),.read_addr_2(21'd0),.read_addr_3(21'd0),.read_addr_index(active_buf_idx),
-    .read_len(FRAME_PIXELS),.read_en(video_read_en),.read_data(video_read_data),.read_fifo_empty(video_read_empty),
+    .read_len(FRAME_WORDS),.read_en(video_read_en),.read_data(video_read_data),.read_fifo_empty(video_read_empty),
     .slide_active(transition_active),.slide_old_index(active_buf_idx),.slide_new_index(slide_new_buf_idx),
-    .slide_offset(slide_offset),.slide_right(slide_right),
+    .slide_offset({1'b0,slide_offset[10:1]}),.slide_right(slide_right),.transition_mode(transition_mode),
     .App_wr_en(App_wr_en),.App_wr_addr(App_wr_addr),.App_wr_din(App_wr_din),.App_wr_dm(App_wr_dm),
     .write_clk(sd_card_clk),.write_req(sd_card_write_req),.write_req_ack(sd_card_write_req_ack),.write_finish(frame_write_finish),
     .write_addr_0(BUF0_ADDR),.write_addr_1(BUF1_ADDR),.write_addr_2(21'd0),.write_addr_3(21'd0),.write_addr_index(write_buf_idx),
-    .write_len(FRAME_PIXELS),.write_en(sd_card_write_en),.write_data(sd_card_write_data),
+    .write_len(FRAME_WORDS),.write_en(sd_card_write_en),.write_data(sd_card_write_data),
     .write_fifo_full(write_fifo_full)
 );
 
@@ -306,7 +365,7 @@ wire [4:0] spectrum_tone_bin;
 wire [23:0] audio_left_data, audio_right_data;
 wire acr_valid;
 wire [19:0] acr_cts, acr_n;
-saixian_audio_cue u_cue(.clk(video_clk),.rst(rst_video),.cue_event(cue_event),.audio_valid(audio_valid),
+saixian_audio_cue #(.CLK_FREQ_HZ(VIDEO_CLK_HZ)) u_cue(.clk(video_clk),.rst(rst_video),.cue_event(cue_event),.audio_valid(audio_valid),
     .audio_left(audio_left_raw),.audio_right(audio_right_raw),.audio_level(audio_level_raw),
     .spectrum_active(spectrum_active),.spectrum_tone_bin(spectrum_tone_bin));
 saixian_audio_volume u_volume(.volume_setting(volume_setting),.audio_left_in(audio_left_raw),
@@ -317,8 +376,8 @@ audio_arc_calculate #(.ACR_N(6144)) u_acr(.I_clk(video_clk),.I_rst(rst_video),.I
 
 reg [1:0] hpd_sync;
 reg hpd_present, hpd_last, edid_seen, edid_failed;
-reg [18:0] hpd_debounce_timer;
-reg [25:0] edid_timer;
+reg [19:0] hpd_debounce_timer;
+reg [26:0] edid_timer;
 reg edid_trig;
 wire edid_valid;
 wire [7:0] edid_data;
@@ -334,7 +393,7 @@ always @(posedge video_clk or posedge rst_video) begin
         // Accept plug/unplug only after 20 ms of stable HPD.
         if (hpd_sync[1] == hpd_present)
             hpd_debounce_timer <= 0;
-        else if (hpd_debounce_timer >= 19'd499_999) begin
+        else if (hpd_debounce_timer >= 20'd749_999) begin
             hpd_present <= hpd_sync[1];
             hpd_debounce_timer <= 0;
         end else
@@ -348,7 +407,7 @@ always @(posedge video_clk or posedge rst_video) begin
             edid_seen <= 0; edid_failed <= 0; edid_timer <= 0;
         end else if (edid_valid) begin
             edid_seen <= 1; edid_failed <= 0; edid_timer <= 0;
-        end else if (!edid_seen && (edid_timer >= 26'd49_999_999)) begin
+        end else if (!edid_seen && (edid_timer >= 27'd74_999_999)) begin
             // Report E05 and retry EDID every two seconds without a reboot.
             edid_failed <= 1; edid_trig <= 1; edid_timer <= 0;
         end else if (!edid_seen)
@@ -357,12 +416,56 @@ always @(posedge video_clk or posedge rst_video) begin
 end
 
 wire [23:0] adjusted_rgb;
-saixian_picture_adjust u_picture_adjust(.clk(video_clk),.rst(rst_video),.de(de),.x(pixel_x),
+saixian_picture_adjust_pipe u_picture_adjust(.clk(video_clk),.rst(rst_video),.de(de),.x(pixel_x),
     .rgb_in(video_rgb_raw),.brightness_setting(brightness_setting),.contrast_setting(contrast_setting),
     .saturation_setting(saturation_setting),.sharpness_setting(sharpness_setting),.rgb_out(adjusted_rgb));
 
-wire [23:0] osd_rgb;
-saixian_osd_overlay u_osd(.de(de),.x(pixel_x),.y(pixel_y),.rgb_in(adjusted_rgb),.display_valid(display_valid),
+// The picture-adjust block has three registered stages. Delay timing and
+// coordinates by the same amount so every transformed pixel keeps its DE/VS
+// and screen position at the higher pixel rate.
+reg [4:0] adjust_de_pipe, adjust_vs_pipe;
+reg [10:0] adjust_x0, adjust_x1, adjust_x2, adjust_x3, adjust_x4;
+reg [9:0]  adjust_y0, adjust_y1, adjust_y2, adjust_y3, adjust_y4;
+always @(posedge video_clk or posedge rst_video) begin
+    if (rst_video) begin
+        adjust_de_pipe <= 5'd0;
+        adjust_vs_pipe <= 5'd0;
+        adjust_x0 <= 11'd0; adjust_x1 <= 11'd0; adjust_x2 <= 11'd0; adjust_x3 <= 11'd0; adjust_x4 <= 11'd0;
+        adjust_y0 <= 10'd0; adjust_y1 <= 10'd0; adjust_y2 <= 10'd0; adjust_y3 <= 10'd0; adjust_y4 <= 10'd0;
+    end else begin
+        adjust_de_pipe <= {adjust_de_pipe[3:0],de};
+        adjust_vs_pipe <= {adjust_vs_pipe[3:0],vs};
+        adjust_x0 <= pixel_x; adjust_x1 <= adjust_x0; adjust_x2 <= adjust_x1; adjust_x3 <= adjust_x2; adjust_x4 <= adjust_x3;
+        adjust_y0 <= pixel_y; adjust_y1 <= adjust_y0; adjust_y2 <= adjust_y1; adjust_y3 <= adjust_y2; adjust_y4 <= adjust_y3;
+    end
+end
+
+wire adjusted_de = adjust_de_pipe[4];
+wire adjusted_vs = adjust_vs_pipe[4];
+// Scale one logical 640x480 OSD canvas over the complete 1280x720 raster.
+// Header, countdown, border, progress bar and spectrum now share one renderer,
+// eliminating the duplicated middle/top bands. 683/1024 approximates 2/3 and
+// maps physical line 719 to logical line 479.
+wire [20:0] osd_y_product = adjust_y4 * 11'd683;
+reg osd_area_in;
+reg [9:0] osd_x_in;
+reg [8:0] osd_y_in;
+reg [23:0] osd_rgb_in;
+always @(posedge video_clk or posedge rst_video) begin
+    if (rst_video) begin
+        osd_area_in <= 1'b0;
+        osd_x_in <= 10'd0;
+        osd_y_in <= 9'd0;
+        osd_rgb_in <= 24'd0;
+    end else begin
+        osd_area_in <= adjusted_de;
+        osd_x_in <= adjust_x4[10:1];
+        osd_y_in <= osd_y_product[18:10];
+        osd_rgb_in <= adjusted_rgb;
+    end
+end
+wire [23:0] osd_rgb_inner;
+saixian_osd_overlay u_osd(.clk(video_clk),.rst(rst_video),.de_i(osd_area_in),.x_i(osd_x_in),.y_i(osd_y_in),.rgb_in_i(osd_rgb_in),.display_valid(display_valid),
     .loading_phase(loading_phase),
     .state(event_state),.project_id(carousel_mode ? project_select : project_id),.minutes(minutes),.seconds(seconds),.countdown_value(countdown_value),
     .ticker_x(ticker_x),
@@ -371,10 +474,52 @@ saixian_osd_overlay u_osd(.de(de),.x(pixel_x),.y(pixel_y),.rgb_in(adjusted_rgb),
     .audio_level(audio_level),.spectrum_active(spectrum_active),.spectrum_tone_bin(spectrum_tone_bin),
     .settings_mode(settings_mode),.setting_item(setting_item),
     .volume_setting(volume_setting),.brightness_setting(brightness_setting),
-    .contrast_setting(contrast_setting),.sharpness_setting(sharpness_setting),.rgb_out(osd_rgb));
+    .contrast_setting(contrast_setting),.sharpness_setting(sharpness_setting),.rgb_out(osd_rgb_inner));
 
-// Register RGB and its timing controls together before AXI conversion.  This
-// preserves pixel alignment while cutting the long combinational OSD path.
+// The full-screen scaler adds one registered stage before the four-stage OSD.
+// Delay the bypass path by five clocks so RGB, DE, VS and coordinates remain
+// pixel-aligned.
+reg osd_area_q1, osd_area_q2, osd_area_q3, osd_area_q4, osd_area_q5;
+reg adjusted_de_q1, adjusted_de_q2, adjusted_de_q3, adjusted_de_q4, adjusted_de_q5;
+reg adjusted_vs_q1, adjusted_vs_q2, adjusted_vs_q3, adjusted_vs_q4, adjusted_vs_q5;
+reg [23:0] adjusted_rgb_q1, adjusted_rgb_q2, adjusted_rgb_q3, adjusted_rgb_q4, adjusted_rgb_q5;
+reg [10:0] adjust_xq1, adjust_xq2, adjust_xq3, adjust_xq4, adjust_xq5;
+reg [9:0] adjust_yq1, adjust_yq2, adjust_yq3, adjust_yq4, adjust_yq5;
+always @(posedge video_clk or posedge rst_video) begin
+    if (rst_video) begin
+        osd_area_q1 <= 1'b0; osd_area_q2 <= 1'b0; osd_area_q3 <= 1'b0; osd_area_q4 <= 1'b0; osd_area_q5 <= 1'b0;
+        adjusted_de_q1 <= 1'b0; adjusted_de_q2 <= 1'b0; adjusted_de_q3 <= 1'b0; adjusted_de_q4 <= 1'b0; adjusted_de_q5 <= 1'b0;
+        adjusted_vs_q1 <= 1'b0; adjusted_vs_q2 <= 1'b0; adjusted_vs_q3 <= 1'b0; adjusted_vs_q4 <= 1'b0; adjusted_vs_q5 <= 1'b0;
+        adjusted_rgb_q1 <= 24'd0; adjusted_rgb_q2 <= 24'd0; adjusted_rgb_q3 <= 24'd0; adjusted_rgb_q4 <= 24'd0; adjusted_rgb_q5 <= 24'd0;
+        adjust_xq1 <= 11'd0; adjust_xq2 <= 11'd0; adjust_xq3 <= 11'd0; adjust_xq4 <= 11'd0; adjust_xq5 <= 11'd0;
+        adjust_yq1 <= 10'd0; adjust_yq2 <= 10'd0; adjust_yq3 <= 10'd0; adjust_yq4 <= 10'd0; adjust_yq5 <= 10'd0;
+    end else begin
+        osd_area_q1 <= adjusted_de; osd_area_q2 <= osd_area_q1; osd_area_q3 <= osd_area_q2; osd_area_q4 <= osd_area_q3; osd_area_q5 <= osd_area_q4;
+        adjusted_de_q1 <= adjusted_de; adjusted_de_q2 <= adjusted_de_q1; adjusted_de_q3 <= adjusted_de_q2; adjusted_de_q4 <= adjusted_de_q3; adjusted_de_q5 <= adjusted_de_q4;
+        adjusted_vs_q1 <= adjusted_vs; adjusted_vs_q2 <= adjusted_vs_q1; adjusted_vs_q3 <= adjusted_vs_q2; adjusted_vs_q4 <= adjusted_vs_q3; adjusted_vs_q5 <= adjusted_vs_q4;
+        adjusted_rgb_q1 <= adjusted_rgb; adjusted_rgb_q2 <= adjusted_rgb_q1; adjusted_rgb_q3 <= adjusted_rgb_q2; adjusted_rgb_q4 <= adjusted_rgb_q3; adjusted_rgb_q5 <= adjusted_rgb_q4;
+        adjust_xq1 <= adjust_x4; adjust_xq2 <= adjust_xq1; adjust_xq3 <= adjust_xq2; adjust_xq4 <= adjust_xq3; adjust_xq5 <= adjust_xq4;
+        adjust_yq1 <= adjust_y4; adjust_yq2 <= adjust_yq1; adjust_yq3 <= adjust_yq2; adjust_yq4 <= adjust_yq3; adjust_yq5 <= adjust_yq4;
+    end
+end
+
+wire [4:0] outside_fade_rank = {adjust_xq5[2]^adjust_yq5[0], adjust_xq5[1]^adjust_yq5[2],
+                                adjust_xq5[0]^adjust_yq5[1], adjust_xq5[2]^adjust_yq5[2],
+                                adjust_xq5[1]^adjust_yq5[0]};
+wire outside_fade_black = transition_active && (transition_mode == 3'd5) &&
+                          ({1'b0,outside_fade_rank} < transition_level);
+wire boot_marker = (adjust_xq5 >= 11'd592) && (adjust_xq5 < 11'd688) &&
+                   (adjust_yq5 >= (10'd312 + {loading_phase,3'b000})) &&
+                   (adjust_yq5 <  (10'd320 + {loading_phase,3'b000}));
+wire [23:0] compat_rgb = !adjusted_de_q5 ? 24'd0 :
+                          (error_code != 0 ? 24'h500008 :
+                           (!display_valid ? (boot_marker ? 24'h38E8FF : 24'h081830) : adjusted_rgb_q5));
+wire [23:0] full_osd_rgb = !adjusted_de_q5 ? 24'd0 :
+                             (osd_area_q5 ? osd_rgb_inner :
+                             ((!display_valid || (error_code != 0) || outside_fade_black) ? 24'd0 : adjusted_rgb_q5));
+wire [23:0] osd_rgb = HDMI_COMPAT_DIAGNOSTIC ? compat_rgb : full_osd_rgb;
+
+// Register RGB and timing controls together before AXI conversion.
 reg [23:0] osd_rgb_pipe;
 reg        de_pipe;
 reg        vs_pipe;
@@ -385,21 +530,21 @@ always @(posedge video_clk or posedge rst_video) begin
         vs_pipe      <= 1'b0;
     end else begin
         osd_rgb_pipe <= osd_rgb;
-        de_pipe      <= de;
-        vs_pipe      <= vs;
+        de_pipe      <= adjusted_de_q5;
+        vs_pipe      <= adjusted_vs_q5;
     end
 end
 
 wire axis_s_user, axis_s_valid, axis_s_last, axis_s_ready;
 wire [23:0] axis_s_data;
-video_rgb_to_axis_640x480 u_axis(.I_clk(video_clk),.I_rst(rst_video),.I_vs(vs_pipe),.I_de(de_pipe),.I_rgb(osd_rgb_pipe),
+video_rgb_to_axis_640x480 #(.H_ACTIVE(1280)) u_axis(.I_clk(video_clk),.I_rst(rst_video),.I_vs(vs_pipe),.I_de(de_pipe),.I_rgb(osd_rgb_pipe),
     .O_video_user(axis_s_user),.O_video_valid(axis_s_valid),.O_video_last(axis_s_last),.O_video_data(axis_s_data));
 
 wire [9:0] tmds_ch0_data, tmds_ch1_data, tmds_ch2_data, tmds_clk_data;
 hdmi_1_4b_transmitter_core_wrapper #(
-    .DEVICE("EG"),.HTOTAL(800),.HSA(96),.HFP(16),.HBP(48),.HACTIVE(640),
-    .VTOTAL(525),.VSA(2),.VFP(10),.VBP(33),.VACTIVE(480),.VIDEO_VIC(1),
-    .VIDEO_TPG("Disable"),.VIDEO_FORMAT("RGB"),.AUDIO_SAMPLE_RATE("48K"),.IIC_SCL_DIV(250)
+    .DEVICE("EG"),.HTOTAL(1650),.HSA(40),.HFP(110),.HBP(220),.HACTIVE(1280),
+    .VTOTAL(750),.VSA(5),.VFP(5),.VBP(20),.VACTIVE(720),.VIDEO_VIC(4),
+    .VIDEO_TPG("Disable"),.VIDEO_FORMAT("RGB"),.AUDIO_SAMPLE_RATE("48K"),.IIC_SCL_DIV(375)
 ) u_hdmi_tx(
     .I_pixel_clk(video_clk),.I_rst(rst_video),.I_edid_read_trig(edid_trig),.O_edid_read_valid(edid_valid),.O_edid_read_data(edid_data),
     .I_axis_s_user(axis_s_user),.I_axis_s_valid(axis_s_valid),.I_axis_s_last(axis_s_last),.I_axis_s_data(axis_s_data),.O_axis_s_ready(axis_s_ready),
@@ -413,10 +558,35 @@ hdmi_phy_wrapper #(.DEVICE("EG")) u_hdmi_phy(.I_pixel_clk(video_clk),.I_serial_c
     .I_tmds_channel_clk(tmds_clk_data),.O_tmds_ch0_p(HDMI_D0_P),.O_tmds_ch1_p(HDMI_D1_P),
     .O_tmds_ch2_p(HDMI_D2_P),.O_tmds_clk_p(HDMI_CLK_P));
 
+// The event controller lives in the video domain. Retiming its low-rate status
+// into the 50 MHz display domain avoids a direct video_clk-to-clk CDC path.
+reg [2:0] error_code_clk_ff1, error_code_clk;
+reg [2:0] image_count_clk_ff1, image_count_clk;
+reg [3:0] event_state_clk_ff1, event_state_clk;
+always @(posedge clk) begin
+    if (rst_clk) begin
+        error_code_clk_ff1 <= 3'd0;
+        error_code_clk     <= 3'd0;
+        image_count_clk_ff1 <= 3'd0;
+        image_count_clk     <= 3'd0;
+        event_state_clk_ff1 <= 4'd0;
+        event_state_clk     <= 4'd0;
+    end else begin
+        error_code_clk_ff1 <= error_code;
+        error_code_clk     <= error_code_clk_ff1;
+        image_count_clk_ff1 <= image_count;
+        image_count_clk     <= image_count_clk_ff1;
+        event_state_clk_ff1 <= event_state;
+        event_state_clk     <= event_state_clk_ff1;
+    end
+end
+
 wire [6:0] seg_code;
-seg_decoder u_seg_decode(.bin_data(error_code != 0 ? {1'b0,error_code} : event_state),.seg_data(seg_code));
+wire [6:0] seg_image_code;
+seg_decoder u_seg_decode(.bin_data(error_code_clk != 0 ? {1'b0,error_code_clk} : event_state_clk),.seg_data(seg_code));
+seg_decoder u_seg_image_decode(.bin_data({1'b0,image_count_clk}),.seg_data(seg_image_code));
 seg_scan u_seg(.clk(clk),.rst_n(~rst_clk),.seg_sel(seg_sel),.seg_data(seg_data),
-    .seg_data_0({1'b1,seg_code}),.seg_data_1({1'b1,7'b1111111}),.seg_data_2({1'b1,7'b1111111}),
+    .seg_data_0({1'b1,seg_code}),.seg_data_1({1'b1,seg_image_code}),.seg_data_2({1'b1,7'b1111111}),
     .seg_data_3({1'b1,7'b1111111}),.seg_data_4({1'b1,7'b1111111}),.seg_data_5({1'b1,7'b1111111}));
 
 assign led[0] = carousel_mode;
@@ -625,6 +795,109 @@ always @* begin
 end
 endmodule
 
+module saixian_picture_adjust_pipe(
+    input wire clk, input wire rst, input wire de, input wire [10:0] x,
+    input wire [23:0] rgb_in,
+    input wire [3:0] brightness_setting, input wire [3:0] contrast_setting,
+    input wire [3:0] saturation_setting, input wire [1:0] sharpness_setting,
+    output reg [23:0] rgb_out
+);
+reg [23:0] previous_rgb;
+reg [23:0] rgb_in_s0;
+reg        de_s0;
+reg [10:0] x_s0;
+reg signed [12:0] red_work_s1, green_work_s1, blue_work_s1;
+reg [7:0] red_pre_s2, green_pre_s2, blue_pre_s2;
+reg signed [12:0] luma_s2;
+reg signed [12:0] red_work_comb, green_work_comb, blue_work_comb;
+reg signed [11:0] red_delta_comb, green_delta_comb, blue_delta_comb;
+reg signed [11:0] red_delta_s1, green_delta_s1, blue_delta_s1;
+reg [7:0] red_base_s1, green_base_s1, blue_base_s1;
+reg signed [10:0] brightness_offset_comb;
+
+function signed [12:0] contrast_scale_pipe;
+    input signed [12:0] value; input [3:0] level;
+    begin
+        case(level)
+            0:contrast_scale_pipe=value>>>1; 1:contrast_scale_pipe=(value>>>1)+(value>>>3);
+            2:contrast_scale_pipe=(value>>>1)+(value>>>2); 3:contrast_scale_pipe=value-(value>>>3);
+            4:contrast_scale_pipe=value; 5:contrast_scale_pipe=value+(value>>>3);
+            6:contrast_scale_pipe=value+(value>>>2); 7:contrast_scale_pipe=value+(value>>>1);
+            default:contrast_scale_pipe=value+(value>>>1)+(value>>>2);
+        endcase
+    end
+endfunction
+function signed [12:0] saturation_scale_pipe;
+    input signed [12:0] value; input [3:0] level;
+    begin
+        case(level)
+            0:saturation_scale_pipe=13'sd0; 1:saturation_scale_pipe=value>>>2;
+            2:saturation_scale_pipe=value>>>1; 3:saturation_scale_pipe=value-(value>>>2);
+            4:saturation_scale_pipe=value; 5:saturation_scale_pipe=value+(value>>>3);
+            6:saturation_scale_pipe=value+(value>>>2); 7:saturation_scale_pipe=value+(value>>>1);
+            default:saturation_scale_pipe=value+(value>>>1)+(value>>>2);
+        endcase
+    end
+endfunction
+function [7:0] clamp_pipe;
+    input signed [12:0] value;
+    begin
+        if(value<0) clamp_pipe=8'd0;
+        else if(value>13'sd255) clamp_pipe=8'd255;
+        else clamp_pipe=value[7:0];
+    end
+endfunction
+
+wire [7:0] red_pre_wire=clamp_pipe(red_work_s1);
+wire [7:0] green_pre_wire=clamp_pipe(green_work_s1);
+wire [7:0] blue_pre_wire=clamp_pipe(blue_work_s1);
+wire signed [12:0] luma_wire=($signed({1'b0,red_pre_wire})+
+    ($signed({1'b0,green_pre_wire})<<<1)+$signed({1'b0,blue_pre_wire}))>>>2;
+wire signed [12:0] red_sat_wire=luma_s2+saturation_scale_pipe($signed({1'b0,red_pre_s2})-luma_s2,saturation_setting);
+wire signed [12:0] green_sat_wire=luma_s2+saturation_scale_pipe($signed({1'b0,green_pre_s2})-luma_s2,saturation_setting);
+wire signed [12:0] blue_sat_wire=luma_s2+saturation_scale_pipe($signed({1'b0,blue_pre_s2})-luma_s2,saturation_setting);
+
+always @* begin
+    case(brightness_setting)
+        0:brightness_offset_comb=-11'sd64; 1:brightness_offset_comb=-11'sd48;
+        2:brightness_offset_comb=-11'sd32; 3:brightness_offset_comb=-11'sd16;
+        4:brightness_offset_comb=11'sd0; 5:brightness_offset_comb=11'sd16;
+        6:brightness_offset_comb=11'sd32; 7:brightness_offset_comb=11'sd48;
+        default:brightness_offset_comb=11'sd64;
+    endcase
+    red_delta_comb=$signed({1'b0,rgb_in_s0[23:16]})-$signed({1'b0,previous_rgb[23:16]});
+    green_delta_comb=$signed({1'b0,rgb_in_s0[15:8]})-$signed({1'b0,previous_rgb[15:8]});
+    blue_delta_comb=$signed({1'b0,rgb_in_s0[7:0]})-$signed({1'b0,previous_rgb[7:0]});
+    if(!de_s0||(x_s0==0)) begin red_delta_comb=0; green_delta_comb=0; blue_delta_comb=0; end
+    case(sharpness_setting)
+        0:begin red_delta_comb=0;green_delta_comb=0;blue_delta_comb=0;end
+        1:begin red_delta_comb=red_delta_comb>>>2;green_delta_comb=green_delta_comb>>>2;blue_delta_comb=blue_delta_comb>>>2;end
+        2:begin red_delta_comb=red_delta_comb>>>1;green_delta_comb=green_delta_comb>>>1;blue_delta_comb=blue_delta_comb>>>1;end
+        default:;
+    endcase
+    red_work_comb=contrast_scale_pipe($signed({1'b0,red_base_s1})+red_delta_s1-13'sd128,contrast_setting)+13'sd128+brightness_offset_comb;
+    green_work_comb=contrast_scale_pipe($signed({1'b0,green_base_s1})+green_delta_s1-13'sd128,contrast_setting)+13'sd128+brightness_offset_comb;
+    blue_work_comb=contrast_scale_pipe($signed({1'b0,blue_base_s1})+blue_delta_s1-13'sd128,contrast_setting)+13'sd128+brightness_offset_comb;
+end
+
+always @(posedge clk or posedge rst) begin
+    if(rst) begin
+        previous_rgb<=0; rgb_in_s0<=0; de_s0<=0; x_s0<=0;
+        red_delta_s1<=0; green_delta_s1<=0; blue_delta_s1<=0;
+        red_base_s1<=0; green_base_s1<=0; blue_base_s1<=0;
+        red_work_s1<=0; green_work_s1<=0; blue_work_s1<=0;
+        red_pre_s2<=0; green_pre_s2<=0; blue_pre_s2<=0; luma_s2<=0; rgb_out<=0;
+    end else begin
+        rgb_in_s0<=rgb_in; de_s0<=de; x_s0<=x;
+        if(de_s0) previous_rgb<=rgb_in_s0;
+        red_delta_s1<=red_delta_comb; green_delta_s1<=green_delta_comb; blue_delta_s1<=blue_delta_comb;
+        red_base_s1<=rgb_in_s0[23:16]; green_base_s1<=rgb_in_s0[15:8]; blue_base_s1<=rgb_in_s0[7:0];
+        red_work_s1<=red_work_comb; green_work_s1<=green_work_comb; blue_work_s1<=blue_work_comb;
+        red_pre_s2<=red_pre_wire; green_pre_s2<=green_pre_wire; blue_pre_s2<=blue_pre_wire; luma_s2<=luma_wire;
+        rgb_out<={clamp_pipe(red_sat_wire),clamp_pipe(green_sat_wire),clamp_pipe(blue_sat_wire)};
+    end
+end
+endmodule
 module saixian_picture_adjust(
     input  wire        clk,
     input  wire        rst,

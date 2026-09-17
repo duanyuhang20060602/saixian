@@ -1,8 +1,10 @@
 module saixian_osd_overlay(
-    input  wire        de,
-    input  wire [9:0]  x,
-    input  wire [8:0]  y,
-    input  wire [23:0] rgb_in,
+    input  wire        clk,
+    input  wire        rst,
+    input  wire        de_i,
+    input  wire [9:0]  x_i,
+    input  wire [8:0]  y_i,
+    input  wire [23:0] rgb_in_i,
     input  wire        display_valid,
     input  wire [2:0]  loading_phase,
     input  wire [3:0]  state,
@@ -47,8 +49,8 @@ reg [3:0] slot;
 reg [9:0] local_x;
 reg [8:0] local_y;
 reg [23:0] base_rgb;
-reg [10:0] curtain_width;
 reg [9:0] progress_width;
+reg [4:0] fade_rank;
 reg [4:0] spectrum_bin;
 reg [6:0] spectrum_h3;
 reg [7:0] spectrum_h5;
@@ -57,13 +59,34 @@ reg [3:0] setting_value;
 reg [9:0] setting_bar_width;
 reg       spinner_pixel;
 reg [2:0] spinner_segment;
+reg [6:0] glyph_id_q;
+reg [3:0] font_row_q;
+reg [3:0] font_col_q;
+reg       text_region_q;
+reg       text_enable_q;
+reg [23:0] text_color_q;
+reg [23:0] render_rgb_q;
+reg [7:0] audio_level_q;
+reg       spectrum_active_q;
+reg [4:0] spectrum_tone_bin_q;
+reg [3:0]  font_col_q2;
+reg        text_region_q2;
+reg        text_enable_q2;
+reg [23:0] text_color_q2;
+reg [23:0] render_rgb_q2;
+reg [23:0] rgb_comb;
+reg        de;
+reg [9:0]  x;
+reg [8:0]  y;
+reg [23:0] rgb_in;
 wire [15:0] font_bits;
-wire font_pixel = font_bits[15-font_col];
+wire font_pixel_q = font_bits[15-font_col_q2];
 wire [10:0] ticker_local_x = {1'b0, x} + 11'd224 - {1'b0, ticker_x};
 
 saixian_font_rom u_font_rom(
-    .glyph_id(glyph_id),
-    .row     (font_row),
+    .clk     (clk),
+    .glyph_id(glyph_id_q),
+    .row     (font_row_q),
     .bits    (font_bits)
 );
 
@@ -376,8 +399,8 @@ always @* begin
 end
 
 always @* begin
-    curtain_width = transition_level * 11'd20;
     progress_width = seconds * 10'd8;
+    fade_rank = {x[2]^y[0], x[1]^y[2], x[0]^y[1], x[2]^y[2], x[1]^y[0]};
     spectrum_bin = 5'd0;
     spectrum_h3 = 7'd0;
     spectrum_h5 = 8'd0;
@@ -396,11 +419,14 @@ always @* begin
     else
         base_rgb = rgb_in;
 
-    rgb_out = base_rgb;
+    rgb_comb = base_rgb;
+    if (de && display_valid && (transition_level != 6'd0) &&
+        ({1'b0,fade_rank} < transition_level))
+        rgb_comb = 24'd0;
 
     // Eight-spoke boot spinner. One bright spoke advances at 10 Hz while the
     // remaining spokes stay dim, making SD scan/first-frame progress visible.
-    if (de && (error_code == 0) && !display_valid) begin
+    else if (de && (error_code == 0) && !display_valid) begin
         if ((x >= 10'd314) && (x < 10'd326) && (y >= 9'd178) && (y < 9'd204)) begin
             spinner_pixel = 1'b1; spinner_segment = 3'd0;
         end else if ((x >= 10'd342) && (x < 10'd360) && (y >= 9'd194) && (y < 9'd212)) begin
@@ -420,15 +446,12 @@ always @* begin
         end
 
         if (spinner_pixel)
-            rgb_out = (spinner_segment == loading_phase) ? 24'h38E8FF : 24'h23506A;
+            rgb_comb = (spinner_segment == loading_phase) ? 24'h38E8FF : 24'h23506A;
     end
 
-    if (de && display_valid && transition_active && (x < curtain_width))
-        rgb_out = (x[5] ^ y[5]) ? 24'h1677FF : 24'h0B3A82;
-
-    if (de && display_valid && settings_mode && (error_code == 0)) begin
+    else if (de && display_valid && settings_mode && (error_code == 0)) begin
         if ((x >= 10'd112) && (x < 10'd528) && (y >= 9'd64) && (y < 9'd384))
-            rgb_out = 24'h101827;
+            rgb_comb = 24'h101827;
 
         if (((y >= 9'd136) && (y < 9'd184)) ||
             ((y >= 9'd192) && (y < 9'd240)) ||
@@ -443,7 +466,7 @@ always @* begin
                 (setting_item == 1 && y >= 9'd192 && y < 9'd240) ||
                 (setting_item == 2 && y >= 9'd248 && y < 9'd296) ||
                 (setting_item == 3 && y >= 9'd304)) begin
-                if ((x >= 10'd128) && (x < 10'd512)) rgb_out = 24'h203B5A;
+                if ((x >= 10'd128) && (x < 10'd512)) rgb_comb = 24'h203B5A;
             end
 
             if ((x >= 10'd248) && (x < 10'd440) &&
@@ -452,45 +475,43 @@ always @* begin
                  ((y >= 9'd266) && (y < 9'd278)) ||
                  ((y >= 9'd322) && (y < 9'd334)))) begin
                 if ((x - 10'd248) < setting_bar_width)
-                    rgb_out = 24'h34D6FF;
+                    rgb_comb = 24'h34D6FF;
                 else
-                    rgb_out = 24'h35445A;
+                    rgb_comb = 24'h35445A;
             end
         end
     end
 
     // FPGA-generated lower-third ticker.  It is independent of the BMP frame
     // buffers, so image swaps cannot leave stale text or tear the banner.
-    if (de && display_valid && (error_code == 0) && !settings_mode &&
+    else if (de && display_valid && (error_code == 0) && !settings_mode &&
         (state == ST_CAROUSEL) && (y >= 9'd424) && (y < 9'd472)) begin
         if (y < 9'd428)
-            rgb_out = 24'h36C7FF;
+            rgb_comb = 24'h36C7FF;
         else
-            rgb_out = {1'b0,rgb_out[23:17],1'b0,rgb_out[15:9],1'b0,rgb_out[7:1]};
+            rgb_comb = {1'b0,rgb_comb[23:17],1'b0,rgb_comb[15:9],1'b0,rgb_comb[7:1]};
     end
 
-    if (de && display_valid && (error_code == 0) && !settings_mode) begin
+    else if (de && display_valid && (error_code == 0) && !settings_mode) begin
         if (y < 9'd64)
-            rgb_out = {1'b0,rgb_out[23:17],1'b0,rgb_out[15:9],1'b0,rgb_out[7:1]};
+            rgb_comb = {1'b0,rgb_comb[23:17],1'b0,rgb_comb[15:9],1'b0,rgb_comb[7:1]};
 
         if ((state == ST_RUNNING || state == ST_PAUSED) &&
             ((x < 10'd6) || (x > 10'd633) || (y < 9'd6) || (y > 9'd473))) begin
             if (state == ST_PAUSED || seconds[0])
-                rgb_out = (state == ST_PAUSED) ? 24'hFFB000 : 24'h00D46A;
+                rgb_comb = (state == ST_PAUSED) ? 24'hFFB000 : 24'h00D46A;
         end
 
         // The progress and audio bars belong to the event UI.  Keep the
         // carousel image clean until KEY1 starts the event flow.
         if ((state != ST_CAROUSEL) &&
             (y >= 9'd398) && (y < 9'd414) && (x >= 10'd80) && (x < 10'd560)) begin
+            // Carry-free colour overlay keeps the photograph visible while
+            // avoiding three 8-bit adders in the 75 MHz pixel critical path.
             if ((state == ST_RUNNING) && ((x - 10'd80) < progress_width))
-                rgb_out = {{1'b0,rgb_out[23:17]} + 8'h0C,
-                           {1'b0,rgb_out[15:9]}  + 8'h70,
-                           {1'b0,rgb_out[7:1]}   + 8'h3D};
+                rgb_comb = rgb_comb | 24'h0C703D;
             else
-                rgb_out = {{1'b0,rgb_out[23:17]} + 8'h12,
-                           {1'b0,rgb_out[15:9]}  + 8'h1A,
-                           {1'b0,rgb_out[7:1]}   + 8'h23};
+                rgb_comb = rgb_comb | 24'h121A23;
         end
 
         // Lightweight 32-bin spectrum. The cue generator supplies the known
@@ -500,40 +521,95 @@ always @* begin
         if ((state != ST_CAROUSEL) &&
             (y >= 9'd416) && (y < 9'd468) && (x >= 10'd64) && (x < 10'd576)) begin
             spectrum_bin = 5'd31 - ((x - 10'd64) >> 4);
-            spectrum_h3 = {2'd0,spectrum_tone_bin} + ({2'd0,spectrum_tone_bin} << 1);
-            spectrum_h5 = {3'd0,spectrum_tone_bin} + ({3'd0,spectrum_tone_bin} << 2);
+            spectrum_h3 = {2'd0,spectrum_tone_bin_q} + ({2'd0,spectrum_tone_bin_q} << 1);
+            spectrum_h5 = {3'd0,spectrum_tone_bin_q} + ({3'd0,spectrum_tone_bin_q} << 2);
             spectrum_height = 6'd4;
-            if (spectrum_active && (audio_level != 8'd0)) begin
-                if (spectrum_bin == spectrum_tone_bin)
-                    spectrum_height = 6'd8 + {1'b0,audio_level[7:3]};
-                else if (((spectrum_tone_bin != 5'd0) &&
-                          (spectrum_bin == (spectrum_tone_bin - 5'd1))) ||
-                         ((spectrum_tone_bin != 5'd31) &&
-                          (spectrum_bin == (spectrum_tone_bin + 5'd1))))
-                    spectrum_height = 6'd4 + {2'd0,audio_level[7:4]};
+            if (spectrum_active_q && (audio_level_q != 8'd0)) begin
+                if (spectrum_bin == spectrum_tone_bin_q)
+                    spectrum_height = 6'd8 + {1'b0,audio_level_q[7:3]};
+                else if (((spectrum_tone_bin_q != 5'd0) &&
+                          (spectrum_bin == (spectrum_tone_bin_q - 5'd1))) ||
+                         ((spectrum_tone_bin_q != 5'd31) &&
+                          (spectrum_bin == (spectrum_tone_bin_q + 5'd1))))
+                    spectrum_height = 6'd4 + {2'd0,audio_level_q[7:4]};
                 else if ((spectrum_h3 <= 7'd31) &&
                          ({2'd0,spectrum_bin} == spectrum_h3))
-                    spectrum_height = 6'd4 + {3'd0,audio_level[7:5]};
+                    spectrum_height = 6'd4 + {3'd0,audio_level_q[7:5]};
                 else if ((spectrum_h5 <= 8'd31) &&
                          ({3'd0,spectrum_bin} == spectrum_h5))
-                    spectrum_height = 6'd4 + {4'd0,audio_level[7:6]};
+                    spectrum_height = 6'd4 + {4'd0,audio_level_q[7:6]};
             end
             if ((x[3:0] < 4'd12) &&
                 (y >= (9'd468 - {3'd0,spectrum_height}))) begin
                 if (spectrum_bin >= 5'd22)
-                    rgb_out = 24'h37DFFF;
+                    rgb_comb = 24'h37DFFF;
                 else if (spectrum_bin >= 5'd11)
-                    rgb_out = 24'h36E58D;
+                    rgb_comb = 24'h36E58D;
                 else if (spectrum_bin >= 5'd4)
-                    rgb_out = 24'hFFD05A;
+                    rgb_comb = 24'hFFD05A;
                 else
-                    rgb_out = 24'hFF625F;
+                    rgb_comb = 24'hFF625F;
             end
         end
     end
 
-    if (de && text_region && font_pixel && (display_valid || (error_code != 0)))
-        rgb_out = text_color;
+end
+
+// Split coordinate/text decoding and font lookup across two pixel clocks.
+// This removes the former x/y -> glyph ROM -> RGB path that could not meet
+// the 75 MHz 720p clock.
+always @(posedge clk or posedge rst) begin
+    if (rst) begin
+        de <= 1'b0;
+        x <= 10'd0;
+        y <= 9'd0;
+        rgb_in <= 24'd0;
+        glyph_id_q <= 7'd0;
+        font_row_q <= 4'd0;
+        font_col_q <= 4'd0;
+        text_region_q <= 1'b0;
+        text_enable_q <= 1'b0;
+        text_color_q <= 24'd0;
+        render_rgb_q <= 24'd0;
+        audio_level_q <= 8'd0;
+        spectrum_active_q <= 1'b0;
+        spectrum_tone_bin_q <= 5'd0;
+        font_col_q2 <= 4'd0;
+        text_region_q2 <= 1'b0;
+        text_enable_q2 <= 1'b0;
+        text_color_q2 <= 24'd0;
+        render_rgb_q2 <= 24'd0;
+        rgb_out <= 24'd0;
+    end else begin
+        // Cut the top-level coordinate subtraction away from the large OSD
+        // decode cone before the 75 MHz rendering pipeline.
+        de <= de_i;
+        x <= x_i;
+        y <= y_i;
+        rgb_in <= rgb_in_i;
+        glyph_id_q <= glyph_id;
+        font_row_q <= font_row;
+        font_col_q <= font_col;
+        text_region_q <= text_region;
+        text_enable_q <= display_valid || (error_code != 0);
+        text_color_q <= text_color;
+        render_rgb_q <= rgb_comb;
+        // Isolate the long volume-control cone from the 75 MHz OSD renderer.
+        // One pixel-clock of spectrum-control latency is visually irrelevant
+        // and preserves the existing video/font pipeline alignment.
+        audio_level_q <= audio_level;
+        spectrum_active_q <= spectrum_active;
+        spectrum_tone_bin_q <= spectrum_tone_bin;
+        // The font ROM has a registered BRAM output; the column select and
+        // colour mux remain in the following stage.
+        font_col_q2 <= font_col_q;
+        text_region_q2 <= text_region_q;
+        text_enable_q2 <= text_enable_q;
+        text_color_q2 <= text_color_q;
+        render_rgb_q2 <= render_rgb_q;
+        rgb_out <= (text_region_q2 && font_pixel_q && text_enable_q2) ?
+                   text_color_q2 : render_rgb_q2;
+    end
 end
 
 endmodule

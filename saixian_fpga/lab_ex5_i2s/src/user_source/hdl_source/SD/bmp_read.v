@@ -6,6 +6,7 @@ module bmp_read(
 
     // 上电扫描：从 scan_start_sector 开始，顺序寻找前 scan_target_count 张 BMP
     input                       scan_start,
+    input                       scan_stop,
     input  [31:0]               scan_start_sector,
     input  [31:0]               scan_max_sector,
     input  [2:0]                scan_target_count,
@@ -394,6 +395,14 @@ always @(posedge clk or posedge rst) begin
                     end else begin
                         state <= ST_IDLE;
                     end
+                end else if (scan_stop) begin
+                    // Finish only between sector reads.  This keeps the SD
+                    // controller transaction intact and lets the caller use
+                    // every valid image already found instead of aborting and
+                    // reinitializing the card.
+                    scan_done   <= 1'b1;
+                    state       <= ST_IDLE;
+                    sd_sec_read <= 1'b0;
                 end else begin
                     if (header_basic_ok_latched && header_geometry_ok_latched) begin
                         scan_found_valid  <= 1'b1;

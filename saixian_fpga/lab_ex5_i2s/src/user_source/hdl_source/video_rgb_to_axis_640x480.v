@@ -1,5 +1,7 @@
 
-module video_rgb_to_axis_640x480(
+module video_rgb_to_axis_640x480 #(
+    parameter integer H_ACTIVE = 1280
+)(
     input  wire        I_clk,
     input  wire        I_rst,
     input  wire        I_vs,
@@ -54,8 +56,7 @@ always @(posedge I_clk or posedge I_rst) begin
                 S_x_cnt <= S_x_cnt + 11'd1;
             end
 
-            // 640x480 最后一个有效像素
-            if (S_x_cnt == 11'd639)
+            if (S_x_cnt == H_ACTIVE - 1)
                 O_video_last <= 1'b1;
         end
         else begin

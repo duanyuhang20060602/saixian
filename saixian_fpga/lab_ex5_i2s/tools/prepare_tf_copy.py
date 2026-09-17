@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Copy up to four already-valid BMPs to an explicitly named removable drive."""
+"""Copy up to five already-valid BMPs to an explicitly named removable drive."""
 from __future__ import annotations
 import argparse
 import ctypes
@@ -20,8 +20,8 @@ def main() -> int:
     if ctypes.windll.kernel32.GetDriveTypeW(str(target)) != DRIVE_REMOVABLE:
         raise SystemExit(f"拒绝：{target} 未被 Windows 识别为可移动盘")
     files = sorted(args.source_dir.glob("*.bmp"))
-    if not 1 <= len(files) <= 4:
-        raise SystemExit("源目录必须包含 1 到 4 张 BMP")
+    if not 1 <= len(files) <= 5:
+        raise SystemExit("源目录必须包含 1 到 5 张 BMP")
     for src in files:
         problems = validate(src)
         if problems: raise SystemExit(f"{src.name}: " + "；".join(problems))

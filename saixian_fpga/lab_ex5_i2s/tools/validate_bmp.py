@@ -5,7 +5,7 @@ import argparse
 import struct
 from pathlib import Path
 
-MIN_W, MIN_H = 640, 480
+MIN_W, MIN_H = 1280, 720
 MAX_W, MAX_H = 1920, 1080
 MAX_FILE_SIZE = 8_388_608
 

@@ -1,9 +1,17 @@
 import os
 import sys
 import argparse
-from PIL import Image
+from PIL import Image, ImageOps
 
-def convert_single_file(input_path, output_path, target_width=640, target_height=480):
+
+def fit_to_canvas(img, target_width, target_height):
+    """等比例缩放并居中补黑边，避免拉伸或裁掉原图内容。"""
+    resized = ImageOps.contain(img, (target_width, target_height), Image.Resampling.LANCZOS)
+    canvas = Image.new('RGB', (target_width, target_height), 'black')
+    canvas.paste(resized, ((target_width - resized.width) // 2, (target_height - resized.height) // 2))
+    return canvas
+
+def convert_single_file(input_path, output_path, target_width=1280, target_height=720):
     """
     将单张图片转换为指定分辨率的无压缩 24-bit BMP 格式。
     """
@@ -17,7 +25,7 @@ def convert_single_file(input_path, output_path, target_width=640, target_height
             img_rgb = img.convert('RGB')
             
             # 调整图片大小
-            img_resized = img_rgb.resize((target_width, target_height), Image.Resampling.LANCZOS)
+            img_resized = fit_to_canvas(img_rgb, target_width, target_height)
             
             # 确保输出后缀为 .bmp
             if not output_path.lower().endswith('.bmp'):
@@ -32,7 +40,7 @@ def convert_single_file(input_path, output_path, target_width=640, target_height
         print(f"[失败] 转换 {input_path} 时发生错误: {e}")
         return False
 
-def convert_to_bmp(input_dir, output_dir, target_width=640, target_height=480):
+def convert_to_bmp(input_dir, output_dir, target_width=1280, target_height=720):
     """
     批量将图片转换为指定分辨率的无压缩 24-bit BMP 格式。
     """
@@ -53,7 +61,7 @@ def convert_to_bmp(input_dir, output_dir, target_width=640, target_height=480):
         input_path = os.path.join(input_dir, filename)
         # 生成输出文件名，确保后缀为 .bmp
         base_name = os.path.splitext(filename)[0]
-        output_filename = f"{base_name}_640x480.bmp"
+        output_filename = f"{base_name}_1280x720.bmp"
         output_path = os.path.join(output_dir, output_filename)
 
         try:
@@ -62,8 +70,8 @@ def convert_to_bmp(input_dir, output_dir, target_width=640, target_height=480):
                 img_rgb = img.convert('RGB')
                 
                 # 调整图片大小 (采用 LANCZOS 算法以保证缩放质量)
-                # 如果你想保持比例并居中裁剪，可以使用 ImageOps.fit
-                img_resized = img_rgb.resize((target_width, target_height), Image.Resampling.LANCZOS)
+                # 等比例缩放并补边，不拉伸也不裁掉原图内容
+                img_resized = fit_to_canvas(img_rgb, target_width, target_height)
                 
                 # 保存为无压缩的 BMP 文件
                 img_resized.save(output_path, 'BMP')
@@ -77,7 +85,7 @@ def convert_to_bmp(input_dir, output_dir, target_width=640, target_height=480):
     print(f"请将 '{output_dir}' 目录下的所有 BMP 文件复制到 TF(SD) 卡的根目录中。")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="FPGA TF卡 BMP 图片转换工具 (640x480, 24位无压缩)")
+    parser = argparse.ArgumentParser(description="FPGA TF卡 BMP 图片转换工具 (1280x720, 24位无压缩)")
     parser.add_argument('input', nargs='?', help='输入的图片文件路径 (例如: 1.jpg)')
     parser.add_argument('output', nargs='?', help='输出的BMP文件路径 (例如: 1.bmp)')
     
@@ -93,7 +101,7 @@ if __name__ == "__main__":
         default_output = os.path.join(current_dir, "output_bmp")
 
         print("=== FPGA TF卡 BMP 图片转换工具 ===")
-        print("要求：640x480, 24位无压缩 BMP")
+        print("要求：1280x720, 24位无压缩 BMP")
         print("-" * 40)
         print("提示: 你也可以通过命令行参数指定单张图片进行转换，格式如下:")
         print("python convert_images_to_bmp.py <输入文件> <输出文件>")
