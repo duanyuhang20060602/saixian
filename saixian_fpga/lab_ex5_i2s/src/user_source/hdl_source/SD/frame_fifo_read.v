@@ -33,6 +33,8 @@ module frame_fifo_read
     input [10:0]                     slide_offset,
     input                            slide_right,
     input [2:0]                      transition_mode,
+    input                            buffer0_vga,
+    input                            buffer1_vga,
     output reg                       fifo_aclr,
     input [BURST_BITS-1:0]           wrusedw
 );
@@ -53,6 +55,7 @@ reg [1:0] slide_old_d0, slide_old_d1, slide_new_d0, slide_new_d1;
 reg [10:0] slide_offset_d0, slide_offset_d1;
 reg slide_right_d0, slide_right_d1;
 reg [2:0] transition_mode_d0, transition_mode_d1;
+reg buffer0_vga_d0, buffer0_vga_d1, buffer1_vga_d0, buffer1_vga_d1;
 
 reg [3:0] state;
 reg [ADDR_BITS-1:0] read_cnt;
@@ -66,7 +69,20 @@ reg [2:0] transition_mode_latch;
 reg [10:0] slide_offset_latch;
 reg [10:0] issue_x;
 reg [9:0] issue_y;
+reg [1:0] row_phase;
+reg old_vga_latch, new_vga_latch;
 reg [ADDR_BITS-1:0] old_row_base, new_row_base;
+wire [ADDR_BITS-1:0] old_row_step =
+    (old_vga_latch && row_phase == 2'd0) ? {ADDR_BITS{1'b0}} : FRAME_WIDTH_U;
+wire [ADDR_BITS-1:0] new_row_step =
+    (new_vga_latch && row_phase == 2'd0) ? {ADDR_BITS{1'b0}} : FRAME_WIDTH_U;
+
+function select_vga;
+    input [1:0] index;
+    begin
+        select_vga = (index == 2'd0) ? buffer0_vga_d1 : buffer1_vga_d1;
+    end
+endfunction
 
 wire rd_vld = (state == S_READ_BURST && burst_cnt >= BURST_SIZE);
 wire rd_burst_finish = rd_vld && (rd_delay == 4'd10);
@@ -169,6 +185,8 @@ always @(posedge mem_clk or posedge rst) begin
         slide_offset_d0 <= 0; slide_offset_d1 <= 0;
         slide_right_d0 <= 0; slide_right_d1 <= 0;
         transition_mode_d0 <= 0; transition_mode_d1 <= 0;
+        buffer0_vga_d0 <= 0; buffer0_vga_d1 <= 0;
+        buffer1_vga_d0 <= 0; buffer1_vga_d1 <= 0;
     end else begin
         read_req_d0 <= read_req; read_req_d1 <= read_req_d0; read_req_d2 <= read_req_d1;
         read_len_d0 <= read_len; read_len_d1 <= read_len_d0;
@@ -179,6 +197,8 @@ always @(posedge mem_clk or posedge rst) begin
         slide_offset_d0 <= slide_offset; slide_offset_d1 <= slide_offset_d0;
         slide_right_d0 <= slide_right; slide_right_d1 <= slide_right_d0;
         transition_mode_d0 <= transition_mode; transition_mode_d1 <= transition_mode_d0;
+        buffer0_vga_d0 <= buffer0_vga; buffer0_vga_d1 <= buffer0_vga_d0;
+        buffer1_vga_d0 <= buffer1_vga; buffer1_vga_d1 <= buffer1_vga_d0;
     end
 end
 
@@ -196,6 +216,8 @@ always @(posedge mem_clk or posedge rst) begin
         App_rd_en_d0 <= 0;
         issue_x <= 0;
         issue_y <= 0;
+        row_phase <= 0;
+        old_vga_latch <= 0; new_vga_latch <= 0;
         old_row_base <= 0;
         new_row_base <= 0;
         slide_active_latch <= 0;
@@ -215,6 +237,9 @@ always @(posedge mem_clk or posedge rst) begin
             slide_offset_latch <= slide_offset_d1;
             issue_x <= 0;
             issue_y <= 0;
+            row_phase <= 0;
+            old_vga_latch <= select_vga(slide_active_d1 ? slide_old_d1 : read_addr_index_d1);
+            new_vga_latch <= select_vga(slide_new_d1);
             old_row_base <= select_base(slide_active_d1 ? slide_old_d1 : read_addr_index_d1);
             new_row_base <= select_base(slide_new_d1);
             App_rd_addr_r <= mapped_address(11'd0, 10'd0,
@@ -225,10 +250,11 @@ always @(posedge mem_clk or posedge rst) begin
             if (issue_x == FRAME_WIDTH - 1) begin
                 issue_x <= 0;
                 issue_y <= issue_y + 1'b1;
-                old_row_base <= old_row_base + FRAME_WIDTH_U;
-                new_row_base <= new_row_base + FRAME_WIDTH_U;
+                row_phase <= (row_phase == 2'd2) ? 2'd0 : row_phase + 1'b1;
+                old_row_base <= old_row_base + old_row_step;
+                new_row_base <= new_row_base + new_row_step;
                 App_rd_addr_r <= mapped_address(11'd0, issue_y + 1'b1,
-                    old_row_base + FRAME_WIDTH_U, new_row_base + FRAME_WIDTH_U,
+                    old_row_base + old_row_step, new_row_base + new_row_step,
                     slide_active_latch, slide_right_latch, transition_mode_latch, slide_offset_latch);
             end else begin
                 issue_x <= issue_x + 1'b1;

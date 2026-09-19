@@ -13,6 +13,7 @@ module sd_card_bmp #(
     output reg [15:0] source_width, output reg [15:0] source_height,
     output reg frame_ready_toggle, output reg [1:0] ready_buf_idx, output reg ready_slide_right,
     output reg [1:0] write_buf_idx,
+    output wire write_vga, output reg buffer0_vga, output reg buffer1_vga,
     input [15:0] bmp_width, input [15:0] bmp_height,
     input write_finish_toggle,
     output write_req, input write_req_ack,
@@ -22,6 +23,8 @@ module sd_card_bmp #(
     output reg audio_found_o,
     output SD_nCS, output SD_DCLK, output SD_MOSI, input SD_MISO
 );
+
+assign write_vga = (pending_width == 16'd640) && (pending_height == 16'd480);
 
 // Slow cards can need several seconds to leave idle after ACMD41. The error
 // recovery path automatically resets and retries the controller.
@@ -163,6 +166,7 @@ always @(posedge clk or posedge rst) begin
         pending_width <= 0; pending_height <= 0; source_width <= 0; source_height <= 0;
         current_image <= 0; pending_image <= 0; desired_image <= 0; current_buf <= 0;
         ready_buf_idx <= 0; write_buf_idx <= 0;
+        buffer0_vga <= 0; buffer1_vga <= 0;
         load_busy <= 0; source_started <= 0; source_done <= 0; write_finish_seen <= 0; awaiting_commit <= 0; display_committed <= 0;
         desired_slide_right <= 0; frame_ready_toggle <= 0;
         ready_slide_right <= 0; load_slide_right <= 0;
@@ -324,6 +328,8 @@ always @(posedge clk or posedge rst) begin
             (source_done || (source_started && bmp_ready)) &&
             (write_finish_seen || wrfin_pulse)) begin
             load_busy <= 0; awaiting_commit <= 1; ready_buf_idx <= write_buf_idx;
+            if (write_buf_idx == 2'd0) buffer0_vga <= write_vga;
+            else if (write_buf_idx == 2'd1) buffer1_vga <= write_vga;
             ready_slide_right <= load_slide_right;
             frame_ready_toggle <= ~frame_ready_toggle;
         end

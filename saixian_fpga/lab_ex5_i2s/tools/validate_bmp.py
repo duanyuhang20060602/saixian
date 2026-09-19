@@ -6,6 +6,7 @@ import struct
 from pathlib import Path
 
 MIN_W, MIN_H = 1280, 720
+VGA_W, VGA_H = 640, 480
 MAX_W, MAX_H = 1920, 1080
 MAX_FILE_SIZE = 8_388_608
 
@@ -23,8 +24,9 @@ def validate(path: Path) -> list[str]:
     compression = struct.unpack_from("<I", raw, 30)[0]
     if sig != b"BM": problems.append("签名不是BM")
     if dib_size < 40: problems.append(f"DIB头过短: {dib_size}")
-    if not (MIN_W <= width <= MAX_W and MIN_H <= height <= MAX_H):
-        problems.append(f"尺寸{width}x{height}超出{MIN_W}x{MIN_H}至{MAX_W}x{MAX_H}正高度范围")
+    if not ((width == VGA_W and height == VGA_H) or
+            (MIN_W <= width <= MAX_W and MIN_H <= height <= MAX_H)):
+        problems.append(f"尺寸{width}x{height}不受支持；要求640x480或1280x720至1920x1080正高度")
     if planes != 1: problems.append(f"颜色平面数为{planes}，要求1")
     if bpp != 24: problems.append(f"位深为{bpp}，要求24")
     if compression != 0: problems.append(f"压缩字段为{compression}，要求BI_RGB(0)")

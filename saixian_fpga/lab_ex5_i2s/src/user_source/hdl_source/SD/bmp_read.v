@@ -94,6 +94,7 @@ wire bmp_data_valid;
 wire [31:0] file_sector_count;
 wire [31:0] next_scan_sector_if_miss;
 wire audio_header_ok;
+wire vga_source = (width == 32'd640) && (height == 32'd480);
 
 assign ready = (state == ST_IDLE);
 assign header_basic_ok = (header_0 == "B") &&
@@ -105,8 +106,10 @@ assign header_basic_ok = (header_0 == "B") &&
                          (file_len      <= 32'd8_388_608);
 assign header_geometry_ok = (width[31:16]  == 16'd0) &&
                       (height[31:16] == 16'd0) &&
-                      (width[15:0]   >= bmp_width) &&
-                      (height[15:0]  >= bmp_height) &&
+                      (((width[15:0] == 16'd640) &&
+                        (height[15:0] == 16'd480)) ||
+                       ((width[15:0] >= bmp_width) &&
+                        (height[15:0] >= bmp_height))) &&
                       (width[15:0]   <= 16'd1920) &&
                       (height[15:0]  <= 16'd1080) &&
                       (bit_count    == 16'd24) &&
@@ -309,7 +312,9 @@ always @(posedge clk or posedge rst) begin
                         // Lightweight nearest-neighbour down-scaler.  It
                         // emits exactly 640 pixels on each of 480 selected
                         // source rows without a divider in the pixel path.
-                        if (row_selected) begin
+                        if (vga_source)
+                            bmp_data_wr_en <= 1'b1;
+                        else if (row_selected) begin
                             if ((x_acc + bmp_width) >= width) begin
                                 bmp_data_wr_en <= 1'b1;
                                 x_acc <= x_acc + bmp_width - width;
@@ -331,11 +336,14 @@ always @(posedge clk or posedge rst) begin
                 row_byte_cnt <= 16'd0;
                 bmp_byte_idx <= 2'd0;
                 src_x        <= 16'd0;
-                x_acc        <= width - bmp_width;
+                x_acc        <= vga_source ? 32'd0 : (width - bmp_width);
 
                 if (src_y + 16'd1 < height[15:0]) begin
                     src_y <= src_y + 16'd1;
-                    if ((y_acc + bmp_height) >= height) begin
+                    if (vga_source) begin
+                        row_selected <= 1'b1;
+                        y_acc <= 32'd0;
+                    end else if ((y_acc + bmp_height) >= height) begin
                         row_selected <= 1'b1;
                         y_acc <= y_acc + bmp_height - height;
                     end else begin
@@ -357,7 +365,10 @@ always @(posedge clk or posedge rst) begin
         src_x           <= 16'd0;
         src_y           <= 16'd0;
         x_acc           <= (width >= bmp_width) ? (width - bmp_width) : 32'd0;
-        if (bmp_height >= height) begin
+        if (vga_source) begin
+            y_acc        <= 32'd0;
+            row_selected <= 1'b1;
+        end else if (bmp_height >= height) begin
             y_acc        <= bmp_height - height;
             row_selected <= 1'b1;
         end else begin

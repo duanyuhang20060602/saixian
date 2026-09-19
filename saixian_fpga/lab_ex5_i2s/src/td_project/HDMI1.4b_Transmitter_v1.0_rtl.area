@@ -8,31 +8,31 @@ IO Statistics
   #inout                    1
 
 Gate Statistics
-#Basic gates            12152
-  #and                    824
+#Basic gates            12096
+  #and                    831
   #nand                     0
-  #or                     561
+  #or                     562
   #nor                      0
   #xor                    158
   #xnor                     0
   #buf                      0
-  #not                    815
+  #not                    821
   #bufif1                  33
-  #MX21                  3373
+  #MX21                  3232
   #FADD                     0
-  #DFF                   6388
+  #DFF                   6459
   #LATCH                    0
-#MACRO_ADD                697
-#MACRO_EQ                 252
+#MACRO_ADD                698
+#MACRO_EQ                 260
 #MACRO_MULT                 2
-#MACRO_MUX               4344
+#MACRO_MUX               4537
 #MACRO_OTHERS              13
 
 Report Hierarchy Area:
 +---------------------------------------------------------------------------------------------------------------------+
 |Instance                                  |Module                                            |gates  |seq    |macros |
 +---------------------------------------------------------------------------------------------------------------------+
-|top                                       |top                                               |5764   |6388   |964    |
+|top                                       |top                                               |5637   |6459   |973    |
 |  u_acr                                   |audio_arc_calculate                               |3      |47     |4      |
 |  u_audio_fifo                            |rfifo_32_32_512                                   |40     |96     |7      |
 |    ram_inst                              |ram_infer_rfifo_32_32_512                         |0      |0      |1      |
@@ -42,10 +42,10 @@ Report Hierarchy Area:
 |  u_bgm_player                            |saixian_pcm_player                                |123    |112    |17     |
 |  u_cue                                   |saixian_audio_cue                                 |109    |185    |35     |
 |  u_delay                                 |video_delay                                       |74     |79     |0      |
-|  u_event                                 |saixian_event_controller                          |331    |56     |9      |
-|  u_frame_rw                              |frame_read_write                                  |435    |411    |105    |
-|    frame_fifo_read_m0                    |frame_fifo_read                                   |324    |154    |76     |
-|    frame_fifo_write_m0                   |frame_fifo_write                                  |35     |69     |15     |
+|  u_event                                 |saixian_event_controller                          |330    |56     |9      |
+|  u_frame_rw                              |frame_read_write                                  |453    |431    |108    |
+|    frame_fifo_read_m0                    |frame_fifo_read                                   |337    |168    |79     |
+|    frame_fifo_write_m0                   |frame_fifo_write                                  |40     |75     |15     |
 |    read_buf                              |rfifo_32_32_512                                   |38     |94     |7      |
 |      ram_inst                            |ram_infer_rfifo_32_32_512                         |0      |0      |1      |
 |      rd_to_wr_cross_inst                 |fifo_cross_domain_addr_process_al_rfifo_32_32_512 |16     |36     |0      |
@@ -93,9 +93,9 @@ Report Hierarchy Area:
 |  u_osd                                   |saixian_osd_overlay                               |1030   |160    |218    |
 |    u_font_rom                            |saixian_font_rom                                  |0      |0      |1      |
 |  u_picture_adjust                        |saixian_picture_adjust_pipe                       |123    |164    |66     |
-|  u_sd_bmp                                |sd_card_bmp                                       |1960   |1963   |115    |
+|  u_sd_bmp                                |sd_card_bmp                                       |1970   |1965   |121    |
 |    u_audio_stream                        |saixian_sd_audio_stream                           |122    |145    |7      |
-|    u_bmp_read                            |bmp_read                                          |695    |884    |58     |
+|    u_bmp_read                            |bmp_read                                          |703    |884    |62     |
 |    u_sd_card_top                         |sd_card_top                                       |415    |186    |13     |
 |      sd_card_cmd_m0                      |sd_card_cmd                                       |278    |49     |8      |
 |      sd_card_sec_read_write_m0           |sd_card_sec_read_write                            |126    |93     |0      |
@@ -114,7 +114,7 @@ Report Hierarchy Area:
 |  u_tracker                               |saixian_video_tracker                             |19     |23     |2      |
 |  u_transition                            |saixian_transition                                |66     |43     |6      |
 |  u_video_pll                             |video_pll                                         |0      |0      |1      |
-|  u_volume                                |saixian_audio_volume                              |244    |0      |10     |
+|  u_volume                                |saixian_audio_volume                              |89     |0      |10     |
 |  u_rst_clk                               |saixian_reset_sync                                |0      |3      |0      |
 |  u_rst_hdmi                              |saixian_reset_sync                                |0      |3      |0      |
 |  u_rst_mem                               |saixian_reset_sync                                |0      |3      |0      |

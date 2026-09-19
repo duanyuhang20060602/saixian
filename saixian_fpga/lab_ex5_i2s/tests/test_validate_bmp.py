@@ -19,10 +19,11 @@ class ValidateBmpTests(unittest.TestCase):
     def test_valid(self):
         with tempfile.TemporaryDirectory() as d:
             p=Path(d)/"ok.bmp"; make_bmp(p); self.assertEqual(validate(p), [])
+            p=Path(d)/"vga.bmp"; make_bmp(p, width=640, height=480); self.assertEqual(validate(p), [])
     def test_wrong_variants(self):
         with tempfile.TemporaryDirectory() as d:
             d=Path(d)
-            for name,kw in [("size",{"width":640,"height":480}),("bpp",{"bpp":32}),("zip",{"compression":1}),("cut",{"truncate":True})]:
+            for name,kw in [("size",{"width":640,"height":720}),("bpp",{"bpp":32}),("zip",{"compression":1}),("cut",{"truncate":True})]:
                 p=d/f"{name}.bmp"; make_bmp(p,**kw); self.assertTrue(validate(p),name)
 
 if __name__ == "__main__": unittest.main()

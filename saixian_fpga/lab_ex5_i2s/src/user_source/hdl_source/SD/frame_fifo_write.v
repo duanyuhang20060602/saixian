@@ -37,6 +37,7 @@ module frame_fifo_write
 	input[ADDR_BITS - 1:0]           write_addr_3,               // data write module write request base address 1, used when write_addr_index = 3
 	input[1:0]                       write_addr_index,           // select valid base address from write_addr_0 write_addr_1 write_addr_2 write_addr_3
 	input[ADDR_BITS - 1:0]           write_len,                  // data write module write request data length
+    input                            write_vga,                 // 640x480 source, 640 replicated words per row
 	output reg                       fifo_aclr,                  // to fifo asynchronous clear
 	input[BURST_BITS-1:0]           rdusedw                     // from FIFO read used words
 );
@@ -47,6 +48,7 @@ localparam ZERO                      = 256'd0;                   //256 bit '0'
 // Input stream order remains unchanged; only SDRAM write addresses are remapped:
 // stream row 0 -> memory row FRAME_HEIGHT-1, stream row 1 -> memory row FRAME_HEIGHT-2, ...
 localparam [ADDR_BITS - 1:0] VFLIP_FIRST_ADDR_OFFSET = (FRAME_HEIGHT - 1) * FRAME_WIDTH;
+localparam [ADDR_BITS - 1:0] VFLIP_VGA_ADDR_OFFSET = (480 - 1) * FRAME_WIDTH;
 localparam [ADDR_BITS - 1:0] VFLIP_LINE_JUMP         = (FRAME_WIDTH * 2) - 1;
 localparam [15:0]            VFLIP_LINE_LAST_X       = FRAME_WIDTH - 1;
 
@@ -68,6 +70,9 @@ reg[ADDR_BITS - 1:0]                write_len_latch;             //lock write da
 reg[ADDR_BITS - 1:0]                write_cnt;                   //write data counter
 reg[1:0]                            write_addr_index_d0;
 reg[1:0]                            write_addr_index_d1;
+reg write_vga_d0, write_vga_d1;
+wire [ADDR_BITS-1:0] first_row_offset =
+    (write_vga_d1 == 1'b1) ? VFLIP_VGA_ADDR_OFFSET : VFLIP_FIRST_ADDR_OFFSET;
 reg[3:0]                            state;                       //state machine
 reg [ADDR_BITS - 1:0]	 App_wr_addr_r;
 reg [15:0]                            wr_x;                       // current x position in one input row
@@ -116,6 +121,7 @@ begin
 		write_len_d1    <=  ZERO[ADDR_BITS - 1:0];              //equivalent to write_len_d1 <= 0;
 		write_addr_index_d0    <=  2'b00;
 		write_addr_index_d1    <=  2'b00;
+        write_vga_d0 <= 1'b0; write_vga_d1 <= 1'b0;
 	end
 	else
 	begin
@@ -126,6 +132,7 @@ begin
 		write_len_d1    <=  write_len_d0;
 		write_addr_index_d0 <= write_addr_index;
 		write_addr_index_d1 <= write_addr_index_d0;
+        write_vga_d0 <= write_vga; write_vga_d1 <= write_vga_d0;
 	end 
 end
 always @(posedge mem_clk or posedge rst)
@@ -150,13 +157,13 @@ begin
 			begin
 				wr_x <= 16'd0;
 				if(write_addr_index_d1 == 2'd0)
-					App_wr_addr_r <= WRITE_V_FLIP ? (write_addr_0 + VFLIP_FIRST_ADDR_OFFSET) : write_addr_0;
+					App_wr_addr_r <= WRITE_V_FLIP ? (write_addr_0 + first_row_offset) : write_addr_0;
 				else if(write_addr_index_d1 == 2'd1)
-					App_wr_addr_r <= WRITE_V_FLIP ? (write_addr_1 + VFLIP_FIRST_ADDR_OFFSET) : write_addr_1;
+					App_wr_addr_r <= WRITE_V_FLIP ? (write_addr_1 + first_row_offset) : write_addr_1;
 				else if(write_addr_index_d1 == 2'd2)
-					App_wr_addr_r <= WRITE_V_FLIP ? (write_addr_2 + VFLIP_FIRST_ADDR_OFFSET) : write_addr_2;
+					App_wr_addr_r <= WRITE_V_FLIP ? (write_addr_2 + first_row_offset) : write_addr_2;
 				else if(write_addr_index_d1 == 2'd3)
-					App_wr_addr_r <= WRITE_V_FLIP ? (write_addr_3 + VFLIP_FIRST_ADDR_OFFSET) : write_addr_3;
+					App_wr_addr_r <= WRITE_V_FLIP ? (write_addr_3 + first_row_offset) : write_addr_3;
 			end
 		else if(App_wr_en)
 			begin

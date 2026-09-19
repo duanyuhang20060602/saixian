@@ -20,6 +20,7 @@ parameter HDMI_COMPAT_DIAGNOSTIC = 1'b0;
 // one-pixel-per-word layout needed 55.9 Mword/s at 720p60, which is more than
 // the timing-clean 50 MHz SDRAM interface can deliver.
 parameter [20:0] FRAME_WORDS = 21'd460800;
+localparam [20:0] VGA_FRAME_WORDS = 21'd307200;
 parameter [20:0] BUF0_ADDR = 21'd0;
 parameter BUF1_ADDR = FRAME_WORDS;
 
@@ -219,6 +220,7 @@ reg sd_card_write_en;
 reg [31:0] sd_card_write_data;
 reg pack_half;
 reg [15:0] pack_first_pixel;
+wire write_vga_sd, buffer0_vga_sd, buffer1_vga_sd;
 wire frame_write_finish;
 reg frame_write_toggle_mem;
 wire write_fifo_full;
@@ -250,7 +252,11 @@ always @(posedge sd_card_clk or posedge rst_sd) begin
     end else begin
         sd_card_write_en <= 1'b0;
         if (sd_card_write_en_raw) begin
-            if (!pack_half) begin
+            if (write_vga_sd) begin
+                sd_card_write_data <= {2{rgb888_to_rgb565(sd_card_write_data_raw)}};
+                sd_card_write_en <= 1'b1;
+                pack_half <= 1'b0;
+            end else if (!pack_half) begin
                 pack_first_pixel <= rgb888_to_rgb565(sd_card_write_data_raw);
                 pack_half <= 1'b1;
             end else begin
@@ -311,6 +317,7 @@ sd_card_bmp #(.CLK_FREQ_HZ(100_000_000),.SCAN_START_SECTOR(0),.SCAN_MAX_SECTOR(5
     .sd_init_done_o(sd_init_done),.scan_done_o(scan_done),.image_count(image_count),.error_code(sd_error),
     .source_width(source_width_sd),.source_height(source_height_sd),
     .frame_ready_toggle(frame_ready_toggle),.ready_buf_idx(ready_buf_idx),.ready_slide_right(ready_slide_right),.write_buf_idx(write_buf_idx),
+    .write_vga(write_vga_sd),.buffer0_vga(buffer0_vga_sd),.buffer1_vga(buffer1_vga_sd),
     .bmp_width(16'd1280),.bmp_height(16'd720),.write_finish_toggle(frame_write_toggle_mem),
     .write_req(sd_card_write_req),.write_req_ack(sd_card_write_req_ack),.write_en(sd_card_write_en_raw),.write_data(sd_card_write_data_raw),
     .audio_fifo_wrusedw(audio_fifo_wrusedw),.audio_pcm_we(audio_pcm_we_sd),
@@ -351,10 +358,12 @@ frame_read_write #(.WRITE_V_FLIP(1),.FRAME_WIDTH(640),.FRAME_HEIGHT(720)) u_fram
     .read_len(FRAME_WORDS),.read_en(video_read_en),.read_data(video_read_data),.read_fifo_empty(video_read_empty),
     .slide_active(transition_active),.slide_old_index(active_buf_idx),.slide_new_index(slide_new_buf_idx),
     .slide_offset({1'b0,slide_offset[10:1]}),.slide_right(slide_right),.transition_mode(transition_mode),
+    .buffer0_vga(buffer0_vga_sd),.buffer1_vga(buffer1_vga_sd),
     .App_wr_en(App_wr_en),.App_wr_addr(App_wr_addr),.App_wr_din(App_wr_din),.App_wr_dm(App_wr_dm),
     .write_clk(sd_card_clk),.write_req(sd_card_write_req),.write_req_ack(sd_card_write_req_ack),.write_finish(frame_write_finish),
     .write_addr_0(BUF0_ADDR),.write_addr_1(BUF1_ADDR),.write_addr_2(21'd0),.write_addr_3(21'd0),.write_addr_index(write_buf_idx),
-    .write_len(FRAME_WORDS),.write_en(sd_card_write_en),.write_data(sd_card_write_data),
+    .write_len(write_vga_sd ? VGA_FRAME_WORDS : FRAME_WORDS),.write_vga(write_vga_sd),
+    .write_en(sd_card_write_en),.write_data(sd_card_write_data),
     .write_fifo_full(write_fifo_full)
 );
 
@@ -406,6 +415,8 @@ end
 wire bgm_play_enable = carousel_mode | ((event_state == 4'd8) && bgm_resume_ready);
 wire [23:0] audio_left_raw, audio_right_raw;
 wire [7:0] audio_level_raw;
+reg [23:0] audio_left_raw_q, audio_right_raw_q;
+reg [7:0] audio_level_raw_q;
 wire spectrum_active;
 wire [4:0] spectrum_tone_bin;
 wire [23:0] audio_left_data, audio_right_data;
@@ -448,8 +459,21 @@ assign audio_right_raw = cue_spectrum_active ?
 assign audio_level_raw = (bg_audio_level > cue_audio_level) ? bg_audio_level : cue_audio_level;
 assign spectrum_active = bg_audio_active | cue_spectrum_active;
 assign spectrum_tone_bin = cue_spectrum_active ? cue_spectrum_tone_bin : bg_spectrum_tone_bin;
-saixian_audio_volume u_volume(.volume_setting(volume_setting),.audio_left_in(audio_left_raw),
-    .audio_right_in(audio_right_raw),.level_in(audio_level_raw),.audio_left_out(audio_left_data),
+// One video-clock stage separates cue synthesis and volume scaling.  At 75 MHz
+// this adds only 13.3 ns, far below one 48 kHz audio sample period.
+always @(posedge video_clk or posedge rst_video) begin
+    if (rst_video) begin
+        audio_left_raw_q <= 24'd0;
+        audio_right_raw_q <= 24'd0;
+        audio_level_raw_q <= 8'd0;
+    end else begin
+        audio_left_raw_q <= audio_left_raw;
+        audio_right_raw_q <= audio_right_raw;
+        audio_level_raw_q <= audio_level_raw;
+    end
+end
+saixian_audio_volume u_volume(.volume_setting(volume_setting),.audio_left_in(audio_left_raw_q),
+    .audio_right_in(audio_right_raw_q),.level_in(audio_level_raw_q),.audio_left_out(audio_left_data),
     .audio_right_out(audio_right_data),.level_out(audio_level));
 audio_arc_calculate #(.ACR_N(6144)) u_acr(.I_clk(video_clk),.I_rst(rst_video),.I_audio_valid(audio_valid),
     .O_acr_valid(acr_valid),.O_acr_cts(acr_cts),.O_acr_n(acr_n));
