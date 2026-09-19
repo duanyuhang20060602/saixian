@@ -1,6 +1,7 @@
 module saixian_osd_overlay(
     input  wire        clk,
     input  wire        rst,
+    input  wire        frame_tick,
     input  wire        de_i,
     input  wire [9:0]  x_i,
     input  wire [8:0]  y_i,
@@ -52,9 +53,6 @@ reg [23:0] base_rgb;
 reg [9:0] progress_width;
 reg [4:0] fade_rank;
 reg [4:0] spectrum_bin;
-reg [6:0] spectrum_h3;
-reg [7:0] spectrum_h5;
-reg [5:0] spectrum_height;
 reg [3:0] setting_value;
 reg [9:0] setting_bar_width;
 reg       spinner_pixel;
@@ -69,6 +67,7 @@ reg [23:0] render_rgb_q;
 reg [7:0] audio_level_q;
 reg       spectrum_active_q;
 reg [4:0] spectrum_tone_bin_q;
+reg [5:0] spectrum_height_q;
 reg [3:0]  font_col_q2;
 reg        text_region_q2;
 reg        text_enable_q2;
@@ -82,6 +81,7 @@ reg [23:0] rgb_in;
 wire [15:0] font_bits;
 wire font_pixel_q = font_bits[15-font_col_q2];
 wire [10:0] ticker_local_x = {1'b0, x} + 11'd224 - {1'b0, ticker_x};
+wire [4:0] spectrum_bin_i = 5'd31 - ((x_i - 10'd64) >> 4);
 
 saixian_font_rom u_font_rom(
     .clk     (clk),
@@ -236,6 +236,29 @@ function [6:0] error_glyph;
                 2:error_glyph=7'd64; 3:error_glyph=7'd63;
                 default:error_glyph=7'd0;
             endcase
+        endcase
+    end
+endfunction
+
+// One full-width spectral envelope.  The absolute five-bit distance prevents
+// the former eight-bin repetition, while registering the result one pixel
+// early keeps the tone/distance arithmetic out of the RGB timing path.
+function [5:0] spectrum_one_peak_height;
+    input [4:0] bin;
+    input [4:0] tone_bin;
+    input [7:0] level;
+    reg [4:0] distance;
+    begin
+        distance = (bin >= tone_bin) ? (bin - tone_bin) : (tone_bin - bin);
+        case (distance)
+            5'd0: spectrum_one_peak_height = 6'd8 + {1'b0,level[7:3]};
+            5'd1: spectrum_one_peak_height = 6'd6 + {2'd0,level[7:4]};
+            5'd2: spectrum_one_peak_height = 6'd5 + {2'd0,level[7:4]};
+            5'd3: spectrum_one_peak_height = 6'd4 + {3'd0,level[7:5]};
+            5'd4: spectrum_one_peak_height = 6'd3 + {3'd0,level[7:5]};
+            5'd5: spectrum_one_peak_height = 6'd3 + {4'd0,level[7:6]};
+            5'd6: spectrum_one_peak_height = 6'd2 + {4'd0,level[7:6]};
+            default: spectrum_one_peak_height = 6'd2;
         endcase
     end
 endfunction
@@ -402,9 +425,6 @@ always @* begin
     progress_width = seconds * 10'd8;
     fade_rank = {x[2]^y[0], x[1]^y[2], x[0]^y[1], x[2]^y[2], x[1]^y[0]};
     spectrum_bin = 5'd0;
-    spectrum_h3 = 7'd0;
-    spectrum_h5 = 8'd0;
-    spectrum_height = 6'd0;
     setting_value = 4'd0;
     setting_bar_width = 10'd0;
     spinner_pixel = 1'b0;
@@ -496,6 +516,26 @@ always @* begin
         if (y < 9'd64)
             rgb_comb = {1'b0,rgb_comb[23:17],1'b0,rgb_comb[15:9],1'b0,rgb_comb[7:1]};
 
+        // Carousel spectrum shares the normal OSD stage instead of adding a
+        // new top-level RGB mux.  Frame-locked controls prevent raster tearing;
+        // a shallow leakage pattern keeps the 32 bars sparse and believable.
+        if ((state == ST_CAROUSEL) && spectrum_active_q &&
+            (audio_level_q != 8'd0) && (y[8:5] == 4'd11) &&
+            (x >= 10'd64) && (x < 10'd576)) begin
+            spectrum_bin = 5'd31 - ((x - 10'd64) >> 4);
+            if ((x[3:0] < 4'd12) &&
+                (y >= (9'd384 - {3'd0,spectrum_height_q}))) begin
+                if (spectrum_bin >= 5'd22)
+                    rgb_comb = 24'h37DFFF;
+                else if (spectrum_bin >= 5'd11)
+                    rgb_comb = 24'h36E58D;
+                else if (spectrum_bin >= 5'd4)
+                    rgb_comb = 24'hFFD05A;
+                else
+                    rgb_comb = 24'hFF625F;
+            end
+        end
+
         if ((state == ST_RUNNING || state == ST_PAUSED) &&
             ((x < 10'd6) || (x > 10'd633) || (y < 9'd6) || (y > 9'd473))) begin
             if (state == ST_PAUSED || seconds[0])
@@ -521,26 +561,9 @@ always @* begin
         if ((state != ST_CAROUSEL) &&
             (y >= 9'd416) && (y < 9'd468) && (x >= 10'd64) && (x < 10'd576)) begin
             spectrum_bin = 5'd31 - ((x - 10'd64) >> 4);
-            spectrum_h3 = {2'd0,spectrum_tone_bin_q} + ({2'd0,spectrum_tone_bin_q} << 1);
-            spectrum_h5 = {3'd0,spectrum_tone_bin_q} + ({3'd0,spectrum_tone_bin_q} << 2);
-            spectrum_height = 6'd4;
-            if (spectrum_active_q && (audio_level_q != 8'd0)) begin
-                if (spectrum_bin == spectrum_tone_bin_q)
-                    spectrum_height = 6'd8 + {1'b0,audio_level_q[7:3]};
-                else if (((spectrum_tone_bin_q != 5'd0) &&
-                          (spectrum_bin == (spectrum_tone_bin_q - 5'd1))) ||
-                         ((spectrum_tone_bin_q != 5'd31) &&
-                          (spectrum_bin == (spectrum_tone_bin_q + 5'd1))))
-                    spectrum_height = 6'd4 + {2'd0,audio_level_q[7:4]};
-                else if ((spectrum_h3 <= 7'd31) &&
-                         ({2'd0,spectrum_bin} == spectrum_h3))
-                    spectrum_height = 6'd4 + {3'd0,audio_level_q[7:5]};
-                else if ((spectrum_h5 <= 8'd31) &&
-                         ({3'd0,spectrum_bin} == spectrum_h5))
-                    spectrum_height = 6'd4 + {4'd0,audio_level_q[7:6]};
-            end
             if ((x[3:0] < 4'd12) &&
-                (y >= (9'd468 - {3'd0,spectrum_height}))) begin
+                spectrum_active_q && (audio_level_q != 8'd0) &&
+                (y >= (9'd468 - {3'd0,spectrum_height_q}))) begin
                 if (spectrum_bin >= 5'd22)
                     rgb_comb = 24'h37DFFF;
                 else if (spectrum_bin >= 5'd11)
@@ -574,6 +597,7 @@ always @(posedge clk or posedge rst) begin
         audio_level_q <= 8'd0;
         spectrum_active_q <= 1'b0;
         spectrum_tone_bin_q <= 5'd0;
+        spectrum_height_q <= 6'd0;
         font_col_q2 <= 4'd0;
         text_region_q2 <= 1'b0;
         text_enable_q2 <= 1'b0;
@@ -594,12 +618,16 @@ always @(posedge clk or posedge rst) begin
         text_enable_q <= display_valid || (error_code != 0);
         text_color_q <= text_color;
         render_rgb_q <= rgb_comb;
-        // Isolate the long volume-control cone from the 75 MHz OSD renderer.
-        // One pixel-clock of spectrum-control latency is visually irrelevant
-        // and preserves the existing video/font pipeline alignment.
-        audio_level_q <= audio_level;
-        spectrum_active_q <= spectrum_active;
-        spectrum_tone_bin_q <= spectrum_tone_bin;
+        spectrum_height_q <= spectrum_one_peak_height(
+            spectrum_bin_i, spectrum_tone_bin_q, audio_level_q);
+        // Freeze the spectrum controls for the whole video frame.  Updating
+        // them at 48 kHz while raster scanning made different lines use
+        // different heights/bins, which looked like old-TV sync flicker.
+        if (frame_tick) begin
+            audio_level_q <= audio_level;
+            spectrum_active_q <= spectrum_active;
+            spectrum_tone_bin_q <= spectrum_tone_bin;
+        end
         // The font ROM has a registered BRAM output; the column select and
         // colour mux remain in the following stage.
         font_col_q2 <= font_col_q;

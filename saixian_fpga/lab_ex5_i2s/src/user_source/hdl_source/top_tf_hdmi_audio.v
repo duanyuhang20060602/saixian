@@ -223,6 +223,10 @@ wire frame_write_finish;
 reg frame_write_toggle_mem;
 wire write_fifo_full;
 reg write_overflow_latched;
+wire audio_pcm_we_sd;
+wire [31:0] audio_pcm_word_sd;
+wire audio_file_found_sd;
+wire [8:0] audio_fifo_wrusedw;
 
 function [15:0] rgb888_to_rgb565;
     input [31:0] pixel;
@@ -309,6 +313,8 @@ sd_card_bmp #(.CLK_FREQ_HZ(100_000_000),.SCAN_START_SECTOR(0),.SCAN_MAX_SECTOR(5
     .frame_ready_toggle(frame_ready_toggle),.ready_buf_idx(ready_buf_idx),.ready_slide_right(ready_slide_right),.write_buf_idx(write_buf_idx),
     .bmp_width(16'd1280),.bmp_height(16'd720),.write_finish_toggle(frame_write_toggle_mem),
     .write_req(sd_card_write_req),.write_req_ack(sd_card_write_req_ack),.write_en(sd_card_write_en_raw),.write_data(sd_card_write_data_raw),
+    .audio_fifo_wrusedw(audio_fifo_wrusedw),.audio_pcm_we(audio_pcm_we_sd),
+    .audio_pcm_word(audio_pcm_word_sd),.audio_found_o(audio_file_found_sd),
     .SD_nCS(sd_ncs),.SD_DCLK(sd_dclk),.SD_MOSI(sd_mosi),.SD_MISO(sd_miso)
 );
 
@@ -358,6 +364,46 @@ sdram u_sdram(.Clk(ext_mem_clk),.Clk_sft(ext_mem_clk_sft),.Rst(rst_mem),.Sdr_ini
     .Sdr_rd_en(Sdr_rd_en),.Sdr_rd_dout(Sdr_rd_dout));
 
 wire audio_valid;
+wire cue_audio_valid;
+wire [23:0] cue_audio_left, cue_audio_right;
+wire [7:0] cue_audio_level;
+wire cue_busy;
+wire cue_spectrum_active;
+wire [4:0] cue_spectrum_tone_bin;
+wire [23:0] bg_audio_left, bg_audio_right;
+wire [7:0] bg_audio_level;
+wire bg_audio_active;
+wire [4:0] bg_spectrum_tone_bin;
+reg finish_cue_seen;
+reg [26:0] bgm_resume_count;
+reg bgm_resume_ready;
+// Resume exactly one second after the complete finish cue, including its
+// intentional inter-tone silence, has ended.  ST_FINISH remains active long
+// enough for this delay before the controller returns to the carousel.
+always @(posedge video_clk or posedge rst_video) begin
+    if (rst_video) begin
+        finish_cue_seen <= 1'b0;
+        bgm_resume_count <= 27'd0;
+        bgm_resume_ready <= 1'b0;
+    end else if (event_state != 4'd8) begin
+        finish_cue_seen <= 1'b0;
+        bgm_resume_count <= 27'd0;
+        bgm_resume_ready <= 1'b0;
+    end else if (!finish_cue_seen) begin
+        if (cue_busy)
+            finish_cue_seen <= 1'b1;
+    end else if (cue_busy) begin
+        bgm_resume_count <= 27'd0;
+    end else if (!bgm_resume_ready) begin
+        if (bgm_resume_count >= VIDEO_CLK_HZ - 1) begin
+            bgm_resume_ready <= 1'b1;
+            bgm_resume_count <= 27'd0;
+        end else begin
+            bgm_resume_count <= bgm_resume_count + 27'd1;
+        end
+    end
+end
+wire bgm_play_enable = carousel_mode | ((event_state == 4'd8) && bgm_resume_ready);
 wire [23:0] audio_left_raw, audio_right_raw;
 wire [7:0] audio_level_raw;
 wire spectrum_active;
@@ -365,9 +411,43 @@ wire [4:0] spectrum_tone_bin;
 wire [23:0] audio_left_data, audio_right_data;
 wire acr_valid;
 wire [19:0] acr_cts, acr_n;
-saixian_audio_cue #(.CLK_FREQ_HZ(VIDEO_CLK_HZ)) u_cue(.clk(video_clk),.rst(rst_video),.cue_event(cue_event),.audio_valid(audio_valid),
-    .audio_left(audio_left_raw),.audio_right(audio_right_raw),.audio_level(audio_level_raw),
-    .spectrum_active(spectrum_active),.spectrum_tone_bin(spectrum_tone_bin));
+wire [31:0] audio_fifo_dout;
+wire audio_fifo_valid, audio_fifo_full, audio_fifo_empty;
+wire audio_fifo_afull, audio_fifo_aempty;
+wire [8:0] audio_fifo_rdusedw;
+wire audio_fifo_re;
+wire audio_fifo_reset = rst_sd | rst_video | ~sd_init_done;
+
+rfifo_32_32_512 u_audio_fifo(
+    .rst(audio_fifo_reset),.clkw(sd_card_clk),.clkr(video_clk),
+    .we(audio_pcm_we_sd && !audio_fifo_full),.di(audio_pcm_word_sd),
+    .re(audio_fifo_re),.dout(audio_fifo_dout),.valid(audio_fifo_valid),
+    .full_flag(audio_fifo_full),.empty_flag(audio_fifo_empty),
+    .afull(audio_fifo_afull),.aempty(audio_fifo_aempty),
+    .wrusedw(audio_fifo_wrusedw),.rdusedw(audio_fifo_rdusedw)
+);
+
+saixian_audio_cue #(.CLK_FREQ_HZ(VIDEO_CLK_HZ)) u_cue(.clk(video_clk),.rst(rst_video),.cue_event(cue_event),.audio_valid(cue_audio_valid),
+    .audio_left(cue_audio_left),.audio_right(cue_audio_right),.audio_level(cue_audio_level),
+    .cue_busy(cue_busy),.spectrum_active(cue_spectrum_active),.spectrum_tone_bin(cue_spectrum_tone_bin));
+
+saixian_pcm_player u_bgm_player(
+    .clk(video_clk),.rst(rst_video),.play_enable(bgm_play_enable),.sample_tick(cue_audio_valid),
+    .fifo_empty(audio_fifo_empty),.fifo_data(audio_fifo_dout),.fifo_valid(audio_fifo_valid),.fifo_read(audio_fifo_re),
+    .audio_left(bg_audio_left),.audio_right(bg_audio_right),.audio_level(bg_audio_level),
+    .audio_active(bg_audio_active),.spectrum_tone_bin(bg_spectrum_tone_bin)
+);
+
+wire signed [24:0] audio_mix_left = ($signed(bg_audio_left) >>> 1) + ($signed(cue_audio_left) >>> 1);
+wire signed [24:0] audio_mix_right = ($signed(bg_audio_right) >>> 1) + ($signed(cue_audio_right) >>> 1);
+assign audio_valid = cue_audio_valid;
+assign audio_left_raw = cue_spectrum_active ?
+                        (bg_audio_active ? audio_mix_left[23:0] : cue_audio_left) : bg_audio_left;
+assign audio_right_raw = cue_spectrum_active ?
+                         (bg_audio_active ? audio_mix_right[23:0] : cue_audio_right) : bg_audio_right;
+assign audio_level_raw = (bg_audio_level > cue_audio_level) ? bg_audio_level : cue_audio_level;
+assign spectrum_active = bg_audio_active | cue_spectrum_active;
+assign spectrum_tone_bin = cue_spectrum_active ? cue_spectrum_tone_bin : bg_spectrum_tone_bin;
 saixian_audio_volume u_volume(.volume_setting(volume_setting),.audio_left_in(audio_left_raw),
     .audio_right_in(audio_right_raw),.level_in(audio_level_raw),.audio_left_out(audio_left_data),
     .audio_right_out(audio_right_data),.level_out(audio_level));
@@ -465,7 +545,7 @@ always @(posedge video_clk or posedge rst_video) begin
     end
 end
 wire [23:0] osd_rgb_inner;
-saixian_osd_overlay u_osd(.clk(video_clk),.rst(rst_video),.de_i(osd_area_in),.x_i(osd_x_in),.y_i(osd_y_in),.rgb_in_i(osd_rgb_in),.display_valid(display_valid),
+saixian_osd_overlay u_osd(.clk(video_clk),.rst(rst_video),.frame_tick(frame_tick),.de_i(osd_area_in),.x_i(osd_x_in),.y_i(osd_y_in),.rgb_in_i(osd_rgb_in),.display_valid(display_valid),
     .loading_phase(loading_phase),
     .state(event_state),.project_id(carousel_mode ? project_select : project_id),.minutes(minutes),.seconds(seconds),.countdown_value(countdown_value),
     .ticker_x(ticker_x),
@@ -594,6 +674,138 @@ assign led[1] = sd_init_done;
 assign led[2] = hpd_present;
 // LED4 indicates an E-code, video FIFO underflow, or write FIFO overflow.
 assign led[3] = (error_code != 0) | video_underflow | write_overflow_latched;
+
+endmodule
+
+module saixian_pcm_player(
+    input  wire        clk,
+    input  wire        rst,
+    input  wire        play_enable,
+    input  wire        sample_tick,
+    input  wire        fifo_empty,
+    input  wire [31:0] fifo_data,
+    input  wire        fifo_valid,
+    output reg         fifo_read,
+    output reg  [23:0] audio_left,
+    output reg  [23:0] audio_right,
+    output reg  [7:0]  audio_level,
+    output reg         audio_active,
+    output reg  [4:0]  spectrum_tone_bin
+);
+
+reg read_pending;
+reg sample_ready;
+reg [31:0] sample_word;
+reg last_sign;
+reg [9:0] zero_period;
+reg [12:0] silent_sample_count;
+reg [6:0] level_decay_count;
+wire [15:0] left_abs = sample_word[15] ? (~sample_word[15:0] + 16'd1) : sample_word[15:0];
+wire [7:0] sample_level = left_abs[15] ? 8'hff : left_abs[14:7];
+
+always @(posedge clk or posedge rst) begin
+    if (rst) begin
+        fifo_read <= 1'b0;
+        read_pending <= 1'b0;
+        sample_ready <= 1'b0;
+        sample_word <= 32'd0;
+        audio_left <= 24'd0;
+        audio_right <= 24'd0;
+        audio_level <= 8'd0;
+        audio_active <= 1'b0;
+        spectrum_tone_bin <= 5'd0;
+        last_sign <= 1'b0;
+        zero_period <= 10'd0;
+        silent_sample_count <= 13'd0;
+        level_decay_count <= 7'd0;
+    end else begin
+        fifo_read <= 1'b0;
+
+        if (!sample_ready && !read_pending && !fifo_empty) begin
+            fifo_read <= 1'b1;
+            read_pending <= 1'b1;
+        end
+        if (fifo_valid) begin
+            sample_word <= fifo_data;
+            sample_ready <= 1'b1;
+            read_pending <= 1'b0;
+        end
+
+        // Pause at the current stereo sample while an event is active.  The
+        // prefetched word is retained, so returning to the carousel resumes
+        // cleanly instead of restarting the file or draining it silently.
+        if (!play_enable) begin
+            audio_left <= 24'd0;
+            audio_right <= 24'd0;
+            audio_level <= 8'd0;
+            audio_active <= 1'b0;
+            zero_period <= 10'd0;
+            silent_sample_count <= 13'd0;
+            level_decay_count <= 7'd0;
+        end else if (sample_tick) begin
+            if (sample_ready) begin
+                // The TF file is stereo signed-16 little-endian.  Left shift
+                // by eight to match the HDMI core's signed 24-bit interface.
+                audio_left <= {sample_word[15:0],8'd0};
+                audio_right <= {sample_word[31:16],8'd0};
+                sample_ready <= 1'b0;
+
+                // Peak-style envelope: attack immediately, then release by
+                // one level every 2 ms.  PCM zero crossings therefore change
+                // individual bar heights without blanking the whole display.
+                if (sample_level > audio_level) begin
+                    audio_level <= sample_level;
+                    level_decay_count <= 7'd0;
+                end else if (level_decay_count >= 7'd95) begin
+                    level_decay_count <= 7'd0;
+                    if (audio_level != 8'd0)
+                        audio_level <= audio_level - 8'd1;
+                end else begin
+                    level_decay_count <= level_decay_count + 7'd1;
+                end
+
+                // Require about 100 ms of continuous near-silence before
+                // declaring the source inactive.  This bridges both waveform
+                // zero crossings and brief TF/FIFO service gaps.
+                if (left_abs > 16'd128) begin
+                    audio_active <= 1'b1;
+                    silent_sample_count <= 13'd0;
+                end else if (silent_sample_count < 13'd4800) begin
+                    silent_sample_count <= silent_sample_count + 13'd1;
+                end else begin
+                    audio_active <= 1'b0;
+                end
+
+                if (zero_period != 10'h3ff)
+                    zero_period <= zero_period + 10'd1;
+                if ((sample_word[15] != last_sign) && (left_abs > 16'd256)) begin
+                    last_sign <= sample_word[15];
+                    if (zero_period >= 10'd96) spectrum_tone_bin <= 5'd1;
+                    else if (zero_period >= 10'd48) spectrum_tone_bin <= 5'd3;
+                    else if (zero_period >= 10'd24) spectrum_tone_bin <= 5'd6;
+                    else if (zero_period >= 10'd12) spectrum_tone_bin <= 5'd11;
+                    else if (zero_period >= 10'd6) spectrum_tone_bin <= 5'd18;
+                    else spectrum_tone_bin <= 5'd26;
+                    zero_period <= 10'd0;
+                end
+            end else begin
+                audio_left <= 24'd0;
+                audio_right <= 24'd0;
+                if (level_decay_count >= 7'd95) begin
+                    level_decay_count <= 7'd0;
+                    if (audio_level != 8'd0)
+                        audio_level <= audio_level - 8'd1;
+                end else begin
+                    level_decay_count <= level_decay_count + 7'd1;
+                end
+                if (silent_sample_count < 13'd4800)
+                    silent_sample_count <= silent_sample_count + 13'd1;
+                else
+                    audio_active <= 1'b0;
+            end
+        end
+    end
+end
 
 endmodule
 

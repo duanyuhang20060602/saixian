@@ -16,6 +16,9 @@ module bmp_read(
     output reg [2:0]            scan_found_total,
     output reg [15:0]           scan_found_width,
     output reg [15:0]           scan_found_height,
+    output reg                  audio_found_valid,
+    output reg [31:0]           audio_found_sector,
+    output reg [31:0]           audio_found_bytes,
 
     // 按指定扇区加载一张图到 SDRAM
     input                       load_start,
@@ -59,6 +62,11 @@ reg [31:0] height;
 reg [15:0] planes;
 reg [15:0] bit_count;
 reg [31:0] compression;
+reg [63:0] audio_magic;
+reg [31:0] audio_data_len;
+reg [31:0] audio_sample_rate;
+reg [15:0] audio_bits;
+reg [15:0] audio_channels;
 
 reg [31:0] scan_sector;
 reg [31:0] load_sector_latched;
@@ -76,12 +84,16 @@ reg        header_basic_ok_latched;
 reg        header_geometry_ok_latched;
 reg        check_from_load;
 reg [31:0] file_sector_count_latched;
+reg        audio_header_ok_latched;
+reg [31:0] audio_data_len_latched;
+reg        audio_found_once;
 
 wire header_basic_ok;
 wire header_geometry_ok;
 wire bmp_data_valid;
 wire [31:0] file_sector_count;
 wire [31:0] next_scan_sector_if_miss;
+wire audio_header_ok;
 
 assign ready = (state == ST_IDLE);
 assign header_basic_ok = (header_0 == "B") &&
@@ -104,6 +116,14 @@ assign bmp_data_valid = (sd_sec_read_data_valid == 1'b1) &&
                         (bmp_len_cnt <  file_len);
 assign file_sector_count = (file_len == 32'd0) ? 32'd1 : ((file_len + 32'd511) >> 9);
 assign next_scan_sector_if_miss  = scan_sector + 32'd1;
+// BGM.AUD begins with one aligned metadata sector. Byte zero is kept in the
+// low byte of audio_magic, so this constant spells "SXAUD001" in file order.
+assign audio_header_ok = (audio_magic       == 64'h3130304455415853) &&
+                         (audio_data_len    >= 32'd4) &&
+                         (audio_data_len[1:0] == 2'b00) &&
+                         (audio_sample_rate == 32'd48000) &&
+                         (audio_bits        == 16'd16) &&
+                         (audio_channels    == 16'd2);
 
 always @(posedge clk or posedge rst) begin
     if (rst || op_abort) begin
@@ -193,6 +213,41 @@ always @(posedge clk or posedge rst) begin
             10'd31: compression[15:8] <= sd_sec_read_data;
             10'd32: compression[23:16] <= sd_sec_read_data;
             10'd33: compression[31:24] <= sd_sec_read_data;
+            default: ;
+        endcase
+    end
+end
+
+// Capture the compact audio metadata independently of the BMP header fields.
+always @(posedge clk or posedge rst) begin
+    if (rst || op_abort) begin
+        audio_magic <= 64'd0;
+        audio_data_len <= 32'd0;
+        audio_sample_rate <= 32'd0;
+        audio_bits <= 16'd0;
+        audio_channels <= 16'd0;
+    end else if ((state == ST_SCAN) && sd_sec_read_data_valid) begin
+        case (rd_cnt)
+            10'd0 : audio_magic[7:0] <= sd_sec_read_data;
+            10'd1 : audio_magic[15:8] <= sd_sec_read_data;
+            10'd2 : audio_magic[23:16] <= sd_sec_read_data;
+            10'd3 : audio_magic[31:24] <= sd_sec_read_data;
+            10'd4 : audio_magic[39:32] <= sd_sec_read_data;
+            10'd5 : audio_magic[47:40] <= sd_sec_read_data;
+            10'd6 : audio_magic[55:48] <= sd_sec_read_data;
+            10'd7 : audio_magic[63:56] <= sd_sec_read_data;
+            10'd8 : audio_data_len[7:0] <= sd_sec_read_data;
+            10'd9 : audio_data_len[15:8] <= sd_sec_read_data;
+            10'd10: audio_data_len[23:16] <= sd_sec_read_data;
+            10'd11: audio_data_len[31:24] <= sd_sec_read_data;
+            10'd12: audio_sample_rate[7:0] <= sd_sec_read_data;
+            10'd13: audio_sample_rate[15:8] <= sd_sec_read_data;
+            10'd14: audio_sample_rate[23:16] <= sd_sec_read_data;
+            10'd15: audio_sample_rate[31:24] <= sd_sec_read_data;
+            10'd16: audio_bits[7:0] <= sd_sec_read_data;
+            10'd17: audio_bits[15:8] <= sd_sec_read_data;
+            10'd18: audio_channels[7:0] <= sd_sec_read_data;
+            10'd19: audio_channels[15:8] <= sd_sec_read_data;
             default: ;
         endcase
     end
@@ -325,12 +380,18 @@ always @(posedge clk or posedge rst) begin
         scan_found_total  <= 3'd0;
         scan_found_width  <= 16'd0;
         scan_found_height <= 16'd0;
+        audio_found_valid <= 1'b0;
+        audio_found_sector <= 32'd0;
+        audio_found_bytes <= 32'd0;
         scan_sector       <= 32'd0;
         load_sector_latched <= 32'd0;
         header_basic_ok_latched <= 1'b0;
         header_geometry_ok_latched <= 1'b0;
         check_from_load <= 1'b0;
         file_sector_count_latched <= 32'd1;
+        audio_header_ok_latched <= 1'b0;
+        audio_data_len_latched <= 32'd0;
+        audio_found_once <= 1'b0;
     end else if (!sd_init_done || op_abort) begin
         state             <= ST_IDLE;
         state_code        <= 4'd0;
@@ -343,14 +404,21 @@ always @(posedge clk or posedge rst) begin
         scan_found_total  <= 3'd0;
         scan_found_width  <= 16'd0;
         scan_found_height <= 16'd0;
+        audio_found_valid <= 1'b0;
+        audio_found_sector <= 32'd0;
+        audio_found_bytes <= 32'd0;
         scan_sector       <= 32'd0;
         load_sector_latched <= 32'd0;
         header_basic_ok_latched <= 1'b0;
         header_geometry_ok_latched <= 1'b0;
         check_from_load <= 1'b0;
         file_sector_count_latched <= 32'd1;
+        audio_header_ok_latched <= 1'b0;
+        audio_data_len_latched <= 32'd0;
+        audio_found_once <= 1'b0;
     end else begin
         scan_found_valid <= 1'b0;
+        audio_found_valid <= 1'b0;
 
         case (state)
             ST_IDLE: begin
@@ -361,6 +429,7 @@ always @(posedge clk or posedge rst) begin
                 if (scan_start) begin
                     scan_done        <= 1'b0;
                     scan_found_total <= 3'd0;
+                    audio_found_once <= 1'b0;
                     scan_sector      <= scan_start_sector;
                     sd_sec_read_addr <= scan_start_sector;
                     state            <= ST_SCAN;
@@ -380,6 +449,8 @@ always @(posedge clk or posedge rst) begin
                     header_basic_ok_latched <= header_basic_ok;
                     header_geometry_ok_latched <= header_geometry_ok;
                     file_sector_count_latched <= file_sector_count;
+                    audio_header_ok_latched <= audio_header_ok;
+                    audio_data_len_latched <= audio_data_len;
                     check_from_load <= 1'b0;
                     state <= ST_CHECK;
                 end
@@ -404,14 +475,35 @@ always @(posedge clk or posedge rst) begin
                     state       <= ST_IDLE;
                     sd_sec_read <= 1'b0;
                 end else begin
-                    if (header_basic_ok_latched && header_geometry_ok_latched) begin
+                    if (audio_header_ok_latched) begin
+                        if (!audio_found_once) begin
+                            audio_found_valid  <= 1'b1;
+                            audio_found_sector <= scan_sector + 32'd1;
+                            audio_found_bytes  <= audio_data_len_latched;
+                            audio_found_once   <= 1'b1;
+                        end
+
+                        // Skip the aligned metadata sector and the complete
+                        // PCM payload instead of scanning 96k audio sectors.
+                        if ((scan_found_total >= scan_target_count) ||
+                            ((scan_sector + 32'd1 + ((audio_data_len_latched + 32'd511) >> 9)) > scan_max_sector)) begin
+                            scan_done        <= 1'b1;
+                            state            <= ST_IDLE;
+                            sd_sec_read_addr <= scan_sector + 32'd1 + ((audio_data_len_latched + 32'd511) >> 9);
+                            scan_sector      <= scan_sector + 32'd1 + ((audio_data_len_latched + 32'd511) >> 9);
+                        end else begin
+                            sd_sec_read_addr <= scan_sector + 32'd1 + ((audio_data_len_latched + 32'd511) >> 9);
+                            scan_sector      <= scan_sector + 32'd1 + ((audio_data_len_latched + 32'd511) >> 9);
+                            state            <= ST_SCAN;
+                        end
+                    end else if (header_basic_ok_latched && header_geometry_ok_latched) begin
                         scan_found_valid  <= 1'b1;
                         scan_found_sector <= scan_sector;
                         scan_found_total  <= scan_found_total + 3'd1;
                         scan_found_width  <= width[15:0];
                         scan_found_height <= height[15:0];
 
-                        if ((scan_found_total + 3'd1 >= scan_target_count) ||
+                        if (((scan_found_total + 3'd1 >= scan_target_count) && audio_found_once) ||
                             ((scan_sector + file_sector_count_latched) > scan_max_sector)) begin
                             scan_done        <= 1'b1;
                             state            <= ST_IDLE;

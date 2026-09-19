@@ -17,6 +17,9 @@ module sd_card_bmp #(
     input write_finish_toggle,
     output write_req, input write_req_ack,
     output write_en, output [31:0] write_data,
+    input [8:0] audio_fifo_wrusedw,
+    output audio_pcm_we, output [31:0] audio_pcm_word,
+    output reg audio_found_o,
     output SD_nCS, output SD_DCLK, output SD_MOSI, input SD_MISO
 );
 
@@ -35,9 +38,15 @@ localparam [31:0] RECOVERY_CYCLES = CLK_FREQ_HZ * 2;
 wire sd_sec_read, sd_sec_read_data_valid, sd_sec_read_end;
 wire [31:0] sd_sec_read_addr;
 wire [7:0] sd_sec_read_data;
+wire bmp_sd_sec_read, bmp_sd_sec_read_data_valid, bmp_sd_sec_read_end;
+wire [31:0] bmp_sd_sec_read_addr;
+wire audio_sd_sec_read, audio_sd_sec_read_data_valid, audio_sd_sec_read_end;
+wire [31:0] audio_sd_sec_read_addr;
 wire bmp_data_wr_en, sd_init_done, bmp_ready, scan_done, scan_found_valid;
 wire [23:0] bmp_data;
 wire [31:0] scan_found_sector;
+wire audio_scan_found_valid;
+wire [31:0] audio_scan_found_sector, audio_scan_found_bytes;
 wire [15:0] scan_found_width, scan_found_height;
 wire [2:0] scan_found_total, init_stage;
 
@@ -53,6 +62,7 @@ reg load_busy, source_started, source_done, write_finish_seen, awaiting_commit, 
 reg desired_slide_right, load_slide_right;
 reg reload_first_after_scan;
 reg [31:0] init_timer, load_timer, auto_timer, recovery_timer, scan_idle_timer;
+reg [31:0] audio_start_sector, audio_data_bytes;
 reg [32:0] scan_timer;
 reg [2:0] prev_sync, next_sync, commit_sync, wrfin_sync;
 reg [1:0] carousel_sync;
@@ -158,6 +168,7 @@ always @(posedge clk or posedge rst) begin
         ready_slide_right <= 0; load_slide_right <= 0;
         reload_first_after_scan <= 0;
         sd_init_done_o <= 0; scan_done_o <= 0; image_count <= 0; error_code <= 0;
+        audio_found_o <= 0; audio_start_sector <= 0; audio_data_bytes <= 0;
         init_timer <= 0; load_timer <= 0; auto_timer <= 0; recovery_timer <= 0; scan_timer <= 0; scan_idle_timer <= 0;
     end else begin
         scan_start_pulse <= 0; load_start_pulse <= 0; op_abort <= 0;
@@ -173,6 +184,7 @@ always @(posedge clk or posedge rst) begin
             else begin
                 recovery_timer <= 0; op_abort <= 1; error_code <= 0;
                 scan_kicked <= 0; image_count <= 0;
+                audio_found_o <= 0; audio_start_sector <= 0; audio_data_bytes <= 0;
                 scan_stop_req <= 0; scan_idle_timer <= 0;
                 load_busy <= 0; awaiting_commit <= 0; desired_image <= 0;
                 desired_slide_right <= 0;
@@ -198,6 +210,7 @@ always @(posedge clk or posedge rst) begin
             scan_stop_req <= 0;
             scan_idle_timer <= 0;
             image_count <= 0;
+            audio_found_o <= 0;
             desired_image <= 0;
             desired_slide_right <= 0;
             image_sector0 <= 0; image_sector1 <= 0; image_sector2 <= 0; image_sector3 <= 0; image_sector4 <= 0;
@@ -215,7 +228,7 @@ always @(posedge clk or posedge rst) begin
         // without another match.  Do not reset the SD controller: the images
         // already collected can then be loaded into SDRAM immediately.
         if (scan_kicked && !scan_done && error_code == 0) begin
-            if (scan_found_valid)
+            if (scan_found_valid || audio_scan_found_valid)
                 scan_idle_timer <= 0;
             else if (image_count != 0) begin
                 if (scan_idle_timer < SCAN_IDLE_CYCLES - 1'b1)
@@ -238,6 +251,12 @@ always @(posedge clk or posedge rst) begin
                 default: ;
             endcase
             if (image_count < 5) image_count <= image_count + 1;
+        end
+
+        if (audio_scan_found_valid) begin
+            audio_found_o <= 1'b1;
+            audio_start_sector <= audio_scan_found_sector;
+            audio_data_bytes <= audio_scan_found_bytes;
         end
 
         if (scan_done && !scan_found_valid && image_count == 0 && scan_kicked && error_code == 0) error_code <= 3'd3;
@@ -323,13 +342,55 @@ bmp_read u_bmp_read(
     .scan_done(scan_done), .scan_found_valid(scan_found_valid),
     .scan_found_sector(scan_found_sector), .scan_found_total(scan_found_total),
     .scan_found_width(scan_found_width), .scan_found_height(scan_found_height),
+    .audio_found_valid(audio_scan_found_valid), .audio_found_sector(audio_scan_found_sector),
+    .audio_found_bytes(audio_scan_found_bytes),
     .load_start(load_start_pulse), .load_sector(load_sector),
     .sd_init_done(sd_init_done), .state_code(state_code), .bmp_width(bmp_width), .bmp_height(bmp_height),
     .write_req(write_req), .write_req_ack(write_req_ack),
-    .sd_sec_read(sd_sec_read), .sd_sec_read_addr(sd_sec_read_addr),
-    .sd_sec_read_data(sd_sec_read_data), .sd_sec_read_data_valid(sd_sec_read_data_valid),
-    .sd_sec_read_end(sd_sec_read_end), .bmp_data_wr_en(bmp_data_wr_en), .bmp_data(bmp_data)
+    .sd_sec_read(bmp_sd_sec_read), .sd_sec_read_addr(bmp_sd_sec_read_addr),
+    .sd_sec_read_data(sd_sec_read_data), .sd_sec_read_data_valid(bmp_sd_sec_read_data_valid),
+    .sd_sec_read_end(bmp_sd_sec_read_end), .bmp_data_wr_en(bmp_data_wr_en), .bmp_data(bmp_data)
 );
+
+saixian_sd_audio_stream u_audio_stream(
+    .clk(clk), .rst(rst | op_abort),
+    .enable(audio_found_o && sd_init_done),
+    .start_sector(audio_start_sector), .data_bytes(audio_data_bytes),
+    .fifo_wrusedw(audio_fifo_wrusedw),
+    .sd_sec_read(audio_sd_sec_read), .sd_sec_read_addr(audio_sd_sec_read_addr),
+    .sd_sec_read_data(sd_sec_read_data), .sd_sec_read_data_valid(audio_sd_sec_read_data_valid),
+    .sd_sec_read_end(audio_sd_sec_read_end),
+    .pcm_we(audio_pcm_we), .pcm_word(audio_pcm_word)
+);
+
+// One physical SPI reader serves both clients. Audio receives priority only
+// when its FIFO needs a complete 512-byte refill; every grant lasts exactly
+// one CMD17 transaction, so BMP loading still advances between audio sectors.
+reg [1:0] read_owner;
+reg [31:0] read_addr_latched;
+always @(posedge clk or posedge rst) begin
+    if (rst || op_abort) begin
+        read_owner <= 2'd0;
+        read_addr_latched <= 32'd0;
+    end else if (read_owner == 2'd0) begin
+        if (audio_sd_sec_read) begin
+            read_owner <= 2'd2;
+            read_addr_latched <= audio_sd_sec_read_addr;
+        end else if (bmp_sd_sec_read) begin
+            read_owner <= 2'd1;
+            read_addr_latched <= bmp_sd_sec_read_addr;
+        end
+    end else if (sd_sec_read_end) begin
+        read_owner <= 2'd0;
+    end
+end
+
+assign sd_sec_read = (read_owner != 2'd0);
+assign sd_sec_read_addr = read_addr_latched;
+assign bmp_sd_sec_read_data_valid = sd_sec_read_data_valid && (read_owner == 2'd1);
+assign bmp_sd_sec_read_end = sd_sec_read_end && (read_owner == 2'd1);
+assign audio_sd_sec_read_data_valid = sd_sec_read_data_valid && (read_owner == 2'd2);
+assign audio_sd_sec_read_end = sd_sec_read_end && (read_owner == 2'd2);
 
 // 100 MHz / ((2 + 2) * 2) = 12.5 MHz for extra MISO timing margin.
 sd_card_top #(
@@ -343,5 +404,100 @@ sd_card_top #(
     .sd_sec_write(1'b0), .sd_sec_write_addr(32'd0), .sd_sec_write_data(8'd0),
     .sd_sec_write_data_req(), .sd_sec_write_end()
 );
+
+endmodule
+
+module saixian_sd_audio_stream(
+    input  wire        clk,
+    input  wire        rst,
+    input  wire        enable,
+    input  wire [31:0] start_sector,
+    input  wire [31:0] data_bytes,
+    input  wire [8:0]  fifo_wrusedw,
+    output reg         sd_sec_read,
+    output reg  [31:0] sd_sec_read_addr,
+    input  wire [7:0]  sd_sec_read_data,
+    input  wire        sd_sec_read_data_valid,
+    input  wire        sd_sec_read_end,
+    output reg         pcm_we,
+    output reg  [31:0] pcm_word
+);
+
+reg initialized;
+reg [31:0] current_sector;
+reg [31:0] bytes_remaining;
+reg [9:0] sector_byte_count;
+reg [1:0] pcm_byte_index;
+
+always @(posedge clk or posedge rst) begin
+    if (rst) begin
+        initialized <= 1'b0;
+        current_sector <= 32'd0;
+        bytes_remaining <= 32'd0;
+        sector_byte_count <= 10'd0;
+        pcm_byte_index <= 2'd0;
+        sd_sec_read <= 1'b0;
+        sd_sec_read_addr <= 32'd0;
+        pcm_we <= 1'b0;
+        pcm_word <= 32'd0;
+    end else begin
+        pcm_we <= 1'b0;
+
+        if (!enable) begin
+            initialized <= 1'b0;
+            sd_sec_read <= 1'b0;
+            current_sector <= start_sector;
+            bytes_remaining <= data_bytes;
+            sector_byte_count <= 10'd0;
+            pcm_byte_index <= 2'd0;
+        end else if (!initialized) begin
+            initialized <= 1'b1;
+            current_sector <= start_sector;
+            bytes_remaining <= data_bytes;
+            sd_sec_read_addr <= start_sector;
+            sector_byte_count <= 10'd0;
+            pcm_byte_index <= 2'd0;
+        end else begin
+            // A sector contains 128 stereo frames. Starting only below 257
+            // samples guarantees that the 512-entry FIFO cannot overflow.
+            if (!sd_sec_read && (fifo_wrusedw <= 9'd256) && (data_bytes != 0)) begin
+                sd_sec_read <= 1'b1;
+                sd_sec_read_addr <= current_sector;
+                sector_byte_count <= 10'd0;
+                pcm_byte_index <= 2'd0;
+            end
+
+            if (sd_sec_read_data_valid &&
+                ({22'd0,sector_byte_count} < bytes_remaining)) begin
+                sector_byte_count <= sector_byte_count + 10'd1;
+                case (pcm_byte_index)
+                    2'd0: begin pcm_word[7:0] <= sd_sec_read_data; pcm_byte_index <= 2'd1; end
+                    2'd1: begin pcm_word[15:8] <= sd_sec_read_data; pcm_byte_index <= 2'd2; end
+                    2'd2: begin pcm_word[23:16] <= sd_sec_read_data; pcm_byte_index <= 2'd3; end
+                    2'd3: begin
+                        pcm_word[31:24] <= sd_sec_read_data;
+                        pcm_byte_index <= 2'd0;
+                        pcm_we <= 1'b1;
+                    end
+                endcase
+            end
+
+            if (sd_sec_read_end) begin
+                sd_sec_read <= 1'b0;
+                sector_byte_count <= 10'd0;
+                pcm_byte_index <= 2'd0;
+                if (bytes_remaining <= 32'd512) begin
+                    current_sector <= start_sector;
+                    bytes_remaining <= data_bytes;
+                    sd_sec_read_addr <= start_sector;
+                end else begin
+                    current_sector <= current_sector + 32'd1;
+                    bytes_remaining <= bytes_remaining - 32'd512;
+                    sd_sec_read_addr <= current_sector + 32'd1;
+                end
+            end
+        end
+    end
+end
 
 endmodule

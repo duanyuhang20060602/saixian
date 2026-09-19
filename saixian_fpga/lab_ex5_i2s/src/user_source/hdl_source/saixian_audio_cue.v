@@ -9,6 +9,7 @@ module saixian_audio_cue #(
     output reg  [23:0] audio_left,
     output reg  [23:0] audio_right,
     output reg  [7:0]  audio_level,
+    output wire        cue_busy,
     output wire        spectrum_active,
     output wire [4:0]  spectrum_tone_bin
 );
@@ -42,6 +43,10 @@ wire signed [23:0] triangle = phase_acc[31] ?
 // metadata so the lightweight display can place energy in physical bins
 // without implementing a resource-heavy FFT.
 assign spectrum_active = (samples_left != 17'd0) && (phase_inc != 32'd0);
+// Unlike spectrum_active, cue_busy remains asserted through intentional
+// silent gaps between segments, so external sequencing cannot mistake the
+// 50 ms gap in the finish cue for the end of the complete sound.
+assign cue_busy = (active_cue != 4'd0);
 assign spectrum_tone_bin =
     (phase_inc == 32'd29527900)  ? 5'd3  : // 330 Hz
     (phase_inc == 32'd39370534)  ? 5'd4  : // 440 Hz
