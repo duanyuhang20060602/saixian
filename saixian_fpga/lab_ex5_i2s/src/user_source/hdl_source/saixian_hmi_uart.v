@@ -37,7 +37,7 @@ reg        rx_byte_valid;
 reg [7:0]  rx_byte;
 reg [1:0]  rx_sync;
 
-// UART input is asynchronous to the 25 MHz video clock.
+// UART input is asynchronous to the parameterized video clock.
 always @(posedge clk or posedge rst) begin
     if (rst)
         rx_sync <= 2'b11;
@@ -103,6 +103,9 @@ end
 reg [2:0] frame_index;
 reg [7:0] frame_command;
 reg [7:0] frame_value;
+// Abandon incomplete messages after four character times of silence.
+localparam integer FRAME_TIMEOUT = CLKS_PER_BIT * 40;
+reg [31:0] frame_idle;
 
 task decode_frame;
     begin
@@ -117,6 +120,14 @@ task decode_frame;
             8'h12: begin setting_valid <= 1'b1; setting_id <= 3'd2; setting_value <= frame_value; end
             8'h13: begin setting_valid <= 1'b1; setting_id <= 3'd3; setting_value <= frame_value; end
             8'h14: begin setting_valid <= 1'b1; setting_id <= 3'd4; setting_value <= frame_value; end
+            8'h15: begin
+                if (frame_value <= 1) begin setting_valid <= 1'b1; setting_id <= 3'd5; setting_value <= frame_value; end
+                else frame_error_pulse <= 1'b1;
+            end
+            8'h16: begin
+                if (frame_value <= 1) begin setting_valid <= 1'b1; setting_id <= 3'd6; setting_value <= frame_value; end
+                else frame_error_pulse <= 1'b1;
+            end
             8'h1f: reset_defaults_pulse <= 1'b1;
             default: frame_error_pulse  <= 1'b1;
         endcase
@@ -126,6 +137,7 @@ endtask
 always @(posedge clk or posedge rst) begin
     if (rst) begin
         frame_index          <= 3'd0;
+        frame_idle           <= 0;
         frame_command        <= 8'd0;
         frame_value          <= 8'd0;
         start_pulse          <= 1'b0;
@@ -147,6 +159,14 @@ always @(posedge clk or posedge rst) begin
         setting_valid        <= 1'b0;
         reset_defaults_pulse <= 1'b0;
         frame_error_pulse    <= 1'b0;
+
+        if (frame_index == 0 || rx_byte_valid)
+            frame_idle <= 0;
+        else if (frame_idle >= FRAME_TIMEOUT-1) begin
+            frame_idle <= 0;
+            frame_index <= 0;
+            frame_error_pulse <= 1'b1;
+        end else frame_idle <= frame_idle + 1'b1;
 
         if (rx_byte_valid) begin
             case (frame_index)

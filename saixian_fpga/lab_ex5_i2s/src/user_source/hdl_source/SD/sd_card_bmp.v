@@ -301,7 +301,7 @@ always @(posedge clk or posedge rst) begin
                 pending_width <= image_width0; pending_height <= image_height0;
                 load_slide_right <= 0;
                 load_start_pulse <= 1; load_busy <= 1; source_started <= 0; source_done <= 0; write_finish_seen <= 0; load_timer <= 0;
-            end else if (desired_image != current_image) begin
+            end else if (carousel_on && desired_image != current_image) begin
                 pending_image <= desired_image;
                 load_sector <= sector_for(desired_image);
                 pending_width <= width_for(desired_image);

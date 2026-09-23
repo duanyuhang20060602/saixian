@@ -107,14 +107,25 @@ wire [6:0] minutes;
 wire [5:0] seconds;
 wire [3:0] countdown_value, cue_event;
 wire carousel_mode;
+wire battle_busy;
+wire carousel_play = carousel_mode && !battle_busy;
 wire settings_mode;
 wire [1:0] setting_item;
 wire [3:0] volume_setting, brightness_setting, contrast_setting, saturation_setting;
 wire [1:0] sharpness_setting;
+reg hmi_invert, hmi_vintage;
+always @(posedge video_clk or posedge rst_video) begin
+    if (rst_video) begin hmi_invert<=0; hmi_vintage<=0; end
+    else if (hmi_reset_defaults) begin hmi_invert<=0; hmi_vintage<=0; end
+    else if (hmi_setting_valid) begin
+        if (hmi_setting_id==3'd5) hmi_invert<=hmi_setting_value[0];
+        if (hmi_setting_id==3'd6) hmi_vintage<=hmi_setting_value[0];
+    end
+end
 wire [7:0] audio_level;
 
 saixian_settings_controller #(.CLK_FREQ_HZ(VIDEO_CLK_HZ)) u_settings(
-    .clk(video_clk),.rst(rst_video),.carousel_mode(carousel_mode),
+    .clk(video_clk),.rst(rst_video),.carousel_mode(carousel_play),
     .key_next_item(key1_press),.key_decrease(key2_press),
     .key_enter_exit(key3_press),.key_increase(key4_press),
     .hmi_setting_valid(hmi_setting_valid),.hmi_setting_id(hmi_setting_id),
@@ -127,7 +138,7 @@ saixian_settings_controller #(.CLK_FREQ_HZ(VIDEO_CLK_HZ)) u_settings(
 
 saixian_event_controller #(.CLK_FREQ_HZ(VIDEO_CLK_HZ)) u_event(
     .clk(video_clk),.rst(rst_video),.frame_start(frame_tick),
-    .key_start((key1_press & ~settings_mode) | hmi_start_pulse),
+    .key_start(((key1_press & ~settings_mode) | hmi_start_pulse) & ~battle_busy),
     .key_pause((key2_press & ~settings_mode) | hmi_pause_pulse),
     .key_end((key3_press & ~settings_mode) | hmi_finish_pulse),.project_switch(project_select),
     .state(event_state),.project_id(project_id),.minutes(minutes),.seconds(seconds),
@@ -172,8 +183,10 @@ end
 reg prev_req_toggle, next_req_toggle;
 always @(posedge video_clk or posedge rst_video) begin
     if (rst_video) begin prev_req_toggle <= 0; next_req_toggle <= 0; end
-    else if (carousel_mode && !settings_mode) begin
-        if (key2_press | hmi_prev_pulse) prev_req_toggle <= ~prev_req_toggle;
+    else if (carousel_play && !settings_mode) begin
+        // K2 now launches the victory animation in carousel mode.  The HMI
+        // previous-image command remains available.
+        if (hmi_prev_pulse) prev_req_toggle <= ~prev_req_toggle;
         if (key4_press | hmi_next_pulse) next_req_toggle <= ~next_req_toggle;
     end
 end
@@ -313,7 +326,7 @@ end
 // window even when only five images are visible in the directory.
 sd_card_bmp #(.CLK_FREQ_HZ(100_000_000),.SCAN_START_SECTOR(0),.SCAN_MAX_SECTOR(524287),.SCAN_TARGET_COUNT(5)) u_sd_bmp(
     .clk(sd_card_clk),.rst(rst_sd | sd_startup_hold),.prev_req_toggle(prev_req_toggle),.next_req_toggle(next_req_toggle),
-    .carousel_mode(carousel_mode && !settings_mode),.display_commit_toggle(frame_commit_toggle),.state_code(sd_state_code),
+    .carousel_mode(carousel_play && !settings_mode),.display_commit_toggle(frame_commit_toggle),.state_code(sd_state_code),
     .sd_init_done_o(sd_init_done),.scan_done_o(scan_done),.image_count(image_count),.error_code(sd_error),
     .source_width(source_width_sd),.source_height(source_height_sd),
     .frame_ready_toggle(frame_ready_toggle),.ready_buf_idx(ready_buf_idx),.ready_slide_right(ready_slide_right),.write_buf_idx(write_buf_idx),
@@ -412,7 +425,7 @@ always @(posedge video_clk or posedge rst_video) begin
         end
     end
 end
-wire bgm_play_enable = carousel_mode | ((event_state == 4'd8) && bgm_resume_ready);
+wire bgm_play_enable = !battle_busy && (carousel_mode | ((event_state == 4'd8) && bgm_resume_ready));
 wire [23:0] audio_left_raw, audio_right_raw;
 wire [7:0] audio_level_raw;
 reg [23:0] audio_left_raw_q, audio_right_raw_q;
@@ -520,6 +533,9 @@ always @(posedge video_clk or posedge rst_video) begin
 end
 
 wire [23:0] adjusted_rgb;
+wire [23:0] styled_rgb;
+saixian_hmi_color_style u_hmi_style(.rgb_in(adjusted_rgb),
+    .invert(hmi_invert),.vintage(hmi_vintage),.rgb_out(styled_rgb));
 saixian_picture_adjust_pipe u_picture_adjust(.clk(video_clk),.rst(rst_video),.de(de),.x(pixel_x),
     .rgb_in(video_rgb_raw),.brightness_setting(brightness_setting),.contrast_setting(contrast_setting),
     .saturation_setting(saturation_setting),.sharpness_setting(sharpness_setting),.rgb_out(adjusted_rgb));
@@ -565,7 +581,7 @@ always @(posedge video_clk or posedge rst_video) begin
         osd_area_in <= adjusted_de;
         osd_x_in <= adjust_x4[10:1];
         osd_y_in <= osd_y_product[18:10];
-        osd_rgb_in <= adjusted_rgb;
+        osd_rgb_in <= styled_rgb;
     end
 end
 wire [23:0] osd_rgb_inner;
@@ -601,7 +617,7 @@ always @(posedge video_clk or posedge rst_video) begin
         osd_area_q1 <= adjusted_de; osd_area_q2 <= osd_area_q1; osd_area_q3 <= osd_area_q2; osd_area_q4 <= osd_area_q3; osd_area_q5 <= osd_area_q4;
         adjusted_de_q1 <= adjusted_de; adjusted_de_q2 <= adjusted_de_q1; adjusted_de_q3 <= adjusted_de_q2; adjusted_de_q4 <= adjusted_de_q3; adjusted_de_q5 <= adjusted_de_q4;
         adjusted_vs_q1 <= adjusted_vs; adjusted_vs_q2 <= adjusted_vs_q1; adjusted_vs_q3 <= adjusted_vs_q2; adjusted_vs_q4 <= adjusted_vs_q3; adjusted_vs_q5 <= adjusted_vs_q4;
-        adjusted_rgb_q1 <= adjusted_rgb; adjusted_rgb_q2 <= adjusted_rgb_q1; adjusted_rgb_q3 <= adjusted_rgb_q2; adjusted_rgb_q4 <= adjusted_rgb_q3; adjusted_rgb_q5 <= adjusted_rgb_q4;
+        adjusted_rgb_q1 <= styled_rgb; adjusted_rgb_q2 <= adjusted_rgb_q1; adjusted_rgb_q3 <= adjusted_rgb_q2; adjusted_rgb_q4 <= adjusted_rgb_q3; adjusted_rgb_q5 <= adjusted_rgb_q4;
         adjust_xq1 <= adjust_x4; adjust_xq2 <= adjust_xq1; adjust_xq3 <= adjust_xq2; adjust_xq4 <= adjust_xq3; adjust_xq5 <= adjust_xq4;
         adjust_yq1 <= adjust_y4; adjust_yq2 <= adjust_yq1; adjust_yq3 <= adjust_yq2; adjust_yq4 <= adjust_yq3; adjust_yq5 <= adjust_yq4;
     end
@@ -627,21 +643,41 @@ wire [23:0] osd_rgb = HDMI_COMPAT_DIAGNOSTIC ? compat_rgb : full_osd_rgb;
 reg [23:0] osd_rgb_pipe;
 reg        de_pipe;
 reg        vs_pipe;
+reg [10:0] battle_x_pipe;
+reg [9:0]  battle_y_pipe;
 always @(posedge video_clk or posedge rst_video) begin
     if (rst_video) begin
         osd_rgb_pipe <= 24'd0;
         de_pipe      <= 1'b0;
-        vs_pipe      <= 1'b0;
+        vs_pipe       <= 1'b0;
+        battle_x_pipe <= 11'd0;
+        battle_y_pipe <= 10'd0;
     end else begin
         osd_rgb_pipe <= osd_rgb;
         de_pipe      <= adjusted_de_q5;
-        vs_pipe      <= adjusted_vs_q5;
+        vs_pipe       <= adjusted_vs_q5;
+        battle_x_pipe <= adjust_xq5;
+        battle_y_pipe <= adjust_yq5;
     end
 end
 
+// K2 in carousel starts blue victory; final hold waits for K2 to return.
+// K2 still decreases settings and pauses/resumes an active event.
+wire [23:0] battle_rgb;
+wire battle_de;
+wire battle_vs;
+saixian_battle_result_fx u_battle_result(
+    .clk(video_clk),.rst(rst_video),.frame_tick(frame_tick),
+    .trigger(key2_press & carousel_mode & ~settings_mode),
+    .busy(battle_busy),
+    .x_in(battle_x_pipe),.y_in(battle_y_pipe),
+    .de_in(de_pipe),.vs_in(vs_pipe),.rgb_in(osd_rgb_pipe),
+    .de_out(battle_de),.vs_out(battle_vs),.rgb_out(battle_rgb)
+);
+
 wire axis_s_user, axis_s_valid, axis_s_last, axis_s_ready;
 wire [23:0] axis_s_data;
-video_rgb_to_axis_640x480 #(.H_ACTIVE(1280)) u_axis(.I_clk(video_clk),.I_rst(rst_video),.I_vs(vs_pipe),.I_de(de_pipe),.I_rgb(osd_rgb_pipe),
+video_rgb_to_axis_640x480 #(.H_ACTIVE(1280)) u_axis(.I_clk(video_clk),.I_rst(rst_video),.I_vs(battle_vs),.I_de(battle_de),.I_rgb(battle_rgb),
     .O_video_user(axis_s_user),.O_video_valid(axis_s_valid),.O_video_last(axis_s_last),.O_video_data(axis_s_data));
 
 wire [9:0] tmds_ch0_data, tmds_ch1_data, tmds_ch2_data, tmds_clk_data;
@@ -1252,4 +1288,20 @@ always @* begin
     blue_sat  = luma_work + saturation_scale($signed({1'b0,blue_pre}) - luma_work, saturation_setting);
     rgb_out = {clamp_channel(red_sat),clamp_channel(green_sat),clamp_channel(blue_sat)};
 end
+endmodule
+
+// Image-only HMI filters. Keep OSD and blue-victory scene legible/unmodified.
+// Vintage is a low-cost warm monochrome approximation; invert is applied last.
+module saixian_hmi_color_style(
+    input wire [23:0] rgb_in,
+    input wire invert, vintage,
+    output wire [23:0] rgb_out
+);
+wire [9:0] luma_sum={2'b0,rgb_in[23:16]}+
+                    {1'b0,rgb_in[15:8],1'b0}+{2'b0,rgb_in[7:0]};
+wire [7:0] luma=luma_sum[9:2];
+wire [7:0] warm_r=(luma>8'd223) ? 8'd255 : luma+8'd32;
+wire [7:0] warm_b=luma-(luma>>2);
+wire [23:0] warm=vintage ? {warm_r,luma,warm_b} : rgb_in;
+assign rgb_out=invert ? ~warm : warm;
 endmodule
