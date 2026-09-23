@@ -1,0 +1,213 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+   <title>Usage</title>
+   <meta name="generator" content="Help &amp; Manual" />
+   <meta name="keywords" content="" />
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   <meta http-equiv="Content-Style-Type" content="text/css" />
+   <link type="text/css" href="default.css" rel="stylesheet" />
+   <script type="text/javascript" src="jquery.js"></script>
+   <script type="text/javascript" src="helpman_settings.js"></script>
+   <script type="text/javascript" src="helpman_topicinit.js"></script>
+
+   <script type="text/javascript">
+     HMSyncTOC("index.html", "usage.htm");
+   </script>
+   <script type="text/javascript" src="highlight.js"></script>
+   <script type="text/javascript">
+     $(document).ready(function(){highlight();});
+   </script>
+</head>
+<body style="margin: 0px 0px 0px 0px; background: #FFFFFF;">
+
+
+<table width="100%" border="0" cellspacing="0" cellpadding="5" bgcolor="#649CCC">
+  <tr valign="middle">
+    <td align="left">
+      <h1 class="p_Heading1"><span class="f_Heading1">Using imageUSB</span></h1>
+
+    </td>
+    <td align="right">
+     <span style="font-size: 9pt">
+     <a href="introduction_and_overview.htm">Top</a>&nbsp;
+     <a href="introduction_and_overview.htm">Previous</a>&nbsp;
+     <a href="system_requirements.htm">Next</a>
+     </span>
+    </td>
+  </tr>
+</table>
+
+
+<!-- Placeholder for topic body. -->
+<table width="100%" border="0" cellspacing="0" cellpadding="5"><tr valign="top"><td align="left">
+<p class="p_Normal"><span style="font-size: 14pt; font-weight: bold;">imageUSB's .bin File Format:</span></p>
+<p class="p_Normal">&nbsp;</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;"> imageUSB's .bin files have a 512-byte header added to the beginning of the raw image. </p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">&nbsp;</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;"><span style="font-weight: bold;">Header Format:</span></p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">&nbsp;</p>
+<div style="text-align: left; text-indent: 0; padding: 0 0 0 0; margin: 0 0 0 49px;"><table style="width:85%; border:none; border-spacing:0;">
+<thead>
+<tr>
+<th style="vertical-align:top; background-color:#99CCFF; padding:0; border:none"><p class="p_Normal"><span style="font-weight: bold;">Offset</span></p>
+</th>
+<th style="vertical-align:top; background-color:#99CCFF; padding:0; border:none"><p class="p_Normal"><span style="font-weight: bold;">Size (bytes)</span></p>
+</th>
+<th style="vertical-align:top; background-color:#99CCFF; padding:0; border:none"><p class="p_Normal"><span style="font-weight: bold;">Description</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">0</p>
+</td>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">32</p>
+</td>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">Program name string &quot;imageUSB&quot; (wchar + null terminator)</p>
+</td>
+</tr>
+<tr>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">32</p>
+</td>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">4</p>
+</td>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">Program version major integer</p>
+</td>
+</tr>
+<tr>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">36</p>
+</td>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">4</p>
+</td>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">Program version minor integer</p>
+</td>
+</tr>
+<tr>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">40</p>
+</td>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">4</p>
+</td>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">Program version build integer</p>
+</td>
+</tr>
+<tr>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">44</p>
+</td>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">4</p>
+</td>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">Program version revision integer</p>
+</td>
+</tr>
+<tr>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">48</p>
+</td>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">8</p>
+</td>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">Image length in bytes (excluding header, unsigned long long)</p>
+</td>
+</tr>
+<tr>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">56</p>
+</td>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">8</p>
+</td>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">Image checksum value* (deprecated, unsigned long long, kept for compatibility)</p>
+</td>
+</tr>
+<tr>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">64</p>
+</td>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">66</p>
+</td>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">MD5 checksum* (wchar + null terminator)</p>
+</td>
+</tr>
+<tr>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">130</p>
+</td>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">82</p>
+</td>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">SHA1 checksum* (wchar + null terminator)</p>
+</td>
+</tr>
+<tr>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">212</p>
+</td>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">300</p>
+</td>
+<td style="vertical-align:top; padding:0; border:none"><p class="p_Normal">Not used - reserved for future use</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p_Normal" style="margin: 0 0 0 49px;">&nbsp;</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">*The checksum values stored in the header are excluding the header and only of the raw image. Starting with Version 1.1.1003, the checksum method was updated to use MD5 and SHA1. Any previous images created with prior versions of imageUSB, will be verified using the old checksum method.</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">&nbsp;</p>
+<p class="p_Normal"><span style="font-size: 14pt; font-weight: bold;">Log Output:</span></p>
+<p class="p_Normal">&nbsp;</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">A log is kept in a separate window of the program, it will display status messages, errors, and any other relevant information. You can access the log through the log button at the bottom of the main GUI. Starting imageUSB with the &quot;-l&quot; command line argument will save a log. The filename for the logfile is &quot;imageUSB.log&quot; and can be found in the same directory as the executable.</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">&nbsp;</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">Debug information (useful to the developers to debug problems) can also be logged by starting imageUSB with the &quot;-d&quot; command line argument. It will save to the same logfile, &quot;imageUSB.log&quot;.</p>
+<p class="p_Normal">&nbsp;</p>
+<p class="p_Normal"><span style="font-size: 14pt; font-weight: bold;">Writing to USB Flash Drive (UFD) or Zero USB Flash Drive (UFD):</span></p>
+<p class="p_Normal">&nbsp;</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;"><span style="font-weight: bold;">Before Starting:</span></p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">Backup the USB Flash Drive contents to a hard disk drive. &nbsp;This process will overwrite the USB drive selected, so remove any other removable drives on the system to reduce the likelihood of mistakes. &quot;Write to UFD&quot; and &quot;Zero USB Drive&quot; supports writing a single image file to multiple drives at the same time.</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">&nbsp;</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;"><span style="font-weight: bold;">Setting Up:</span></p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">Step 1: imageUSB will display a list of available USB drives. Selecting the corresponding check box next to each drive letter will select the drive to be acted on.</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">For &quot;Write to USB Flash Drive&quot;</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;"><span style="width:47px;display:inline-block">&nbsp;</span>Step 2: Select &quot;Write to UFD&quot; to write an image (.bin/.iso*) file specified in <span style="font-weight: bold;">Step 3</span> to the selected drives in <span style="font-weight: bold;">Step 1</span>. Check the &quot;Post Image Verification&quot; box for verification of the contents on the UFD afterwards (only for imageUSB .bin files). Image verification may double the normal imaging time.</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;"><span style="width:47px;display:inline-block">&nbsp;</span>Step 3: Select the image (.bin) file to be written to the selected USB drives in <span style="font-weight: bold;">Step 1</span>.</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;"><span style="width:47px;display:inline-block">&nbsp;</span>Step 4: When ready, click the &quot;Write to UFD&quot; button. (<span style="font-weight: bold; color: #ff0000;">NOTE</span>: Be very careful that the drives you selected are the ones to write to, any contents originally on those drive will be destroyed.)</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">For &quot;Zero USB Drive&quot;</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;"><span style="width:47px;display:inline-block">&nbsp;</span>Step 2: Select &quot;Zero USB Drive&quot; to zero (write empty bytes to) the selected drives in <span style="font-weight: bold;">Step 1</span>. Check the &quot;Boot Sector(s) Only&quot; box for to only erase the boot sectors on the drive. Zeroing the entire drive will take a longer time depending on the size of the drive. &nbsp; &nbsp; &nbsp; &nbsp;</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;"><span style="width:47px;display:inline-block">&nbsp;</span>Step 3: When ready, click the &quot;Zero UFD&quot; button. (<span style="font-weight: bold; color: #ff0000;">NOTE</span>: Be very careful that the drives you selected are the ones to write to, any contents originally on those drive will be destroyed.)</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">&nbsp;</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;"><span style="font-weight: bold;">During imaging:</span></p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">While imaging is taking place, the progress bar will display the overall progress. The progress bar takes into account both the write and verify process of writing the UFD when &quot;Write to UFD&quot; is selected. Individual drive status can be seen under the &quot;Status&quot; column for each drive.</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">&nbsp;</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;"><span style="font-weight: bold;">Aborting:</span></p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">After imaging has started, the &quot;Write to UFD&quot; or &quot;Zero UFD&quot; button will be relabeled &quot;Abort&quot;. We recommend that you <span style="font-weight: bold;">NOT</span> use the &quot;Abort&quot; button. Aborting will stop the imaging process and any drives that are not completed will &nbsp;be rendered unreadable. To fix the unreadable drives, you will need to reformat them (e.g. in Windows, right-click the drive and choose &quot;Format...&quot; from the menu. ).</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">&nbsp;</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">*imageUSB will try to detect if ISO image is bootable and if so write appropriate bootloader. As of release only booting through UEFI seems to be working. Tested with Windows 10 ISO, Linux (Porteus-5.0rc, Ubuntu-19.04 and Mint 19.2 ISO images). Features is EXPERIMENTAL and NOT ALL ISO IMAGES WILL WORK. This functionality is experimental and may be removed from software at any time.</p>
+<p class="p_Normal">&nbsp;</p>
+<p class="p_Normal">&nbsp;</p>
+<p class="p_Normal"><span style="font-size: 14pt; font-weight: bold;">Create from USB Flash Drive (UFD):</span></p>
+<p class="p_Normal">&nbsp;</p>
+<p class="p_Normal" style="margin: 0 0 0 48px;"><span style="font-weight: bold;">Before Starting:</span></p>
+<p class="p_Normal" style="margin: 0 0 0 48px;">imageUSB (starting with 1.1.1003) supports the simultaneous creation of images of multiple drives. If more than one drive is selected, the naming will be based on the base name given in <span style="font-weight: bold;">Step 3</span>. The images will be &nbsp;named with &quot;_nnn&quot; added to the base name and before the extension, starting with &quot;_000&quot; (i.e. test.bin will be become test_000.bin, test_001.bin, test_002.bin, ..., test_00n.bin for up to n drives). <span style="font-weight: bold; color: #ff0000;">CAUTION</span>: If the directory where the image is to be written to already contains a file with the same filename, it will be OVERWRITTEN. It is best to save images to an empty directory.</p>
+<p class="p_Normal" style="margin: 0 0 0 48px;">&nbsp;</p>
+<p class="p_Normal" style="margin: 0 0 0 48px;"><span style="font-weight: bold;">Setting Up:</span></p>
+<p class="p_Normal" style="margin: 0 0 0 48px;">Step 1: imageUSB will display a list of available USB drives. Check the corresponding check box next to each drive letter will select the drive to be acted on. </p>
+<p class="p_Normal" style="margin: 0 0 0 48px;">Step 2: Select &quot;Create from UFD&quot; to create an image (.bin) file specified in <span style="font-weight: bold;">Step 3</span> from the selected drive in <span style="font-weight: bold;">Step 1</span>. Check the &quot;Post Image Verification&quot; box for verification of the contents of the image afterwards. Image verification may double the normal imaging time.</p>
+<p class="p_Normal" style="margin: 0 0 0 48px;">Step 3: Enter in the filename and location where the image (.bin) file will be written to. See &quot;Before Starting&quot; above for naming convention used.</p>
+<p class="p_Normal" style="margin: 0 0 0 48px;">Step 4: When ready, click the &quot;Create to UFD&quot; button.</p>
+<p class="p_Normal" style="margin: 0 0 0 48px;">&nbsp;</p>
+<p class="p_Normal" style="margin: 0 0 0 48px;"><span style="font-weight: bold;">During imaging:</span></p>
+<p class="p_Normal" style="margin: 0 0 0 48px;">While imaging is taking place, the progress bar will display the overall progress. A status for the drive is also shown under the &quot;Status&quot; column in the list in <span style="font-weight: bold;">Step 1</span>.</p>
+<p class="p_Normal" style="margin: 0 0 0 48px;">&nbsp;</p>
+<p class="p_Normal" style="margin: 0 0 0 48px;"><span style="font-weight: bold;">Aborting:</span></p>
+<p class="p_Normal" style="margin: 0 0 0 48px;">After imaging has started, the &quot;Create from UFD&quot; button will be relabeled &quot;Abort&quot;. We recommend that you not use the &quot;Abort&quot; button. Aborting will stop the imaging process and the image file will be incomplete.</p>
+<p class="p_Normal" style="margin: 0 0 0 48px;">&nbsp;</p>
+<p class="p_Normal" style="margin: 0 0 0 48px;"><span style="font-weight: bold;">After imaging:</span></p>
+<p class="p_Normal" style="margin: 0 0 0 48px;">Each drive imaged will also have an accompanying log created in the same directory. The name of the log will be the same as the image but with &quot;.log&quot; appended to the filename. </p>
+<p class="p_Normal">&nbsp;</p>
+<p class="p_Normal"><span style="font-size: 14pt; font-weight: bold;">Reformat USB Flash Drive (UFD) - Windows Vista and later only:</span></p>
+<p class="p_Normal">&nbsp;</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;"><span style="font-weight: bold;">Before Starting:</span></p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">Backup the USB Flash Drive contents to a hard disk drive. &nbsp;This process will erase the contents of the USB drive selected, so remove any other removable drives on the system to reduce the likelihood of mistakes. Format option is only available on systems running Windows Vista and later.</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">&nbsp;</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;"><span style="font-weight: bold;">Setting Up:</span></p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">Step 1: imageUSB will display a list of available USB drives. Selecting the corresponding check box next to each drive letter will select the drive to be acted on.</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">Step 2: Select &quot;Format UFD&quot; to format &nbsp;the selected drives in <span style="font-weight: bold;">Step 1</span>. Select the desired File System (NTFS or FAT32) in the drop down box.</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;"><span style="width:47px;display:inline-block">&nbsp;</span>Step 3: When ready, click the &quot;Format UFD&quot; button. (<span style="font-weight: bold; color: #ff0000;">NOTE</span>: Be very careful that the drives you selected are the ones to format, any contents originally on those drive will be destroyed.)</p>
+<p class="p_Normal" style="margin: 0 0 0 49px;">&nbsp;</p>
+<p class="p_Normal">&nbsp;</p>
+
+</td></tr></table>
+
+</body>
+</html>

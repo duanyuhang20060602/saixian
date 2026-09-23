@@ -1,0 +1,12 @@
+BODY {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; FONT-SIZE: 12px; BACKGROUND: #d1e7a9; PADDING-BOTTOM: 0px; MARGIN: 0px; COLOR: #000; PADDING-TOP: 0px; FONT-FAMILY: Tahoma, Verdana; TEXT-ALIGN: center
+}
+IMG {
+	HEIGHT: auto; max-width: 100%
+}
+SELECT {
+	FONT-SIZE: 12px; FONT-FAMILY: Tahoma, Verdana
+}
+TH {
+	BACKGROUND: #f5f5f1
+}

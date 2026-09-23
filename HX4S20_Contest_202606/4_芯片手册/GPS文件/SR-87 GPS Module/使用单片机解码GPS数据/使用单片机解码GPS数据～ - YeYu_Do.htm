@@ -1,0 +1,446 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<!-- saved from url=(0034)http://yeyudo.cn/article.asp?id=21 -->
+<HTML lang=UTF-8 xmlns="http://www.w3.org/1999/xhtml"><HEAD><TITLE>使用单片机解码GPS数据～ - YeYu.Do</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=UTF-8">
+<META http-equiv=Content-Language content=UTF-8>
+<META content=all name=robots>
+<META content=yeyu.do@qq.com,Yeyu name=author>
+<META content="PJBlog3 CopyRight 2008" name=Copyright>
+<META 
+content=PuterJam,Blog,ASP,designing,with,web,standards,xhtml,css,graphic,design,layout,usability,accessibility,w3c,w3,w3cn 
+name=keywords>
+<META content="YeYu.Do - 作家和厨师争论:你没从事过写作,无权对这本书提出批评!厨师反驳:我这辈子没下过蛋,可我能尝出炒鸡蛋味道~~" 
+name=description>
+<META content="MSHTML 6.00.2900.2180" name=GENERATOR><LINK 
+title="YeYu.Do - Atom" href="http://www.yeyudo.cn/xmlrpc.asp" 
+type=application/atom+xml rel=service.post><LINK title=RSD 
+href="http://www.yeyudo.cn/rsd.asp" type=application/rsd+xml rel=EditURI><LINK 
+title="订阅 YeYu.Do - 单片机 所有文章(rss2)" 
+href="http://www.yeyudo.cn/feed.asp?cateID=4" type=application/rss+xml 
+rel=alternate><LINK title="订阅 YeYu.Do - 单片机 所有文章(atom)" 
+href="http://www.yeyudo.cn/atom.asp?cateID=4" type=application/atom+xml 
+rel=alternate><LINK rev=stylesheet media=all 
+href="使用单片机解码GPS数据～ - YeYu_Do.files/global.css" type=text/css rel=stylesheet><!--全局样式表--><LINK rev=stylesheet media=all 
+href="使用单片机解码GPS数据～ - YeYu_Do.files/layout.css" type=text/css rel=stylesheet><!--层次样式表--><LINK rev=stylesheet media=all 
+href="使用单片机解码GPS数据～ - YeYu_Do.files/typography.css" type=text/css 
+rel=stylesheet><!--局部样式表--><LINK rev=stylesheet media=all 
+href="使用单片机解码GPS数据～ - YeYu_Do.files/link.css" type=text/css rel=stylesheet><!--超链接样式表--><LINK rev=stylesheet media=all 
+href="使用单片机解码GPS数据～ - YeYu_Do.files/editor.css" type=text/css rel=stylesheet><!--UBB编辑器代码--><LINK rev=stylesheet media=all 
+href="使用单片机解码GPS数据～ - YeYu_Do.files/Dphighlighter.css" type=text/css 
+rel=stylesheet><!--FCK块引用&代码样式--><LINK href="favicon.ico" type=image/x-icon 
+rel=icon><LINK href="favicon.ico" type=image/x-icon rel="shortcut icon">
+<SCRIPT src="使用单片机解码GPS数据～ - YeYu_Do.files/common.js" 
+type=text/javascript></SCRIPT>
+<!--<script type="text/javascript" src="common/nicetitle.js"></script>--></HEAD>
+<BODY onkeydown=PressKey() onload=initJS()><A accessKey=i 
+href="http://yeyudo.cn/default.asp"></A><A accessKey=z 
+href="javascript:history.go(-1)"></A>
+<DIV id=container><!--顶部-->
+<DIV id=header>
+<DIV id=blogname>YeYu.Do 
+<DIV 
+id=blogTitle>作家和厨师争论:你没从事过写作,无权对这本书提出批评!厨师反驳:我这辈子没下过蛋,可我能尝出炒鸡蛋味道~~</DIV></DIV>
+<DIV id=menu>
+<DIV id=Left></DIV>
+<DIV id=Right></DIV>
+<UL>
+  <LI class=menuL></LI>
+  <LI><A class=menuA title=日志首页 href="http://yeyudo.cn/default.asp">首页</A></LI>
+  <LI class=menuDiv></LI>
+  <LI><A class=menuA title="" 
+  href="http://yeyudo.cn/default.asp?cateID=3">GPS</A></LI>
+  <LI class=menuDiv></LI>
+  <LI><A class=menuA title="" 
+  href="http://yeyudo.cn/default.asp?cateID=4">单片机</A></LI>
+  <LI class=menuDiv></LI>
+  <LI><A class=menuA title="" 
+  href="http://yeyudo.cn/default.asp?cateID=7">LED点阵</A></LI>
+  <LI class=menuDiv></LI>
+  <LI><A class=menuA title="" 
+  href="http://yeyudo.cn/default.asp?cateID=8">相关资料</A></LI>
+  <LI class=menuDiv></LI>
+  <LI><A class=menuA title=行事历 
+  href="http://yeyudo.cn/LoadMod.asp?plugins=DatePlaner">行事历</A></LI>
+  <LI class=menuDiv></LI>
+  <LI><A class=menuA title="" 
+  href="http://yeyudo.cn/default.asp?cateID=9">随便整点</A></LI>
+  <LI class=menuR></LI></UL></DIV></DIV><!--内容-->
+<DIV id=Tbody>
+<DIV id=mainContent>
+<DIV id=innermainContent>
+<DIV id=mainContent-topimg></DIV>
+<DIV class=content-width id=Content_ContentList><A accessKey=B 
+href="http://yeyudo.cn/article.asp?id=21#body" name=body></A>
+<DIV class=pageContent>
+<DIV style="FLOAT: right; WIDTH: auto"><A title="上一篇日志: 关于GPS一些参数～" accessKey=, 
+href="http://yeyudo.cn/article.asp?id=18"><IMG alt="" 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/Cprevious.gif" border=0> 上一篇</A> | <A 
+title="下一篇日志: 使用单片机解码GPS数据的实验～" accessKey=. 
+href="http://yeyudo.cn/article.asp?id=22"><IMG alt="" 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/Cnext.gif" border=0> 下一篇</A> </DIV><IMG 
+style="MARGIN: 0px 2px -4px 0px" alt="" 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/14.gif"> <STRONG><A title=查看所有单片机的日志 
+href="http://yeyudo.cn/default.asp?cateID=4">单片机</A></STRONG> <A 
+title=订阅所有单片机的日志 accessKey=O href="http://yeyudo.cn/feed.asp?cateID=4" 
+target=_blank><IMG style="MARGIN-BOTTOM: -1px" alt=订阅所有单片机的日志 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/rss.png" border=0></A> </DIV>
+<DIV class=Content>
+<DIV class=Content-top>
+<DIV class=ContentLeft></DIV>
+<DIV class=ContentRight></DIV>
+<H1 class=ContentTitle><STRONG>使用单片机解码GPS数据～</STRONG></H1>
+<H2 class=ContentAuthor>作者:yeyu 日期:2007-05-30</H2></DIV>
+<DIV class=Content-Info>
+<DIV class=InfoOther>字体大小: <A accessKey=1 
+href="javascript:SetFont('12px')">小</A> <A accessKey=2 
+href="javascript:SetFont('14px')">中</A> <A accessKey=3 
+href="javascript:SetFont('16px')">大</A></DIV>
+<DIV class=InfoAuthor><IMG style="MARGIN: 0px 2px -6px 0px" alt="" 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/hn2_sunny.gif"><IMG alt="" 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/hn2_t_sunny.gif"> <IMG 
+style="MARGIN: 0px 2px -1px 0px" alt="" 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/level3.gif"> </DIV></DIV>
+<DIV class=Content-body id=logPanel>参考BG4UVR的资料，使用89C2051 1602显示屏 SIRF 2 
+12通道模块，做一下单片机解码实验，先准备东东～<BR>1602屏<BR><IMG alt="" 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/o200753094559.gif" border=0><BR><BR>SIRF 
+7451模块<BR><IMG alt="" src="使用单片机解码GPS数据～ - YeYu_Do.files/n200753094638.jpg" 
+border=0><BR><BR>BG4UVR的第5版GPS解码程序：<IMG style="MARGIN: 0px 2px -4px 0px" 
+alt=下载文件 src="使用单片机解码GPS数据～ - YeYu_Do.files/download.gif"> <A 
+href="http://yeyudo.cn/attachments/month_0705/o200753095045.rar" 
+target=_blank>点击下载此文件</A><BR>GPS数据解码器。V1.1<BR>接线：<BR>MCU：89C51<BR>晶振：11.0592Mhz<BR>LCD：1602使用8BIT模式。<BR>数据口接：P0、<BR>RS：P2.0 
+、<BR>R/W：P2.1、<BR>EN：P2.2<BR>GPS：接RXD，即10脚<BR><BR>89C2051中文资料<BR><BR><IMG 
+style="MARGIN: 0px 2px -4px 0px" alt=下载文件 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/download.gif"> <A 
+href="http://yeyudo.cn/attachments/month_0705/8200753095120.pdf" 
+target=_blank>点击下载此文件</A><BR><BR>另外一个网友的版本：<BR><IMG 
+style="MARGIN: 0px 2px -4px 0px" alt=下载文件 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/download.gif"> <A 
+href="http://yeyudo.cn/attachments/month_0705/8200753095437.rar" 
+target=_blank>点击下载此文件</A><BR>用AT89C2051，1602LCD，-JUPITER GPS 模块，4800BAUD 
+，11。0952晶体，GPRMC数据。<BR><BR>P1.1--RS<BR>P1.2--R/W<BR>P1.3--E<BR>P1.4--D4<BR>P1.5--D5<BR>P1.6--D6<BR>P1.7--D7<BR>p3.0--GPS 
+TX(TTL)--MAX202<BR>p3.1--MAX202<BR>P3.2--翻页按键<BR>P3.3--背灯控制<BR>P3。7--背灯输出<BR><BR>89C2051解码NEMA0183格式GPS数据：<IMG 
+style="MARGIN: 0px 2px -4px 0px" alt=下载文件 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/download.gif"> <A 
+href="http://yeyudo.cn/attachments/month_0705/e200753095851.pdf" 
+target=_blank>点击下载此文件</A><BR><BR>1602.H <IMG style="MARGIN: 0px 2px -4px 0px" 
+alt=下载文件 src="使用单片机解码GPS数据～ - YeYu_Do.files/download.gif"> <A 
+href="http://yeyudo.cn/attachments/month_0705/3200753010745.rar" 
+target=_blank>点击下载此文件</A><BR>源码：<BR><IMG style="MARGIN: 0px 2px -4px 0px" 
+alt=下载文件 src="使用单片机解码GPS数据～ - YeYu_Do.files/download.gif"> <A 
+href="http://yeyudo.cn/attachments/month_0705/v200753010829.rar" 
+target=_blank>点击下载此文件</A><BR>1602接线资料：<BR><BR><IMG alt="" 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/82007530102259.gif" 
+border=0><BR><BR><BR></DIV>
+<DIV class=Content-body>[本日志由 yeyu 于 2007-05-30 10:23 AM 编辑]<BR><IMG 
+style="MARGIN: 4px 2px -4px 0px" alt="" 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/From.gif"><STRONG>文章来自:</STRONG> <A 
+href="http://www.yeyudo.cn/" target=_blank>本站原创</A><BR><IMG 
+style="MARGIN: 4px 2px -4px 0px" alt="" 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/icon_trackback.gif"><STRONG>引用通告:</STRONG> <A 
+href="http://yeyudo.cn/trackback.asp?tbID=21&amp;action=view" 
+target=_blank>查看所有引用</A> | <A title=获得引用文章的链接 onclick=getTrackbackURL(21) 
+href="javascript:;">我要引用此文章</A><BR><IMG style="MARGIN: 4px 2px -4px 0px" alt="" 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/tag.gif"><STRONG>Tags:</STRONG> <A 
+href="http://yeyudo.cn/default.asp?tag=1602+89C2051+GPS">1602 89C2051 GPS</A><A 
+style="DISPLAY: none" href="http://technorati.com/tag/1602%2089C2051%20GPS" 
+rel=tag>1602 89C2051 GPS</A> <BR></DIV>
+<DIV class=Content-bottom>
+<DIV class=ContentBLeft></DIV>
+<DIV class=ContentBRight></DIV>评论: 0 | 引用: 0 | 查看次数: 1495 </DIV></DIV></DIV><A 
+accessKey=C href="http://yeyudo.cn/article.asp?id=21#comm_top" 
+name=comm_top></A>
+<DIV id=MsgContent style="WIDTH: 94%">
+<DIV id=MsgHead>发表评论</DIV>
+<DIV id=MsgBody>
+<SCRIPT type=text/javascript>
+		      		function checkCommentPost(){
+		      			if (!CheckPost) return false
+						// 备用方法
+		      			return true
+		      		}
+		      </SCRIPT>
+
+<FORM style="MARGIN: 0px" name=frm onsubmit="return checkCommentPost()" 
+action=blogcomm.asp method=post>
+<TABLE cellSpacing=0 cellPadding=0 width="100%">
+  <TBODY>
+  <TR>
+    <TD align=right width=70><STRONG>昵　称:</STRONG></TD>
+    <TD 
+    style="PADDING-RIGHT: 3px; PADDING-LEFT: 3px; PADDING-BOTTOM: 3px; PADDING-TOP: 3px" 
+    align=left><INPUT class=userpass maxLength=24 size=18 name=username></TD></TR>
+  <TR>
+    <TD align=right width=70><STRONG>密　码:</STRONG></TD>
+    <TD 
+    style="PADDING-RIGHT: 3px; PADDING-LEFT: 3px; PADDING-BOTTOM: 3px; PADDING-TOP: 3px" 
+    align=left><INPUT class=userpass type=password maxLength=24 size=18 
+      name=password> 游客发言不需要密码.</TD></TR>
+  <TR>
+    <TD vAlign=top align=right width=70><STRONG>内　容:</STRONG><BR></TD>
+    <TD 
+    style="PADDING-RIGHT: 2px; PADDING-LEFT: 2px; PADDING-BOTTOM: 2px; PADDING-TOP: 2px">
+      <SCRIPT language=javascript src="使用单片机解码GPS数据～ - YeYu_Do.files/UBBCode.js" 
+      type=text/javascript></SCRIPT>
+
+      <SCRIPT language=javascript 
+      src="使用单片机解码GPS数据～ - YeYu_Do.files/UBBCode_help.js" 
+      type=text/javascript></SCRIPT>
+
+      <DIV class=UBBSmiliesPanel id=UBBSmiliesPanel></DIV><TEXTAREA class=editTextarea id=editMask style="WIDTH: 99%; HEIGHT: 100px" onfocus="loadUBB('Message')"></TEXTAREA>
+      <DIV id=editorbody style="DISPLAY: none">
+      <DIV id=editorHead>正在加载编辑器...</DIV>
+      <DIV class=editorContent><TEXTAREA class=editTextarea style="HEIGHT: 150px" accessKey=R name=Message rows=1 cols=1></TEXTAREA></DIV></DIV>
+      <SCRIPT language=javascript 
+      type=text/javascript>initUBB("Message")</SCRIPT>
+    </TD></TR>
+  <TR>
+    <TD align=right width=70><STRONG>验证码:</STRONG></TD>
+    <TD 
+    style="PADDING-RIGHT: 3px; PADDING-LEFT: 3px; PADDING-BOTTOM: 3px; PADDING-TOP: 3px" 
+    align=left><INPUT class=userpass onfocus=this.select() maxLength=4 size=4 
+      name=validate> <IMG id=vcodeImg title=看不清楚?换一张 
+      style="MARGIN-TOP: 3px; MARGIN-BOTTOM: -4px; WIDTH: 40px; CURSOR: pointer; MARGIN-RIGHT: 40px; HEIGHT: 18px" 
+      onclick="src='common/getcode.asp?s='+Math.random()" alt=验证码 
+      onerror="this.onerror=null;this.src='common/getcode.asp?s='+Math.random();" 
+      src="G:\gps光盘\SR-87 GPS Module\使用单片机解码GPS数据\使用单片机解码GPS数据～ - YeYu_Do.files\abo113(1).tmp"></TD></TR>
+  <TR>
+    <TD vAlign=top align=right width=70><STRONG>选　项:</STRONG></TD>
+    <TD 
+    style="PADDING-RIGHT: 3px; PADDING-LEFT: 3px; PADDING-BOTTOM: 3px; PADDING-TOP: 3px" 
+    align=left><LABEL for=label5><INPUT id=label5 type=checkbox value=1 
+      name=log_DisSM>禁止表情转换</LABEL> <LABEL for=label6><INPUT id=label6 
+      type=checkbox value=1 name=log_DisURL>禁止自动转换链接</LABEL> <LABEL 
+      for=label7><INPUT id=label7 type=checkbox value=1 
+      name=log_DisKey>禁止自动转换关键字</LABEL> </TD></TR>
+  <TR>
+    <TD 
+    style="PADDING-RIGHT: 3px; PADDING-LEFT: 3px; PADDING-BOTTOM: 3px; PADDING-TOP: 3px" 
+    align=middle colSpan=2><INPUT type=hidden value=21 name=logID> <INPUT 
+      type=hidden value=post name=action> <INPUT class=userbutton accessKey=S type=submit value=发表评论 name=submit2> <INPUT class=userbutton type=reset value=重写 name=button></TD></TR>
+  <TR>
+    <TD align=right colSpan=2>虽然发表评论不用注册，但是为了保护您的发言权，建议您<A 
+      href="http://yeyudo.cn/register.asp">注册帐号</A>. <BR>字数限制 <B>1000 字</B> | 
+      UBB代码 <B>开启</B> | [img]标签 <B>关闭</B> 
+</TD></TR></TBODY></TABLE></FORM></DIV></DIV>
+<DIV id=mainContent-bottomimg></DIV></DIV></DIV>
+<DIV id=sidebar>
+<DIV id=innersidebar>
+<DIV id=sidebar-topimg><!--工具条顶部图象--></DIV>
+<DIV class=sidepanel id=Side_clock>
+<H4 class=Ptitle>时间</H4>
+<DIV class=Pcontent><EMBED 
+src=http://www.clocklink.com/clocks/8002-red.swf?TimeZone=CCT&amp; width=150 
+height=150 type=application/x-shockwave-flash wmode="transparent"></DIV>
+<DIV class=Pfoot></DIV></DIV>
+<DIV class=sidepanel id=Side_CJFForPJBlog>
+<H4 class=Ptitle>简繁转换</H4>
+<DIV class=Pcontent><A class=sideA id=StranLink>转换到繁體中文</A>
+<SCRIPT src="使用单片机解码GPS数据～ - YeYu_Do.files/Std_StranJF.js" 
+type=text/javascript></SCRIPT>
+</DIV>
+<DIV class=Pfoot></DIV></DIV>
+<DIV class=sidepanel id=Side_Calendar>
+<H4 class=Ptitle>日历</H4>
+<DIV class=Pcontent>
+<DIV id=Calendar_Body>
+<DIV id=Calendar_Top>
+<DIV id=LeftB 
+onclick="location.href='default.asp?log_Year=2008&amp;log_Month=10'"></DIV>
+<DIV id=RightB 
+onclick="location.href='default.asp?log_Year=2008&amp;log_Month=12'"></DIV>2008年11月</DIV>
+<DIV id=Calendar_week>
+<UL class=Week_UL>
+  <LI><FONT color=#ff0000>日</FONT></LI>
+  <LI>一</LI>
+  <LI>二</LI>
+  <LI>三</LI>
+  <LI>四</LI>
+  <LI>五</LI>
+  <LI>六</LI></UL></DIV>
+<DIV class=Calendar_Day>
+<UL class=Day_UL>
+  <LI class=DayA><A class=otherday 
+  title="当天共写了2篇日志&#13; - VFD驱动芯片6312测试（五） &#10; - IV 18管子收到" 
+  href="http://yeyudo.cn/default.asp?log_Year=2008&amp;log_Month=10&amp;log_Day=26">26</A></LI>
+  <LI class=DayA><A class=otherday>27</A></LI>
+  <LI class=DayA><A class=otherday>28</A></LI>
+  <LI class=DayA><A class=otherday>29</A></LI>
+  <LI class=DayA><A class=otherday title="当天共写了1篇日志&#13; - 51利用IO口模拟串口" 
+  href="http://yeyudo.cn/default.asp?log_Year=2008&amp;log_Month=10&amp;log_Day=30">30</A></LI>
+  <LI class=DayA><A class=otherday>31</A></LI>
+  <LI class=DayA><A class=today>1</A></LI></UL></DIV>
+<DIV class=Calendar_Day>
+<UL class=Day_UL>
+  <LI class=DayA><A>2</A></LI>
+  <LI class=DayA><A>3</A></LI>
+  <LI class=DayA><A>4</A></LI>
+  <LI class=DayA><A>5</A></LI>
+  <LI class=DayA><A>6</A></LI>
+  <LI class=DayA><A>7</A></LI>
+  <LI class=DayA><A>8</A></LI></UL></DIV>
+<DIV class=Calendar_Day>
+<UL class=Day_UL>
+  <LI class=DayA><A>9</A></LI>
+  <LI class=DayA><A>10</A></LI>
+  <LI class=DayA><A>11</A></LI>
+  <LI class=DayA><A>12</A></LI>
+  <LI class=DayA><A>13</A></LI>
+  <LI class=DayA><A>14</A></LI>
+  <LI class=DayA><A>15</A></LI></UL></DIV>
+<DIV class=Calendar_Day>
+<UL class=Day_UL>
+  <LI class=DayA><A>16</A></LI>
+  <LI class=DayA><A>17</A></LI>
+  <LI class=DayA><A>18</A></LI>
+  <LI class=DayA><A>19</A></LI>
+  <LI class=DayA><A>20</A></LI>
+  <LI class=DayA><A>21</A></LI>
+  <LI class=DayA><A>22</A></LI></UL></DIV>
+<DIV class=Calendar_Day>
+<UL class=Day_UL>
+  <LI class=DayA><A>23</A></LI>
+  <LI class=DayA><A>24</A></LI>
+  <LI class=DayA><A>25</A></LI>
+  <LI class=DayA><A>26</A></LI>
+  <LI class=DayA><A>27</A></LI>
+  <LI class=DayA><A>28</A></LI>
+  <LI class=DayA><A>29</A></LI></UL></DIV>
+<DIV class=Calendar_Day>
+<UL class=Day_UL>
+  <LI class=DayA><A>30</A></LI>
+  <LI class=DayA><A class=otherday>1</A></LI>
+  <LI class=DayA><A class=otherday>2</A></LI>
+  <LI class=DayA><A class=otherday>3</A></LI>
+  <LI class=DayA><A class=otherday>4</A></LI>
+  <LI class=DayA><A class=otherday>5</A></LI>
+  <LI class=DayA><A class=otherday>6</A></LI></UL></DIV></DIV></DIV>
+<DIV class=Pfoot></DIV></DIV>
+<DIV class=sidepanel id=Side_Category>
+<H4 class=Ptitle>分类</H4>
+<DIV class=Pcontent><IMG style="MARGIN: 3px 4px -4px 0px" alt=日志首页 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/22.gif" border=0><A class=CategoryA 
+title=日志首页 href="http://yeyudo.cn/default.asp">首页</A><BR><IMG 
+style="MARGIN: 3px 4px -4px 0px" alt="" 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/9.gif" border=0><A class=CategoryA title="" 
+href="http://yeyudo.cn/default.asp?cateID=3">GPS [24]</A> <A title=订阅该分类内容 
+href="http://yeyudo.cn/feed.asp?cateID=3"><IMG style="MARGIN: 3px 4px -1px 0px" 
+alt="" src="使用单片机解码GPS数据～ - YeYu_Do.files/rss.png" border=0></A><BR><IMG 
+style="MARGIN: 3px 4px -4px 0px" alt="" 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/14.gif" border=0><A class=CategoryA title="" 
+href="http://yeyudo.cn/default.asp?cateID=4">单片机 [43]</A> <A title=订阅该分类内容 
+href="http://yeyudo.cn/feed.asp?cateID=4"><IMG style="MARGIN: 3px 4px -1px 0px" 
+alt="" src="使用单片机解码GPS数据～ - YeYu_Do.files/rss.png" border=0></A><BR><IMG 
+style="MARGIN: 3px 4px -4px 0px" alt="" 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/10.gif" border=0><A class=CategoryA title="" 
+href="http://yeyudo.cn/default.asp?cateID=7">LED点阵 [15]</A> <A title=订阅该分类内容 
+href="http://yeyudo.cn/feed.asp?cateID=7"><IMG style="MARGIN: 3px 4px -1px 0px" 
+alt="" src="使用单片机解码GPS数据～ - YeYu_Do.files/rss.png" border=0></A><BR><IMG 
+style="MARGIN: 3px 4px -4px 0px" alt="" 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/11.gif" border=0><A class=CategoryA title="" 
+href="http://yeyudo.cn/default.asp?cateID=8">相关资料 [59]</A> <A title=订阅该分类内容 
+href="http://yeyudo.cn/feed.asp?cateID=8"><IMG style="MARGIN: 3px 4px -1px 0px" 
+alt="" src="使用单片机解码GPS数据～ - YeYu_Do.files/rss.png" border=0></A><BR><IMG 
+style="MARGIN: 3px 4px -4px 0px" alt=行事历 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/1.gif" border=0><A class=CategoryA title=行事历 
+href="http://yeyudo.cn/LoadMod.asp?plugins=DatePlaner">行事历</A><BR><IMG 
+style="MARGIN: 3px 4px -4px 0px" alt="" 
+src="使用单片机解码GPS数据～ - YeYu_Do.files/3.gif" border=0><A class=CategoryA title="" 
+href="http://yeyudo.cn/default.asp?cateID=9">随便整点 [38]</A> <A title=订阅该分类内容 
+href="http://yeyudo.cn/feed.asp?cateID=9"><IMG style="MARGIN: 3px 4px -1px 0px" 
+alt="" src="使用单片机解码GPS数据～ - YeYu_Do.files/rss.png" border=0></A><BR></DIV>
+<DIV class=Pfoot></DIV></DIV>
+<DIV class=sidepanel id=Side_User>
+<H4 class=Ptitle>用户</H4>
+<DIV class=Pcontent><A class=sideA accessKey=L 
+href="http://yeyudo.cn/login.asp">登录</A><A class=sideA accessKey=U 
+href="http://yeyudo.cn/register.asp">用户注册</A></DIV>
+<DIV class=Pfoot></DIV></DIV>
+<DIV class=sidepanel id=Side_Comment>
+<H4 class=Ptitle>评论</H4>
+<DIV class=Pcontent>
+<DIV class=commentTable><A class=sideA 
+title="pangzitiancai 于 31/10/2008 16:56:56 发表评论&#10;海关砸你管子，咱们就去砸了他的场子！真是气人啊！！替老大默哀" 
+href="http://www.yeyudo.cn/article.asp?id=186#comm_706">海关砸你管子，咱们就去砸了他的场子！真是气人啊！！...</A><A 
+class=sideA title="keetian 于 30/10/2008 22:58:52 发表评论&#10;定一个" 
+href="http://www.yeyudo.cn/article.asp?id=186#comm_705">定一个</A><A class=sideA 
+title="fjangei 于 30/10/2008 21:23:22 发表评论&#10;终于点亮了，原来我写命令的时序有问题。不过现在还有个问题，就是没法控制。将所有位全部写0xff，前五位全亮；我用PT6312_WriteData( 0x00,0xff );PT6312_WriteDa..." 
+href="http://www.yeyudo.cn/article.asp?id=182#comm_704">终于点亮了，原来我写命令的时序有问题。不过现在还有...</A><A 
+class=sideA title="fjangei 于 30/10/2008 11:56:46 发表评论&#10;真是太感谢你了，我先参考一下" 
+href="http://www.yeyudo.cn/article.asp?id=182#comm_703">真是太感谢你了，我先参考一下</A><A 
+class=sideA 
+title="yeyu 于 29/10/2008 22:47:51 发表评论&#10;我把我程序里面的PT6312部分贴上了 看能否参考上～  我使用M16 8M&nbsp;&nbsp;编译是WINAVR " 
+href="http://www.yeyudo.cn/article.asp?id=182#comm_702">我把我程序里面的PT6312部分贴上了 
+看能否参考...</A><A class=sideA 
+title="fjangei 于 29/10/2008 20:14:31 发表评论&#10;你好，能否指点一下如何驱动PT6312，我查了一些资料，怎么改时序都不行" 
+href="http://www.yeyudo.cn/article.asp?id=182#comm_701">你好，能否指点一下如何驱动PT6312，我查了一些...</A><A 
+class=sideA title="daigua 于 29/10/2008 15:25:08 发表评论&#10;谢谢能让我一起分享" 
+href="http://www.yeyudo.cn/article.asp?id=152#comm_700">谢谢能让我一起分享</A><A 
+class=sideA 
+title="yeyu 于 28/10/2008 22:04:45 发表评论&#10;买了几十个 就几乎坏了一半了 搞的一个划7-80元了 晕~~ 万恶的海关！ 他们拆开检查后就随便糊弄的粘了一下！！！&nbsp;&nbsp;我在设计PCB 等段时间 就有配套的PCB了 全贴片的 电路设计 调试花了不少精..." 
+href="http://www.yeyudo.cn/article.asp?id=186#comm_699">买了几十个 就几乎坏了一半了 
+搞的一个划7-80元...</A><A class=sideA 
+title="dzyj 于 28/10/2008 19:31:44 发表评论&#10;好的有吗?多少钱个." 
+href="http://www.yeyudo.cn/article.asp?id=186#comm_698">好的有吗?多少钱个.</A><A 
+class=sideA title="1245 于 28/10/2008 16:36:24 发表评论&#10;我们给海关弄破东西也不要陪就好了" 
+href="http://www.yeyudo.cn/article.asp?id=186#comm_697">我们给海关弄破东西也不要陪就好了</A> 
+</DIV></DIV>
+<DIV class=Pfoot></DIV></DIV>
+<DIV class=sidepanel id=Side_Archive>
+<H4 class=Ptitle>存档</H4>
+<DIV class=Pcontent><A class=sideA title=查看2008年的日志 
+style="MARGIN: 0px 0px 0px -2px" 
+href="http://yeyudo.cn/default.asp?log_Year=2008">2008</A><A title=2008年1月有5篇日志 
+style="MARGIN-RIGHT: 5px" 
+href="http://yeyudo.cn/default.asp?log_Year=2008&amp;log_Month=1">01月</A><A 
+title=2008年2月有8篇日志 style="MARGIN-RIGHT: 5px" 
+href="http://yeyudo.cn/default.asp?log_Year=2008&amp;log_Month=2">02月</A><A 
+title=2008年3月有9篇日志 style="MARGIN-RIGHT: 5px" 
+href="http://yeyudo.cn/default.asp?log_Year=2008&amp;log_Month=3">03月</A><A 
+title=2008年4月有6篇日志 style="MARGIN-RIGHT: 5px" 
+href="http://yeyudo.cn/default.asp?log_Year=2008&amp;log_Month=4">04月</A><A 
+title=2008年5月有9篇日志 style="MARGIN-RIGHT: 5px" 
+href="http://yeyudo.cn/default.asp?log_Year=2008&amp;log_Month=5">05月</A><BR><A 
+title=2008年6月有3篇日志 style="MARGIN-RIGHT: 5px" 
+href="http://yeyudo.cn/default.asp?log_Year=2008&amp;log_Month=6">06月</A><A 
+title=2008年7月有2篇日志 style="MARGIN-RIGHT: 5px" 
+href="http://yeyudo.cn/default.asp?log_Year=2008&amp;log_Month=7">07月</A><A 
+title=2008年8月有6篇日志 style="MARGIN-RIGHT: 5px" 
+href="http://yeyudo.cn/default.asp?log_Year=2008&amp;log_Month=8">08月</A><A 
+title=2008年9月有7篇日志 style="MARGIN-RIGHT: 5px" 
+href="http://yeyudo.cn/default.asp?log_Year=2008&amp;log_Month=9">09月</A><A 
+title=2008年10月有4篇日志 style="MARGIN-RIGHT: 5px" 
+href="http://yeyudo.cn/default.asp?log_Year=2008&amp;log_Month=10">10月</A><BR><A 
+class=sideA title=查看2007年的日志 style="MARGIN: 6px 0px 0px -2px" 
+href="http://yeyudo.cn/default.asp?log_Year=2007">2007</A><A title=2007年5月有19篇日志 
+style="MARGIN-RIGHT: 5px" 
+href="http://yeyudo.cn/default.asp?log_Year=2007&amp;log_Month=5">05月</A><A 
+title=2007年6月有49篇日志 style="MARGIN-RIGHT: 5px" 
+href="http://yeyudo.cn/default.asp?log_Year=2007&amp;log_Month=6">06月</A><A 
+title=2007年7月有10篇日志 style="MARGIN-RIGHT: 5px" 
+href="http://yeyudo.cn/default.asp?log_Year=2007&amp;log_Month=7">07月</A><A 
+title=2007年8月有10篇日志 style="MARGIN-RIGHT: 5px" 
+href="http://yeyudo.cn/default.asp?log_Year=2007&amp;log_Month=8">08月</A><A 
+title=2007年9月有10篇日志 style="MARGIN-RIGHT: 5px" 
+href="http://yeyudo.cn/default.asp?log_Year=2007&amp;log_Month=9">09月</A><BR><A 
+title=2007年10月有6篇日志 style="MARGIN-RIGHT: 5px" 
+href="http://yeyudo.cn/default.asp?log_Year=2007&amp;log_Month=10">10月</A><A 
+title=2007年11月有5篇日志 style="MARGIN-RIGHT: 5px" 
+href="http://yeyudo.cn/default.asp?log_Year=2007&amp;log_Month=11">11月</A><A 
+title=2007年12月有11篇日志 style="MARGIN-RIGHT: 5px" 
+href="http://yeyudo.cn/default.asp?log_Year=2007&amp;log_Month=12">12月</A></DIV>
+<DIV class=Pfoot></DIV></DIV>
+<DIV id=sidebar-bottomimg></DIV></DIV></DIV>
+<DIV 
+style="CLEAR: both; MARGIN-TOP: -1px; OVERFLOW: hidden; HEIGHT: 1px"></DIV></DIV><!--底部-->
+<DIV id=foot>
+<P>Powered By <A href="http://www.pjhome.net/" target=_blank><STRONG>PJBlog3 
+v2.8.4.133</STRONG></A> CopyRight 2005 - 2008, <STRONG>YeYu.Do</STRONG> <A 
+href="http://validator.w3.org/check/referer" target=_blank>xhtml</A> | <A 
+href="http://jigsaw.w3.org/css-validator/validator-uri.html">css</A></P>
+<P style="FONT-SIZE: 11px">Processed in <B>2.078125</B> second(s) , <B>9</B> 
+queries , <A href="http://www.jinnlife.com/" target=_blank><STRONG>JinnStyle 
+V1</STRONG></A> Design By <A href="mailto:eatfishlin@hotmail.com" 
+target=_blank><STRONG>Jinn Lynn</STRONG></A> <BR><A style="FONT-SIZE: 12px" 
+href="http://www.miibeian.gov.cn/"><B>鄂ICP备07008154号</B></A> </P></DIV></DIV>
+<SCRIPT type=text/javascript>initAccessKey()  //转换AccessKey For IE</SCRIPT>
+</BODY></HTML>
