@@ -11,4 +11,14 @@ set end_step bitgen
 set area_option -packarea
 set arr_filter false
 set drHoldFix on
+set phyWildParams {place seed 2}
+if {[info exists ::env(SAIXIAN_PLACE_SEED)]} {
+    set phyWildParams [list place seed $::env(SAIXIAN_PLACE_SEED)]
+}
+# This high-utilization design needs the explicit route hold-fix stage.  The
+# automatic in-route pass is skipped above 90% slice utilization.  Keep the
+# normal route phase enabled, then invoke the tool's official fix_hold phase
+# and generate the final routed timing report after that phase.
+set arr_filter on
+set arr_rwns -100000
 source {C:/Anlogic/TD_6.2.1_Engineer_6.2.168.116/doc/scripts/DefaultFlow.tcl}

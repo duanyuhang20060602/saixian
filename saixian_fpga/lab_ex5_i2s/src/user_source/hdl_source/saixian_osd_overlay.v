@@ -23,11 +23,14 @@ module saixian_osd_overlay(
     input  wire        spectrum_active,
     input  wire [4:0]  spectrum_tone_bin,
     input  wire        settings_mode,
-    input  wire [1:0]  setting_item,
+    input  wire [2:0]  setting_item,
     input  wire [3:0]  volume_setting,
     input  wire [3:0]  brightness_setting,
     input  wire [3:0]  contrast_setting,
     input  wire [1:0]  sharpness_setting,
+    input  wire [3:0]  saturation_setting,
+    input  wire        invert_setting,
+    input  wire        vintage_setting,
     output reg  [23:0] rgb_out
 );
 
@@ -40,6 +43,11 @@ localparam ST_START    = 4'd5;
 localparam ST_RUNNING  = 4'd6;
 localparam ST_PAUSED   = 4'd7;
 localparam ST_FINISH   = 4'd8;
+
+wire [3:0] row0_value = setting_item[2] ? saturation_setting : volume_setting;
+wire [3:0] row1_value = setting_item[2] ? {3'd0,invert_setting} : brightness_setting;
+wire [3:0] row2_value = setting_item[2] ? {3'd0,vintage_setting} : contrast_setting;
+wire [3:0] row3_value = {2'd0,sharpness_setting};
 
 reg [6:0] glyph_id;
 reg [3:0] font_row;
@@ -315,16 +323,20 @@ always @* begin
             font_col = local_x[4:1];
             if (y < 9'd176) begin
                 font_row = (y - 9'd144) >> 1;
-                glyph_id = (slot == 0) ? 7'd74 : ((slot == 1) ? 7'd75 : 7'd0); // 音量
+                glyph_id = setting_item[2] ? ((slot == 0) ? 7'd81 : 7'd82) :
+                    ((slot == 0) ? 7'd74 : 7'd75); // 饱和 / 音量
             end else if (y < 9'd232) begin
                 font_row = (y - 9'd200) >> 1;
-                glyph_id = (slot == 0) ? 7'd76 : ((slot == 1) ? 7'd77 : 7'd0); // 亮度
+                glyph_id = setting_item[2] ? ((slot == 0) ? 7'd83 : 7'd84) :
+                    ((slot == 0) ? 7'd76 : 7'd77); // 反色 / 亮度
             end else if (y < 9'd288) begin
                 font_row = (y - 9'd256) >> 1;
-                glyph_id = (slot == 0) ? 7'd78 : ((slot == 1) ? 7'd70 : 7'd0); // 对比
+                glyph_id = setting_item[2] ? ((slot == 0) ? 7'd85 : 7'd86) :
+                    ((slot == 0) ? 7'd78 : 7'd70); // 复古 / 对比
             end else begin
                 font_row = (y - 9'd312) >> 1;
-                glyph_id = (slot == 0) ? 7'd79 : ((slot == 1) ? 7'd77 : 7'd0); // 锐度
+                glyph_id = setting_item[2] ? 7'd0 :
+                    ((slot == 0) ? 7'd79 : ((slot == 1) ? 7'd77 : 7'd0)); // 锐度
             end
             text_region = 1'b1;
             text_color = 24'hFFFFFF;
@@ -334,10 +346,10 @@ always @* begin
                       ((y >= 9'd256) && (y < 9'd288)) ||
                       ((y >= 9'd312) && (y < 9'd344)))) begin
             font_col = (x - 10'd464) >> 1;
-            if (y < 9'd176) begin font_row = (y - 9'd144) >> 1; glyph_id = digit_glyph(volume_setting); end
-            else if (y < 9'd232) begin font_row = (y - 9'd200) >> 1; glyph_id = digit_glyph(brightness_setting); end
-            else if (y < 9'd288) begin font_row = (y - 9'd256) >> 1; glyph_id = digit_glyph(contrast_setting); end
-            else begin font_row = (y - 9'd312) >> 1; glyph_id = digit_glyph({2'd0,sharpness_setting}); end
+            if (y < 9'd176) begin font_row = (y - 9'd144) >> 1; glyph_id = digit_glyph(row0_value); end
+            else if (y < 9'd232) begin font_row = (y - 9'd200) >> 1; glyph_id = digit_glyph(row1_value); end
+            else if (y < 9'd288) begin font_row = (y - 9'd256) >> 1; glyph_id = digit_glyph(row2_value); end
+            else begin font_row = (y - 9'd312) >> 1; glyph_id = setting_item[2] ? 7'd0 : digit_glyph(row3_value); end
             text_region = 1'b1;
             text_color = 24'hFFD166;
         end
@@ -477,19 +489,19 @@ always @* begin
             ((y >= 9'd192) && (y < 9'd240)) ||
             ((y >= 9'd248) && (y < 9'd296)) ||
             ((y >= 9'd304) && (y < 9'd352))) begin
-            if (y < 9'd184) begin setting_value = volume_setting; setting_bar_width = volume_setting * 10'd24; end
-            else if (y < 9'd240) begin setting_value = brightness_setting; setting_bar_width = brightness_setting * 10'd24; end
-            else if (y < 9'd296) begin setting_value = contrast_setting; setting_bar_width = contrast_setting * 10'd24; end
-            else begin setting_value = {2'd0,sharpness_setting}; setting_bar_width = sharpness_setting * 10'd64; end
+            if (y < 9'd184) begin setting_value = row0_value; setting_bar_width = row0_value * 10'd24; end
+            else if (y < 9'd240) begin setting_value = row1_value; setting_bar_width = setting_item[2] ? (invert_setting ? 10'd192 : 10'd0) : brightness_setting * 10'd24; end
+            else if (y < 9'd296) begin setting_value = row2_value; setting_bar_width = setting_item[2] ? (vintage_setting ? 10'd192 : 10'd0) : contrast_setting * 10'd24; end
+            else begin setting_value = row3_value; setting_bar_width = sharpness_setting * 10'd64; end
 
-            if ((setting_item == 0 && y < 9'd184) ||
-                (setting_item == 1 && y >= 9'd192 && y < 9'd240) ||
-                (setting_item == 2 && y >= 9'd248 && y < 9'd296) ||
-                (setting_item == 3 && y >= 9'd304)) begin
+            if ((setting_item[1:0] == 0 && y < 9'd184) ||
+                (setting_item[1:0] == 1 && y >= 9'd192 && y < 9'd240) ||
+                (setting_item[1:0] == 2 && y >= 9'd248 && y < 9'd296) ||
+                (setting_item[1:0] == 3 && y >= 9'd304)) begin
                 if ((x >= 10'd128) && (x < 10'd512)) rgb_comb = 24'h203B5A;
             end
 
-            if ((x >= 10'd248) && (x < 10'd440) &&
+            if ((!setting_item[2] || y < 9'd304) && (x >= 10'd248) && (x < 10'd440) &&
                 (((y >= 9'd154) && (y < 9'd166)) ||
                  ((y >= 9'd210) && (y < 9'd222)) ||
                  ((y >= 9'd266) && (y < 9'd278)) ||

@@ -1,52 +1,38 @@
-# K2 blue-victory mode (supersedes the earlier A/B battle animation)
+# K2 结算动画：蓝方获胜 → 红方获胜 → 8 人百米排名 → 前三名
 
-## Split-title revision
+开机仍自动轮播。仅在轮播模式且未进入设置时，K2 按如下顺序工作：
 
-The Chinese title now enters as three diagonal screen-space slices with
-staggered left/right offsets (frames 90, 98, 106). All offsets settle to zero;
-the final title remains complete and legible. The background is three separated
-slanted plates rather than a full-width rectangle. This is an original
-Apex-inspired treatment, not an exact reproduction.
-The vertical title baseline is fixed to keep the ROM address path short.
-The original K2 PLAY/HOLD/return behavior and HMI filter adaptation are retained.
-tests/tb_victory_slice.v checks staggered motion and settled offsets and exports
-doc/hmi_ui/blue_victory_slice_entry.ppm; the existing blue-victory test checks HOLD.
-Timing/resource numbers below describe the earlier unsplit revision; consult
-src/td_project/final_timing.rpt for current build signoff.
+1. 第一次：播放原有蓝方获胜动画（360 帧），最后一页保持。
+2. 第二次：播放红方获胜动画（360 帧），最后一页保持。
+3. 第三次：八条 100 米成绩依次从左向右滑入（144 帧），完整榜单保持。
+4. 第四次：前三名以铜、银、金的顺序进入紧凑型奖牌卡片（96 帧），冠军顶边随后亮起；文字按字库原生尺寸显示，最后一页保持。
+5. 第五次：在帧边界返回轮播；下一次 K2 可以重播整个流程。
 
-Updated: 2026-09-22.
+播放入场动画期间的 K2 按下不排队，也不跳页。结算状态下，轮播的自动切图、OSD 和 BGM 关闭；SDRAM 刷新、HDMI 扫描继续运行。这是互斥显示状态，不是 FPGA 资源动态重配置。
 
-- Boot retains the existing automatic carousel. K2 no longer means previous image.
-- K2 in carousel mode (outside settings) queues the blue-victory scene at a frame boundary.
-- During battle, the scene replaces all incoming carousel/OSD pixels. Automatic image changes and BGM playback are disabled; new match starts are blocked.
-- Existing SD transfers finish normally. SDRAM refresh, framebuffer scanout and HDMI timing remain running. This is exclusive presentation, not dynamic FPGA resource reallocation.
-- The 360-frame scene contains a match-ended introduction, blue diagonal wipe, shield emblem, antialiased Chinese victory title, and one sheen pass. There is no red team, opponent, cross, or fragmentation.
-- Repeated K2 presses during PLAY are ignored (including the final PLAY frame). At completion the module enters HOLD and freezes animation counters. Carousel and BGM remain disabled indefinitely.
-- A fresh K2 press in HOLD returns to carousel at a frame boundary. The carousel interval restarts rather than preserving its partial timer. Reset always returns to idle.
-- Typography uses a generated 512x128 2bpp atlas (four additional 32K BRAMs). Rebuild with doc/tools/generate_victory_atlas.py; MIF is for synthesis, HEX is for simulation. Existing project OSD font assets are unchanged.
+## 示例成绩
 
-## Verification
+目前没有接入真实百米计时/成绩数据。下列 8 行是**演示占位数据**，不能当作正式成绩使用：
 
-Tang Dynasty full synthesis, placement, routing and bit generation completed.
-Final blue-victory rebuild: setup WNS +0.195 ns; hold WNS +0.003 ns; STA coverage 99.95%.
-Resources: 13234 / 19600 LUTs, 6981 registers, 22 BRAM9K, 5 BRAM32K, 2 DSPs.
-Changed RTL passes scoped git diff --check (line-ending warnings only).
+| 名次 | 道次 | 姓名 | 成绩 |
+| --- | --- | --- | --- |
+| 1 | 4 | 选手01 | 10.23 秒 |
+| 2 | 5 | 选手02 | 10.31 秒 |
+| 3 | 3 | 选手03 | 10.38 秒 |
+| 4 | 6 | 选手04 | 10.46 秒 |
+| 5 | 2 | 选手05 | 10.55 秒 |
+| 6 | 7 | 选手06 | 10.63 秒 |
+| 7 | 1 | 选手07 | 10.76 秒 |
+| 8 | 8 | 选手08 | 10.91 秒 |
 
-Bitstream: `src/td_project/HDMI1.4b_Transmitter_v1.0.bit`.
-Icarus RTL simulation passes reset, RGB/sync passthrough, queued and same-cycle start, ignored PLAY presses, 360-frame completion, 600 further frames of HOLD, frame-aligned K2 return, and replay. Testbench: tests/tb_blue_victory.v.
-Simulation commands (run from project root):
+修改 `doc/tools/generate_sprint_atlas.py` 中的 `RUNNERS`，重新运行脚本生成 MIF 和 HEX，然后重新综合/生成 bit 文件。当前展示是固化在片上 ROM 的静态演示数据，串口屏尚未提供 8 人成绩上传协议。蓝方字库由 `doc/tools/generate_victory_atlas.py` 生成，红方局部标题/队名字库由 `doc/tools/generate_red_victory_atlas.py` 生成；两个胜利页都显示“K2 继续”。
 
-    iverilog -g2012 -DVICTORY_SIM -s tb_blue_victory -o tests/blue_victory.vvp tests/tb_blue_victory.v src/user_source/hdl_source/saixian_battle_result_fx_pipelined.v
-    vvp tests/blue_victory.vvp
+百米结算采用领奖台式金、银、铜配色。前三名页的奖牌由 FPGA 按像素实时绘制绶带、分层盘面和菱形压印，不占额外图片存储；8 人最终排名页的姓名列相对上一版左移 32 像素。奖牌是原创示意图案，不是奥运会官方徽章。
 
-The test exports doc/hmi_ui/blue_victory_rtl.ppm. A PNG conversion is provided alongside it.
-Not programmed or visually validated on hardware in this revision. Simulation uses a behavioral synchronous atlas ROM; HDMI PHY and physical keys still require hardware acceptance. Browser preview is a visual reference, not a pixel-identical promise.
+## 验证与资源
 
-## Hardware acceptance
+`tests/tb_blue_victory.v` 的 RTL 仿真已通过蓝方→红方→8 人排名→前三名→轮播、逐行滑入、入场时忽略 K2、冻结保持与重播检查。添加 `-DEXPORT_RED` 可导出红方定格帧，添加 `-DEXPORT_RESULTS` 可导出排名与前三名。PNG 预览见 `doc/hmi_ui/red_victory_preview.png`、`doc/hmi_ui/sprint_rank_preview.png` 和 `doc/hmi_ui/sprint_podium_preview.png`。
 
-1. Boot and confirm automatic image cycling and ordinary controls.
-2. Press K2 mid-carousel: confirm a clean full-screen scene with no OSD or spectrum showing through, and no background music.
-3. Confirm blue-only scene, shield, diagonal wipe, Chinese title and sheen; watch for timing/pixel alignment defects.
-4. Repeatedly press K2 during playback: it must not restart the scene.
-5. After roughly six seconds, confirm the final screen stays indefinitely and shows the K2 return prompt.
-6. Press K2 again: confirm carousel/BGM recover. Press K2 once more to repeat the animation.
+2026-09-23 完整 Tang Dynasty 构建（综合、布局布线、bitgen）通过：setup WNS +0.118 ns、hold WNS +0.003 ns，STA 覆盖率 99.95%，报告见 `src/td_project/final_timing.rpt`。资源：14957/19600 LUT、7291 寄存器、14/16 BRAM32K、22/64 BRAM9K、7/29 DSP。可烧录文件：`src/td_project/HDMI1.4b_Transmitter_v1.0.bit`。
+
+**尚未上板验证。** 时序余量较窄；正式比赛使用前需在目标板上连续检查 HDMI 画面、K2 去抖、SD 卡轮播恢复和串口屏交互。

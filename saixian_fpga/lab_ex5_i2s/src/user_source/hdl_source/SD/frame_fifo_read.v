@@ -80,7 +80,13 @@ wire [ADDR_BITS-1:0] new_row_step =
 function select_vga;
     input [1:0] index;
     begin
-        select_vga = (index == 2'd0) ? buffer0_vga_d1 : buffer1_vga_d1;
+        // Buffer 2 is the dedicated native 1280x720 result background.
+        // Never inherit buffer 1's 640x480 scaling flag for that index.
+        case (index)
+            2'd0: select_vga = buffer0_vga_d1;
+            2'd1: select_vga = buffer1_vga_d1;
+            default: select_vga = 1'b0;
+        endcase
     end
 endfunction
 

@@ -14,6 +14,9 @@ module saixian_hmi_uart #(
     output reg        finish_pulse,
     output reg        prev_pulse,
     output reg        next_pulse,
+    output reg        result_blue_pulse,
+    output reg        result_red_pulse,
+    output reg        result_sprint_pulse,
     output reg        setting_valid,
     output reg [2:0]  setting_id,
     output reg [7:0]  setting_value,
@@ -129,6 +132,18 @@ task decode_frame;
                 else frame_error_pulse <= 1'b1;
             end
             8'h1f: reset_defaults_pulse <= 1'b1;
+            8'h20: begin
+                if (frame_value == 0) result_blue_pulse <= 1'b1;
+                else frame_error_pulse <= 1'b1;
+            end
+            8'h21: begin
+                if (frame_value == 0) result_red_pulse <= 1'b1;
+                else frame_error_pulse <= 1'b1;
+            end
+            8'h22: begin
+                if (frame_value == 0) result_sprint_pulse <= 1'b1;
+                else frame_error_pulse <= 1'b1;
+            end
             default: frame_error_pulse  <= 1'b1;
         endcase
     end
@@ -145,6 +160,9 @@ always @(posedge clk or posedge rst) begin
         finish_pulse         <= 1'b0;
         prev_pulse           <= 1'b0;
         next_pulse           <= 1'b0;
+        result_blue_pulse    <= 1'b0;
+        result_red_pulse     <= 1'b0;
+        result_sprint_pulse  <= 1'b0;
         setting_valid        <= 1'b0;
         setting_id           <= 3'd0;
         setting_value        <= 8'd0;
@@ -156,6 +174,9 @@ always @(posedge clk or posedge rst) begin
         finish_pulse         <= 1'b0;
         prev_pulse           <= 1'b0;
         next_pulse           <= 1'b0;
+        result_blue_pulse    <= 1'b0;
+        result_red_pulse     <= 1'b0;
+        result_sprint_pulse  <= 1'b0;
         setting_valid        <= 1'b0;
         reset_defaults_pulse <= 1'b0;
         frame_error_pulse    <= 1'b0;

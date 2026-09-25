@@ -26,7 +26,7 @@ def main():
     label((384, 32, 128, 32), "对局结束", 27)
     label((384, 64, 128, 24), "本局优胜", 18)
     label((0, 96, 384, 32), "BLUE ALLIANCE  /  蓝方战队", 16)
-    label((384, 96, 128, 32), "K2 返回轮播", 16)
+    label((384, 96, 128, 32), "K2 继续", 16)
     words = []
     for y in range(128):
         for x in range(0, 512, 16):
@@ -46,4 +46,3 @@ def main():
     print(f"Generated {len(words)} x 32-bit words; 512x128, 2bpp")
 if __name__ == "__main__":
     main()
-

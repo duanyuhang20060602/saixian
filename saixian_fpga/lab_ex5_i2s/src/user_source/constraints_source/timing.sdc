@@ -26,4 +26,4 @@ set_false_path -from [get_regs {por_count[22]}] \
 # First stages of the video-to-50MHz status synchronizers are intentional CDC
 # sampling points. Only these first-stage registers are exempt; their second
 # stages and all downstream seven-segment logic remain fully timed.
-set_false_path -to [get_regs {error_code_clk_ff1[*] image_count_clk_ff1[*] event_state_clk_ff1[*]}]
+set_false_path -to [get_regs {error_code_clk_ff1[*] image_count_clk_ff1[*] event_state_clk_ff1[*] hmi_sent_units_clk_ff1[*] hmi_sent_tens_clk_ff1[*]}]

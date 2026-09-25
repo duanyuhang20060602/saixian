@@ -14,6 +14,7 @@ module sd_card_bmp #(
     output reg frame_ready_toggle, output reg [1:0] ready_buf_idx, output reg ready_slide_right,
     output reg [1:0] write_buf_idx,
     output wire write_vga, output reg buffer0_vga, output reg buffer1_vga,
+    output reg sprint_background_ready,
     input [15:0] bmp_width, input [15:0] bmp_height,
     input write_finish_toggle,
     output write_req, input write_req_ack,
@@ -21,6 +22,9 @@ module sd_card_bmp #(
     input [8:0] audio_fifo_wrusedw,
     output audio_pcm_we, output [31:0] audio_pcm_word,
     output reg audio_found_o,
+    input [2:0] audio_track_index,
+    input audio_track_toggle,
+    output reg [2:0] audio_track_count_o,
     output SD_nCS, output SD_DCLK, output SD_MOSI, input SD_MISO
 );
 
@@ -34,8 +38,8 @@ localparam [31:0] INIT_TIMEOUT_CYCLES = CLK_FREQ_HZ * 8;
 // is valid, so keep the timeout finite but allow adequate hardware margin.
 localparam [31:0] LOAD_TIMEOUT_CYCLES = CLK_FREQ_HZ * 30;
 localparam [31:0] AUTO_CYCLES = CLK_FREQ_HZ * 5;
-localparam [32:0] SCAN_TIMEOUT_CYCLES = 64'd30 * CLK_FREQ_HZ;
-localparam [31:0] SCAN_IDLE_CYCLES = CLK_FREQ_HZ * 5;
+localparam [34:0] SCAN_TIMEOUT_CYCLES = 64'd240 * CLK_FREQ_HZ;
+localparam [31:0] SCAN_IDLE_CYCLES = CLK_FREQ_HZ * 20;
 localparam [31:0] RECOVERY_CYCLES = CLK_FREQ_HZ * 2;
 
 wire sd_sec_read, sd_sec_read_data_valid, sd_sec_read_end;
@@ -50,23 +54,35 @@ wire [23:0] bmp_data;
 wire [31:0] scan_found_sector;
 wire audio_scan_found_valid;
 wire [31:0] audio_scan_found_sector, audio_scan_found_bytes;
+wire [2:0] audio_scan_found_index;
 wire [15:0] scan_found_width, scan_found_height;
+wire scan_found_sprint;
 wire [2:0] scan_found_total, init_stage;
 
 reg scan_start_pulse, scan_stop_req, load_start_pulse, op_abort, scan_kicked;
 reg [31:0] load_sector;
 reg [31:0] image_sector0, image_sector1, image_sector2, image_sector3, image_sector4;
+reg [31:0] sprint_background_sector;
+reg sprint_background_found, loading_sprint_background;
 reg [15:0] image_width0, image_width1, image_width2, image_width3, image_width4;
 reg [15:0] image_height0, image_height1, image_height2, image_height3, image_height4;
 reg [15:0] pending_width, pending_height;
 reg [2:0] current_image, pending_image, desired_image;
 reg [1:0] current_buf;
+// Prefetch only into the carousel's inactive buffer; buffer 2 remains reserved.
+reg cache_valid, load_prefetch;
+reg [2:0] cached_image;
+reg [1:0] cached_buf;
 reg load_busy, source_started, source_done, write_finish_seen, awaiting_commit, display_committed;
 reg desired_slide_right, load_slide_right;
 reg reload_first_after_scan;
 reg [31:0] init_timer, load_timer, auto_timer, recovery_timer, scan_idle_timer;
-reg [31:0] audio_start_sector, audio_data_bytes;
-reg [32:0] scan_timer;
+reg [31:0] audio_start_sector0, audio_start_sector1, audio_start_sector2, audio_start_sector3, audio_start_sector4;
+reg [31:0] audio_data_bytes0, audio_data_bytes1, audio_data_bytes2, audio_data_bytes3, audio_data_bytes4;
+reg [2:0] audio_track_sel0, audio_track_sel1;
+reg audio_track_toggle0, audio_track_toggle1, audio_track_toggle_seen;
+reg audio_stream_restart;
+reg [34:0] scan_timer;
 reg [2:0] prev_sync, next_sync, commit_sync, wrfin_sync;
 reg [1:0] carousel_sync;
 
@@ -161,10 +177,13 @@ always @(posedge clk or posedge rst) begin
     if (rst) begin
         scan_start_pulse <= 0; scan_stop_req <= 0; load_start_pulse <= 0; op_abort <= 0; load_sector <= 0;
         scan_kicked <= 0; image_sector0 <= 0; image_sector1 <= 0; image_sector2 <= 0; image_sector3 <= 0; image_sector4 <= 0;
+        sprint_background_sector <= 0; sprint_background_found <= 0;
+        sprint_background_ready <= 0; loading_sprint_background <= 0;
         image_width0 <= 0; image_width1 <= 0; image_width2 <= 0; image_width3 <= 0; image_width4 <= 0;
         image_height0 <= 0; image_height1 <= 0; image_height2 <= 0; image_height3 <= 0; image_height4 <= 0;
         pending_width <= 0; pending_height <= 0; source_width <= 0; source_height <= 0;
         current_image <= 0; pending_image <= 0; desired_image <= 0; current_buf <= 0;
+        cache_valid <= 0; load_prefetch <= 0; cached_image <= 0; cached_buf <= 0;
         ready_buf_idx <= 0; write_buf_idx <= 0;
         buffer0_vga <= 0; buffer1_vga <= 0;
         load_busy <= 0; source_started <= 0; source_done <= 0; write_finish_seen <= 0; awaiting_commit <= 0; display_committed <= 0;
@@ -172,7 +191,12 @@ always @(posedge clk or posedge rst) begin
         ready_slide_right <= 0; load_slide_right <= 0;
         reload_first_after_scan <= 0;
         sd_init_done_o <= 0; scan_done_o <= 0; image_count <= 0; error_code <= 0;
-        audio_found_o <= 0; audio_start_sector <= 0; audio_data_bytes <= 0;
+        audio_found_o <= 0; audio_track_count_o <= 0;
+        audio_start_sector0 <= 0; audio_start_sector1 <= 0; audio_start_sector2 <= 0; audio_start_sector3 <= 0; audio_start_sector4 <= 0;
+        audio_data_bytes0 <= 0; audio_data_bytes1 <= 0; audio_data_bytes2 <= 0; audio_data_bytes3 <= 0; audio_data_bytes4 <= 0;
+        audio_track_sel0 <= 0; audio_track_sel1 <= 0;
+        audio_track_toggle0 <= 0; audio_track_toggle1 <= 0; audio_track_toggle_seen <= 0;
+        audio_stream_restart <= 0;
         init_timer <= 0; load_timer <= 0; auto_timer <= 0; recovery_timer <= 0; scan_timer <= 0; scan_idle_timer <= 0;
     end else begin
         scan_start_pulse <= 0; load_start_pulse <= 0; op_abort <= 0;
@@ -188,9 +212,14 @@ always @(posedge clk or posedge rst) begin
             else begin
                 recovery_timer <= 0; op_abort <= 1; error_code <= 0;
                 scan_kicked <= 0; image_count <= 0;
-                audio_found_o <= 0; audio_start_sector <= 0; audio_data_bytes <= 0;
+                sprint_background_found <= 0; sprint_background_ready <= 0;
+                loading_sprint_background <= 0;
+                audio_found_o <= 0; audio_track_count_o <= 0;
+                audio_start_sector0 <= 0; audio_start_sector1 <= 0; audio_start_sector2 <= 0; audio_start_sector3 <= 0; audio_start_sector4 <= 0;
+                audio_data_bytes0 <= 0; audio_data_bytes1 <= 0; audio_data_bytes2 <= 0; audio_data_bytes3 <= 0; audio_data_bytes4 <= 0;
                 scan_stop_req <= 0; scan_idle_timer <= 0;
                 load_busy <= 0; awaiting_commit <= 0; desired_image <= 0;
+                cache_valid <= 0; load_prefetch <= 0;
                 desired_slide_right <= 0;
                 source_started <= 0; source_done <= 0; write_finish_seen <= 0;
                 init_timer <= 0; scan_timer <= 0; load_timer <= 0;
@@ -214,10 +243,13 @@ always @(posedge clk or posedge rst) begin
             scan_stop_req <= 0;
             scan_idle_timer <= 0;
             image_count <= 0;
-            audio_found_o <= 0;
+            audio_found_o <= 0; audio_track_count_o <= 0;
+            cache_valid <= 0; load_prefetch <= 0;
             desired_image <= 0;
             desired_slide_right <= 0;
             image_sector0 <= 0; image_sector1 <= 0; image_sector2 <= 0; image_sector3 <= 0; image_sector4 <= 0;
+            sprint_background_sector <= 0; sprint_background_found <= 0;
+            sprint_background_ready <= 0; loading_sprint_background <= 0;
             image_width0 <= 0; image_width1 <= 0; image_width2 <= 0; image_width3 <= 0; image_width4 <= 0;
             image_height0 <= 0; image_height1 <= 0; image_height2 <= 0; image_height3 <= 0; image_height4 <= 0;
         end
@@ -228,7 +260,7 @@ always @(posedge clk or posedge rst) begin
         end else scan_timer <= 0;
 
         // Raw-sector scanning has no FAT directory to identify the last file.
-        // After at least one valid BMP, finish cleanly when five seconds pass
+        // After at least one valid BMP, finish cleanly when twenty seconds pass
         // without another match.  Do not reset the SD controller: the images
         // already collected can then be loaded into SDRAM immediately.
         if (scan_kicked && !scan_done && error_code == 0) begin
@@ -246,21 +278,46 @@ always @(posedge clk or posedge rst) begin
         end
 
         if (scan_found_valid) begin
-            case (image_count)
-                0: begin image_sector0 <= scan_found_sector; image_width0 <= scan_found_width; image_height0 <= scan_found_height; end
-                1: begin image_sector1 <= scan_found_sector; image_width1 <= scan_found_width; image_height1 <= scan_found_height; end
-                2: begin image_sector2 <= scan_found_sector; image_width2 <= scan_found_width; image_height2 <= scan_found_height; end
-                3: begin image_sector3 <= scan_found_sector; image_width3 <= scan_found_width; image_height3 <= scan_found_height; end
-                4: begin image_sector4 <= scan_found_sector; image_width4 <= scan_found_width; image_height4 <= scan_found_height; end
-                default: ;
-            endcase
-            if (image_count < 5) image_count <= image_count + 1;
+            if (scan_found_sprint) begin
+                if (scan_found_width == 16'd1280 && scan_found_height == 16'd720) begin
+                    sprint_background_sector <= scan_found_sector;
+                    sprint_background_found <= 1'b1;
+                end
+            end else begin
+                case (image_count)
+                    0: begin image_sector0 <= scan_found_sector; image_width0 <= scan_found_width; image_height0 <= scan_found_height; end
+                    1: begin image_sector1 <= scan_found_sector; image_width1 <= scan_found_width; image_height1 <= scan_found_height; end
+                    2: begin image_sector2 <= scan_found_sector; image_width2 <= scan_found_width; image_height2 <= scan_found_height; end
+                    3: begin image_sector3 <= scan_found_sector; image_width3 <= scan_found_width; image_height3 <= scan_found_height; end
+                    4: begin image_sector4 <= scan_found_sector; image_width4 <= scan_found_width; image_height4 <= scan_found_height; end
+                    default: ;
+                endcase
+                if (image_count < 5) image_count <= image_count + 1;
+            end
+        end
+
+        audio_track_sel0 <= audio_track_index;
+        audio_track_sel1 <= audio_track_sel0;
+        audio_track_toggle0 <= audio_track_toggle;
+        audio_track_toggle1 <= audio_track_toggle0;
+        audio_stream_restart <= 1'b0;
+        if (audio_track_toggle1 != audio_track_toggle_seen) begin
+            audio_track_toggle_seen <= audio_track_toggle1;
+            audio_stream_restart <= 1'b1;
         end
 
         if (audio_scan_found_valid) begin
+            case (audio_track_count_o)
+                3'd0: begin audio_start_sector0 <= audio_scan_found_sector; audio_data_bytes0 <= audio_scan_found_bytes; end
+                3'd1: begin audio_start_sector1 <= audio_scan_found_sector; audio_data_bytes1 <= audio_scan_found_bytes; end
+                3'd2: begin audio_start_sector2 <= audio_scan_found_sector; audio_data_bytes2 <= audio_scan_found_bytes; end
+                3'd3: begin audio_start_sector3 <= audio_scan_found_sector; audio_data_bytes3 <= audio_scan_found_bytes; end
+                3'd4: begin audio_start_sector4 <= audio_scan_found_sector; audio_data_bytes4 <= audio_scan_found_bytes; end
+                default: ;
+            endcase
+            if (audio_track_count_o < 3'd5)
+                audio_track_count_o <= audio_track_count_o + 1'b1;
             audio_found_o <= 1'b1;
-            audio_start_sector <= audio_scan_found_sector;
-            audio_data_bytes <= audio_scan_found_bytes;
         end
 
         if (scan_done && !scan_found_valid && image_count == 0 && scan_kicked && error_code == 0) error_code <= 3'd3;
@@ -277,7 +334,7 @@ always @(posedge clk or posedge rst) begin
             desired_slide_right <= 0;
             auto_timer <= 0;
         end else if (carousel_on && scan_done && image_count > 1 &&
-                     display_committed && !load_busy && !awaiting_commit &&
+                     display_committed && !awaiting_commit &&
                      (desired_image == current_image)) begin
             if (auto_timer == AUTO_CYCLES - 1) begin
                 auto_timer <= 0;
@@ -289,18 +346,38 @@ always @(posedge clk or posedge rst) begin
         end
 
         if (scan_done && image_count != 0 && !load_busy && !awaiting_commit && bmp_ready) begin
-            if (reload_first_after_scan && display_committed) begin
+            // The tagged BMP is a dedicated 100 m background. Load once into
+            // buffer 2; buffers 0/1 and all five carousel slots remain
+            // unchanged. It is never committed as a carousel frame.
+            if (sprint_background_found && !sprint_background_ready) begin
+                load_sector <= sprint_background_sector; write_buf_idx <= 2'd2;
+                pending_width <= 16'd1280; pending_height <= 16'd720;
+                loading_sprint_background <= 1'b1; load_prefetch <= 0;
+                load_start_pulse <= 1; load_busy <= 1;
+                source_started <= 0; source_done <= 0; write_finish_seen <= 0; load_timer <= 0;
+            end else if (reload_first_after_scan && display_committed) begin
                 pending_image <= 0; load_sector <= image_sector0;
                 write_buf_idx <= (current_buf == 0) ? 2'd1 : 2'd0;
                 pending_width <= image_width0; pending_height <= image_height0;
                 load_slide_right <= 0;
-                load_start_pulse <= 1; load_busy <= 1; source_started <= 0; source_done <= 0; write_finish_seen <= 0; load_timer <= 0;
+                load_start_pulse <= 1; load_busy <= 1; load_prefetch <= 0; cache_valid <= 0;
+                source_started <= 0; source_done <= 0; write_finish_seen <= 0; load_timer <= 0;
                 reload_first_after_scan <= 0;
             end else if (!display_committed) begin
                 pending_image <= 0; load_sector <= image_sector0; write_buf_idx <= 0;
                 pending_width <= image_width0; pending_height <= image_height0;
                 load_slide_right <= 0;
-                load_start_pulse <= 1; load_busy <= 1; source_started <= 0; source_done <= 0; write_finish_seen <= 0; load_timer <= 0;
+                load_start_pulse <= 1; load_busy <= 1; load_prefetch <= 0; cache_valid <= 0;
+                source_started <= 0; source_done <= 0; write_finish_seen <= 0; load_timer <= 0;
+            end else if (carousel_on && cache_valid && (desired_image == cached_image)) begin
+                pending_image <= cached_image;
+                pending_width <= width_for(cached_image);
+                pending_height <= height_for(cached_image);
+                ready_buf_idx <= cached_buf;
+                ready_slide_right <= desired_slide_right;
+                frame_ready_toggle <= ~frame_ready_toggle;
+                awaiting_commit <= 1;
+                cache_valid <= 0;
             end else if (carousel_on && desired_image != current_image) begin
                 pending_image <= desired_image;
                 load_sector <= sector_for(desired_image);
@@ -308,8 +385,18 @@ always @(posedge clk or posedge rst) begin
                 pending_height <= height_for(desired_image);
                 write_buf_idx <= (current_buf == 0) ? 2'd1 : 2'd0;
                 load_slide_right <= desired_slide_right;
-                load_start_pulse <= 1; load_busy <= 1; source_started <= 0; source_done <= 0; write_finish_seen <= 0;
+                load_start_pulse <= 1; load_busy <= 1; load_prefetch <= 0; cache_valid <= 0;
+                source_started <= 0; source_done <= 0; write_finish_seen <= 0;
                 load_timer <= 0;
+            end else if (carousel_on && image_count > 1 && display_committed && !cache_valid) begin
+                cached_image <= next_index(current_image, image_count);
+                cached_buf <= (current_buf == 0) ? 2'd1 : 2'd0;
+                load_sector <= sector_for(next_index(current_image, image_count));
+                write_buf_idx <= (current_buf == 0) ? 2'd1 : 2'd0;
+                pending_width <= width_for(next_index(current_image, image_count));
+                pending_height <= height_for(next_index(current_image, image_count));
+                load_start_pulse <= 1; load_busy <= 1; load_prefetch <= 1;
+                source_started <= 0; source_done <= 0; write_finish_seen <= 0; load_timer <= 0;
             end
         end
 
@@ -321,21 +408,33 @@ always @(posedge clk or posedge rst) begin
             // bmp_ready returns high at the end of the source transfer.
             if (wrfin_pulse) write_finish_seen <= 1;
             if (load_timer < LOAD_TIMEOUT_CYCLES) load_timer <= load_timer + 1;
-            else begin load_busy <= 0; op_abort <= 1; error_code <= 3'd4; end
+            else begin load_busy <= 0; loading_sprint_background <= 0; cache_valid <= 0;
+                       op_abort <= 1; error_code <= 3'd4; end
         end
 
         if (load_busy &&
             (source_done || (source_started && bmp_ready)) &&
             (write_finish_seen || wrfin_pulse)) begin
-            load_busy <= 0; awaiting_commit <= 1; ready_buf_idx <= write_buf_idx;
-            if (write_buf_idx == 2'd0) buffer0_vga <= write_vga;
-            else if (write_buf_idx == 2'd1) buffer1_vga <= write_vga;
-            ready_slide_right <= load_slide_right;
-            frame_ready_toggle <= ~frame_ready_toggle;
+            load_busy <= 0;
+            if (loading_sprint_background) begin
+                loading_sprint_background <= 0;
+                sprint_background_ready <= 1'b1;
+            end else if (load_prefetch) begin
+                cache_valid <= 1'b1;
+                if (write_buf_idx == 2'd0) buffer0_vga <= write_vga;
+                else if (write_buf_idx == 2'd1) buffer1_vga <= write_vga;
+            end else begin
+                awaiting_commit <= 1; ready_buf_idx <= write_buf_idx;
+                if (write_buf_idx == 2'd0) buffer0_vga <= write_vga;
+                else if (write_buf_idx == 2'd1) buffer1_vga <= write_vga;
+                ready_slide_right <= load_slide_right;
+                frame_ready_toggle <= ~frame_ready_toggle;
+            end
         end
 
         if (awaiting_commit && commit_pulse) begin
             awaiting_commit <= 0; display_committed <= 1; current_buf <= ready_buf_idx; current_image <= pending_image;
+            cache_valid <= 0;
             source_width <= pending_width; source_height <= pending_height; auto_timer <= 0;
         end
     end
@@ -348,7 +447,8 @@ bmp_read u_bmp_read(
     .scan_done(scan_done), .scan_found_valid(scan_found_valid),
     .scan_found_sector(scan_found_sector), .scan_found_total(scan_found_total),
     .scan_found_width(scan_found_width), .scan_found_height(scan_found_height),
-    .audio_found_valid(audio_scan_found_valid), .audio_found_sector(audio_scan_found_sector),
+    .scan_found_sprint(scan_found_sprint),
+    .audio_found_valid(audio_scan_found_valid), .audio_found_index(audio_scan_found_index), .audio_found_sector(audio_scan_found_sector),
     .audio_found_bytes(audio_scan_found_bytes),
     .load_start(load_start_pulse), .load_sector(load_sector),
     .sd_init_done(sd_init_done), .state_code(state_code), .bmp_width(bmp_width), .bmp_height(bmp_height),
@@ -358,10 +458,21 @@ bmp_read u_bmp_read(
     .sd_sec_read_end(bmp_sd_sec_read_end), .bmp_data_wr_en(bmp_data_wr_en), .bmp_data(bmp_data)
 );
 
+reg [31:0] selected_audio_start_sector, selected_audio_data_bytes;
+always @* begin
+    case (audio_track_sel1)
+        3'd1: begin selected_audio_start_sector = audio_start_sector1; selected_audio_data_bytes = audio_data_bytes1; end
+        3'd2: begin selected_audio_start_sector = audio_start_sector2; selected_audio_data_bytes = audio_data_bytes2; end
+        3'd3: begin selected_audio_start_sector = audio_start_sector3; selected_audio_data_bytes = audio_data_bytes3; end
+        3'd4: begin selected_audio_start_sector = audio_start_sector4; selected_audio_data_bytes = audio_data_bytes4; end
+        default: begin selected_audio_start_sector = audio_start_sector0; selected_audio_data_bytes = audio_data_bytes0; end
+    endcase
+end
+
 saixian_sd_audio_stream u_audio_stream(
-    .clk(clk), .rst(rst | op_abort),
+    .clk(clk), .rst(rst | op_abort | audio_stream_restart),
     .enable(audio_found_o && sd_init_done),
-    .start_sector(audio_start_sector), .data_bytes(audio_data_bytes),
+    .start_sector(selected_audio_start_sector), .data_bytes(selected_audio_data_bytes),
     .fifo_wrusedw(audio_fifo_wrusedw),
     .sd_sec_read(audio_sd_sec_read), .sd_sec_read_addr(audio_sd_sec_read_addr),
     .sd_sec_read_data(sd_sec_read_data), .sd_sec_read_data_valid(audio_sd_sec_read_data_valid),

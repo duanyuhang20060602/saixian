@@ -16,6 +16,7 @@ parameter MEM_DATA_BITS = 32;
 parameter ADDR_BITS = 21;
 parameter integer VIDEO_CLK_HZ = 75_000_000;
 parameter HDMI_COMPAT_DIAGNOSTIC = 1'b0;
+parameter VIDEO_PATH_TEST_PATTERN = 1'b0;
 // Store two RGB565 pixels in every 32-bit SDRAM word.  The previous
 // one-pixel-per-word layout needed 55.9 Mword/s at 720p60, which is more than
 // the timing-clean 50 MHz SDRAM interface can deliver.
@@ -23,13 +24,17 @@ parameter [20:0] FRAME_WORDS = 21'd460800;
 localparam [20:0] VGA_FRAME_WORDS = 21'd307200;
 parameter [20:0] BUF0_ADDR = 21'd0;
 parameter BUF1_ADDR = FRAME_WORDS;
+// One 720p RGB565 frame reserved for the 100 m result route.  The two
+// carousel buffers still occupy only indices 0 and 1.
+localparam [20:0] SPRINT_BG_ADDR = FRAME_WORDS * 21'd2;
 
 wire sd_card_clk, ext_mem_clk, ext_mem_clk_sft, video_clk, hdmi_5x_clk;
 wire sys_pll_lock, video_pll_lock;
 wire pll_locked = sys_pll_lock & video_pll_lock;
 reg [22:0] por_count;
 wire reset_request = ~por_count[22];
-wire rst_clk, rst_sd, rst_mem, rst_video, rst_hdmi;
+wire rst_clk, rst_sd, rst_mem, rst_video_pre, rst_hdmi;
+reg rst_video;
 reg [26:0] sd_startup_count;
 wire sd_startup_hold = (sd_startup_count < 27'd100000000);
 
@@ -47,8 +52,16 @@ end
 saixian_reset_sync u_rst_clk  (.clk(clk),          .arst(reset_request), .rst(rst_clk));
 saixian_reset_sync u_rst_sd   (.clk(sd_card_clk),  .arst(reset_request), .rst(rst_sd));
 saixian_reset_sync u_rst_mem  (.clk(ext_mem_clk),  .arst(reset_request), .rst(rst_mem));
-saixian_reset_sync u_rst_video(.clk(video_clk),    .arst(reset_request), .rst(rst_video));
+saixian_reset_sync u_rst_video(.clk(video_clk),    .arst(reset_request), .rst(rst_video_pre));
 saixian_reset_sync u_rst_hdmi (.clk(hdmi_5x_clk),  .arst(reset_request), .rst(rst_hdmi));
+
+// Release the high-fanout asynchronous video reset on the falling edge.
+// It is still asserted immediately, while the following rising edge has a
+// half-cycle of recovery/removal margin for pixel-domain registers.
+always @(negedge video_clk or posedge reset_request) begin
+    if (reset_request) rst_video <= 1'b1;
+    else               rst_video <= rst_video_pre;
+end
 
 // Give an already-inserted TF card one full second to reach stable power before
 // starting SPI initialization. The HDMI boot animation remains active.
@@ -64,6 +77,38 @@ saixian_key_debounce #(.CLK_FREQ_HZ(VIDEO_CLK_HZ),.DEBOUNCE_MS(20)) u_key1(.clk(
 saixian_key_debounce #(.CLK_FREQ_HZ(VIDEO_CLK_HZ),.DEBOUNCE_MS(20)) u_key2(.clk(video_clk),.rst(rst_video),.key_n(key[1]),.press_pulse(key2_press));
 saixian_key_debounce #(.CLK_FREQ_HZ(VIDEO_CLK_HZ),.DEBOUNCE_MS(20)) u_key3(.clk(video_clk),.rst(rst_video),.key_n(key[2]),.press_pulse(key3_press));
 saixian_key_debounce #(.CLK_FREQ_HZ(VIDEO_CLK_HZ),.DEBOUNCE_MS(20)) u_key4(.clk(video_clk),.rst(rst_video),.key_n(key[3]),.press_pulse(key4_press));
+
+// K4 short release advances a photo; holding for one second changes music.
+localparam integer KEY4_AUDIO_HOLD_CYCLES = VIDEO_CLK_HZ;
+reg key4_meta, key4_sync, key4_audio_fired, key4_short_pending;
+reg [26:0] key4_hold_count;
+reg key4_short_pulse;
+wire key4_audio_long_press = !key4_sync && !key4_audio_fired &&
+                              (key4_hold_count >= KEY4_AUDIO_HOLD_CYCLES - 1);
+always @(posedge video_clk or posedge rst_video) begin
+    if (rst_video) begin
+        key4_meta <= 1'b1; key4_sync <= 1'b1;
+        key4_audio_fired <= 1'b0; key4_short_pending <= 1'b0;
+        key4_short_pulse <= 1'b0; key4_hold_count <= 27'd0;
+    end else begin
+        key4_meta <= key[3];
+        key4_sync <= key4_meta;
+        key4_short_pulse <= 1'b0;
+        if (key4_press) key4_short_pending <= 1'b1;
+        if (key4_sync) begin
+            if (key4_short_pending && !key4_audio_fired)
+                key4_short_pulse <= 1'b1;
+            key4_short_pending <= 1'b0;
+            key4_hold_count <= 27'd0;
+            key4_audio_fired <= 1'b0;
+        end else if (!key4_audio_fired) begin
+            if (key4_hold_count < KEY4_AUDIO_HOLD_CYCLES)
+                key4_hold_count <= key4_hold_count + 1'b1;
+            if (key4_audio_long_press)
+                key4_audio_fired <= 1'b1;
+        end
+    end
+end
 
 wire [1:0] project_select;
 saixian_switch_filter #(.CLK_FREQ_HZ(VIDEO_CLK_HZ),.FILTER_MS(20)) u_project_switch(
@@ -87,6 +132,7 @@ saixian_video_tracker u_tracker(.clk(video_clk),.rst(rst_video),.vs(vs),.de(de),
 
 wire hmi_start_pulse, hmi_pause_pulse, hmi_finish_pulse;
 wire hmi_prev_pulse, hmi_next_pulse;
+wire hmi_result_blue, hmi_result_red, hmi_result_sprint;
 wire hmi_setting_valid, hmi_reset_defaults, hmi_frame_error;
 wire [2:0] hmi_setting_id;
 wire [7:0] hmi_setting_value;
@@ -94,13 +140,11 @@ saixian_hmi_uart #(.CLK_FREQ_HZ(VIDEO_CLK_HZ),.BAUD_RATE(115_200)) u_hmi_uart(
     .clk(video_clk),.rst(rst_video),.uart_rx(hmi_uart_rx),
     .start_pulse(hmi_start_pulse),.pause_pulse(hmi_pause_pulse),
     .finish_pulse(hmi_finish_pulse),.prev_pulse(hmi_prev_pulse),.next_pulse(hmi_next_pulse),
+    .result_blue_pulse(hmi_result_blue),.result_red_pulse(hmi_result_red),
+    .result_sprint_pulse(hmi_result_sprint),
     .setting_valid(hmi_setting_valid),.setting_id(hmi_setting_id),.setting_value(hmi_setting_value),
     .reset_defaults_pulse(hmi_reset_defaults),.frame_error_pulse(hmi_frame_error)
 );
-// Bidirectional status updates can be added later. Keep FPGA TX at the UART
-// idle level for this screen-to-FPGA control revision.
-assign hmi_uart_tx = 1'b1;
-
 wire [3:0] event_state;
 wire [1:0] project_id;
 wire [6:0] minutes;
@@ -108,32 +152,51 @@ wire [5:0] seconds;
 wire [3:0] countdown_value, cue_event;
 wire carousel_mode;
 wire battle_busy;
+wire sprint_result_active;
 wire carousel_play = carousel_mode && !battle_busy;
 wire settings_mode;
-wire [1:0] setting_item;
+wire [2:0] setting_item;
 wire [3:0] volume_setting, brightness_setting, contrast_setting, saturation_setting;
 wire [1:0] sharpness_setting;
-reg hmi_invert, hmi_vintage;
+wire invert_setting, vintage_setting;
+wire [7:0] audio_level;
+wire [2:0] audio_track_count_sd;
+reg [2:0] audio_track_count_sync0, audio_track_count_sync1;
+reg [2:0] audio_track_index;
+reg audio_track_toggle;
+reg [3:0] audio_fifo_flush_count;
 always @(posedge video_clk or posedge rst_video) begin
-    if (rst_video) begin hmi_invert<=0; hmi_vintage<=0; end
-    else if (hmi_reset_defaults) begin hmi_invert<=0; hmi_vintage<=0; end
-    else if (hmi_setting_valid) begin
-        if (hmi_setting_id==3'd5) hmi_invert<=hmi_setting_value[0];
-        if (hmi_setting_id==3'd6) hmi_vintage<=hmi_setting_value[0];
+    if (rst_video) begin
+        audio_track_count_sync0 <= 0; audio_track_count_sync1 <= 0;
+        audio_track_index <= 0; audio_track_toggle <= 0;
+        audio_fifo_flush_count <= 0;
+    end else begin
+        audio_track_count_sync0 <= audio_track_count_sd;
+        audio_track_count_sync1 <= audio_track_count_sync0;
+        if (audio_fifo_flush_count != 0)
+            audio_fifo_flush_count <= audio_fifo_flush_count - 1'b1;
+        if (key4_audio_long_press && carousel_play && !settings_mode &&
+            audio_track_count_sync1 > 1) begin
+            if (audio_track_index >= audio_track_count_sync1 - 1'b1)
+                audio_track_index <= 0;
+            else audio_track_index <= audio_track_index + 1'b1;
+            audio_track_toggle <= ~audio_track_toggle;
+            audio_fifo_flush_count <= 4'd15;
+        end
     end
 end
-wire [7:0] audio_level;
 
 saixian_settings_controller #(.CLK_FREQ_HZ(VIDEO_CLK_HZ)) u_settings(
     .clk(video_clk),.rst(rst_video),.carousel_mode(carousel_play),
     .key_next_item(key1_press),.key_decrease(key2_press),
-    .key_enter_exit(key3_press),.key_increase(key4_press),
+    .key_enter_exit(key3_press),.key_increase(key4_short_pulse),
     .hmi_setting_valid(hmi_setting_valid),.hmi_setting_id(hmi_setting_id),
     .hmi_setting_value(hmi_setting_value),.hmi_reset_defaults(hmi_reset_defaults),
     .settings_mode(settings_mode),.setting_item(setting_item),
     .volume_setting(volume_setting),.brightness_setting(brightness_setting),
     .contrast_setting(contrast_setting),.saturation_setting(saturation_setting),
-    .sharpness_setting(sharpness_setting)
+    .sharpness_setting(sharpness_setting),
+    .invert_setting(invert_setting),.vintage_setting(vintage_setting)
 );
 
 saixian_event_controller #(.CLK_FREQ_HZ(VIDEO_CLK_HZ)) u_event(
@@ -187,13 +250,16 @@ always @(posedge video_clk or posedge rst_video) begin
         // K2 now launches the victory animation in carousel mode.  The HMI
         // previous-image command remains available.
         if (hmi_prev_pulse) prev_req_toggle <= ~prev_req_toggle;
-        if (key4_press | hmi_next_pulse) next_req_toggle <= ~next_req_toggle;
+        if (key4_short_pulse | hmi_next_pulse) next_req_toggle <= ~next_req_toggle;
     end
 end
 
 wire [3:0] sd_state_code;
 wire sd_init_done, scan_done;
 wire [2:0] image_count, sd_error;
+wire sprint_background_ready_sd;
+reg sprint_background_ready_meta, sprint_background_ready_video;
+wire sprint_read_enabled = sprint_result_active && sprint_background_ready_video;
 wire [15:0] source_width_sd, source_height_sd;
 reg [15:0] source_width_sync0, source_width_sync1;
 reg [15:0] source_height_sync0, source_height_sync1;
@@ -324,17 +390,21 @@ end
 // Search the first 256 MiB of the card. Files copied to a fragmented or
 // previously-used FAT volume are often allocated beyond the former 64 MiB
 // window even when only five images are visible in the directory.
-sd_card_bmp #(.CLK_FREQ_HZ(100_000_000),.SCAN_START_SECTOR(0),.SCAN_MAX_SECTOR(524287),.SCAN_TARGET_COUNT(5)) u_sd_bmp(
+// Five full-length AUD tracks plus six BMPs can exceed the former 256 MiB
+// raw-sector search window if FAT32 places them after a free-space gap.
+sd_card_bmp #(.CLK_FREQ_HZ(100_000_000),.SCAN_START_SECTOR(0),.SCAN_MAX_SECTOR(1048575),.SCAN_TARGET_COUNT(6)) u_sd_bmp(
     .clk(sd_card_clk),.rst(rst_sd | sd_startup_hold),.prev_req_toggle(prev_req_toggle),.next_req_toggle(next_req_toggle),
     .carousel_mode(carousel_play && !settings_mode),.display_commit_toggle(frame_commit_toggle),.state_code(sd_state_code),
     .sd_init_done_o(sd_init_done),.scan_done_o(scan_done),.image_count(image_count),.error_code(sd_error),
     .source_width(source_width_sd),.source_height(source_height_sd),
     .frame_ready_toggle(frame_ready_toggle),.ready_buf_idx(ready_buf_idx),.ready_slide_right(ready_slide_right),.write_buf_idx(write_buf_idx),
     .write_vga(write_vga_sd),.buffer0_vga(buffer0_vga_sd),.buffer1_vga(buffer1_vga_sd),
+    .sprint_background_ready(sprint_background_ready_sd),
     .bmp_width(16'd1280),.bmp_height(16'd720),.write_finish_toggle(frame_write_toggle_mem),
     .write_req(sd_card_write_req),.write_req_ack(sd_card_write_req_ack),.write_en(sd_card_write_en_raw),.write_data(sd_card_write_data_raw),
     .audio_fifo_wrusedw(audio_fifo_wrusedw),.audio_pcm_we(audio_pcm_we_sd),
     .audio_pcm_word(audio_pcm_word_sd),.audio_found_o(audio_file_found_sd),
+    .audio_track_index(audio_track_index),.audio_track_toggle(audio_track_toggle),.audio_track_count_o(audio_track_count_sd),
     .SD_nCS(sd_ncs),.SD_DCLK(sd_dclk),.SD_MOSI(sd_mosi),.SD_MISO(sd_miso)
 );
 
@@ -350,10 +420,13 @@ always @(posedge video_clk or posedge rst_video) begin
         sd_error_sync0 <= 0; sd_error_sync1 <= 0;
         source_width_sync0 <= 0; source_width_sync1 <= 0;
         source_height_sync0 <= 0; source_height_sync1 <= 0;
+        sprint_background_ready_meta <= 0; sprint_background_ready_video <= 0;
     end else begin
         sd_error_sync0 <= sd_error; sd_error_sync1 <= sd_error_sync0;
         source_width_sync0 <= source_width_sd; source_width_sync1 <= source_width_sync0;
         source_height_sync0 <= source_height_sd; source_height_sync1 <= source_height_sync0;
+        sprint_background_ready_meta <= sprint_background_ready_sd;
+        sprint_background_ready_video <= sprint_background_ready_meta;
     end
 end
 
@@ -367,14 +440,15 @@ frame_read_write #(.WRITE_V_FLIP(1),.FRAME_WIDTH(640),.FRAME_HEIGHT(720)) u_fram
     .mem_clk(ext_mem_clk),.rst(rst_mem),.Sdr_init_done(Sdr_init_done),.Sdr_init_ref_vld(Sdr_init_ref_vld),.Sdr_busy(Sdr_busy),
     .App_rd_en(App_rd_en),.App_rd_addr(App_rd_addr),.Sdr_rd_en(Sdr_rd_en),.Sdr_rd_dout(Sdr_rd_dout),
     .read_clk(video_clk),.read_req(video_read_req),.read_req_ack(video_read_req_ack),.read_finish(),
-    .read_addr_0(BUF0_ADDR),.read_addr_1(BUF1_ADDR),.read_addr_2(21'd0),.read_addr_3(21'd0),.read_addr_index(active_buf_idx),
+    .read_addr_0(BUF0_ADDR),.read_addr_1(BUF1_ADDR),.read_addr_2(SPRINT_BG_ADDR),.read_addr_3(21'd0),
+    .read_addr_index(sprint_read_enabled ? 2'd2 : active_buf_idx),
     .read_len(FRAME_WORDS),.read_en(video_read_en),.read_data(video_read_data),.read_fifo_empty(video_read_empty),
-    .slide_active(transition_active),.slide_old_index(active_buf_idx),.slide_new_index(slide_new_buf_idx),
+    .slide_active(transition_active && !sprint_read_enabled),.slide_old_index(active_buf_idx),.slide_new_index(slide_new_buf_idx),
     .slide_offset({1'b0,slide_offset[10:1]}),.slide_right(slide_right),.transition_mode(transition_mode),
     .buffer0_vga(buffer0_vga_sd),.buffer1_vga(buffer1_vga_sd),
     .App_wr_en(App_wr_en),.App_wr_addr(App_wr_addr),.App_wr_din(App_wr_din),.App_wr_dm(App_wr_dm),
     .write_clk(sd_card_clk),.write_req(sd_card_write_req),.write_req_ack(sd_card_write_req_ack),.write_finish(frame_write_finish),
-    .write_addr_0(BUF0_ADDR),.write_addr_1(BUF1_ADDR),.write_addr_2(21'd0),.write_addr_3(21'd0),.write_addr_index(write_buf_idx),
+    .write_addr_0(BUF0_ADDR),.write_addr_1(BUF1_ADDR),.write_addr_2(SPRINT_BG_ADDR),.write_addr_3(21'd0),.write_addr_index(write_buf_idx),
     .write_len(write_vga_sd ? VGA_FRAME_WORDS : FRAME_WORDS),.write_vga(write_vga_sd),
     .write_en(sd_card_write_en),.write_data(sd_card_write_data),
     .write_fifo_full(write_fifo_full)
@@ -440,7 +514,7 @@ wire audio_fifo_valid, audio_fifo_full, audio_fifo_empty;
 wire audio_fifo_afull, audio_fifo_aempty;
 wire [8:0] audio_fifo_rdusedw;
 wire audio_fifo_re;
-wire audio_fifo_reset = rst_sd | rst_video | ~sd_init_done;
+wire audio_fifo_reset = rst_sd | rst_video | ~sd_init_done | (audio_fifo_flush_count != 0);
 
 rfifo_32_32_512 u_audio_fifo(
     .rst(audio_fifo_reset),.clkw(sd_card_clk),.clkr(video_clk),
@@ -501,6 +575,44 @@ wire [7:0] edid_data;
 wire hdmi_error = !hpd_present || edid_failed;
 wire [2:0] error_code = (sd_error_sync1 != 0) ? sd_error_sync1 : (hdmi_error ? 3'd5 : 3'd0);
 
+// Synchronize SD scan results before formatting serial-screen status text.
+reg [2:0] hmi_image_count_ff1, hmi_image_count_ff2;
+reg hmi_audio_found_ff1, hmi_audio_found_ff2;
+always @(posedge video_clk or posedge rst_video) begin
+    if (rst_video) begin
+        hmi_image_count_ff1 <= 3'd0;
+        hmi_image_count_ff2 <= 3'd0;
+        hmi_audio_found_ff1 <= 1'b0;
+        hmi_audio_found_ff2 <= 1'b0;
+    end else begin
+        hmi_image_count_ff1 <= image_count;
+        hmi_image_count_ff2 <= hmi_image_count_ff1;
+        hmi_audio_found_ff1 <= audio_file_found_sd;
+        hmi_audio_found_ff2 <= hmi_audio_found_ff1;
+    end
+end
+
+wire hmi_command_sent;
+reg [3:0] hmi_sent_units, hmi_sent_tens;
+saixian_hmi_status_tx #(.CLK_FREQ_HZ(VIDEO_CLK_HZ), .BAUD_RATE(115_200)) u_hmi_status_tx (
+    .clk(video_clk), .rst(rst_video), .image_count(hmi_image_count_ff2),
+    .audio_found(hmi_audio_found_ff2), .error_code(error_code),
+    .uart_tx(hmi_uart_tx), .command_sent_pulse(hmi_command_sent)
+);
+// Count complete UART commands, not screen acknowledgements. The HMI project
+// has no return acknowledgement for these page-local text assignments.
+always @(posedge video_clk or posedge rst_video) begin
+    if (rst_video) begin
+        hmi_sent_units <= 4'd0;
+        hmi_sent_tens <= 4'd0;
+    end else if (hmi_command_sent) begin
+        if (hmi_sent_units == 4'd9) begin
+            hmi_sent_units <= 4'd0;
+            hmi_sent_tens <= (hmi_sent_tens == 4'd9) ? 4'd0 : hmi_sent_tens + 1'b1;
+        end else hmi_sent_units <= hmi_sent_units + 1'b1;
+    end
+end
+
 always @(posedge video_clk or posedge rst_video) begin
     if (rst_video) begin
         hpd_sync <= 0; hpd_present <= 0; hpd_last <= 0; hpd_debounce_timer <= 0;
@@ -535,7 +647,7 @@ end
 wire [23:0] adjusted_rgb;
 wire [23:0] styled_rgb;
 saixian_hmi_color_style u_hmi_style(.rgb_in(adjusted_rgb),
-    .invert(hmi_invert),.vintage(hmi_vintage),.rgb_out(styled_rgb));
+    .invert(invert_setting),.vintage(vintage_setting),.rgb_out(styled_rgb));
 saixian_picture_adjust_pipe u_picture_adjust(.clk(video_clk),.rst(rst_video),.de(de),.x(pixel_x),
     .rgb_in(video_rgb_raw),.brightness_setting(brightness_setting),.contrast_setting(contrast_setting),
     .saturation_setting(saturation_setting),.sharpness_setting(sharpness_setting),.rgb_out(adjusted_rgb));
@@ -594,7 +706,9 @@ saixian_osd_overlay u_osd(.clk(video_clk),.rst(rst_video),.frame_tick(frame_tick
     .audio_level(audio_level),.spectrum_active(spectrum_active),.spectrum_tone_bin(spectrum_tone_bin),
     .settings_mode(settings_mode),.setting_item(setting_item),
     .volume_setting(volume_setting),.brightness_setting(brightness_setting),
-    .contrast_setting(contrast_setting),.sharpness_setting(sharpness_setting),.rgb_out(osd_rgb_inner));
+    .contrast_setting(contrast_setting),.sharpness_setting(sharpness_setting),
+    .saturation_setting(saturation_setting),.invert_setting(invert_setting),
+    .vintage_setting(vintage_setting),.rgb_out(osd_rgb_inner));
 
 // The full-screen scaler adds one registered stage before the four-stage OSD.
 // Delay the bypass path by five clocks so RGB, DE, VS and coordinates remain
@@ -637,7 +751,10 @@ wire [23:0] compat_rgb = !adjusted_de_q5 ? 24'd0 :
 wire [23:0] full_osd_rgb = !adjusted_de_q5 ? 24'd0 :
                              (osd_area_q5 ? osd_rgb_inner :
                              ((!display_valid || (error_code != 0) || outside_fade_black) ? 24'd0 : adjusted_rgb_q5));
-wire [23:0] osd_rgb = HDMI_COMPAT_DIAGNOSTIC ? compat_rgb : full_osd_rgb;
+// Result pixels come from the dedicated frame, bypassing carousel OSD text.
+wire [23:0] osd_rgb = sprint_read_enabled ?
+                      (adjusted_de_q5 ? adjusted_rgb_q5 : 24'd0) :
+                      (HDMI_COMPAT_DIAGNOSTIC ? compat_rgb : full_osd_rgb);
 
 // Register RGB and timing controls together before AXI conversion.
 reg [23:0] osd_rgb_pipe;
@@ -661,7 +778,8 @@ always @(posedge video_clk or posedge rst_video) begin
     end
 end
 
-// K2 in carousel starts blue victory; final hold waits for K2 to return.
+// K2 advances: blue win -> red win -> eight-runner rank -> top three -> carousel.
+// Each page holds after its entrance; transition-time presses are ignored.
 // K2 still decreases settings and pauses/resumes an active event.
 wire [23:0] battle_rgb;
 wire battle_de;
@@ -669,7 +787,11 @@ wire battle_vs;
 saixian_battle_result_fx u_battle_result(
     .clk(video_clk),.rst(rst_video),.frame_tick(frame_tick),
     .trigger(key2_press & carousel_mode & ~settings_mode),
-    .busy(battle_busy),
+    .select_blue(hmi_result_blue & carousel_mode & ~settings_mode),
+    .select_red(hmi_result_red & carousel_mode & ~settings_mode),
+    .select_sprint(hmi_result_sprint & carousel_mode & ~settings_mode),
+    .busy(battle_busy),.sprint_active(sprint_result_active),
+    .sprint_background_valid(sprint_background_ready_video),
     .x_in(battle_x_pipe),.y_in(battle_y_pipe),
     .de_in(de_pipe),.vs_in(vs_pipe),.rgb_in(osd_rgb_pipe),
     .de_out(battle_de),.vs_out(battle_vs),.rgb_out(battle_rgb)
@@ -677,7 +799,10 @@ saixian_battle_result_fx u_battle_result(
 
 wire axis_s_user, axis_s_valid, axis_s_last, axis_s_ready;
 wire [23:0] axis_s_data;
-video_rgb_to_axis_640x480 #(.H_ACTIVE(1280)) u_axis(.I_clk(video_clk),.I_rst(rst_video),.I_vs(battle_vs),.I_de(battle_de),.I_rgb(battle_rgb),
+// Output-only diagnostic: constant gray bypasses BMP, SDRAM and picture
+// processing, but retains the normal timing and HDMI transmitter chain.
+wire [23:0] axis_rgb = VIDEO_PATH_TEST_PATTERN ? 24'h808080 : battle_rgb;
+video_rgb_to_axis_640x480 #(.H_ACTIVE(1280)) u_axis(.I_clk(video_clk),.I_rst(rst_video),.I_vs(battle_vs),.I_de(battle_de),.I_rgb(axis_rgb),
     .O_video_user(axis_s_user),.O_video_valid(axis_s_valid),.O_video_last(axis_s_last),.O_video_data(axis_s_data));
 
 wire [9:0] tmds_ch0_data, tmds_ch1_data, tmds_ch2_data, tmds_clk_data;
@@ -703,6 +828,8 @@ hdmi_phy_wrapper #(.DEVICE("EG")) u_hdmi_phy(.I_pixel_clk(video_clk),.I_serial_c
 reg [2:0] error_code_clk_ff1, error_code_clk;
 reg [2:0] image_count_clk_ff1, image_count_clk;
 reg [3:0] event_state_clk_ff1, event_state_clk;
+reg [3:0] hmi_sent_units_clk_ff1, hmi_sent_units_clk;
+reg [3:0] hmi_sent_tens_clk_ff1, hmi_sent_tens_clk;
 always @(posedge clk) begin
     if (rst_clk) begin
         error_code_clk_ff1 <= 3'd0;
@@ -711,6 +838,10 @@ always @(posedge clk) begin
         image_count_clk     <= 3'd0;
         event_state_clk_ff1 <= 4'd0;
         event_state_clk     <= 4'd0;
+        hmi_sent_units_clk_ff1 <= 4'd0;
+        hmi_sent_units_clk <= 4'd0;
+        hmi_sent_tens_clk_ff1 <= 4'd0;
+        hmi_sent_tens_clk <= 4'd0;
     end else begin
         error_code_clk_ff1 <= error_code;
         error_code_clk     <= error_code_clk_ff1;
@@ -718,16 +849,23 @@ always @(posedge clk) begin
         image_count_clk     <= image_count_clk_ff1;
         event_state_clk_ff1 <= event_state;
         event_state_clk     <= event_state_clk_ff1;
+        hmi_sent_units_clk_ff1 <= hmi_sent_units;
+        hmi_sent_units_clk <= hmi_sent_units_clk_ff1;
+        hmi_sent_tens_clk_ff1 <= hmi_sent_tens;
+        hmi_sent_tens_clk <= hmi_sent_tens_clk_ff1;
     end
 end
 
 wire [6:0] seg_code;
 wire [6:0] seg_image_code;
+wire [6:0] seg_hmi_units_code, seg_hmi_tens_code;
 seg_decoder u_seg_decode(.bin_data(error_code_clk != 0 ? {1'b0,error_code_clk} : event_state_clk),.seg_data(seg_code));
 seg_decoder u_seg_image_decode(.bin_data({1'b0,image_count_clk}),.seg_data(seg_image_code));
+seg_decoder u_seg_hmi_units(.bin_data(hmi_sent_units_clk),.seg_data(seg_hmi_units_code));
+seg_decoder u_seg_hmi_tens(.bin_data(hmi_sent_tens_clk),.seg_data(seg_hmi_tens_code));
 seg_scan u_seg(.clk(clk),.rst_n(~rst_clk),.seg_sel(seg_sel),.seg_data(seg_data),
-    .seg_data_0({1'b1,seg_code}),.seg_data_1({1'b1,seg_image_code}),.seg_data_2({1'b1,7'b1111111}),
-    .seg_data_3({1'b1,7'b1111111}),.seg_data_4({1'b1,7'b1111111}),.seg_data_5({1'b1,7'b1111111}));
+    .seg_data_0({1'b1,seg_code}),.seg_data_1({1'b1,seg_image_code}),.seg_data_2({1'b1,seg_hmi_units_code}),
+    .seg_data_3({1'b1,seg_hmi_tens_code}),.seg_data_4({1'b1,7'b1111111}),.seg_data_5({1'b1,7'b1111111}));
 
 assign led[0] = carousel_mode;
 assign led[1] = sd_init_done;
@@ -917,7 +1055,7 @@ endmodule
 
 module saixian_settings_controller #(
     parameter integer CLK_FREQ_HZ = 25_000_000,
-    parameter integer TIMEOUT_SECONDS = 15
+    parameter integer TIMEOUT_SECONDS = 60
 )(
     input  wire       clk,
     input  wire       rst,
@@ -931,15 +1069,17 @@ module saixian_settings_controller #(
     input  wire [7:0] hmi_setting_value,
     input  wire       hmi_reset_defaults,
     output reg        settings_mode,
-    output reg [1:0]  setting_item,
+    output reg [2:0]  setting_item,
     output reg [3:0]  volume_setting,
     output reg [3:0]  brightness_setting,
     output reg [3:0]  contrast_setting,
     output reg [3:0]  saturation_setting,
-    output reg [1:0]  sharpness_setting
+    output reg [1:0]  sharpness_setting,
+    output reg        invert_setting,
+    output reg        vintage_setting
 );
-localparam [28:0] TIMEOUT_CYCLES = CLK_FREQ_HZ * TIMEOUT_SECONDS;
-reg [28:0] idle_timer;
+localparam [32:0] TIMEOUT_CYCLES = 64'd1 * CLK_FREQ_HZ * TIMEOUT_SECONDS;
+reg [32:0] idle_timer;
 
 function [3:0] quantize_percent;
     input [7:0] value;
@@ -959,44 +1099,50 @@ endfunction
 always @(posedge clk or posedge rst) begin
     if (rst) begin
         settings_mode      <= 1'b0;
-        setting_item       <= 2'd0;
+        setting_item       <= 3'd0;
         volume_setting     <= 4'd5;
         brightness_setting <= 4'd4;
         contrast_setting   <= 4'd4;
         saturation_setting <= 4'd4;
         sharpness_setting  <= 2'd1;
-        idle_timer         <= 29'd0;
+        invert_setting     <= 1'b0;
+        vintage_setting    <= 1'b0;
+        idle_timer         <= 33'd0;
     end else if (hmi_reset_defaults) begin
         volume_setting     <= 4'd5;
         brightness_setting <= 4'd4;
         contrast_setting   <= 4'd4;
         saturation_setting <= 4'd4;
         sharpness_setting  <= 2'd1;
-        idle_timer         <= 29'd0;
+        invert_setting     <= 1'b0;
+        vintage_setting    <= 1'b0;
+        idle_timer         <= 33'd0;
     end else if (hmi_setting_valid) begin
-        idle_timer <= 29'd0;
+        idle_timer <= 33'd0;
         case (hmi_setting_id)
             3'd0: sharpness_setting  <= (hmi_setting_value > 3) ? 2'd3 : hmi_setting_value[1:0];
             3'd1: brightness_setting <= quantize_percent(hmi_setting_value);
             3'd2: contrast_setting   <= quantize_percent(hmi_setting_value);
             3'd3: saturation_setting <= quantize_percent(hmi_setting_value);
             3'd4: volume_setting     <= quantize_percent(hmi_setting_value);
+            3'd5: invert_setting     <= (hmi_setting_value != 0);
+            3'd6: vintage_setting    <= (hmi_setting_value != 0);
             default: ;
         endcase
     end else if (!carousel_mode) begin
         settings_mode <= 1'b0;
-        idle_timer    <= 29'd0;
+        idle_timer    <= 33'd0;
     end else if (!settings_mode) begin
-        idle_timer <= 29'd0;
+        idle_timer <= 33'd0;
         if (key_enter_exit) begin
             settings_mode <= 1'b1;
-            setting_item  <= 2'd0;
+            setting_item  <= 3'd0;
         end
     end else begin
         if (key_next_item || key_decrease || key_enter_exit || key_increase)
-            idle_timer <= 29'd0;
+            idle_timer <= 33'd0;
         else if (idle_timer >= TIMEOUT_CYCLES - 1'b1) begin
-            idle_timer    <= 29'd0;
+            idle_timer    <= 33'd0;
             settings_mode <= 1'b0;
         end else
             idle_timer <= idle_timer + 1'b1;
@@ -1004,13 +1150,16 @@ always @(posedge clk or posedge rst) begin
         if (key_enter_exit)
             settings_mode <= 1'b0;
         else if (key_next_item)
-            setting_item <= setting_item + 1'b1;
+            setting_item <= (setting_item == 3'd6) ? 3'd0 : setting_item + 1'b1;
         else if (key_decrease) begin
             case (setting_item)
                 2'd0: if (volume_setting     != 0) volume_setting     <= volume_setting - 1'b1;
                 2'd1: if (brightness_setting != 0) brightness_setting <= brightness_setting - 1'b1;
                 2'd2: if (contrast_setting   != 0) contrast_setting   <= contrast_setting - 1'b1;
                 2'd3: if (sharpness_setting  != 0) sharpness_setting  <= sharpness_setting - 1'b1;
+                3'd4: if (saturation_setting != 0) saturation_setting <= saturation_setting - 1'b1;
+                3'd5: invert_setting <= 1'b0;
+                3'd6: vintage_setting <= 1'b0;
             endcase
         end else if (key_increase) begin
             case (setting_item)
@@ -1018,6 +1167,9 @@ always @(posedge clk or posedge rst) begin
                 2'd1: if (brightness_setting < 8) brightness_setting <= brightness_setting + 1'b1;
                 2'd2: if (contrast_setting   < 8) contrast_setting   <= contrast_setting + 1'b1;
                 2'd3: if (sharpness_setting  < 3) sharpness_setting  <= sharpness_setting + 1'b1;
+                3'd4: if (saturation_setting < 8) saturation_setting <= saturation_setting + 1'b1;
+                3'd5: invert_setting <= 1'b1;
+                3'd6: vintage_setting <= 1'b1;
             endcase
         end
     end
@@ -1304,4 +1456,115 @@ wire [7:0] warm_r=(luma>8'd223) ? 8'd255 : luma+8'd32;
 wire [7:0] warm_b=luma-(luma>>2);
 wire [23:0] warm=vintage ? {warm_r,luma,warm_b} : rgb_in;
 assign rgb_out=invert ? ~warm : warm;
+endmodule
+
+// TJC command stream: b[component ID].txt="<value>" followed by FF FF FF.
+// The active home page uses IDs 7 (picture), 9 (music), and 11 (error).
+// Refreshing once per second also restores these page-local fields when the
+// user returns to home, without changing the HMI project or its event code.
+module saixian_hmi_status_tx #(
+    parameter integer CLK_FREQ_HZ = 75_000_000,
+    parameter integer BAUD_RATE = 115_200
+)(
+    input wire clk, rst,
+    input wire [2:0] image_count,
+    input wire audio_found,
+    input wire [2:0] error_code,
+    output reg uart_tx,
+    output reg command_sent_pulse
+);
+localparam integer CLKS_PER_BIT = CLK_FREQ_HZ / BAUD_RATE;
+localparam [1:0] TX_IDLE = 2'd0, TX_START = 2'd1,
+                 TX_DATA = 2'd2, TX_STOP = 2'd3;
+reg [1:0] tx_state, next_field;
+reg [31:0] refresh_count;
+reg [15:0] baud_count;
+reg [159:0] message;
+reg [4:0] message_len, byte_index;
+reg [2:0] bit_index;
+reg [7:0] shift_byte;
+
+always @(posedge clk or posedge rst) begin
+    if (rst) begin
+        uart_tx <= 1'b1;
+        command_sent_pulse <= 1'b0;
+        tx_state <= TX_IDLE;
+        next_field <= 2'd0;
+        refresh_count <= 32'd0;
+        baud_count <= 16'd0;
+        message <= 160'd0;
+        message_len <= 5'd0;
+        byte_index <= 5'd0;
+        bit_index <= 3'd0;
+        shift_byte <= 8'd0;
+    end else begin
+        command_sent_pulse <= 1'b0;
+        if (refresh_count == CLK_FREQ_HZ - 1) begin
+            refresh_count <= 32'd0;
+            if (next_field == 2'd3) next_field <= 2'd0;
+        end else refresh_count <= refresh_count + 1'b1;
+
+        case (tx_state)
+            TX_IDLE: if (next_field != 2'd3) begin
+                case (next_field)
+                    2'd0: begin
+                        message <= {"b[7].txt=\"", (8'h30 + {5'd0,image_count}),
+                                    8'h22, 24'hffffff, 40'd0};
+                        message_len <= 5'd15;
+                    end
+                    2'd1: begin
+                        message <= {"b[9].txt=\"", (audio_found ? 8'h31 : 8'h30),
+                                    8'h22, 24'hffffff, 40'd0};
+                        message_len <= 5'd15;
+                    end
+                    default: begin
+                        message <= {"b[11].txt=\"", (error_code == 0 ? 8'h4f : 8'h45),
+                                    (error_code == 0 ? 8'h4b : (8'h30 + {5'd0,error_code})),
+                                    8'h22, 24'hffffff, 24'd0};
+                        message_len <= 5'd17;
+                    end
+                endcase
+                next_field <= next_field + 1'b1;
+                byte_index <= 5'd0;
+                shift_byte <= 8'h62; // leading 'b' in every command
+                bit_index <= 3'd0;
+                baud_count <= 16'd0;
+                uart_tx <= 1'b0;
+                tx_state <= TX_START;
+            end
+            TX_START: if (baud_count == CLKS_PER_BIT - 1) begin
+                baud_count <= 16'd0;
+                uart_tx <= shift_byte[0];
+                shift_byte <= shift_byte >> 1;
+                bit_index <= 3'd0;
+                tx_state <= TX_DATA;
+            end else baud_count <= baud_count + 1'b1;
+            TX_DATA: if (baud_count == CLKS_PER_BIT - 1) begin
+                baud_count <= 16'd0;
+                if (bit_index == 3'd7) begin
+                    uart_tx <= 1'b1;
+                    tx_state <= TX_STOP;
+                end else begin
+                    uart_tx <= shift_byte[0];
+                    shift_byte <= shift_byte >> 1;
+                    bit_index <= bit_index + 1'b1;
+                end
+            end else baud_count <= baud_count + 1'b1;
+            TX_STOP: if (baud_count == CLKS_PER_BIT - 1) begin
+                baud_count <= 16'd0;
+                if (byte_index + 1'b1 < message_len) begin
+                    shift_byte <= message[159 - ((byte_index + 1'b1) * 8) -: 8];
+                    byte_index <= byte_index + 1'b1;
+                    uart_tx <= 1'b0;
+                    tx_state <= TX_START;
+                end else begin
+                    uart_tx <= 1'b1;
+                    command_sent_pulse <= 1'b1;
+                    tx_state <= TX_IDLE;
+                end
+            end else baud_count <= baud_count + 1'b1;
+            default: tx_state <= TX_IDLE;
+        endcase
+    end
+end
 endmodule
