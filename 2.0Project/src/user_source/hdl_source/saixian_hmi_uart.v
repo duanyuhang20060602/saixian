@@ -10,13 +10,18 @@ module saixian_hmi_uart #(
     input  wire       rst,
     input  wire       uart_rx,
     output reg        start_pulse,
+    output reg        pause_set_pulse, resume_pulse,
+    output reg [2:0]  page_id,
+    output reg        page_notify_pulse,
     output reg        pause_pulse,
     output reg        finish_pulse,
     output reg        prev_pulse,
     output reg        next_pulse,
+    output reg        music_next_pulse,
     output reg        result_blue_pulse,
     output reg        result_red_pulse,
     output reg        result_sprint_pulse,
+    output reg        result_stop_pulse,
     output reg        setting_valid,
     output reg [2:0]  setting_id,
     output reg [7:0]  setting_value,
@@ -113,11 +118,15 @@ reg [31:0] frame_idle;
 task decode_frame;
     begin
         case (frame_command)
-            8'h01: start_pulse          <= 1'b1;
-            8'h02: pause_pulse          <= 1'b1;
-            8'h03: finish_pulse         <= 1'b1;
-            8'h04: prev_pulse           <= 1'b1;
-            8'h05: next_pulse           <= 1'b1;
+            8'h01: if (frame_value == 0) start_pulse <= 1'b1; else frame_error_pulse <= 1'b1;
+            8'h02: if (frame_value == 0) pause_pulse <= 1'b1; else frame_error_pulse <= 1'b1;
+            8'h03: if (frame_value == 0) finish_pulse <= 1'b1; else frame_error_pulse <= 1'b1;
+            8'h04: if (frame_value == 0) prev_pulse <= 1'b1; else frame_error_pulse <= 1'b1;
+            8'h05: if (frame_value == 0) next_pulse <= 1'b1; else frame_error_pulse <= 1'b1;
+            8'h06: if (frame_value == 0) pause_set_pulse <= 1'b1; else frame_error_pulse <= 1'b1;
+            8'h08: if (frame_value == 0) music_next_pulse <= 1'b1; else frame_error_pulse <= 1'b1;
+            8'h07: if (frame_value == 0) resume_pulse <= 1'b1; else frame_error_pulse <= 1'b1;
+            8'h30: if (frame_value <= 4) begin page_id <= frame_value[2:0]; page_notify_pulse <= 1'b1; end else frame_error_pulse <= 1'b1;
             8'h10: begin setting_valid <= 1'b1; setting_id <= 3'd0; setting_value <= frame_value; end
             8'h11: begin setting_valid <= 1'b1; setting_id <= 3'd1; setting_value <= frame_value; end
             8'h12: begin setting_valid <= 1'b1; setting_id <= 3'd2; setting_value <= frame_value; end
@@ -131,7 +140,7 @@ task decode_frame;
                 if (frame_value <= 1) begin setting_valid <= 1'b1; setting_id <= 3'd6; setting_value <= frame_value; end
                 else frame_error_pulse <= 1'b1;
             end
-            8'h1f: reset_defaults_pulse <= 1'b1;
+            8'h1f: if (frame_value == 0) reset_defaults_pulse <= 1'b1; else frame_error_pulse <= 1'b1;
             8'h17: begin
                 if(frame_value<=2) begin setting_valid<=1'b1;setting_id<=3'd7;setting_value<=frame_value;end
                 else frame_error_pulse<=1'b1;
@@ -144,6 +153,7 @@ task decode_frame;
                 if (frame_value == 0) result_red_pulse <= 1'b1;
                 else frame_error_pulse <= 1'b1;
             end
+            8'h23: if (frame_value == 0) result_stop_pulse <= 1'b1; else frame_error_pulse <= 1'b1;
             8'h22: begin
                 if (frame_value == 0) result_sprint_pulse <= 1'b1;
                 else frame_error_pulse <= 1'b1;
@@ -156,17 +166,21 @@ endtask
 always @(posedge clk or posedge rst) begin
     if (rst) begin
         frame_index          <= 3'd0;
+        page_id <= 3'd0;
         frame_idle           <= 0;
         frame_command        <= 8'd0;
         frame_value          <= 8'd0;
         start_pulse          <= 1'b0;
+        pause_set_pulse <= 1'b0; resume_pulse <= 1'b0; page_notify_pulse <= 1'b0;
         pause_pulse          <= 1'b0;
         finish_pulse         <= 1'b0;
         prev_pulse           <= 1'b0;
         next_pulse           <= 1'b0;
+        music_next_pulse     <= 1'b0;
         result_blue_pulse    <= 1'b0;
         result_red_pulse     <= 1'b0;
         result_sprint_pulse  <= 1'b0;
+        result_stop_pulse    <= 1'b0;
         setting_valid        <= 1'b0;
         setting_id           <= 3'd0;
         setting_value        <= 8'd0;
@@ -174,13 +188,16 @@ always @(posedge clk or posedge rst) begin
         frame_error_pulse    <= 1'b0;
     end else begin
         start_pulse          <= 1'b0;
+        pause_set_pulse <= 1'b0; resume_pulse <= 1'b0; page_notify_pulse <= 1'b0;
         pause_pulse          <= 1'b0;
         finish_pulse         <= 1'b0;
         prev_pulse           <= 1'b0;
         next_pulse           <= 1'b0;
+        music_next_pulse     <= 1'b0;
         result_blue_pulse    <= 1'b0;
         result_red_pulse     <= 1'b0;
         result_sprint_pulse  <= 1'b0;
+        result_stop_pulse    <= 1'b0;
         setting_valid        <= 1'b0;
         reset_defaults_pulse <= 1'b0;
         frame_error_pulse    <= 1'b0;

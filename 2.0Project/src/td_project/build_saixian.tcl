@@ -11,10 +11,13 @@ set end_step bitgen
 set area_option -packarea
 set arr_filter false
 set drHoldFix on
-set phyWildParams {place seed 4}
+set phyWildParams {place seed 3}
 if {[info exists ::env(SAIXIAN_PLACE_SEED)]} {
     set phyWildParams [list place seed $::env(SAIXIAN_PLACE_SEED)]
 }
+# Strengthen post-route optimization without changing clock constraints.
+lappend phyWildParams route post_route_opt high
+lappend phyWildParams route effort high
 # This high-utilization design needs the explicit route hold-fix stage.  The
 # automatic in-route pass is skipped above 90% slice utilization.  Keep the
 # normal route phase enabled, then invoke the tool's official fix_hold phase

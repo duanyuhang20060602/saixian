@@ -4,6 +4,10 @@ $vvp = 'C:/iverilog/bin/vvp.exe'
 Push-Location (Split-Path $PSScriptRoot -Parent)
 try {
     $jobs = @(
+        @('tb_result_text_geometry', 'tests/tb_result_text_geometry.v', 'src/user_source/hdl_source/saixian_battle_result_fx_pipelined.v'),
+        @('tb_hmi_music', 'tests/tb_hmi_music.v', 'src/user_source/hdl_source/saixian_hmi_uart.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
+        @('tb_hmi_compat', 'tests/tb_hmi_compat.v', 'src/user_source/hdl_source/saixian_hmi_uart.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
+        @('tb_hmi_bidirectional', 'tests/tb_hmi_bidirectional.v', 'src/user_source/hdl_source/saixian_hmi_uart.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v', 'src/user_source/hdl_source/saixian_event_controller.v'),
         @('tb_sdram_refresh_timer', 'tests/tb_sdram_refresh_timer.v', 'src/user_source/hdl_source/include/sdr_init_ref.enc.v'),
         @('tb_startup_error_policy', 'tests/tb_startup_error_policy.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
         @('tb_startup_retry_integration', 'tests/tb_startup_retry_integration.v', 'src/user_source/hdl_source/SD/sd_card_bmp.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
@@ -35,7 +39,7 @@ try {
         $target = Join-Path $testCache ($job[0] + '.vvp')
         $options = @('-g2012', '-DVICTORY_SIM', '-s', $job[0], '-o', $target)
         if ($job[0] -eq 'tb_sdram_refresh_timer') { $options += @('-DSDRAM_REFRESH_TIMER_SIM', '-I', 'src/td_project') }
-        if ($job[0] -in @('tb_frame_config', 'tb_frame_handshake', 'tb_music_start', 'tb_boot_load_order', 'tb_startup_retry_integration')) { $options += '-i' }
+        if ($job[0] -in @('tb_frame_config', 'tb_frame_handshake', 'tb_music_start', 'tb_hmi_music', 'tb_boot_load_order', 'tb_startup_retry_integration')) { $options += '-i' }
         $sources = $job[1..($job.Count - 1)]
         & $iv @options @sources
         if ($LASTEXITCODE -ne 0) { throw "Compile failed: $($job[0])" }

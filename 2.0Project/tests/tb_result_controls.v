@@ -1,10 +1,10 @@
 `timescale 1ns/1ps
 module tb_result_controls;
 reg clk=0;always #5 clk=~clk;
-reg rst=1,ft=0,trigger=0,blue=0,red=0,sprint=0;
+reg rst=1,ft=0,trigger=0,blue=0,red=0,sprint=0,stop=0;
 wire busy,sprint_active,de,vs;wire [23:0] rgb;
 saixian_battle_result_fx dut(.clk(clk),.rst(rst),.frame_tick(ft),.trigger(trigger),
- .select_blue(blue),.select_red(red),.select_sprint(sprint),
+ .stop(stop),.select_blue(blue),.select_red(red),.select_sprint(sprint),
  .x_in(11'd0),.y_in(10'd0),.de_in(1'b0),.vs_in(1'b0),.rgb_in(24'd0),
  .sprint_background_valid(1'b1),.busy(busy),.sprint_active(sprint_active),
  .de_out(de),.vs_out(vs),.rgb_out(rgb));
@@ -26,6 +26,12 @@ initial begin
  repeat(120) tick;if(dut.state!=5) $fatal(1,"automatic podium missing");
  repeat(96) tick;if(dut.state!=6) $fatal(1,"podium did not settle");
  trigger=1;tick;trigger=0;if(dut.state!=0) $fatal(1,"carousel return failed");
+ blue=1;tick;blue=0;stop=1;@(negedge clk);stop=0;
+ if(!busy)$fatal(1,"Stop must wait for frame boundary");
+ tick;if(busy || dut.state!=0)$fatal(1,"Stop did not exit blue entrance");
+ sprint=1;tick;sprint=0;stop=1;tick;stop=0;
+ if(busy || sprint_active)$fatal(1,"Stop did not exit sprint entrance");
+ stop=1;tick;stop=0;tick;if(busy)$fatal(1,"Repeated stop restarted result");
  $display("PASS frame-boundary blue/red/sprint selection, entrance protection, podium, carousel return");$finish;
 end
 endmodule

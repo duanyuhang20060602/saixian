@@ -2,7 +2,7 @@
 // Each K2 press advances from a held page; no automatic exit.
 module saixian_battle_result_fx(
     input wire clk, rst, frame_tick, trigger,
-    input wire select_blue, select_red, select_sprint,
+    input wire select_blue, select_red, select_sprint, stop,
     input wire [10:0] x_in,
     input wire [9:0] y_in,
     input wire de_in, vs_in,
@@ -37,6 +37,7 @@ localparam IDLE=3'd0, PLAY=3'd1, HOLD=3'd2,
            RED_PLAY=4'd7, RED_HOLD=4'd8;
 reg [3:0] state;
 reg pending;
+reg stop_pending;
 reg [1:0] direct_pending;
 reg auto_podium;
 reg red_selected;
@@ -114,10 +115,11 @@ endfunction
 
 always @(posedge clk or posedge rst) begin
     if(rst) begin
-        state<=IDLE; pending<=0; direct_pending<=0; auto_podium<=0; red_selected<=0;
+        state<=IDLE; pending<=0; stop_pending<=0; direct_pending<=0; auto_podium<=0; red_selected<=0;
         frame_count<=0; result_frame<=0;
         wipe_edge<=0; sheen_edge<=0; title_drop<=24; gold_line_edge<=11'd220;
     end else begin
+        if(stop) stop_pending<=1'b1;
         // Latch UART pulses until the next video frame; the latest choice wins.
         if(select_blue) direct_pending<=2'd1;
         else if(select_red) direct_pending<=2'd2;
@@ -130,7 +132,10 @@ always @(posedge clk or posedge rst) begin
             if(state==RANK_IN || state==IDLE) gold_line_edge<=11'd220;
             else if(state==PODIUM_IN && result_frame>=8'd56 &&
                     gold_line_edge<11'd1060) gold_line_edge<=gold_line_edge+11'd30;
-            if(direct_choice!=0) begin
+            if(stop_pending || stop) begin
+                state<=IDLE; pending<=0; direct_pending<=0; stop_pending<=0;
+                frame_count<=0; result_frame<=0; auto_podium<=0; red_selected<=0;
+            end else if(direct_choice!=0) begin
                 direct_pending<=0; pending<=0;
                 frame_count<=0; result_frame<=0;
                 wipe_edge<=0; sheen_edge<=0; title_drop<=24;
@@ -327,37 +332,39 @@ wire [31:0] atlas_word;
 // Eight independently staggered, frame-rate-only slide positions. The pixel
 // path only selects a registered displacement; it never computes easing.
 reg [10:0] rank_shift [0:7];
-reg [10:0] podium_shift [0:2];
+reg [10:0] podium_shift [0:2]; // includes the fixed 200-pixel podium offset
 integer si;
 function [10:0] slide_shift;
     input [7:0] f;
     input [7:0] onset;
-    reg [7:0] age;
+    reg [10:0] base;
     begin
-        age=f-onset;
+        // Share the frame multiplication across all constant onset offsets.
+        // Modular arithmetic is exact for visible offsets 0..1200.
+        base=(11'd24-{3'd0,f})*11'd50;
         if(f<onset) slide_shift=11'd1200;
-        else if(age<8'd24) slide_shift=(8'd24-age)*11'd50;
+        else if({1'b0,f} < {1'b0,onset}+9'd24) slide_shift=base+onset*11'd50;
         else slide_shift=0;
     end
 endfunction
 always @(posedge clk or posedge rst) begin
     if(rst) begin
         for(si=0;si<8;si=si+1) rank_shift[si]<=11'd1200;
-        for(si=0;si<3;si=si+1) podium_shift[si]<=11'd1200;
+        for(si=0;si<3;si=si+1) podium_shift[si]<=11'd1400;
     end else if(frame_tick) begin
         if(direct_choice==2'd3) begin
             for(si=0;si<8;si=si+1) rank_shift[si]<=11'd1200;
-            for(si=0;si<3;si=si+1) podium_shift[si]<=11'd1200;
+            for(si=0;si<3;si=si+1) podium_shift[si]<=11'd1400;
         end else begin
             if(state==RANK_IN)
                 for(si=0;si<8;si=si+1)
                     rank_shift[si]<=slide_shift(result_frame,si*12);
             if(state==PODIUM_IN)
                 for(si=0;si<3;si=si+1)
-                    podium_shift[si]<=slide_shift(result_frame,(2-si)*16);
+                    podium_shift[si]<=slide_shift(result_frame,(2-si)*16)+11'd200;
             if(state==IDLE) begin
                 for(si=0;si<8;si=si+1) rank_shift[si]<=11'd1200;
-                for(si=0;si<3;si=si+1) podium_shift[si]<=11'd1200;
+                for(si=0;si<3;si=si+1) podium_shift[si]<=11'd1400;
             end
         end
     end
@@ -397,14 +404,20 @@ always @* begin
               ({12{row_hit[2]}}&{1'b0,rank_shift[2]})|({12{row_hit[3]}}&{1'b0,rank_shift[3]})|
               ({12{row_hit[4]}}&{1'b0,rank_shift[4]})|({12{row_hit[5]}}&{1'b0,rank_shift[5]})|
               ({12{row_hit[6]}}&{1'b0,rank_shift[6]})|({12{row_hit[7]}}&{1'b0,rank_shift[7]})|
-              ({12{row_hit[8]}}&({1'b0,podium_shift[0]}+12'd200))|
-              ({12{row_hit[9]}}&({1'b0,podium_shift[1]}+12'd200))|
-              ({12{row_hit[10]}}&({1'b0,podium_shift[2]}+12'd200));
+              ({12{row_hit[8]}}&{1'b0,podium_shift[0]})|
+              ({12{row_hit[9]}}&{1'b0,podium_shift[1]})|
+              ({12{row_hit[10]}}&{1'b0,podium_shift[2]});
 end
 // Stage 0 separates the displacement mux/add from the ROM address decode.
 // Victory and passthrough pixels take the same extra clock.
 reg [10:0] pre_x;
-reg [9:0] pre_y, pre_row_y;
+reg [9:0] pre_y;
+reg pre_row_text_valid;
+// Selected rank bands span offsets -8..35 and podium bands -34..61.
+// Their low six bits are <28 exactly for the visible text offsets 0..27.
+// Evaluate this before Stage 0 so row-id decode/add/compare is not serialized.
+wire [5:0] row_text_offset=raster_y[5:0]-row_y[5:0];
+wire row_text_valid=!row_id[3] && row_text_offset<6'd28;
 reg [11:0] pre_row_shift;
 reg [11:0] pre_x_atlas;
 reg [8:0] pre_header_x;
@@ -435,7 +448,7 @@ reg pre_de, pre_vs, pre_ink, pre_red_ink, pre_red;
 reg [23:0] pre_rgb;
 always @(posedge clk or posedge rst) begin
     if(rst) begin
-        pre_x<=0; pre_y<=0; pre_row_y<=0; pre_row_shift<=0;
+        pre_x<=0; pre_y<=0; pre_row_text_valid<=0; pre_row_shift<=0;
         pre_x_atlas<=0;
         pre_header_x<=0;pre_header_y<=0;
         pre_atlas_x<=0; pre_atlas_y<=0; pre_frame_count<=0;
@@ -444,7 +457,7 @@ always @(posedge clk or posedge rst) begin
         pre_active<=0; pre_hold<=0; pre_rank<=0; pre_podium<=0;
         pre_rgb<=0;
     end else begin
-        pre_x<=raster_x; pre_y<=raster_y; pre_row_y<=row_y;
+        pre_x<=raster_x; pre_y<=raster_y; pre_row_text_valid<=row_text_valid;
         pre_row_shift<=row_shift;
         // Subtract from x in parallel with row displacement selection,
         // rather than serializing y decode -> shift mux -> subtraction.
@@ -485,11 +498,11 @@ always @* begin
                     pre_x>=11'd184 && pre_x<11'd696) begin
             result_ink=1;
         end else if(pre_row_id<8 && pre_rank &&
-                    pre_y>=pre_row_y && pre_y<pre_row_y+10'd28 &&
+                    pre_row_text_valid &&
                     pre_row_x_virtual>=12'd124 && pre_row_x_virtual<12'd636) begin
             result_ink=1;
         end else if(pre_row_id<3 && pre_podium &&
-                    pre_y>=pre_row_y && pre_y<pre_row_y+10'd28 &&
+                    pre_row_text_valid &&
                     pre_row_x_virtual>=12'd384 && pre_row_x_virtual<12'd896) begin
             result_ink=1;
         end
