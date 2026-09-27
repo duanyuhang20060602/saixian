@@ -1,0 +1,18 @@
+tests/*.vvp
+src/td_project/.build_backup/
+src/td_project/*.log
+src/td_project/*.logw
+src/td_project/.*.f
+
+# Intermediate compiler outputs are not release inputs.
+src/td_project/*.area
+src/td_project/*.ts
+src/td_project/*.bid
+src/**/*.dath
+src/user_source/constraints_source/.*
+
+# The single accepted programming image and final evidence are published.
+!src/td_project/HDMI1.4b_Transmitter_v2.0.bit
+!src/td_project/HDMI1.4b_Transmitter_v2.0_phy.area
+!src/td_project/final_timing.rpt
+

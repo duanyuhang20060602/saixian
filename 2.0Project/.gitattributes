@@ -1,0 +1,4 @@
+*.AUD binary
+*.bmp binary
+*.bit binary
+*.hex text eol=lf
