@@ -638,6 +638,9 @@ module saixian_load_scaler #(
 );
 localparam integer CHUNKS=(OUT_WIDTH+511)/512;
 reg active, native_size;
+// VGA artwork/text needs crisp pixel replication, not two-axis blending.
+// Latch the policy per image; other source sizes keep bilinear interpolation.
+reg vga_crisp;
 reg [3:0] vertical_pace;
 reg [10:0] in_x, in_y, source_last_x, source_last_y;
 reg [16:0] x_step, y_step;
@@ -674,8 +677,9 @@ wire [26:0] h_position=(hx==OUT_WIDTH-1) ? {source_last_x,16'd0} : xpos;
 // fraction. Equivalent comparison avoids a wide increment/carry chain.
 wire h_available=(h_position[26:16]<sample_x) ||
                  (h_position[26:16]==sample_x && h_position[15:0]==0);
-wire [7:0] h_weight=h_position[15:8];
-wire [23:0] h_left=(sample_x==0 || h_position[15:0]==0) ? current_pixel : left_pixel;
+wire [7:0] h_weight=vga_crisp ? 8'd0 : h_position[15:8];
+wire [23:0] h_left=(sample_x==0 || h_position[15:0]==0 ||
+                   (vga_crisp && h_position[15])) ? current_pixel : left_pixel;
 function [7:0] clamp;
     input signed [18:0] n;
     begin clamp=(n<0) ? 0 : ((n>255) ? 255 : n[7:0]); end
@@ -707,7 +711,7 @@ generate for(bank=0;bank<3;bank=bank+1) begin: banks
     end
     assign bank_read[bank]=selected;
 end endgenerate
-reg read_first, read_valid, read_last;
+reg read_first, read_valid, read_last, read_integer;
 reg [7:0] read_weight;
 reg mix_valid, mix_last;
 reg select_valid, select_last;
@@ -723,7 +727,9 @@ always @* begin
         1:begin current_word=bank_read[1];previous_word=bank_read[0];end
         default:begin current_word=bank_read[2];previous_word=bank_read[1];end
     endcase
-    if(read_first || read_weight==0) previous_word=current_word;
+    // The 8-bit weight can quantize a NONZERO Q16 fraction to zero.
+    // Only an exact Q16 integer addresses the current row rather than ceil-1.
+    if(read_first || read_integer || (vga_crisp && read_weight[7])) previous_word=current_word;
     current_rgb={current_word[15:11],current_word[15:13],current_word[10:5],current_word[10:9],current_word[4:0],current_word[4:2]};
     previous_rgb={previous_word[15:11],previous_word[15:13],previous_word[10:5],previous_word[10:9],previous_word[4:0],previous_word[4:2]};
 end
@@ -733,7 +739,7 @@ wire next_y_available=(next_ypos[26:16]<v_source_y) ||
 assign busy=active;
 always @(posedge clk or posedge rst) begin
     if(rst) begin
-        active<=0;native_size<=0;fault<=0;pixel_out_valid<=0;pixel_out<=0;vertical_pace<=0;
+        active<=0;native_size<=0;vga_crisp<=0;fault<=0;pixel_out_valid<=0;pixel_out<=0;vertical_pace<=0;
         in_x<=0;in_y<=0;source_last_x<=0;source_last_y<=0;x_step<=0;y_step<=0;xpos<=0;ypos<=0;
         x_dividend<=0;y_dividend<=0;x_quotient<=0;y_quotient<=0;
         x_remainder<=0;y_remainder<=0;divide_count<=0;dividing<=0;
@@ -742,11 +748,13 @@ always @(posedge clk or posedge rst) begin
         h_valid<=0;h_last<=0;h_addr<=0;h_bank_q<=0;h_row_q<=0;h_base<=0;hp_r<=0;hp_g<=0;hp_b<=0;
         h_calc_valid<=0;h_calc_last<=0;h_calc_addr<=0;h_calc_row<=0;h_calc_bank<=0;
         h_calc_base<=0;h_calc_weight<=0;hd_r<=0;hd_g<=0;hd_b<=0;
-        read_chunk<=0;read_bank<=0;read_first<=0;read_valid<=0;read_last<=0;read_weight<=0;
+        read_chunk<=0;read_bank<=0;read_first<=0;read_valid<=0;read_last<=0;read_weight<=0;read_integer<=0;
         mix_valid<=0;mix_last<=0;mix_base<=0;vp_r<=0;vp_g<=0;vp_b<=0;
         select_valid<=0;select_last<=0;selected_current<=0;selected_previous<=0;selected_weight<=0;
     end else if(start) begin
         active<=1;fault<=0;native_size<=(source_width==OUT_WIDTH && source_height==OUT_HEIGHT);vertical_pace<=0;
+        vga_crisp<=(source_width==16'd640 && source_height==16'd480 &&
+                    OUT_WIDTH==1280 && OUT_HEIGHT==720);
         // Compute terminal indices once, rather than subtracting in every
         // endpoint/ceil comparison on the 100MHz pixel-enable path.
         source_last_x<=source_width[10:0]-11'd1;source_last_y<=source_height[10:0]-11'd1;
@@ -815,6 +823,7 @@ always @(posedge clk or posedge rst) begin
         end
         if(vertical_step) begin
             read_chunk<=vx>>9;read_bank<=v_bank;read_first<=(v_source_y==0);
+            read_integer<=(ypos[15:0]==0);
             read_weight<=ypos[15:8];read_last<=(vx==OUT_WIDTH-1 && vy==OUT_HEIGHT-1);
             if(vx==OUT_WIDTH-1) begin
                 vx<=0;vy<=vy+1'b1;ypos<=next_ypos;
@@ -823,7 +832,7 @@ always @(posedge clk or posedge rst) begin
         end
         if(read_valid) begin
             selected_current<=current_rgb;selected_previous<=previous_rgb;
-            selected_weight<=read_weight;select_last<=read_last;
+            selected_weight<=vga_crisp ? 8'd0 : read_weight;select_last<=read_last;
         end
         if(select_valid) begin
             mix_base<=selected_previous;mix_last<=select_last;

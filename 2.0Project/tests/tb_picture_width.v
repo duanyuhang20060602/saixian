@@ -13,7 +13,7 @@ initial begin
         b=ib;c=ic;s=is;
         for(n=0;n<64;n=n+1) begin
             rgb={8'(n*4),8'(n*57),8'(n*101)};
-            repeat(7) @(negedge clk);
+            repeat(11) @(negedge clk);
             if(compact!==reference) $fatal(1,"width optimization changed RGB %h b=%d c=%d s=%d compact=%h ref=%h",rgb,b,c,s,compact,reference);
             count=count+1;
         end

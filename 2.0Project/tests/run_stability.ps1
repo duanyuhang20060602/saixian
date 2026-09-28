@@ -1,9 +1,19 @@
 $ErrorActionPreference = 'Stop'
 $iv = 'C:/iverilog/bin/iverilog.exe'
 $vvp = 'C:/iverilog/bin/vvp.exe'
+if ($env:SAIXIAN_IVERILOG_BIN) {
+    $iv = Join-Path $env:SAIXIAN_IVERILOG_BIN 'iverilog.exe'
+    $vvp = Join-Path $env:SAIXIAN_IVERILOG_BIN 'vvp.exe'
+}
+if (-not (Test-Path -LiteralPath $iv) -or -not (Test-Path -LiteralPath $vvp)) {
+    throw 'Set SAIXIAN_IVERILOG_BIN to a directory containing iverilog.exe and vvp.exe.'
+}
+$savedTestPath = $env:PATH
+$env:PATH = (Split-Path $iv -Parent) + ';' + $env:PATH
 Push-Location (Split-Path $PSScriptRoot -Parent)
 try {
     $jobs = @(
+        @('tb_picture_stream', 'tests/tb_picture_stream.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
         @('tb_result_text_geometry', 'tests/tb_result_text_geometry.v', 'src/user_source/hdl_source/saixian_battle_result_fx_pipelined.v'),
         @('tb_hmi_music', 'tests/tb_hmi_music.v', 'src/user_source/hdl_source/saixian_hmi_uart.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
         @('tb_hmi_compat', 'tests/tb_hmi_compat.v', 'src/user_source/hdl_source/saixian_hmi_uart.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
@@ -27,6 +37,9 @@ try {
         @('tb_pcm_pause', 'tests/tb_pcm_pause.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
         @('tb_boot_load_order', 'tests/tb_boot_load_order.v', 'src/user_source/hdl_source/SD/sd_card_bmp.v'),
         @('tb_load_scaler', 'tests/tb_load_scaler.v', 'src/user_source/hdl_source/SD/bmp_read.v'),
+        @('tb_scaler_fraction_zero', 'tests/tb_scaler_fraction_zero.v', 'src/user_source/hdl_source/SD/bmp_read.v'),
+        @('tb_scaler_vga_tail', 'tests/tb_scaler_vga_tail.v', 'src/user_source/hdl_source/SD/bmp_read.v'),
+        @('tb_scaler_vga_crisp', 'tests/tb_scaler_vga_crisp.v', 'src/user_source/hdl_source/SD/bmp_read.v'),
         @('tb_scaler_pacing', 'tests/tb_scaler_pacing.v', 'src/user_source/hdl_source/SD/bmp_read.v'),
         @('tb_enhance', 'tests/tb_enhance.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
         @('tb_enhance_numeric', 'tests/tb_enhance_numeric.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
@@ -34,7 +47,7 @@ try {
         @('tb_pcm_snapshot', 'tests/tb_pcm_snapshot.v', 'src/user_source/hdl_source/saixian_osd_overlay.v')
     )
     foreach ($job in $jobs) {
-        $testCache = 'E:/Codex/Temp/saixian_four_features_tests'
+        $testCache = Join-Path (Split-Path $PSScriptRoot -Parent) '.build-backup/rtl-tests'
         New-Item -ItemType Directory -Force -Path $testCache | Out-Null
         $target = Join-Path $testCache ($job[0] + '.vvp')
         $options = @('-g2012', '-DVICTORY_SIM', '-s', $job[0], '-o', $target)
@@ -46,4 +59,4 @@ try {
         & $vvp $target
         if ($LASTEXITCODE -ne 0) { throw "Simulation failed: $($job[0])" }
     }
-} finally { Pop-Location }
+} finally { Pop-Location; $env:PATH = $savedTestPath }

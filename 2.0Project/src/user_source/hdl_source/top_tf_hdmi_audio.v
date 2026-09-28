@@ -709,33 +709,37 @@ saixian_picture_adjust_pipe u_picture_adjust(.clk(video_clk),.rst(rst_video),.de
     .rgb_in(enhanced_rgb),.brightness_setting(brightness_frame),.contrast_setting(contrast_frame),
     .saturation_setting(saturation_frame),.sharpness_setting(2'd0),.rgb_out(adjusted_rgb));
 
-// The picture-adjust block has five registered stages. Delay timing and
+// The picture-adjust block has eight registered stages. Delay timing and
 // coordinates by the same amount so every transformed pixel keeps its DE/VS
 // and screen position at the higher pixel rate.
-reg [4:0] adjust_de_pipe, adjust_vs_pipe;
-reg [10:0] adjust_x0, adjust_x1, adjust_x2, adjust_x3, adjust_x4;
-reg [9:0]  adjust_y0, adjust_y1, adjust_y2, adjust_y3, adjust_y4;
+reg [7:0] adjust_de_pipe, adjust_vs_pipe;
+reg [10:0] adjust_x0, adjust_x1, adjust_x2, adjust_x3, adjust_x4, adjust_x5, adjust_x6, adjust_x7;
+reg [9:0]  adjust_y0, adjust_y1, adjust_y2, adjust_y3, adjust_y4, adjust_y5, adjust_y6, adjust_y7;
 always @(posedge video_clk or posedge rst_video) begin
     if (rst_video) begin
-        adjust_de_pipe <= 5'd0;
-        adjust_vs_pipe <= 5'd0;
+        adjust_de_pipe <= 8'd0;
+        adjust_vs_pipe <= 8'd0;
         adjust_x0 <= 11'd0; adjust_x1 <= 11'd0; adjust_x2 <= 11'd0; adjust_x3 <= 11'd0; adjust_x4 <= 11'd0;
         adjust_y0 <= 10'd0; adjust_y1 <= 10'd0; adjust_y2 <= 10'd0; adjust_y3 <= 10'd0; adjust_y4 <= 10'd0;
+        adjust_x5 <= 0; adjust_x6 <= 0; adjust_x7 <= 0;
+        adjust_y5 <= 0; adjust_y6 <= 0; adjust_y7 <= 0;
     end else begin
-        adjust_de_pipe <= {adjust_de_pipe[3:0],enhanced_de};
-        adjust_vs_pipe <= {adjust_vs_pipe[3:0],enhanced_vs};
+        adjust_de_pipe <= {adjust_de_pipe[6:0],enhanced_de};
+        adjust_vs_pipe <= {adjust_vs_pipe[6:0],enhanced_vs};
         adjust_x0 <= enhanced_x; adjust_x1 <= adjust_x0; adjust_x2 <= adjust_x1; adjust_x3 <= adjust_x2; adjust_x4 <= adjust_x3;
         adjust_y0 <= enhanced_y; adjust_y1 <= adjust_y0; adjust_y2 <= adjust_y1; adjust_y3 <= adjust_y2; adjust_y4 <= adjust_y3;
+        adjust_x5 <= adjust_x4; adjust_x6 <= adjust_x5; adjust_x7 <= adjust_x6;
+        adjust_y5 <= adjust_y4; adjust_y6 <= adjust_y5; adjust_y7 <= adjust_y6;
     end
 end
 
-wire adjusted_de = adjust_de_pipe[4];
-wire adjusted_vs = adjust_vs_pipe[4];
+wire adjusted_de = adjust_de_pipe[7];
+wire adjusted_vs = adjust_vs_pipe[7];
 // Scale one logical 640x480 OSD canvas over the complete 1280x720 raster.
 // Header, countdown, border, progress bar and spectrum now share one renderer,
 // eliminating the duplicated middle/top bands. 683/1024 approximates 2/3 and
 // maps physical line 719 to logical line 479.
-wire [20:0] osd_y_product = adjust_y4 * 11'd683;
+wire [20:0] osd_y_product = adjust_y7 * 11'd683;
 reg osd_area_in;
 reg [9:0] osd_x_in;
 reg [8:0] osd_y_in;
@@ -748,7 +752,7 @@ always @(posedge video_clk or posedge rst_video) begin
         osd_rgb_in <= 24'd0;
     end else begin
         osd_area_in <= adjusted_de;
-        osd_x_in <= adjust_x4[10:1];
+        osd_x_in <= adjust_x7[10:1];
         osd_y_in <= osd_y_product[18:10];
         osd_rgb_in <= styled_rgb;
     end
@@ -791,8 +795,8 @@ always @(posedge video_clk or posedge rst_video) begin
         adjusted_de_q1 <= adjusted_de; adjusted_de_q2 <= adjusted_de_q1; adjusted_de_q3 <= adjusted_de_q2; adjusted_de_q4 <= adjusted_de_q3; adjusted_de_q5 <= adjusted_de_q4;
         adjusted_vs_q1 <= adjusted_vs; adjusted_vs_q2 <= adjusted_vs_q1; adjusted_vs_q3 <= adjusted_vs_q2; adjusted_vs_q4 <= adjusted_vs_q3; adjusted_vs_q5 <= adjusted_vs_q4;
         adjusted_rgb_q1 <= styled_rgb; adjusted_rgb_q2 <= adjusted_rgb_q1; adjusted_rgb_q3 <= adjusted_rgb_q2; adjusted_rgb_q4 <= adjusted_rgb_q3; adjusted_rgb_q5 <= adjusted_rgb_q4;
-        adjust_xq1 <= adjust_x4; adjust_xq2 <= adjust_xq1; adjust_xq3 <= adjust_xq2; adjust_xq4 <= adjust_xq3; adjust_xq5 <= adjust_xq4;
-        adjust_yq1 <= adjust_y4; adjust_yq2 <= adjust_yq1; adjust_yq3 <= adjust_yq2; adjust_yq4 <= adjust_yq3; adjust_yq5 <= adjust_yq4;
+        adjust_xq1 <= adjust_x7; adjust_xq2 <= adjust_xq1; adjust_xq3 <= adjust_xq2; adjust_xq4 <= adjust_xq3; adjust_xq5 <= adjust_xq4;
+        adjust_yq1 <= adjust_y7; adjust_yq2 <= adjust_yq1; adjust_yq3 <= adjust_yq2; adjust_yq4 <= adjust_yq3; adjust_yq5 <= adjust_yq4;
     end
 end
 
@@ -1350,7 +1354,9 @@ wire signed [9:0] residual=$signed({1'b0,y1})-$signed({1'b0,neighborhood[11:4]})
 reg signed [9:0] detail_term;
 reg signed [7:0] tone_term;
 always @* begin
-    if(detail>=-3 && detail<=3) detail_term=-detail; // smooth only small residuals
+    // Preserve low-contrast lettering/texture rather than replacing it with
+    // the causal neighborhood average. Keep the existing edge sharpening.
+    if(detail>=-3 && detail<=3) detail_term=0;
     else case(strength)
         0:detail_term=0;1:detail_term=detail>>>1;
         2:detail_term=detail;default:detail_term=detail+(detail>>>1);
@@ -1359,9 +1365,10 @@ always @* begin
     if(detail_term< -12) detail_term=-12;
     case(gain)
         0:tone_term=0;
-        1:tone_term=$signed({1'b0,curve_product[15:9]});
-        2:tone_term=$signed({1'b0,curve_product[15:8]});
-        default:tone_term=$signed({1'b0,curve_product[15:8]})+$signed({1'b0,curve_product[15:9]});
+        // Half the previous lift: retain more mid-tone contrast/headroom.
+        1:tone_term=$signed({2'b0,curve_product[15:10]});
+        2:tone_term=$signed({1'b0,curve_product[15:9]});
+        default:tone_term=$signed({1'b0,curve_product[15:9]})+$signed({2'b0,curve_product[15:10]});
     endcase
 end
 integer i;
@@ -1441,6 +1448,32 @@ reg [7:0] red_base_s1, green_base_s1, blue_base_s1;
 reg signed [10:0] brightness_offset_comb;
 reg signed [10:0] brightness_offset_s1;
 reg [10:0] contrast_config_s1, saturation_config_s2;
+// Separate subtract, DSP multiply, Q4 rounding/add and clamp. Total latency: 8 clocks.
+reg signed [8:0] red_sat_delta_s3, green_sat_delta_s3, blue_sat_delta_s3;
+reg [10:0] saturation_config_s3;
+reg signed [8:0] luma_s3, luma_s4;
+reg signed [14:0] red_product_s4, green_product_s4, blue_product_s4;
+reg [3:0] saturation_bias_s4;
+reg red_carry_s4, green_carry_s4, blue_carry_s4;
+reg signed [10:0] red_sat_s5, green_sat_s5, blue_sat_s5;
+
+function gain_carry;
+    input signed [8:0] value; input [1:0] selector;
+    begin
+        gain_carry=selector==1 ? value[2]&value[0] :
+                   selector==2 ? value[1]&value[0] : 1'b0;
+    end
+endfunction
+
+function signed [10:0] finish_saturation;
+    input signed [14:0] product; input [3:0] bias;
+    input carry_bit; input signed [8:0] luma_value;
+    reg signed [14:0] rounded;
+    begin
+        rounded=product+$signed({1'b0,bias});
+        finish_saturation=luma_value+(rounded>>>4)-$signed({1'b0,carry_bit});
+    end
+endfunction
 
 // Decode frame-stable controls before the pixel multiplier path. Bits are
 // {positive Q4 coefficient, rounding bias, low-bit correction selector}.
@@ -1524,8 +1557,8 @@ endfunction
 function [7:0] clamp_pipe;
     input signed [10:0] value;
     begin
-        if(value<0) clamp_pipe=8'd0;
-        else if(value>13'sd255) clamp_pipe=8'd255;
+        if(value[10]) clamp_pipe=8'd0;
+        else if(|value[9:8]) clamp_pipe=8'd255;
         else clamp_pipe=value[7:0];
     end
 endfunction
@@ -1535,9 +1568,6 @@ wire [7:0] green_pre_wire=clamp_pipe(green_work_s1);
 wire [7:0] blue_pre_wire=clamp_pipe(blue_work_s1);
 wire signed [10:0] luma_wire=($signed({1'b0,red_pre_wire})+
     ($signed({1'b0,green_pre_wire})<<<1)+$signed({1'b0,blue_pre_wire}))>>>2;
-wire signed [10:0] red_sat_wire=luma_s2+decoded_gain($signed({1'b0,red_pre_s2})-luma_s2,saturation_config_s2);
-wire signed [10:0] green_sat_wire=luma_s2+decoded_gain($signed({1'b0,green_pre_s2})-luma_s2,saturation_config_s2);
-wire signed [10:0] blue_sat_wire=luma_s2+decoded_gain($signed({1'b0,blue_pre_s2})-luma_s2,saturation_config_s2);
 
 always @* begin
     case(brightness_setting)
@@ -1571,6 +1601,11 @@ always @(posedge clk or posedge rst) begin
         saturation_config_s2<=gain_config(4'd4,1'b1);
         red_work_s1<=0; green_work_s1<=0; blue_work_s1<=0;
         red_pre_s2<=0; green_pre_s2<=0; blue_pre_s2<=0; luma_s2<=0; rgb_out<=0;
+        red_sat_delta_s3<=0; green_sat_delta_s3<=0; blue_sat_delta_s3<=0;
+        saturation_config_s3<=gain_config(4'd4,1'b1); luma_s3<=0; luma_s4<=0;
+        red_product_s4<=0; green_product_s4<=0; blue_product_s4<=0;
+        saturation_bias_s4<=0; red_carry_s4<=0; green_carry_s4<=0; blue_carry_s4<=0;
+        red_sat_s5<=0; green_sat_s5<=0; blue_sat_s5<=0;
     end else begin
         rgb_in_s0<=rgb_in; de_s0<=de; x_s0<=x;
         brightness_offset_s1<=brightness_offset_comb;
@@ -1581,7 +1616,21 @@ always @(posedge clk or posedge rst) begin
         red_base_s1<=rgb_in_s0[23:16]; green_base_s1<=rgb_in_s0[15:8]; blue_base_s1<=rgb_in_s0[7:0];
         red_work_s1<=red_work_comb; green_work_s1<=green_work_comb; blue_work_s1<=blue_work_comb;
         red_pre_s2<=red_pre_wire; green_pre_s2<=green_pre_wire; blue_pre_s2<=blue_pre_wire; luma_s2<=luma_wire;
-        rgb_out<={clamp_pipe(red_sat_wire),clamp_pipe(green_sat_wire),clamp_pipe(blue_sat_wire)};
+        red_sat_delta_s3<=$signed({1'b0,red_pre_s2})-luma_s2;
+        green_sat_delta_s3<=$signed({1'b0,green_pre_s2})-luma_s2;
+        blue_sat_delta_s3<=$signed({1'b0,blue_pre_s2})-luma_s2;
+        luma_s3<=luma_s2; saturation_config_s3<=saturation_config_s2;
+        red_product_s4<=red_sat_delta_s3*$signed({1'b0,saturation_config_s3[10:6]});
+        green_product_s4<=green_sat_delta_s3*$signed({1'b0,saturation_config_s3[10:6]});
+        blue_product_s4<=blue_sat_delta_s3*$signed({1'b0,saturation_config_s3[10:6]});
+        luma_s4<=luma_s3; saturation_bias_s4<=saturation_config_s3[5:2];
+        red_carry_s4<=gain_carry(red_sat_delta_s3,saturation_config_s3[1:0]);
+        green_carry_s4<=gain_carry(green_sat_delta_s3,saturation_config_s3[1:0]);
+        blue_carry_s4<=gain_carry(blue_sat_delta_s3,saturation_config_s3[1:0]);
+        red_sat_s5<=finish_saturation(red_product_s4,saturation_bias_s4,red_carry_s4,luma_s4);
+        green_sat_s5<=finish_saturation(green_product_s4,saturation_bias_s4,green_carry_s4,luma_s4);
+        blue_sat_s5<=finish_saturation(blue_product_s4,saturation_bias_s4,blue_carry_s4,luma_s4);
+        rgb_out<={clamp_pipe(red_sat_s5),clamp_pipe(green_sat_s5),clamp_pipe(blue_sat_s5)};
     end
 end
 endmodule

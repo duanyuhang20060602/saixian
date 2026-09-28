@@ -19,7 +19,7 @@ task frame;
     begin
         p=level*(255-level);
         case(gain)
-            0:t=0;1:t=p>>9;2:t=p>>8;3:t=(p>>8)+(p>>9);
+            0:t=0;1:t=p>>10;2:t=p>>9;3:t=(p>>9)+(p>>10);
         endcase
         expected=level+t;if(expected>255) expected=255;
         for(j=0;j<80;j=j+1) begin

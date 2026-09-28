@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Project Version="3" Minor="2" Path="E:/Codex/Downloads/qiansai/2.0Project/src/td_project">
+<Project Version="3" Minor="2" Path="D:/qiansai/saixian_project2.0_20260928/2.0Project/src/td_project">
     <Project_Created_Time></Project_Created_Time>
     <TD_Version>6.2.168116</TD_Version>
     <Name>HDMI1.4b_Transmitter_v2.0</Name>
@@ -164,7 +164,6 @@
             </File>
             <File Path="../user_source/hdl_source/saixian_battle_result_fx_pipelined.v">
                 <FileInfo>
-                    <Attr Name="AutoExcluded" Val="true"/>
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>

@@ -1,13 +1,15 @@
 $ErrorActionPreference = "Stop"
 $projectRoot = (Resolve-Path $PSScriptRoot).Path
 $tdRoot = 'C:\Anlogic\TD_6.2.1_Engineer_6.2.168.116'
+if ($env:SAIXIAN_TD_ROOT) { $tdRoot = $env:SAIXIAN_TD_ROOT }
+elseif (-not (Test-Path -LiteralPath $tdRoot)) { $tdRoot = 'D:\TD' }
 $tdPrompt = Join-Path $tdRoot 'bin\td_commands_prompt.exe'
 if (-not (Test-Path -LiteralPath $tdPrompt)) {
     throw "TD command-line tool not found: $tdPrompt"
 }
 try {
     Push-Location (Join-Path $projectRoot 'src\td_project')
-    $backupDir = 'E:/Codex/Temp/saixian_2.0_build'
+    $backupDir = Join-Path $projectRoot '.build-backup'
     New-Item -ItemType Directory -Force -Path $backupDir | Out-Null
     $lastGood = Join-Path $backupDir 'last_timing_pass.bin'
     $baseline = 'HDMI1.4b_Transmitter_v2.0.bit'
@@ -16,7 +18,13 @@ try {
     }
     $buildStarted = Get-Date
     Remove-Item -LiteralPath '.opt_rtl.error.f' -Force -ErrorAction SilentlyContinue
-    & $tdPrompt 'build_saixian.tcl'
+    $previousTdRoot = $env:SAIXIAN_TD_ROOT
+    try {
+        $env:SAIXIAN_TD_ROOT = $tdRoot.Replace('\','/')
+        & $tdPrompt 'build_saixian.tcl'
+    } finally {
+        $env:SAIXIAN_TD_ROOT = $previousTdRoot
+    }
     if ($LASTEXITCODE -ne 0) {
         throw "TD command-line exit code: $LASTEXITCODE"
     }

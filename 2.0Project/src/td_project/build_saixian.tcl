@@ -24,4 +24,6 @@ lappend phyWildParams route effort high
 # and generate the final routed timing report after that phase.
 set arr_filter on
 set arr_rwns -100000
-source {C:/Anlogic/TD_6.2.1_Engineer_6.2.168.116/doc/scripts/DefaultFlow.tcl}
+set tdRoot {C:/Anlogic/TD_6.2.1_Engineer_6.2.168.116}
+if {[info exists ::env(SAIXIAN_TD_ROOT)]} { set tdRoot $::env(SAIXIAN_TD_ROOT) }
+source [file join $tdRoot doc scripts DefaultFlow.tcl]

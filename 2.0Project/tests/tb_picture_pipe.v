@@ -7,7 +7,7 @@ reg [3:0] b=4,c=4,s=4;reg [1:0] sharp=0;
 wire [23:0] out;
 saixian_picture_adjust_pipe dut(clk,rst,de,x,rgb,b,c,s,sharp,out);
 integer i,j;
-task settle;begin repeat(7) @(negedge clk);end endtask
+task settle;begin repeat(11) @(negedge clk);end endtask
 initial begin
  settle;rst=0;
  for(i=0;i<256;i=i+1) begin

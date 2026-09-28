@@ -36,10 +36,10 @@ initial begin
                         total=total+b;
                     end
                 d=a-(total>>4);
-                if(d>=-3 && d<=3) dt=-d;
+                if(d>=-3 && d<=3) dt=0;
                 else case(s) 0:dt=0;1:dt=d>>>1;2:dt=d;3:dt=d+(d>>>1);endcase
                 if(dt>12) dt=12;if(dt< -12) dt=-12;
-                e=a+((a*(255-a))>>9)+dt;
+                e=a+((a*(255-a))>>10)+dt;
                 if(e<0) e=0;if(e>255) e=255;
                 @(negedge clk);de=1;x=i;y=j;rgb={8'(a),8'(a),8'(a)};expect_pixel=e;
             end
