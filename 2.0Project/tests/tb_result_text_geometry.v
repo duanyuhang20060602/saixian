@@ -34,7 +34,10 @@ initial begin
  end
  state_value=5;
  for(f=0;f<256;f=f+1)begin
-  @(negedge clk);frame_value=f;ft=1;
+  @(negedge clk);frame_value=f;
+  // Allow the production frame-level base multiply to pre-register before
+  // the next frame boundary, matching the real result_frame cadence.
+  @(posedge clk);@(negedge clk);ft=1;
   @(negedge clk);ft=0;
   for(i=0;i<3;i=i+1)begin
    row=180+i*135;#1;expected_shift=200+shift_ref(f,(2-i)*16);

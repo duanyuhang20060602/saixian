@@ -29,9 +29,19 @@ initial begin
  blue=1;tick;blue=0;stop=1;@(negedge clk);stop=0;
  if(!busy)$fatal(1,"Stop must wait for frame boundary");
  tick;if(busy || dut.state!=0)$fatal(1,"Stop did not exit blue entrance");
+ blue=1;tick;blue=0;
+ repeat(360) tick;if(dut.state!=2)$fatal(1,"blue victory did not settle");
+ trigger=1;tick;trigger=0;
+ if(dut.state!=3)$fatal(1,"blue continue must skip red victory and enter ranking");
+ stop=1;tick;stop=0;if(busy)$fatal(1,"Stop did not exit blue-to-ranking flow");
+ red=1;tick;red=0;
+ repeat(360) tick;if(dut.state!=8)$fatal(1,"red victory did not settle");
+ trigger=1;tick;trigger=0;
+ if(dut.state!=3)$fatal(1,"red continue did not enter ranking");
+ stop=1;tick;stop=0;if(busy)$fatal(1,"Stop did not exit red-to-ranking flow");
  sprint=1;tick;sprint=0;stop=1;tick;stop=0;
  if(busy || sprint_active)$fatal(1,"Stop did not exit sprint entrance");
  stop=1;tick;stop=0;tick;if(busy)$fatal(1,"Repeated stop restarted result");
- $display("PASS frame-boundary blue/red/sprint selection, entrance protection, podium, carousel return");$finish;
+ $display("PASS blue skips red, direct red continues to ranking, sprint protection, podium, carousel return");$finish;
 end
 endmodule

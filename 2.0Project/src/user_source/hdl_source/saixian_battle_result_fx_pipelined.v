@@ -1,5 +1,5 @@
-// Blue victory -> red victory -> eight-runner ranking -> compact top three.
-// Each K2 press advances from a held page; no automatic exit.
+// Blue or red victory -> eight-runner ranking -> compact top three.
+// A generic trigger advances from a held page; direct inputs select a result.
 module saixian_battle_result_fx(
     input wire clk, rst, frame_tick, trigger,
     input wire select_blue, select_red, select_sprint, stop,
@@ -168,9 +168,9 @@ always @(posedge clk or posedge rst) begin
                 end
             end else if(state==HOLD) begin
                 if(pending || trigger) begin
-                    state<=RED_PLAY; pending<=0; frame_count<=0;
-                    wipe_edge<=0; sheen_edge<=0; title_drop<=24;
-                    red_selected<=1;
+                    // Blue victory continues directly to the ranking.  Red
+                    // victory remains available only through select_red.
+                    state<=RANK_IN; pending<=0; result_frame<=0;
                 end
             end else if(state==RED_HOLD) begin
                 if(pending || trigger) begin
@@ -333,6 +333,7 @@ wire [31:0] atlas_word;
 // path only selects a registered displacement; it never computes easing.
 reg [10:0] rank_shift [0:7];
 reg [10:0] podium_shift [0:2]; // includes the fixed 200-pixel podium offset
+reg [10:0] slide_base;
 integer si;
 function [10:0] slide_shift;
     input [7:0] f;
@@ -347,24 +348,41 @@ function [10:0] slide_shift;
         else slide_shift=0;
     end
 endfunction
+function [10:0] slide_shift_fast;
+    input [7:0] f;
+    input [7:0] onset;
+    input [10:0] base;
+    begin
+        if(f<onset) slide_shift_fast=11'd1200;
+        else if({1'b0,f} < {1'b0,onset}+9'd24) slide_shift_fast=base+onset*11'd50;
+        else slide_shift_fast=0;
+    end
+endfunction
 always @(posedge clk or posedge rst) begin
     if(rst) begin
+        slide_base<=11'd1200;
         for(si=0;si<8;si=si+1) rank_shift[si]<=11'd1200;
         for(si=0;si<3;si=si+1) podium_shift[si]<=11'd1400;
-    end else if(frame_tick) begin
-        if(direct_choice==2'd3) begin
-            for(si=0;si<8;si=si+1) rank_shift[si]<=11'd1200;
-            for(si=0;si<3;si=si+1) podium_shift[si]<=11'd1400;
-        end else begin
-            if(state==RANK_IN)
-                for(si=0;si<8;si=si+1)
-                    rank_shift[si]<=slide_shift(result_frame,si*12);
-            if(state==PODIUM_IN)
-                for(si=0;si<3;si=si+1)
-                    podium_shift[si]<=slide_shift(result_frame,(2-si)*16)+11'd200;
-            if(state==IDLE) begin
+    end else begin
+        // result_frame changes only at a video-frame boundary.  Pre-register
+        // its shared multiply during the intervening pixel clocks so the next
+        // frame boundary only performs constant offsets and comparisons.
+        slide_base <= (11'd24-{3'd0,result_frame})*11'd50;
+        if(frame_tick) begin
+            if(direct_choice==2'd3) begin
                 for(si=0;si<8;si=si+1) rank_shift[si]<=11'd1200;
                 for(si=0;si<3;si=si+1) podium_shift[si]<=11'd1400;
+            end else begin
+                if(state==RANK_IN)
+                    for(si=0;si<8;si=si+1)
+                        rank_shift[si]<=slide_shift_fast(result_frame,si*12,slide_base);
+                if(state==PODIUM_IN)
+                    for(si=0;si<3;si=si+1)
+                        podium_shift[si]<=slide_shift_fast(result_frame,(2-si)*16,slide_base)+11'd200;
+                if(state==IDLE) begin
+                    for(si=0;si<8;si=si+1) rank_shift[si]<=11'd1200;
+                    for(si=0;si<3;si=si+1) podium_shift[si]<=11'd1400;
+                end
             end
         end
     end

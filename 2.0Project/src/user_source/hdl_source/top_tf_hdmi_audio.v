@@ -78,6 +78,14 @@ saixian_key_debounce #(.CLK_FREQ_HZ(VIDEO_CLK_HZ),.DEBOUNCE_MS(20)) u_key2(.clk(
 saixian_key_debounce #(.CLK_FREQ_HZ(VIDEO_CLK_HZ),.DEBOUNCE_MS(20)) u_key3(.clk(video_clk),.rst(rst_video),.key_n(key[2]),.press_pulse(key3_press));
 saixian_key_debounce #(.CLK_FREQ_HZ(VIDEO_CLK_HZ),.DEBOUNCE_MS(20)) u_key4(.clk(video_clk),.rst(rst_video),.key_n(key[3]),.press_pulse(key4_press));
 
+// In carousel mode K2 selects a winner without changing the animation itself:
+// release before one second selects blue; reaching one second selects red once.
+wire key2_result_short_press, key2_result_long_press;
+saixian_key_short_long #(.CLK_FREQ_HZ(VIDEO_CLK_HZ),.HOLD_MS(1000)) u_key2_result_press(
+    .clk(video_clk),.rst(rst_video),.key_n(key[1]),.press_pulse(key2_press),
+    .short_pulse(key2_result_short_press),.long_pulse(key2_result_long_press)
+);
+
 // K4 short release advances a photo; holding for one second changes music.
 localparam integer KEY4_AUDIO_HOLD_CYCLES = VIDEO_CLK_HZ;
 reg key4_meta, key4_sync, key4_audio_fired, key4_short_pending;
@@ -841,16 +849,24 @@ always @(posedge video_clk or posedge rst_video) begin
     end
 end
 
-// K2 advances: blue win -> red win -> eight-runner rank -> top three -> carousel.
-// Each page holds after its entrance; transition-time presses are ignored.
-// K2 still decreases settings and pauses/resumes an active event.
+// Outside a result animation, K2 short/long selects blue/red.  Once a result is
+// active, either press is routed back to the original "K2 continue" input, so a
+// short continue press cannot restart blue victory.  HMI direct selection,
+// ranking and all animation rendering stay unchanged.
 wire [23:0] battle_rgb;
 wire battle_vs;
+wire key2_result_continue, key2_result_blue_select, key2_result_red_select;
+saixian_key2_result_router u_key2_result_router(
+    .result_mode(carousel_mode & ~settings_mode),.battle_busy(battle_busy),
+    .short_pulse(key2_result_short_press),.long_pulse(key2_result_long_press),
+    .continue_pulse(key2_result_continue),.blue_select(key2_result_blue_select),
+    .red_select(key2_result_red_select)
+);
 saixian_battle_result_fx u_battle_result(
     .clk(video_clk),.rst(rst_video),.frame_tick(frame_tick),
-    .trigger(key2_press & carousel_mode & ~settings_mode),
-    .select_blue(hmi_result_blue & carousel_mode & ~settings_mode),
-    .select_red(hmi_result_red & carousel_mode & ~settings_mode),
+    .trigger(key2_result_continue),
+    .select_blue((hmi_result_blue & carousel_mode & ~settings_mode) | key2_result_blue_select),
+    .select_red((hmi_result_red & carousel_mode & ~settings_mode) | key2_result_red_select),
     .select_sprint(hmi_result_sprint & carousel_mode & ~settings_mode),.stop(hmi_result_stop),
     .busy(battle_busy),.sprint_active(sprint_result_active),
     .sprint_background_valid(sprint_background_ready_video),
@@ -1067,6 +1083,76 @@ always @(posedge clk or posedge rst) begin
     end
 end
 
+endmodule
+
+module saixian_key2_result_router(
+    input  wire result_mode,
+    input  wire battle_busy,
+    input  wire short_pulse,
+    input  wire long_pulse,
+    output wire continue_pulse,
+    output wire blue_select,
+    output wire red_select
+);
+assign continue_pulse = result_mode && battle_busy && (short_pulse || long_pulse);
+assign blue_select    = result_mode && !battle_busy && short_pulse;
+assign red_select     = result_mode && !battle_busy && long_pulse;
+endmodule
+
+// Classify one active-low key press.  The debounced press pulse arms short-press
+// reporting, while a synchronized raw level makes the one-second threshold
+// independent of the 20 ms debounce delay.  A long press fires exactly once and
+// suppresses the short pulse when the key is released.
+module saixian_key_short_long #(
+    parameter integer CLK_FREQ_HZ = 25_000_000,
+    parameter integer HOLD_MS = 1000
+)(
+    input  wire clk,
+    input  wire rst,
+    input  wire key_n,
+    input  wire press_pulse,
+    output reg  short_pulse,
+    output reg  long_pulse
+);
+localparam integer HOLD_CYCLES = (CLK_FREQ_HZ / 1000) * HOLD_MS;
+reg key_meta, key_sync;
+reg press_pending, long_fired;
+reg [31:0] hold_count;
+
+always @(posedge clk or posedge rst) begin
+    if (rst) begin
+        key_meta      <= 1'b1;
+        key_sync      <= 1'b1;
+        press_pending <= 1'b0;
+        long_fired    <= 1'b0;
+        hold_count    <= 32'd0;
+        short_pulse   <= 1'b0;
+        long_pulse    <= 1'b0;
+    end else begin
+        key_meta    <= key_n;
+        key_sync    <= key_meta;
+        short_pulse <= 1'b0;
+        long_pulse  <= 1'b0;
+
+        if (press_pulse)
+            press_pending <= 1'b1;
+
+        if (key_sync) begin
+            if (press_pending && !long_fired)
+                short_pulse <= 1'b1;
+            press_pending <= 1'b0;
+            long_fired    <= 1'b0;
+            hold_count    <= 32'd0;
+        end else if (!long_fired) begin
+            if (hold_count >= HOLD_CYCLES - 1) begin
+                long_pulse <= 1'b1;
+                long_fired <= 1'b1;
+            end else begin
+                hold_count <= hold_count + 32'd1;
+            end
+        end
+    end
+end
 endmodule
 
 module saixian_reset_sync(

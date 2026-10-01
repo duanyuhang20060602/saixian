@@ -13,6 +13,7 @@ $env:PATH = (Split-Path $iv -Parent) + ';' + $env:PATH
 Push-Location (Split-Path $PSScriptRoot -Parent)
 try {
     $jobs = @(
+        @('tb_key2_short_long', 'tests/tb_key2_short_long.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
         @('tb_picture_stream', 'tests/tb_picture_stream.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
         @('tb_result_text_geometry', 'tests/tb_result_text_geometry.v', 'src/user_source/hdl_source/saixian_battle_result_fx_pipelined.v'),
         @('tb_hmi_music', 'tests/tb_hmi_music.v', 'src/user_source/hdl_source/saixian_hmi_uart.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
