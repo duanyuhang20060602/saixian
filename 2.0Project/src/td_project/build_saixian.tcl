@@ -11,7 +11,7 @@ set end_step bitgen
 set area_option -packarea
 set arr_filter false
 set drHoldFix on
-set phyWildParams {place seed 3}
+set phyWildParams {place seed 12}
 if {[info exists ::env(SAIXIAN_PLACE_SEED)]} {
     set phyWildParams [list place seed $::env(SAIXIAN_PLACE_SEED)]
 }

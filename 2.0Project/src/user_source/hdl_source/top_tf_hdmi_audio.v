@@ -24,9 +24,9 @@ parameter [20:0] FRAME_WORDS = 21'd460800;
 localparam [20:0] VGA_FRAME_WORDS = 21'd307200;
 parameter [20:0] BUF0_ADDR = 21'd0;
 parameter BUF1_ADDR = FRAME_WORDS;
-// One 720p RGB565 frame reserved for the 100 m result route.  The two
-// carousel buffers still occupy only indices 0 and 1.
+// Index 2 holds the dedicated sprint backdrop; 0/1/3 cache carousel images.
 localparam [20:0] SPRINT_BG_ADDR = FRAME_WORDS * 21'd2;
+localparam [20:0] BUF3_ADDR = FRAME_WORDS * 21'd3;
 
 wire sd_card_clk, ext_mem_clk, ext_mem_clk_sft, video_clk, hdmi_5x_clk;
 wire sys_pll_lock, video_pll_lock;
@@ -458,7 +458,7 @@ frame_read_write #(.WRITE_V_FLIP(1),.FRAME_WIDTH(640),.FRAME_HEIGHT(720)) u_fram
     .mem_clk(ext_mem_clk),.rst(rst_mem),.Sdr_init_done(Sdr_init_done),.Sdr_init_ref_vld(Sdr_init_ref_vld),.Sdr_busy(Sdr_busy),
     .App_rd_en(App_rd_en),.App_rd_addr(App_rd_addr),.Sdr_rd_en(Sdr_rd_en),.Sdr_rd_dout(Sdr_rd_dout),
     .read_clk(video_clk),.read_req(video_read_req),.read_req_ack(video_read_req_ack),.read_finish(),
-    .read_addr_0(BUF0_ADDR),.read_addr_1(BUF1_ADDR),.read_addr_2(SPRINT_BG_ADDR),.read_addr_3(21'd0),
+    .read_addr_0(BUF0_ADDR),.read_addr_1(BUF1_ADDR),.read_addr_2(SPRINT_BG_ADDR),.read_addr_3(BUF3_ADDR),
     .read_addr_index(sprint_read_enabled ? 2'd2 : active_buf_idx),
     .read_len(FRAME_WORDS),.read_en(video_read_en),.read_data(video_read_data),.read_fifo_empty(video_read_empty),
     .slide_active(transition_active && !sprint_read_enabled),.slide_old_index(active_buf_idx),.slide_new_index(slide_new_buf_idx),
@@ -466,7 +466,7 @@ frame_read_write #(.WRITE_V_FLIP(1),.FRAME_WIDTH(640),.FRAME_HEIGHT(720)) u_fram
     .buffer0_vga(buffer0_vga_sd),.buffer1_vga(buffer1_vga_sd),
     .App_wr_en(App_wr_en),.App_wr_addr(App_wr_addr),.App_wr_din(App_wr_din),.App_wr_dm(App_wr_dm),
     .write_clk(sd_card_clk),.write_req(sd_card_write_req),.write_req_ack(sd_card_write_req_ack),.write_finish(frame_write_finish),
-    .write_addr_0(BUF0_ADDR),.write_addr_1(BUF1_ADDR),.write_addr_2(SPRINT_BG_ADDR),.write_addr_3(21'd0),.write_addr_index(write_buf_idx),
+    .write_addr_0(BUF0_ADDR),.write_addr_1(BUF1_ADDR),.write_addr_2(SPRINT_BG_ADDR),.write_addr_3(BUF3_ADDR),.write_addr_index(write_buf_idx),
     .write_len(write_vga_sd ? VGA_FRAME_WORDS : FRAME_WORDS),.write_vga(write_vga_sd),
     .write_en(sd_card_write_en),.write_data(sd_card_write_data),
     .write_fifo_full(write_fifo_full)
@@ -1415,10 +1415,12 @@ assign de_out=de_pipe[6];assign vs_out=vs_pipe[6];
 assign x_out=xp[6];assign y_out=yp[6];
 function [7:0] tap;
     input [7:0] a,b;input valid;
-    reg [7:0] difference;
+    reg [8:0] difference;
     begin
-        difference=(a>b) ? a-b : b-a;
-        tap=(valid && difference<=8'd24) ? b : a;
+        // One subtraction covers both signs. In unsigned 9-bit arithmetic,
+        // [-24,-1] maps to [488,511]; avoid two subtractors and an abs mux.
+        difference={1'b0,a}-{1'b0,b};
+        tap=(valid && (difference<=9'd24 || difference>=9'd488)) ? b : a;
     end
 endfunction
 function [7:0] clamp_enhanced;

@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-01",
+  "base_branch": "codex/saixian-2.0-sdram-refresh",
+  "base_commit": "18908e72221d1d081aa67af064bbbc71eee9cf25",
+  "scope": "homepage previous/next image responsiveness",
+  "source_backup": "E:/Codex/Work/saixian_navigation_20261001",
+  "fpga_bit": "src/td_project/SAIXIAN_2.0_NAV_CACHE_20261001.bit",
+  "bit_bytes": 702956,
+  "bit_sha256": "9092AE7CE053B1405F0AE8860E6A7072FCE7C1B541AE7CE64822D25B48D38A7C",
+  "locally_built": true,
+  "tool": "Tang Dynasty 6.2.168116",
+  "place_seed": 6,
+  "timing_confidence": "Routed",
+  "setup_ns": 0.104,
+  "hold_ns": 0.027,
+  "setup_tns_ns": 0,
+  "hold_tns_ns": 0,
+  "resources": {
+    "lut": 17420,
+    "registers": 9532,
+    "bram9k": 38,
+    "bram32k": 14,
+    "dsp": 10
+  },
+  "baseline_delta": {
+    "lut": 73,
+    "registers": 4,
+    "bram9k": 0,
+    "bram32k": 0,
+    "dsp": 0,
+    "external_sdram_bytes": 1843200
+  },
+  "regression_passes": 37,
+  "regression_record": "doc/validation/navigation_20261001_regression.txt",
+  "after_final_neighbor_pipeline_rechecked": [
+    "tb_picture_navigation",
+    "tb_boot_load_order",
+    "tb_startup_retry_integration"
+  ],
+  "final_scheduler_record": "doc/validation/navigation_20261001_final_scheduler.txt",
+  "screen_model": "TJC8048T070_011R",
+  "screen_tft_sha256": "3E5B268BFC185FDB93F80926F533B464E4DCEB1212EE4A07E1E79797356182BD",
+  "screen_reflash_required": false,
+  "screen_sync_check": "PASS",
+  "clock_constraints_sha256": "E6371095F3338DED83E50B4B8976B7AED8BFFF6ECCECED5DD6F1164F2BFA2404",
+  "hardware_validation": "FPGA download and physical touch/HDMI validation pending user board operation",
+  "source_sha256": {
+    "src/user_source/hdl_source/top_tf_hdmi_audio.v": "B38739C6913BDEC0867EC567AE9706119ED5F294045E2B612B3C5A69125C351F",
+    "src/user_source/hdl_source/SD/sd_card_bmp.v": "B7E21E64855B1DDB368226AA99DB5157B6C6D02CDA7F22CE83B59D661AA2A9B1",
+    "src/user_source/hdl_source/SD/bmp_read.v": "2B3D4EF9611B30E9E76A4CADD4F44A05A624637F90E5E369B9042594423F51A3",
+    "tests/tb_picture_navigation.v": "2AB6C2A2F26979BE5888D5B9D18A39878953037621A5C1A0913C85A9008176FF",
+    "tests/tb_bmp_payload_limits.v": "FE74FAE22C677B87CF3494A3BE1BCA93A5114C0B4899D48A2D461EACB8AE267D",
+    "tests/tb_enhance_tap_range.v": "D432835E24A184014840165CDE703471D92269984B0D938D2D3F9B6FEF099D01",
+    "tests/tb_boot_load_order.v": "94A9BEB22349EAF8B910C68027C4B78E2CE4E63A79C9E54CF2EBCC6D154F80F8",
+    "tests/run_stability.ps1": "9DB6DBA9100DB91A792734DBC519CF7A1474559598BFF91F0AF16D0355BDF29A",
+    "src/td_project/build_saixian.tcl": "37717DB6E6505561FB71B17F973E8B2597524D2DAB17E34887ACD46B0AB4F47B",
+    "build_saixian.ps1": "87D10A2880FA6FC66251AA451E2EF312BD2CF3EB350AABC96F01EDBC998F690F",
+    "src/user_source/constraints_source/timing.sdc": "E6371095F3338DED83E50B4B8976B7AED8BFFF6ECCECED5DD6F1164F2BFA2404"
+  }
+}

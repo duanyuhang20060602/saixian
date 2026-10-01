@@ -1,6 +1,6 @@
 # HMI 编辑器操作清单（TJC8048X570）
 
-打开 `saixian-main/saixian_UART_HMI.HMI`，先在编辑器“另存为”备份。下面修改事件和属性即可；完整滑块代码见同目录 `HMI_双向串口修改说明.md`。
+2026-10-01：下述同步修改已在 `2.0Project/hmi/saixian_UART_HMI.HMI` 通过原生编辑器完成，已编译输出 `saixian_UART_HMI.tft`，0 错误、0 警告。当前下载与哈希以 [屏幕交付说明](../hmi/README.md) 为准。下文保留为维护操作参考，不要使用 `saixian-main` 中的旧副本。
 
 ## A. Program.s
 
@@ -152,7 +152,7 @@ FPGA 会直接写 game.t4.txt、game.t3.txt 为 MM:SS，写 game.n_state.val 为
 
 1. 保存 HMI，点击编辑器“编译”，逐项修复提示。确认工程选择的是实物 TJC8048X570 对应后缀，800×480。
 2. 通过编辑器串口下载或按屏幕手册用 TFT 下载到屏幕。不要把 HMI 源文件当 TFT 烧录文件。
-3. FPGA 下载本次通过最终时序检查的新位流；具体文件与 SHA256 以 HMI_BUILD_STATUS.md 的最终交付记录为准。
+3. FPGA 保持当前匹配位流；具体文件与 SHA256 以当前 README.md 和 hmi/README.md 为准，本次屏端同步修复不需要重建 FPGA 位流。
 4. 双向接线：屏 TX→D14，屏 RX←G11，GND 共地，接口应为 TTL。实际为 RS232 模式时须先转换。
 5. 依次测首页状态、设置/恢复默认、开始/暂停/继续/结束，以及结束展示后蓝/红/百米选择。
 

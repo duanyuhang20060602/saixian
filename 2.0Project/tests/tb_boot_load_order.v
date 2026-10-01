@@ -16,11 +16,11 @@ initial begin
  force dut.image_sector0=32'h1000;force dut.sprint_background_sector=32'h2000;
  force dut.sprint_background_found=1;force dut.sprint_background_ready=0;
  force dut.display_committed=0;
- @(negedge clk);
+ wait(dut.load_start_pulse); @(negedge clk);
  if(dut.load_sector!==32'h1000 || dut.write_buf_idx!==0 || dut.loading_sprint_background)
   $fatal(1,"sprint background delayed first carousel picture");
  force dut.load_busy=0;force dut.awaiting_commit=0;force dut.display_committed=1;
- @(negedge clk);
+ @(negedge clk); wait(dut.load_start_pulse); @(negedge clk);
  if(dut.load_sector!==32'h2000 || dut.write_buf_idx!==2 || !dut.loading_sprint_background)
   $fatal(1,"dedicated sprint background not loaded after first picture");
  $display("PASS first carousel picture before dedicated sprint background; buffers remain separate");$finish;

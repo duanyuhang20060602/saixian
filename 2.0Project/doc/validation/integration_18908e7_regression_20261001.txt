@@ -1,0 +1,68 @@
+PASS K2 idle short/long selects blue/red; active-result short press continues without restart
+tests/tb_key2_short_long.v:69: $finish called at 2030000 (1ps)
+PASS 46656 consecutive pixels, 8-stage latency, all 9x9x9 settings
+tests/tb_picture_stream.v:73: $finish called at 641560000 (1ps)
+PASS independent text-band reference: all 1024 rows in three modes; all 256 frames x 3 podium offsets, no added raster delay
+tests/tb_result_text_geometry.v:47: $finish called at 38443000 (1ps)
+PASS music counts 0..5 and cleared count, real UART next-track command, wraparound and state guards
+tests/tb_hmi_music.v:42: $finish called at 580870000 (1ps)
+PASS HMI: all 13 command IDs, boot noise, invalid toggles, timeout, recovery, color filters
+tests/tb_hmi_compat.v:63: $finish called at 126494000 (1ps)
+PASS named home/settings/game UART commands, page switching, pause/resume, malformed values and timeout recovery
+tests/tb_hmi_bidirectional.v:60: $finish called at 1879530000 (1ps)
+PASS production SDRAM refresh timer: 4096 intervals in 62.6688 ms, ack/valid guard, retirement, reset; encrypted command decoder NOT modeled
+tests/tb_sdram_refresh_timer.v:44: $finish called at 62684620000 (1ps)
+PASS first/second/persistent E02, no level double-count, other errors, success clear and runtime reporting
+tests/tb_startup_error_policy.v:27: $finish called at 720000 (1ps)
+PASS SD scheduler integration: unchanged first timeout recovery/reset, second timeout report, success and runtime error
+tests/tb_startup_retry_integration.v:31: $finish called at 2700000 (1ps)
+PASS UART status IN/OK/E2/E1, named home components and command framing
+tests/tb_hmi_startup_policy.v:33: $finish called at 238030000 (1ps)
+PASS RGB pair order, 21-stage timing, injected underflow, frame recovery, reset
+tests/tb_video_recovery.v:36: $finish called at 2110000 (1ps)
+PASS 256 gray levels, primaries, brightness/contrast clamps, saturation
+tests/tb_picture_pipe.v:25: $finish called at 29480000 (1ps)
+PASS conservative 11-bit manual adjustment versus retained wide reference:       46656 cases
+tests/tb_picture_width.v:22: $finish called at 5132200000 (1ps)
+PASS exact DSP gains including negative rounding:       20432 exhaustive cases
+tests/tb_gain_exact.v:34: $finish called at 0 (1ps)
+PASS blue skips red, direct red continues to ranking, sprint protection, podium, carousel return
+tests/tb_result_controls.v:45: $finish called at 22110000 (1ps)
+PASS frame-atomic picture configuration (vendor IP isolated)
+tests/tb_frame_config.v:23: $finish called at 120000 (1ps)
+PASS timing-stage reset, two-stage asynchronous ack, repeated frame request
+tests/tb_frame_handshake.v:20: $finish called at 170000 (1ps)
+PASS 4096 full-speed raster pixels and exhaustive signed title-bound equivalence
+tests/tb_result_raster.v:38: $finish called at 41060000 (1ps)
+PASS exhaustive one-hot row decode versus original priority geometry: 3072 cases
+tests/tb_result_decode.v:28: $finish called at 3112000 (1ps)
+PASS title origins: 512 frames x 2048 columns; medal geometry: 4194304 cases
+tests/tb_result_geometry.v:49: $finish called at 5249062000 (1ps)
+PASS palette versus original full-RGB scene reference:      150010 clocks, blue/red/sprint
+tests/tb_result_palette.v:149: $finish called at 1500140000 (1ps)
+PASS music waits for first displayed picture; blanking, result pause, finish resume, reset
+tests/tb_music_start.v:23: $finish called at 390000 (1ps)
+PASS no startup FIFO reads, preserved first sample and event-pause resume
+tests/tb_pcm_pause.v:26: $finish called at 420000 (1ps)
+PASS first carousel picture before dedicated sprint background; buffers remain separate
+tests/tb_boot_load_order.v:26: $finish called at 50000 (1ps)
+PASS streaming AUD header: valid format and all 16 fixed-byte corruptions
+tests/tb_audio_header_stream.v:50: $finish called at 4830000 (1ps)
+PASS bilinear constant, 2D ramp, endpoints, count, native bypass
+tests/tb_load_scaler.v:38: $finish called at 22060000 (1ps)
+PASS 2048 bilinear pixels: nonzero-Q16/zero-Q8 fraction and exact endpoint
+tests/tb_scaler_fraction_zero.v:42: $finish called at 345660000 (1ps)
+PASS 20480 VGA tail pixels: row 707/710/713/716 and exact final endpoint
+tests/tb_scaler_vga_tail.v:52: $finish called at 7976860000 (1ps)
+PASS VGA crisp: 921600 exact nearest pixels, endpoints, RGB565, pacing
+tests/tb_scaler_vga_crisp.v:56: $finish called at 301506460000 (1ps)
+PASS paced vertical writes: exact pixel count, RGB alignment, at least 16 clocks between pixels
+tests/tb_scaler_pacing.v:28: $finish called at 24260000 (1ps)
+PASS enhancement bypass/split, RGB/DE/XY alignment, border masks
+tests/tb_enhance.v:36: $finish called at 12540000 (1ps)
+PASS adaptive thresholds, fixed-point tone reference, constant-field borders and saturation:       61440 pixels
+tests/tb_enhance_numeric.v:42: $finish called at 658300000 (1ps)
+PASS independent integer reference: range-gated causal 3x3, four strengths, edges, detail clamp (       3072 pixels)
+tests/tb_enhance_detail.v:52: $finish called at 35480000 (1ps)
+PASS real PCM capture, frame-atomic publication, bank isolation
+tests/tb_pcm_snapshot.v:20: $finish called at 2690000 (1ps)

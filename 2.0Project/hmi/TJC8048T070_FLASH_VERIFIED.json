@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-01",
+  "model": "TJC8048T070_011R",
+  "serial": "E467C05117335E28",
+  "port": "COM10",
+  "runtime_baud": 115200,
+  "download_baud": 230400,
+  "download_result": "completed",
+  "compile_errors": 0,
+  "compile_warnings": 0,
+  "ram_max_page_bytes": 1860,
+  "ram_total_bytes": 3584,
+  "source_sync_check": "PASS",
+  "physical_serial_check": "PASS",
+  "fpga_integration_test": "not performed in this download session",
+  "files": {
+    "saixian_TJC8048T070.HMI": {
+      "bytes": 9958162,
+      "sha256": "70c740d1eb91fe642c509c6d88d62da06eb920915bea1aea6906291e2929f31a"
+    },
+    "saixian_TJC8048T070.tft": {
+      "bytes": 2858540,
+      "sha256": "3e5b268bfc185fdb93f80926f533b464e4dceb1212ee4a07e1e79797356182bd"
+    }
+  }
+}

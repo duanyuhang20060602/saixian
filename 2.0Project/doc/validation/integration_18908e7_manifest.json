@@ -1,0 +1,35 @@
+{
+  "repo": "https://github.com/duanyuhang20060602/saixian",
+  "branch": "codex/saixian-2.0-sdram-refresh",
+  "commit": "18908e72221d1d081aa67af064bbbc71eee9cf25",
+  "date": "2026-10-01",
+  "backup": "E:\\Codex\\Work\\saixian_integrate_20261001_18908e7\\before",
+  "updated_from_remote": [
+    "src/user_source/hdl_source/top_tf_hdmi_audio.v",
+    "src/user_source/hdl_source/saixian_battle_result_fx_pipelined.v",
+    "tests/tb_key2_short_long.v",
+    "tests/tb_result_controls.v",
+    "tests/tb_result_text_geometry.v",
+    "src/td_project/HDMI1.4b_Transmitter_v2.0.bit",
+    "src/td_project/HDMI1.4b_Transmitter_v2.0_phy.area",
+    "src/td_project/final_timing.rpt",
+    "src/td_project/SAIXIAN_2.0_KEY2_BLUE_SKIP_RED_20261001.bit",
+    "src/td_project/SAIXIAN_2.0_KEY2_BLUE_SKIP_RED_20261001.timing.rpt"
+  ],
+  "preserved": [
+    "native compiled X570 HMI and TFT",
+    "flashed TJC8048T070 HMI and TFT",
+    "local TD project paths and IP configuration",
+    "existing TF materials",
+    "local audio-header regression"
+  ],
+  "regression_passes": 34,
+  "hdl_rom_files_matching_remote_after_line_ending_normalization": 62,
+  "timing_report_origin": "published repository report, no local reroute this session",
+  "setup_ns": 0.105,
+  "hold_ns": 0.024,
+  "bit_sha256": "628EBBB33998C51ADFFCE5F7E3C16DF3421E18423A10D94C60E36B2C9C3D27B5",
+  "screen_sha256": "3E5B268BFC185FDB93F80926F533B464E4DCEB1212EE4A07E1E79797356182BD",
+  "screen_already_flashed": true,
+  "latest_fpga_flashing_and_system_hardware_validation": "pending user board operation"
+}

@@ -1,41 +1,26 @@
-# 赛显 2.0：HMI 双向串口与 SDRAM 刷新修复版
+# 赛显 2.0：首页切图响应修复与 TJC8048T070 新屏整合
 
-2026-10-01 KEY2 胜方选择冲突修复版：图片轮播且尚未进入结算动画时，短按 KEY2 并松开播放“蓝方获胜”动画；长按满 1 秒立即播放“红方获胜”动画，松开后不会重复触发蓝方。蓝方获胜画面按 K2 后直接进入八人排名，不再插入红方获胜画面；从长按进入的红方获胜画面按 K2 后同样进入八人排名。进入任一结算动画后，KEY2 只用于推进原动画，不会重新启动胜方动画。设置状态下 KEY2 仍用于减小参数，比赛过程中仍用于暂停/继续；串口屏的蓝方、红方、百米排名和退出指令保持不变。
+平台：安路 EG4S20BG256，TD 6.2.168116；当前实物串口屏 `TJC8048T070_011R`，800×480。原 `TJC8048X570_011` 工程仍保留。
 
-烧录 [KEY2 蓝方跳过红方版位流](src/td_project/SAIXIAN_2.0_KEY2_BLUE_SKIP_RED_20261001.bit)，702956 字节；SHA256：`628EBBB33998C51ADFFCE5F7E3C16DF3421E18423A10D94C60E36B2C9C3D27B5`。默认 `HDMI1.4b_Transmitter_v2.0.bit` 与其一致；独立报告见 [KEY2 蓝方跳过红方版时序](src/td_project/SAIXIAN_2.0_KEY2_BLUE_SKIP_RED_20261001.timing.rpt)。33 项完整回归全部通过；TD 完整布局布线采用种子 6，建立余量 +0.105ns、保持余量 +0.024ns，STNS/HTNS 均为零。此前 `SAIXIAN_2.0_KEY2_WIN_20261001.bit` 存在继续键冲突，`SAIXIAN_2.0_KEY2_CONTINUE_FIX_20261001.bit` 的蓝方流程仍会经过红方画面，两者均已撤回，不要烧录。
+## 当前版本（2026-10-01）
 
-2026-09-28 最新 VGA 清晰版 R2 已完成：640×480 图片采用最近邻放大，修复 Q16/Q8 小数边界选错行的问题；图像调节使用八级流水线，坐标与 DE/VS 同步延迟。完整 TD 布线建立 +0.130ns、保持 +0.024ns，STNS/HTNS 均为零；30 项常规回归与 2 项定向测试共 32 项通过，含真实 VGA 整帧 921600 个像素检查。未降低视频时钟或放宽约束，默认布局种子为 3。
+已从 GitHub 分支 `codex/saixian-2.0-sdram-refresh` 提交 `18908e72221d1d081aa67af064bbbc71eee9cf25` 整合最新 RTL、测试及位流。轮播态 KEY2 短按松开选择蓝方、长按满 1 秒选择红方；胜方画面停稳后 KEY2 直接推进排名，不再插入另一胜方画面。比赛态暂停/继续、设置态减小参数、HMI 指令均保留。原 VGA 清晰版 R2、SDRAM 刷新、五首音乐和配套图片素材继续使用。真实排名不属于当前要求，本次未新增成绩采集或真实排名。
 
-烧录 [VGA 清晰版 R2 位流](src/td_project/SAIXIAN_2.0_VGA_CRISP_R2_20260928.bit)，702956 字节，2026-09-28 18:18:42；默认 `HDMI1.4b_Transmitter_v2.0.bit` 与其一致。SHA256：`B9FD157B57D1DEBEAE3CE69E51C5D0784E73FFF6658797374FABCE77747EB016`。详见 [640 图片优化与验证记录](doc/640图片清晰度优化_20260928.md) 和 [本次独立时序报告](src/td_project/SAIXIAN_2.0_VGA_CRISP_R2_20260928.timing.rpt)。初版 VGA_CRISP 位流已撤回，不要误用。2026-09-28 用户反馈本版上板通过；此反馈不代表已完成逐项功能、长时间运行或温度范围测试。
+在上述 GitHub 版本基础上，本机新增首页上一张/下一张响应修复：SDRAM 0/1/3 帧槽缓存当前及前后邻图，读卡忙时可提交已缓存目标，等待读卡时重复点击合并，转场时保留一次最新方向请求，防止五次请求循环抵消；槽 2 仍专用于比赛背景。调度增加相邻编号与扇区地址流水线，BMP 边界比较和增强范围门限采用等价简化。详情见 [五次请求抵消修复与复验](doc/五次连点与方向错乱修复_20261001.md)。本次未修改屏幕工程和素材。
 
-此前 2026-09-28 保细节版已通过 TD 完整布线：建立 +0.030ns、保持 +0.029ns，总负裕量均为零；保留 [旧清晰度版位流](src/td_project/SAIXIAN_2.0_CLARITY_20260928.bit) 供对比。下述 2026-09-27 的指标与哈希仅描述仓库原版，不代表当前默认位流。
+39 项 FPGA 回归通过，含真实 UART 接收器到切图调度及转场的逐张操作仿真；新屏同步检查通过。本机 TD 完整重建、布局种子 12，最终布线建立余量 +0.115ns，保持 +0.027ns，STNS/HTNS 均为零，STA 覆盖率 99.97%；LUT 17380/19600、寄存器 9525/19600、RAM9K 38/64、RAM32K 14/16、DSP 10/29。相对上一版 NAV_CACHE 少 40 LUT、7 个寄存器，RAM、DSP 和外部帧缓存相同。已复现并修复慢读卡期间五次请求抵消；用户逐张点击也卡住的现场症状尚未复现，不能认定完整根因已排除。新位流整机实测尚待下载后验证。
 
-平台：安路 EG4S20BG256，TD 6.2.168116；串口屏 TJC8048X570。此目录独立包含 2.0 工程、素材、动画资源与测试。
+## 烧录、接线与验证
 
-## 仓库原版历史记录（2026-09-27）
+- **FPGA 下载文件**：[SAIXIAN_2.0_NAV_WRAP_FIX_20261001.bit](src/td_project/SAIXIAN_2.0_NAV_WRAP_FIX_20261001.bit)，702956 字节，SHA256 `A29EEC942532A252D504911C89644C3935E794C9271563D6EDA5C2C6227FFC4E`；默认 `HDMI1.4b_Transmitter_v2.0.bit` 与其一致。原 [KEY2 稳定版](src/td_project/SAIXIAN_2.0_KEY2_BLUE_SKIP_RED_20261001.bit) 保留用于回退。
+- **当前新屏已烧录文件**：[saixian_TJC8048T070.tft](hmi/saixian_TJC8048T070.tft)，源工程 [saixian_TJC8048T070.HMI](hmi/saixian_TJC8048T070.HMI)。屏序列号 `E467C05117335E28`，PC 下载时 COM10，运行 115200、8N1。本次更新无需重烧新屏。
+- 新屏已通过官方编辑器编译和下载，实物串口查询的 18 个反馈控件、五个页面通知通过；已修复 T0 背景切图兼容问题。详情见 [屏幕交付与验证](hmi/README.md)。原 X570 文件只用于对应旧屏。
+- **接线**：屏 TX→J1 第 1 脚 GPIOA_0/D14；屏 RX←J1 第 2 脚 GPIOA_1/G11；GND→J1 第 12 或 30 脚。新屏信号为用户确认的 3.3 V TTL；VCC 按屏幕电源标注，不能把信号电平当成供电电压。接 FPGA 前拔下 USB 转 TTL 的 TX/RX，避免发送端并联。
+- **完整现场操作**：[新屏接线与整机验证](doc/新屏接线与整机验证_20261001.md)，含供电、HDMI_A、最新 FPGA 下载、播放、参数回写、比赛计时、KEY2 和故障定位。
+- 本次整合前备份：`E:/Codex/Work/saixian_integrate_20261001_18908e7/before`。整合证据：[文件清单](doc/validation/integration_18908e7_manifest.json)、[34 项回归记录](doc/validation/integration_18908e7_regression_20261001.txt)。
+- 切图修改前备份：`E:/Codex/Work/saixian_navigation_20261001`。当前修复前备份：`E:/Codex/Work/saixian_navigation_wrap_fix_20261001`。本次证据：[交付清单](doc/validation/navigation_wrap_20261001_manifest.json)、[39 项回归记录](doc/validation/navigation_wrap_20261001_regression.txt)、[旧版失效记录](doc/validation/navigation_wrap_20261001_before_failure.txt)。
 
-2026-09-27 19:51:22 构建，布局种子 3。新增首页 t_p/t_m/t_e 状态回传、设置参数回传、FPGA 比赛时间/状态回传、页面通知及独立暂停/继续指令；保留 SDRAM 周期刷新修复。
-
-28 项回归全部通过。最终布局布线：建立时间 +0.105ns，保持时间 +0.024ns，STNS/HTNS 均为零。LUT 17355/19600、寄存器 9372/19600、RAM9K 38/64、RAM32K 14/16、DSP 10/29。视频时钟仍为 75MHz，未放宽时序约束。
-
-新增 08 循环切歌、23 退出赛果动画；t_m 显示已识别有效 AUD 音乐数量 0–5。编辑器代码见 [HMI_音乐与退出动画.md](doc/HMI_音乐与退出动画.md)。动画十一组位移共享帧数乘法基值，65536 组独立参考比较通过。
-
-为收敛时序，赛果动画的固定领奖台偏移提前到逐帧更新，文字高度判定提前寄存；新增独立几何参考测试确认坐标、动画及流水线延迟保持一致。
-
-**这是已通过仿真和完整布线时序的新固件；尚未完成修改后 HMI 的编辑器编译、屏幕下载和实板联调，不能把它描述成实板长时间稳定性保证。**
-
-## 仓库原版烧录与 HMI 修改（历史）
-
-- 工程内位流：[HDMI1.4b_Transmitter_v2.0.bit](src/td_project/HDMI1.4b_Transmitter_v2.0.bit)，702956 字节，2026-09-27 19:51:22。
-- SHA256：`5524A058C0B881AF3BB74A0FA2C8F53C71ABA2F410266B3C1A4A1659CB563F59`。
-- 同内容下载副本：`E:/Codex/Downloads/SAIXIAN_2.0_HMI_MUSIC_EXIT_20260927.bit`。
-- 屏幕编辑器逐步操作：[HMI_编辑器操作清单.md](doc/HMI_编辑器操作清单.md)。
-- 完整事件代码和协议：[HMI_双向串口修改说明.md](doc/HMI_双向串口修改说明.md)。
-- 构建、测试与交付记录：[HMI_BUILD_STATUS.md](doc/HMI_BUILD_STATUS.md)。
-
-HMI 当前工程归档：[saixian_UART_HMI.HMI](hmi/saixian_UART_HMI.HMI)，说明见 [hmi/README.md](hmi/README.md)。未直接改写二进制；按说明在 USART HMI 编辑器修改控件属性和事件，再编译下载。旧版本不包含这些双向同步功能；在 BitWriter 移除旧文件条目，重新添加本次文件并核对时间及哈希。
-
-屏 TX→FPGA D14，屏 RX←FPGA G11，GND 共地；115200、8N1，使用 TTL 接口。比赛计时以 FPGA 为准，屏端旧 tm0 本地计时需要关闭。现有文字输入及八人成绩上传尚未接入，见完整说明。
+比赛计时以 FPGA 为准，HMI 已关闭旧屏端 tm0 本地计时。首页自定义文字上传和八人成绩采集仍未接入；已有排名动画为演示。原实机稳定性反馈对应此前使用的位流，不替代本次新位流现场复验。
 
 ## 素材与工程
 
@@ -43,11 +28,12 @@ HMI 当前工程归档：[saixian_UART_HMI.HMI](hmi/saixian_UART_HMI.HMI)，说�
 - FPGA 动画：[赛果 RTL](src/user_source/hdl_source/saixian_battle_result_fx_pipelined.v)，配套 `saixian_*_atlas.hex/.mif` 保留。
 - TD 工程：[HDMI1.4b_Transmitter_v2.0.al](src/td_project/HDMI1.4b_Transmitter_v2.0.al)。
 - 构建：[build_saixian.ps1](build_saixian.ps1)，失败或过期的候选不会替换最后合格位流。
-- 回归：[tests/run_stability.ps1](tests/run_stability.ps1)，当前套件为脚本列出的 32 项。
+- 回归：[tests/run_stability.ps1](tests/run_stability.ps1)，当前常规套件为脚本列出的 39 项。
 - 最终时序：[final_timing.rpt](src/td_project/final_timing.rpt)。
 - 资源：[HDMI1.4b_Transmitter_v2.0_phy.area](src/td_project/HDMI1.4b_Transmitter_v2.0_phy.area)。
 - 功能、算法及历史修复：[功能与算法应用报告](doc/功能与算法应用报告.md)。
+- 本轮 GitHub 算法及资源取舍：[GitHub FPGA 算法与资源审计](doc/GitHub_FPGA算法与资源审计_20260928.md)。
 
 TF 读取采用连续扇区扫描，不遍历 FAT 簇链，文件须连续存储。重新部署 TF 卡前先备份，再一次性复制全部素材；单独覆盖素材可能产生碎片。
 
-PowerShell 进入本目录，运行 `./tests/run_stability.ps1`，再运行 `./build_saixian.ps1`。仿真器可通过 `SAIXIAN_IVERILOG_BIN` 指定；当前便携目录为 `D:/qiansai/.tools/iverilog-portable/ucrt64/bin`。TD 可通过 `SAIXIAN_TD_ROOT` 指定，自动兼容原 C 盘安装及 `D:/TD`；构建备份和测试缓存使用工程内 `.build-backup`，不依赖 E 盘。编译数据库、失败位流和临时日志不作为交付固件。
+PowerShell 进入本目录，运行 `./tests/run_stability.ps1`，再运行 `./build_saixian.ps1`。脚本使用本机 `C:/iverilog` 与 `C:/Anlogic/TD_6.2.1_Engineer_6.2.168.116`，测试缓存和构建备份放在 `E:/Codex/Temp`。其他电脑应调整工具路径。编译数据库、失败位流和临时日志不作为交付固件。

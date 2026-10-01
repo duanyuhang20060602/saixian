@@ -138,9 +138,13 @@ assign header_geometry_ok = (width[31:16]  == 16'd0) &&
                       (height[15:0]  <= 16'd1080) &&
                       (bit_count    == 16'd24) &&
                       (compression  == 32'd0);
-assign bmp_data_valid = (sd_sec_read_data_valid == 1'b1) &&
-                        (bmp_len_cnt >= pixel_offset) &&
-                        (bmp_len_cnt <  file_len);
+// Compare upper/lower halves in parallel instead of putting a full 32-bit
+// carry comparator in series with pixel assembly. Preserve all header bits.
+wire payload_started = (bmp_len_cnt[31:16] > pixel_offset[31:16]) ||
+    ((bmp_len_cnt[31:16] == pixel_offset[31:16]) && (bmp_len_cnt[15:0] >= pixel_offset[15:0]));
+wire before_file_end = (bmp_len_cnt[31:16] < file_len[31:16]) ||
+    ((bmp_len_cnt[31:16] == file_len[31:16]) && (bmp_len_cnt[15:0] < file_len[15:0]));
+assign bmp_data_valid = sd_sec_read_data_valid && payload_started && before_file_end;
 assign file_sector_count = (file_len == 32'd0) ? 32'd1 : ((file_len + 32'd511) >> 9);
 assign next_scan_sector_if_miss  = scan_sector + 32'd1;
 // BGM.AUD begins with one aligned metadata sector. Byte zero is kept in the
@@ -602,7 +606,7 @@ always @(posedge clk or posedge rst) begin
 
                 if (sd_sec_read_end) begin
                     sd_sec_read <= 1'b0;
-                    if (bmp_len_cnt >= file_len) begin
+                    if (!before_file_end) begin
                         state <= ST_IDLE;
                     end else begin
                         sd_sec_read_addr <= sd_sec_read_addr + 32'd1;

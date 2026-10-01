@@ -1,0 +1,6 @@
+PASS navigation: cached prev/next during loads, slot 3, rapid latest target, no stale display, manual priority, both neighbours
+tests/tb_picture_navigation.v:103: $finish called at 1010000 (1ps)
+PASS first carousel picture before dedicated sprint background; buffers remain separate
+tests/tb_boot_load_order.v:26: $finish called at 80000 (1ps)
+PASS SD scheduler integration: unchanged first timeout recovery/reset, second timeout report, success and runtime error
+tests/tb_startup_retry_integration.v:31: $finish called at 2700000 (1ps)

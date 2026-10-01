@@ -70,10 +70,13 @@ reg [15:0] image_width0, image_width1, image_width2, image_width3, image_width4;
 reg [15:0] image_height0, image_height1, image_height2, image_height3, image_height4;
 reg [2:0] current_image, pending_image, desired_image;
 reg [1:0] current_buf;
-// Prefetch only into the carousel's inactive buffer; buffer 2 remains reserved.
-reg cache_valid, load_prefetch;
-reg [2:0] cached_image;
-reg [1:0] cached_buf;
+// Three RGB565 slots fit within the existing SDRAM. Index 2 stays reserved
+// for the sprint backdrop. Keep the visible frame and both neighbours cached.
+reg [3:0] cache_valid;
+reg [2:0] cached_image [0:3];
+reg [2:0] loading_image;
+reg load_prefetch, load_initial;
+reg load_issue_pending;
 reg load_busy, source_started, source_done, write_finish_seen, awaiting_commit, display_committed;
 reg desired_slide_right, load_slide_right;
 reg reload_first_after_scan;
@@ -162,6 +165,60 @@ function [31:0] sector_for;
         endcase
     end
 endfunction
+
+function image_is_cached;
+    input [2:0] image;
+    input [3:0] valid;
+    input [2:0] image0, image1, image3;
+    begin
+        image_is_cached = (valid[0] && image0 == image) ||
+                          (valid[1] && image1 == image) ||
+                          (valid[3] && image3 == image);
+    end
+endfunction
+function [1:0] buffer_for_image;
+    input [2:0] image;
+    begin
+        if (cache_valid[0] && cached_image[0] == image) buffer_for_image = 0;
+        else if (cache_valid[1] && cached_image[1] == image) buffer_for_image = 1;
+        else buffer_for_image = 3;
+    end
+endfunction
+function [1:0] buffer_to_fill;
+    input [2:0] keep_image;
+    begin
+        // Never overwrite the displayed frame. The scheduler does not start
+        // another write during a transition, so its old/new slots stay intact.
+        if (current_buf != 0 && (!cache_valid[0] || cached_image[0] != keep_image)) buffer_to_fill = 0;
+        else if (current_buf != 1 && (!cache_valid[1] || cached_image[1] != keep_image)) buffer_to_fill = 1;
+        else buffer_to_fill = 3;
+    end
+endfunction
+// Break index wrapping -> cache lookup -> victim selection into two clocks.
+// Tag the precomputed neighbours so a just-committed frame cannot allocate
+// using the previous frame's indices while these registers catch up.
+reg [2:0] following_image, preceding_image;
+reg [2:0] neighbor_current, neighbor_count;
+always @(posedge clk or posedge rst) begin
+    if (rst) begin
+        following_image <= 0; preceding_image <= 0;
+        neighbor_current <= 0; neighbor_count <= 0;
+    end else begin
+        following_image <= next_index(current_image,image_count);
+        preceding_image <= previous_index(current_image,image_count);
+        neighbor_current <= current_image; neighbor_count <= image_count;
+    end
+end
+wire neighbors_ready = neighbor_current == current_image && neighbor_count == image_count;
+wire following_cached = image_is_cached(following_image,cache_valid,cached_image[0],cached_image[1],cached_image[3]);
+wire preceding_cached = image_is_cached(preceding_image,cache_valid,cached_image[0],cached_image[1],cached_image[3]);
+wire desired_cached = image_is_cached(desired_image,cache_valid,cached_image[0],cached_image[1],cached_image[3]);
+wire publish_cached = carousel_on && display_committed && !awaiting_commit &&
+                      desired_image != current_image && desired_cached &&
+                      !prev_pulse && !next_pulse;
+wire [2:0] prefetch_image = (desired_slide_right && !preceding_cached) || following_cached ?
+                          preceding_image : following_image;
+wire [2:0] prefetch_keep = prefetch_image == following_image ? preceding_image : following_image;
 always @(posedge clk or posedge rst) begin
     if (rst) begin
         prev_sync <= 0; next_sync <= 0; commit_sync <= 0; wrfin_sync <= 0; carousel_sync <= 0;
@@ -184,7 +241,10 @@ always @(posedge clk or posedge rst) begin
         image_height0 <= 0; image_height1 <= 0; image_height2 <= 0; image_height3 <= 0; image_height4 <= 0;
         pending_width <= 0; pending_height <= 0; source_width <= 0; source_height <= 0;
         current_image <= 0; pending_image <= 0; desired_image <= 0; current_buf <= 0;
-        cache_valid <= 0; load_prefetch <= 0; cached_image <= 0; cached_buf <= 0;
+        cache_valid <= 0; load_prefetch <= 0; load_initial <= 0; loading_image <= 0;
+        load_issue_pending <= 0;
+        cached_image[0] <= 0; cached_image[1] <= 0;
+        cached_image[2] <= 0; cached_image[3] <= 0;
         ready_buf_idx <= 0; write_buf_idx <= 0;
         buffer0_vga <= 0; buffer1_vga <= 0;
         load_busy <= 0; source_started <= 0; source_done <= 0; write_finish_seen <= 0; awaiting_commit <= 0; display_committed <= 0;
@@ -201,6 +261,14 @@ always @(posedge clk or posedge rst) begin
         init_timer <= 0; load_timer <= 0; auto_timer <= 0; recovery_timer <= 0; scan_timer <= 0; scan_idle_timer <= 0;
     end else begin
         scan_start_pulse <= 0; load_start_pulse <= 0; op_abort <= 0;
+        // Register the selected image before the shared sector lookup. This
+        // removes cache/victim selection from the 32-bit SD address path.
+        // The reader samples the pulse next clock, after load_sector is stable.
+        if (load_issue_pending) begin
+            load_sector <= loading_sprint_background ? sprint_background_sector : sector_for(loading_image);
+            load_start_pulse <= 1;
+            load_issue_pending <= 0;
+        end
         sd_init_done_o <= sd_init_done;
         scan_done_o <= scan_done;
 
@@ -220,6 +288,7 @@ always @(posedge clk or posedge rst) begin
                 audio_data_bytes0 <= 0; audio_data_bytes1 <= 0; audio_data_bytes2 <= 0; audio_data_bytes3 <= 0; audio_data_bytes4 <= 0;
                 scan_stop_req <= 0; scan_idle_timer <= 0;
                 load_busy <= 0; awaiting_commit <= 0; desired_image <= 0;
+                load_issue_pending <= 0;
                 cache_valid <= 0; load_prefetch <= 0;
                 desired_slide_right <= 0;
                 source_started <= 0; source_done <= 0; write_finish_seen <= 0;
@@ -323,15 +392,17 @@ always @(posedge clk or posedge rst) begin
 
         if (scan_done && !scan_found_valid && image_count == 0 && scan_kicked && error_code == 0) error_code <= 3'd3;
 
-        // Track the desired image independently from the visible one. A TF
-        // transfer can take seconds, so presses received while busy must update
-        // the target instead of being collapsed into one pending direction bit.
+        // A slow TF load must not accumulate a modulo-five click backlog.
+        // Before a transition, each click refers to the visible frame. During
+        // a transition, keep one latest-direction request after its fixed
+        // destination. Repeated clicks therefore cannot wrap back and cancel
+        // the pending change while the screen is still showing the old frame.
         if (prev_pulse && carousel_on && scan_done && image_count > 1) begin
-            desired_image <= previous_index(desired_image, image_count);
+            desired_image <= awaiting_commit ? previous_index(pending_image,image_count) : previous_index(current_image,image_count);
             desired_slide_right <= 1;
             auto_timer <= 0;
         end else if (next_pulse && carousel_on && scan_done && image_count > 1) begin
-            desired_image <= next_index(desired_image, image_count);
+            desired_image <= awaiting_commit ? next_index(pending_image,image_count) : next_index(current_image,image_count);
             desired_slide_right <= 0;
             auto_timer <= 0;
         end else if (carousel_on && scan_done && image_count > 1 &&
@@ -346,59 +417,57 @@ always @(posedge clk or posedge rst) begin
             auto_timer <= 0;
         end
 
-        if (scan_done && image_count != 0 && !load_busy && !awaiting_commit && bmp_ready) begin
+        // Cache hits need no TF transaction. They can be published while a
+        // different slot (including the dedicated backdrop) is still loading.
+        if (publish_cached) begin
+            pending_image <= desired_image;
+            ready_buf_idx <= buffer_for_image(desired_image);
+            ready_slide_right <= desired_slide_right;
+            frame_ready_toggle <= ~frame_ready_toggle;
+            awaiting_commit <= 1;
+        end
+
+        if (scan_done && image_count != 0 && neighbors_ready && !load_busy && !awaiting_commit && bmp_ready &&
+            !publish_cached && !prev_pulse && !next_pulse) begin
             // The tagged BMP is a dedicated 100 m background. Load once into
             // buffer 2; buffers 0/1 and all five carousel slots remain
             // unchanged. It is never committed as a carousel frame.
             // Show the first carousel picture before loading the separate
             // sprint backdrop; no need to keep the user on the boot screen.
-            if (display_committed && sprint_background_found && !sprint_background_ready) begin
-                load_sector <= sprint_background_sector; write_buf_idx <= 2'd2;
+            if (carousel_on && display_committed && desired_image != current_image && !desired_cached) begin
+                // A requested photo takes priority over optional background work.
+                loading_image <= desired_image;
+                write_buf_idx <= buffer_to_fill(preceding_image);
+                cache_valid[buffer_to_fill(preceding_image)] <= 0;
+                load_slide_right <= desired_slide_right;
+                load_issue_pending <= 1; load_busy <= 1; load_prefetch <= 0; load_initial <= 0;
+                source_started <= 0; source_done <= 0; write_finish_seen <= 0; load_timer <= 0;
+            end else if (display_committed && sprint_background_found && !sprint_background_ready) begin
+                write_buf_idx <= 2'd2;
                 pending_width <= 16'd1280; pending_height <= 16'd720;
-                loading_sprint_background <= 1'b1; load_prefetch <= 0;
-                load_start_pulse <= 1; load_busy <= 1;
+                loading_sprint_background <= 1'b1; load_prefetch <= 0; load_initial <= 0;
+                load_issue_pending <= 1; load_busy <= 1;
                 source_started <= 0; source_done <= 0; write_finish_seen <= 0; load_timer <= 0;
             end else if (reload_first_after_scan && display_committed) begin
-                pending_image <= 0; load_sector <= image_sector0;
-                write_buf_idx <= (current_buf == 0) ? 2'd1 : 2'd0;
+                loading_image <= 0;
+                write_buf_idx <= buffer_to_fill(preceding_image);
                 pending_width <= image_width0; pending_height <= image_height0;
                 load_slide_right <= 0;
-                load_start_pulse <= 1; load_busy <= 1; load_prefetch <= 0; cache_valid <= 0;
+                load_issue_pending <= 1; load_busy <= 1; load_prefetch <= 0; load_initial <= 1; cache_valid <= 0;
                 source_started <= 0; source_done <= 0; write_finish_seen <= 0; load_timer <= 0;
                 reload_first_after_scan <= 0;
             end else if (!display_committed) begin
-                pending_image <= 0; load_sector <= image_sector0; write_buf_idx <= 0;
+                loading_image <= 0; write_buf_idx <= 0;
                 pending_width <= image_width0; pending_height <= image_height0;
                 load_slide_right <= 0;
-                load_start_pulse <= 1; load_busy <= 1; load_prefetch <= 0; cache_valid <= 0;
+                load_issue_pending <= 1; load_busy <= 1; load_prefetch <= 0; load_initial <= 1; cache_valid <= 0;
                 source_started <= 0; source_done <= 0; write_finish_seen <= 0; load_timer <= 0;
-            end else if (carousel_on && cache_valid && (desired_image == cached_image)) begin
-                pending_image <= cached_image;
-                pending_width <= width_for(cached_image);
-                pending_height <= height_for(cached_image);
-                ready_buf_idx <= cached_buf;
-                ready_slide_right <= desired_slide_right;
-                frame_ready_toggle <= ~frame_ready_toggle;
-                awaiting_commit <= 1;
-                cache_valid <= 0;
-            end else if (carousel_on && desired_image != current_image) begin
-                pending_image <= desired_image;
-                load_sector <= sector_for(desired_image);
-                pending_width <= width_for(desired_image);
-                pending_height <= height_for(desired_image);
-                write_buf_idx <= (current_buf == 0) ? 2'd1 : 2'd0;
-                load_slide_right <= desired_slide_right;
-                load_start_pulse <= 1; load_busy <= 1; load_prefetch <= 0; cache_valid <= 0;
-                source_started <= 0; source_done <= 0; write_finish_seen <= 0;
-                load_timer <= 0;
-            end else if (carousel_on && image_count > 1 && display_committed && !cache_valid) begin
-                cached_image <= next_index(current_image, image_count);
-                cached_buf <= (current_buf == 0) ? 2'd1 : 2'd0;
-                load_sector <= sector_for(next_index(current_image, image_count));
-                write_buf_idx <= (current_buf == 0) ? 2'd1 : 2'd0;
-                pending_width <= width_for(next_index(current_image, image_count));
-                pending_height <= height_for(next_index(current_image, image_count));
-                load_start_pulse <= 1; load_busy <= 1; load_prefetch <= 1;
+            end else if (carousel_on && image_count > 1 && display_committed &&
+                         desired_image == current_image && (!following_cached || !preceding_cached)) begin
+                loading_image <= prefetch_image;
+                write_buf_idx <= buffer_to_fill(prefetch_keep);
+                cache_valid[buffer_to_fill(prefetch_keep)] <= 0;
+                load_issue_pending <= 1; load_busy <= 1; load_prefetch <= 1; load_initial <= 0;
                 source_started <= 0; source_done <= 0; write_finish_seen <= 0; load_timer <= 0;
             end
         end
@@ -411,7 +480,7 @@ always @(posedge clk or posedge rst) begin
             // bmp_ready returns high at the end of the source transfer.
             if (wrfin_pulse) write_finish_seen <= 1;
             if (load_timer < LOAD_TIMEOUT_CYCLES) load_timer <= load_timer + 1;
-            else begin load_busy <= 0; loading_sprint_background <= 0; cache_valid <= 0;
+            else begin load_busy <= 0; loading_sprint_background <= 0; cache_valid <= 0; load_issue_pending <= 0;
                        op_abort <= 1; error_code <= 3'd4; end
         end
 
@@ -422,23 +491,26 @@ always @(posedge clk or posedge rst) begin
             if (loading_sprint_background) begin
                 loading_sprint_background <= 0;
                 sprint_background_ready <= 1'b1;
-            end else if (load_prefetch) begin
-                cache_valid <= 1'b1;
-                if (write_buf_idx == 2'd0) buffer0_vga <= write_vga;
-                else if (write_buf_idx == 2'd1) buffer1_vga <= write_vga;
             end else begin
-                awaiting_commit <= 1; ready_buf_idx <= write_buf_idx;
+                cache_valid[write_buf_idx] <= 1'b1;
+                cached_image[write_buf_idx] <= loading_image;
                 if (write_buf_idx == 2'd0) buffer0_vga <= write_vga;
                 else if (write_buf_idx == 2'd1) buffer1_vga <= write_vga;
-                ready_slide_right <= load_slide_right;
-                frame_ready_toggle <= ~frame_ready_toggle;
+                // Do not display an old request after the user's target changed.
+                // Normal loads become cache entries; only the latest target is
+                // promoted by publish_cached above. The first frame is special.
+                if (load_initial) begin
+                    pending_image <= loading_image;
+                    awaiting_commit <= 1; ready_buf_idx <= write_buf_idx;
+                    ready_slide_right <= load_slide_right;
+                    frame_ready_toggle <= ~frame_ready_toggle;
+                end
             end
         end
 
         if (awaiting_commit && commit_pulse) begin
             awaiting_commit <= 0; display_committed <= 1; current_buf <= ready_buf_idx; current_image <= pending_image;
-            cache_valid <= 0;
-            source_width <= pending_width; source_height <= pending_height; auto_timer <= 0;
+            source_width <= width_for(pending_image); source_height <= height_for(pending_image); auto_timer <= 0;
         end
     end
 end

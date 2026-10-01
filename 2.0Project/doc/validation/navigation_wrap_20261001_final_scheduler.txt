@@ -1,0 +1,9 @@
+PASS navigation: cached prev/next during loads, slot 3, coalesced clicks/latest direction, no stale display, manual priority, both neighbours
+tests/tb_picture_navigation.v:106: $finish called at 1160000 (1ps)
+INFO 40 settled clicks passed: four forward/backward wraps and actual frame contents
+PASS navigation cycles: 40 settled clicks, auto/manual boundary, slow five-click bursts both directions, transition reversal and immediate manual recovery
+tests/tb_navigation_cycles.v:102: $finish called at 344600000 (1ps)
+PASS first carousel picture before dedicated sprint background; buffers remain separate
+tests/tb_boot_load_order.v:26: $finish called at 80000 (1ps)
+PASS SD scheduler integration: unchanged first timeout recovery/reset, second timeout report, success and runtime error
+tests/tb_startup_retry_integration.v:31: $finish called at 2700000 (1ps)

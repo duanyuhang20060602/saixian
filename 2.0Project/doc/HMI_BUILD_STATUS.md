@@ -1,9 +1,11 @@
 # HMI 串口与时序修复交付记录
 
-## 当前合格固件
+## 2026-09-27 HMI 交付固件（历史版本）
+
+当前工程位流已于 2026-09-28 更新为 AUD 扫描资源优化版；新位流哈希、29 项回归与资源数据见 [README](../README.md) 和 [本轮资源审计](GitHub_FPGA算法与资源审计_20260928.md)。以下记录保留用于追溯 HMI 功能交付，不再把下载副本当作工程内当前位流。
 
 - 下载：E:/Codex/Downloads/SAIXIAN_2.0_HMI_MUSIC_EXIT_20260927.bit。
-- 工程内同内容位流：src/td_project/HDMI1.4b_Transmitter_v2.0.bit。
+- 当时的工程内同内容位流：src/td_project/HDMI1.4b_Transmitter_v2.0.bit。
 - 时间：2026-09-27 19:51:22；大小：702956 字节。
 - SHA256：5524A058C0B881AF3BB74A0FA2C8F53C71ABA2F410266B3C1A4A1659CB563F59。两个文件已核对一致。
 - TD 6.2.168116，EG4S20BG256，布局种子 3。

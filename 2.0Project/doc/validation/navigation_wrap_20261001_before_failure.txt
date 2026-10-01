@@ -1,0 +1,3 @@
+INFO 40 settled clicks passed: four forward/backward wraps and actual frame contents
+FATAL: tests/tb_navigation_cycles.v:90: five next clicks while loading wrapped back to the visible image
+       Time: 279360000  Scope: tb_navigation_cycles

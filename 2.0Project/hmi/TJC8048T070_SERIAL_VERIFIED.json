@@ -1,0 +1,130 @@
+[
+  {
+    "command": "connect",
+    "hex": "63 6F 6D 6F 6B 20 31 2C 31 31 32 2D 30 2C 54 4A 43 38 30 34 38 54 30 37 30 5F 30 31 31 52 2C 31 38 37 2C 36 31 34 38 38 2C 45 34 36 37 43 30 35 31 31 37 33 33 35 45 32 38 2C 31 36 37 37 37 32 31 36 FF FF FF"
+  },
+  {
+    "command": "sendme",
+    "hex": "66 00 FF FF FF"
+  },
+  {
+    "command": "get baud",
+    "hex": "71 00 C2 01 00 FF FF FF"
+  },
+  {
+    "command": "get bkcmd",
+    "hex": "71 00 00 00 00 FF FF FF"
+  },
+  {
+    "command": "get home.t_p.txt",
+    "hex": "70 30 FF FF FF"
+  },
+  {
+    "command": "get home.t_m.txt",
+    "hex": "70 30 FF FF FF"
+  },
+  {
+    "command": "get home.t_e.txt",
+    "hex": "70 CE DE FF FF FF"
+  },
+  {
+    "command": "get settings.h_sharp.val",
+    "hex": "71 01 00 00 00 FF FF FF"
+  },
+  {
+    "command": "get settings.n_sharp.val",
+    "hex": "71 01 00 00 00 FF FF FF"
+  },
+  {
+    "command": "get settings.h_bright.val",
+    "hex": "71 32 00 00 00 FF FF FF"
+  },
+  {
+    "command": "get settings.n_bright.val",
+    "hex": "71 32 00 00 00 FF FF FF"
+  },
+  {
+    "command": "get settings.h_contrast.val",
+    "hex": "71 32 00 00 00 FF FF FF"
+  },
+  {
+    "command": "get settings.n_contrast.val",
+    "hex": "71 32 00 00 00 FF FF FF"
+  },
+  {
+    "command": "get settings.h_saturation.val",
+    "hex": "71 32 00 00 00 FF FF FF"
+  },
+  {
+    "command": "get settings.n_saturation.val",
+    "hex": "71 32 00 00 00 FF FF FF"
+  },
+  {
+    "command": "get settings.h_volume.val",
+    "hex": "71 3F 00 00 00 FF FF FF"
+  },
+  {
+    "command": "get settings.n_volume.val",
+    "hex": "71 3F 00 00 00 FF FF FF"
+  },
+  {
+    "command": "get settings.bt_invert.val",
+    "hex": "71 00 00 00 00 FF FF FF"
+  },
+  {
+    "command": "get settings.bt_vintage.val",
+    "hex": "71 00 00 00 00 FF FF FF"
+  },
+  {
+    "command": "get game.t4.txt",
+    "hex": "70 30 30 3A 30 30 FF FF FF"
+  },
+  {
+    "command": "get game.t3.txt",
+    "hex": "70 30 30 3A 30 30 FF FF FF"
+  },
+  {
+    "command": "get game.n_state.val",
+    "hex": "71 00 00 00 00 FF FF FF"
+  },
+  {
+    "command": "page 1",
+    "hex": "55 30 01 00 FF FF FF"
+  },
+  {
+    "command": "sendme",
+    "hex": "66 01 FF FF FF"
+  },
+  {
+    "command": "page 2",
+    "hex": "55 30 02 00 FF FF FF"
+  },
+  {
+    "command": "sendme",
+    "hex": "66 02 FF FF FF"
+  },
+  {
+    "command": "page 3",
+    "hex": "55 30 03 00 FF FF FF"
+  },
+  {
+    "command": "sendme",
+    "hex": "66 03 FF FF FF"
+  },
+  {
+    "command": "page 4",
+    "hex": "55 30 04 00 FF FF FF"
+  },
+  {
+    "command": "sendme",
+    "hex": "66 04 FF FF FF"
+  },
+  {
+    "command": "page 0",
+    "hex": "55 30 00 00 FF FF FF"
+  },
+  {
+    "command": "sendme",
+    "hex": "66 00 FF FF FF"
+  }
+]
