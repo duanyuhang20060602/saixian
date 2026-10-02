@@ -18,6 +18,13 @@ if {[info exists ::env(SAIXIAN_PLACE_SEED)]} {
 # Strengthen post-route optimization without changing clock constraints.
 lappend phyWildParams route post_route_opt high
 lappend phyWildParams route effort high
+# TD official AreaOptimizeHigh parameters, applied directly so builds do
+# not depend on a per-user GUI strategy file.
+lappend phyWildParams gate add_map_lut_struct high
+lappend phyWildParams gate map_mode area_prior
+lappend phyWildParams gate multi_thread_mapping partition
+lappend phyWildParams rtl resource_sharing auto
+lappend phyWildParams rtl shifter_style shifter_reg
 # This high-utilization design needs the explicit route hold-fix stage.  The
 # automatic in-route pass is skipped above 90% slice utilization.  Keep the
 # normal route phase enabled, then invoke the tool's official fix_hold phase

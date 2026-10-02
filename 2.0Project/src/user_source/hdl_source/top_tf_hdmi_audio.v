@@ -73,6 +73,7 @@ always @(posedge sd_card_clk or posedge rst_sd) begin
 end
 
 wire key1_press, key2_press, key3_press, key4_press;
+wire key3_home_short, visual_mode;
 saixian_key_debounce #(.CLK_FREQ_HZ(VIDEO_CLK_HZ),.DEBOUNCE_MS(20)) u_key1(.clk(video_clk),.rst(rst_video),.key_n(key[0]),.press_pulse(key1_press));
 saixian_key_debounce #(.CLK_FREQ_HZ(VIDEO_CLK_HZ),.DEBOUNCE_MS(20)) u_key2(.clk(video_clk),.rst(rst_video),.key_n(key[1]),.press_pulse(key2_press));
 saixian_key_debounce #(.CLK_FREQ_HZ(VIDEO_CLK_HZ),.DEBOUNCE_MS(20)) u_key3(.clk(video_clk),.rst(rst_video),.key_n(key[2]),.press_pulse(key3_press));
@@ -200,7 +201,7 @@ end
 saixian_settings_controller #(.CLK_FREQ_HZ(VIDEO_CLK_HZ)) u_settings(
     .clk(video_clk),.rst(rst_video),.carousel_mode(carousel_play),
     .key_next_item(key1_press),.key_decrease(key2_press),
-    .key_enter_exit(key3_press),.key_increase(key4_short_pulse),
+    .key_enter_exit((key3_press && settings_mode) || key3_home_short),.key_increase(key4_short_pulse),
     .hmi_setting_valid(hmi_setting_valid),.hmi_setting_id(hmi_setting_id),
     .hmi_setting_value(hmi_setting_value),.hmi_reset_defaults(hmi_reset_defaults),
     .settings_mode(settings_mode),.setting_item(setting_item),
@@ -216,7 +217,7 @@ saixian_event_controller #(.CLK_FREQ_HZ(VIDEO_CLK_HZ)) u_event(
     .key_start(((key1_press & ~settings_mode) | hmi_start_pulse) & ~battle_busy),
     .key_pause((key2_press & ~settings_mode) | hmi_pause_pulse |
         (hmi_pause_set && event_state == 4'd6) | (hmi_resume && event_state == 4'd7)),
-    .key_end((key3_press & ~settings_mode) | hmi_finish_pulse),.project_switch(project_select),
+    .key_end((key3_press & ~settings_mode & ~carousel_mode) | hmi_finish_pulse),.project_switch(project_select),
     .state(event_state),.project_id(project_id),.minutes(minutes),.seconds(seconds),
     .countdown_value(countdown_value),.cue_event(cue_event),.carousel_mode(carousel_mode)
 );
@@ -766,6 +767,33 @@ always @(posedge video_clk or posedge rst_video) begin
     end
 end
 wire [23:0] osd_rgb_inner;
+// Sample exactly the data accepted by HDMI on audio_valid. The analyzer
+// sees this registered tap one clock later; audio timing itself is unchanged.
+reg visual_sample_valid;
+reg signed [15:0] visual_left,visual_right;
+always @(posedge video_clk or posedge rst_video) begin
+    if(rst_video) begin visual_sample_valid<=0;visual_left<=0;visual_right<=0;end
+    else begin
+        visual_sample_valid<=audio_valid;
+        if(audio_valid) begin visual_left<=audio_left_data[23:8];visual_right<=audio_right_data[23:8];end
+    end
+end
+saixian_av_key3 #(.CLK_HZ(VIDEO_CLK_HZ)) u_visual_key3(
+    .clk(video_clk),.rst(rst_video),.key_n(key[2]),.frame_tick(frame_tick),
+    .eligible(carousel_mode && !settings_mode && !battle_busy && display_valid && error_code==0),
+    .short_pulse(key3_home_short),.mode(visual_mode));
+wire [9:0] visual_x=osd_x_in-10'd64;
+wire [6:0] visual_height,visual_peak;
+wire [31:0] visual_wave;
+wire visual_fft_valid,visual_wave_valid;
+saixian_av_fft u_visual_fft(
+    .clk(video_clk),.rst(rst_video),.frame_tick(frame_tick),.sample_valid(visual_sample_valid),
+    .left(visual_left),.right(visual_right),.read_band(visual_x[8:4]),
+    .read_height(visual_height),.read_peak(visual_peak),.valid(visual_fft_valid),.block_done());
+saixian_av_wave u_visual_wave(
+    .clk(video_clk),.rst(rst_video),.frame_tick(frame_tick),.sample_valid(visual_sample_valid),
+    .left(visual_left),.right(visual_right),.read_index(visual_x[8:1]),
+    .read_extrema(visual_wave),.valid(visual_wave_valid));
 saixian_osd_overlay u_osd(.clk(video_clk),.rst(rst_video),.frame_tick(frame_tick),.de_i(osd_area_in),.x_i(osd_x_in),.y_i(osd_y_in),.rgb_in_i(osd_rgb_in),.display_valid(display_valid),
     .loading_phase(loading_phase),
     .state(event_state),.project_id(carousel_mode ? project_select : project_id),.minutes(minutes),.seconds(seconds),.countdown_value(countdown_value),
@@ -779,6 +807,8 @@ saixian_osd_overlay u_osd(.clk(video_clk),.rst(rst_video),.frame_tick(frame_tick
     .saturation_setting(saturation_setting),.invert_setting(invert_setting),
     .vintage_setting(vintage_setting),.enhancement_setting(enhancement_setting),
     .audio_sample_valid(audio_valid),.audio_sample(audio_left_data[23:16]),
+    .visual_mode(visual_mode),.visual_height(visual_height),.visual_peak(visual_peak),
+    .visual_wave(visual_wave),.visual_fft_valid(visual_fft_valid),.visual_wave_valid(visual_wave_valid),
     .rgb_out(osd_rgb_inner));
 
 // The full-screen scaler adds one registered stage before the four-stage OSD.

@@ -1,8 +1,14 @@
-# 赛显 2.0：首页切图响应修复与 TJC8048T070 新屏整合
+# 赛显 2.0：真实音频频谱与双声道波形
 
 平台：安路 EG4S20BG256，TD 6.2.168116；当前实物串口屏 `TJC8048T070_011R`，800×480。原 `TJC8048X570_011` 工程仍保留。
 
-## 当前版本（2026-10-01）
+## 当前版本（2026-10-02）
+
+首页显示来自实际 HDMI 音频的 1024 点 FFT、32 根频谱柱；KEY3 长按一秒在频谱与双声道波形间切换，持续按住不重复切换，首页短按松开进入设置。设置和比赛保留原 KEY3 操作。模式和显示快照在帧边界切换，不改 HMI、音乐素材或时钟约束。
+
+44 项回归和 13 类独立 FFT 数值参考测试通过。完整 TD 布线建立/保持 WNS 为 +0.021/+0.024 ns，TNS 均为零；LUT 80.96%、RAM9K 60/64、RAM32K 14/16、DSP 11/29。当前默认位流与 `src/td_project/SAIXIAN_2.0_REAL_AUDIO_VISUAL_20261002.bit` 匹配。**实板五首音乐与连续一小时验收待进行。** 使用 `build_saixian.ps1` 复现官方面积优化参数；GUI 默认策略可能打包超容量。详见 [实现、报告与实板待验说明](doc/真实音频可视化_20261002.md)。
+
+## 上一版本（2026-10-01）
 
 已从 GitHub 分支 `codex/saixian-2.0-sdram-refresh` 提交 `18908e72221d1d081aa67af064bbbc71eee9cf25` 整合最新 RTL、测试及位流。轮播态 KEY2 短按松开选择蓝方、长按满 1 秒选择红方；胜方画面停稳后 KEY2 直接推进排名，不再插入另一胜方画面。比赛态暂停/继续、设置态减小参数、HMI 指令均保留。原 VGA 清晰版 R2、SDRAM 刷新、五首音乐和配套图片素材继续使用。真实排名不属于当前要求，本次未新增成绩采集或真实排名。
 
@@ -12,7 +18,7 @@
 
 ## 烧录、接线与验证
 
-- **FPGA 下载文件**：[SAIXIAN_2.0_NAV_WRAP_FIX_20261001.bit](src/td_project/SAIXIAN_2.0_NAV_WRAP_FIX_20261001.bit)，702956 字节，SHA256 `A29EEC942532A252D504911C89644C3935E794C9271563D6EDA5C2C6227FFC4E`；默认 `HDMI1.4b_Transmitter_v2.0.bit` 与其一致。原 [KEY2 稳定版](src/td_project/SAIXIAN_2.0_KEY2_BLUE_SKIP_RED_20261001.bit) 保留用于回退。
+- **当前 FPGA 下载文件**：[真实音频可视化版](src/td_project/SAIXIAN_2.0_REAL_AUDIO_VISUAL_20261002.bit)，709940 字节，SHA256 `A9027AD61A81F7CCE7F243F906CF900901ED848CA081F6101C197F5F31FB7988`；默认 `HDMI1.4b_Transmitter_v2.0.bit` 与其一致。上一版 [NAV_WRAP_FIX](src/td_project/SAIXIAN_2.0_NAV_WRAP_FIX_20261001.bit) 和原 [KEY2 稳定版](src/td_project/SAIXIAN_2.0_KEY2_BLUE_SKIP_RED_20261001.bit) 保留用于回退。
 - **当前新屏已烧录文件**：[saixian_TJC8048T070.tft](hmi/saixian_TJC8048T070.tft)，源工程 [saixian_TJC8048T070.HMI](hmi/saixian_TJC8048T070.HMI)。屏序列号 `E467C05117335E28`，PC 下载时 COM10，运行 115200、8N1。本次更新无需重烧新屏。
 - 新屏已通过官方编辑器编译和下载，实物串口查询的 18 个反馈控件、五个页面通知通过；已修复 T0 背景切图兼容问题。详情见 [屏幕交付与验证](hmi/README.md)。原 X570 文件只用于对应旧屏。
 - **接线**：屏 TX→J1 第 1 脚 GPIOA_0/D14；屏 RX←J1 第 2 脚 GPIOA_1/G11；GND→J1 第 12 或 30 脚。新屏信号为用户确认的 3.3 V TTL；VCC 按屏幕电源标注，不能把信号电平当成供电电压。接 FPGA 前拔下 USB 转 TTL 的 TX/RX，避免发送端并联。

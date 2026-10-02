@@ -43,14 +43,29 @@ try {
             $timingOK = $swns -ge 0 -and $hwns -ge 0 -and $stns -eq 0 -and $htns -eq 0
         }
     }
-    if (-not $timingOK) {
+    $areaOK = $false
+    $areaReport = 'HDMI1.4b_Transmitter_v2.0_phy.area'
+    if ((Test-Path -LiteralPath $areaReport) -and
+        ((Get-Item -LiteralPath $areaReport).LastWriteTime -ge $buildStarted)) {
+        $area = Get-Content -LiteralPath $areaReport -Raw
+        $lut = [regex]::Match($area, '(?m)^#lut\s+(\d+)\s+out of\s+(\d+)')
+        $ram = [regex]::Match($area, '(?m)^#bram\s+(\d+)\s+out of')
+        $ram32 = [regex]::Match($area, '(?m)^#bram32k\s+(\d+)\s+out of')
+        $dsp = [regex]::Match($area, '(?m)^#dsp\s+(\d+)\s+out of')
+        if ($lut.Success -and $ram.Success -and $ram32.Success -and $dsp.Success) {
+            $areaOK = [int]$lut.Groups[1].Value -le 0.95 * [int]$lut.Groups[2].Value -and
+                [int]$ram.Groups[1].Value -le 60 -and [int]$ram32.Groups[1].Value -le 14 -and
+                [int]$dsp.Groups[1].Value -le 16
+        }
+    }
+    if (-not $timingOK -or -not $areaOK) {
         if (Test-Path -LiteralPath $bit) {
             Copy-Item -LiteralPath $bit -Destination (Join-Path $backupDir 'TIMING_FAILED_DO_NOT_USE.bin') -Force
         }
         if (Test-Path -LiteralPath $lastGood) {
             Copy-Item -LiteralPath $lastGood -Destination $bit -Force
         }
-        throw 'Routed timing failed or output is stale. Default bit restored to last known timing-pass build.'
+        throw 'Routed timing/resource budget failed or output is stale. Default bit restored to last known timing-pass build.'
     }
     Copy-Item -LiteralPath $report -Destination 'final_timing.rpt' -Force
     Copy-Item -LiteralPath $bit -Destination $lastGood -Force

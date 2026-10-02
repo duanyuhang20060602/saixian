@@ -4,6 +4,11 @@ $vvp = 'C:/iverilog/bin/vvp.exe'
 Push-Location (Split-Path $PSScriptRoot -Parent)
 try {
     $jobs = @(
+        @('tb_audio_visual_key3', 'tests/tb_audio_visual_key3.v', 'src/user_source/hdl_source/saixian_audio_visualizer.v'),
+        @('tb_audio_visual_wave', 'tests/tb_audio_visual_wave.v', 'src/user_source/hdl_source/saixian_audio_visualizer.v'),
+        @('tb_audio_visual_render', 'tests/tb_audio_visual_render.v', 'src/user_source/hdl_source/saixian_osd_overlay.v'),
+        @('tb_audio_visual_stream', 'tests/tb_audio_visual_stream.v', 'src/user_source/hdl_source/saixian_audio_visualizer.v'),
+        @('tb_audio_visual_pcm_tap', 'tests/tb_audio_visual_pcm_tap.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
         @('tb_picture_navigation', 'tests/tb_picture_navigation.v', 'src/user_source/hdl_source/SD/sd_card_bmp.v'),
         @('tb_navigation_cycles', 'tests/tb_navigation_cycles.v', 'src/user_source/hdl_source/SD/sd_card_bmp.v', 'src/user_source/hdl_source/saixian_transition.v'),
         @('tb_navigation_uart', 'tests/tb_navigation_uart.v', 'src/user_source/hdl_source/saixian_hmi_uart.v', 'src/user_source/hdl_source/SD/sd_card_bmp.v', 'src/user_source/hdl_source/saixian_transition.v'),
@@ -50,8 +55,9 @@ try {
         $target = Join-Path $testCache ($job[0] + '.vvp')
         $options = @('-g2012', '-DVICTORY_SIM', '-s', $job[0], '-o', $target)
         if ($job[0] -eq 'tb_sdram_refresh_timer') { $options += @('-DSDRAM_REFRESH_TIMER_SIM', '-I', 'src/td_project') }
-        if ($job[0] -in @('tb_picture_navigation', 'tb_navigation_cycles', 'tb_navigation_uart', 'tb_frame_config', 'tb_frame_handshake', 'tb_music_start', 'tb_hmi_music', 'tb_boot_load_order', 'tb_startup_retry_integration')) { $options += '-i' }
+        if ($job[0] -in @('tb_audio_visual_pcm_tap', 'tb_picture_navigation', 'tb_navigation_cycles', 'tb_navigation_uart', 'tb_frame_config', 'tb_frame_handshake', 'tb_music_start', 'tb_hmi_music', 'tb_boot_load_order', 'tb_startup_retry_integration')) { $options += '-i' }
         $sources = $job[1..($job.Count - 1)]
+        if ($sources -contains 'src/user_source/hdl_source/top_tf_hdmi_audio.v') { $sources += 'src/user_source/hdl_source/saixian_audio_visualizer.v' }
         & $iv @options @sources
         if ($LASTEXITCODE -ne 0) { throw "Compile failed: $($job[0])" }
         & $vvp $target

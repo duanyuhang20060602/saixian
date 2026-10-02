@@ -34,6 +34,10 @@ module saixian_osd_overlay(
     input  wire [1:0]  enhancement_setting,
     input  wire        audio_sample_valid,
     input  wire [7:0]  audio_sample,
+    input wire visual_mode,
+    input wire [6:0] visual_height,visual_peak,
+    input wire [31:0] visual_wave,
+    input wire visual_fft_valid,visual_wave_valid,
     output reg  [23:0] rgb_out
 );
 
@@ -95,6 +99,16 @@ wire [15:0] font_bits;
 wire font_pixel_q = font_bits[15-font_col_q2];
 wire [10:0] ticker_local_x = {1'b0, x} + 11'd224 - {1'b0, ticker_x};
 wire [4:0] spectrum_bin_i = 5'd31 - ((x_i - 10'd64) >> 4);
+reg [6:0] visual_distance;
+reg signed [6:0] wave_amplitude;
+wire wave_left_pixel=wave_amplitude >= $signed({visual_wave[31],visual_wave[31:26]}) &&
+    wave_amplitude <= $signed({visual_wave[23],visual_wave[23:18]});
+wire wave_right_pixel=wave_amplitude >= $signed({visual_wave[15],visual_wave[15:10]}) &&
+    wave_amplitude <= $signed({visual_wave[7],visual_wave[7:2]});
+always @(posedge clk) begin
+    visual_distance<=9'd391-y_i;
+    wave_amplitude<=9'd356-y_i;
+end
 
 saixian_font_rom u_font_rom(
     .clk     (clk),
@@ -359,7 +373,58 @@ always @* begin
             text_color = 24'hFFD166;
         end
     end else if (display_valid_q) begin
-        if ((state == ST_CAROUSEL) &&
+        if(state==ST_CAROUSEL && x>=16 && x<64 && y>=320 && y<408) begin
+            local_x=x-16;slot=local_x[5:4];font_col=local_x[3:0];
+            text_color=24'h849DB4;
+            if(!visual_mode) begin
+                if(y<336) begin font_row=y[3:0];text_region=1;glyph_id=slot==1 ? 7'd1 : 0;end
+                else if(y>=344 && y<360) begin
+                    font_row=y[3:0]-8;text_region=1;glyph_id=slot==0 ? 7'd97 : slot==1 ? 7'd3 : 7'd5;
+                end else if(y>=368 && y<384) begin
+                    font_row=y[3:0];text_region=1;glyph_id=slot==0 ? 7'd97 : slot==1 ? 7'd5 : 7'd9;
+                end else if(y>=392) begin
+                    font_row=y[3:0]-8;text_region=1;glyph_id=slot==0 ? 7'd97 : slot==1 ? 7'd8 : 7'd3;
+                end
+            end else begin
+                if(y>=324 && y<340) begin
+                    font_row=y[3:0]-4;text_region=1;glyph_id=slot==0 ? 7'd100 : slot==1 ? 7'd2 : 0;
+                end else if(y>=348 && y<364) begin
+                    font_row=y[3:0]-12;text_region=1;glyph_id=slot==1 ? 7'd1 : 0;
+                end else if(y>=388 && y<404) begin
+                    font_row=y[3:0]-4;text_region=1;glyph_id=slot==0 ? 7'd97 : slot==1 ? 7'd2 : 0;
+                end
+            end
+        end else if(state==ST_CAROUSEL && !visual_mode && x>=544 && x<576 && y>=304 && y<320) begin
+            font_col=x[3:0];font_row=y[3:0];text_region=1;
+            glyph_id=x[4] ? 7'd99 : 7'd98;text_color=24'h849DB4;
+        end else if ((state == ST_CAROUSEL) && x>=64 && x<320 && y>=304 && y<320) begin
+            local_x=x-64;slot=local_x[7:4];font_col=local_x[3:0];font_row=y[3:0];
+            text_region=1;text_color=24'h9FE7FF;
+            if(visual_mode) begin
+                if(slot==6) text_color=24'h37DFFF;
+                else if(slot==7) text_color=24'hFFB85C;
+                case(slot)
+                    0:glyph_id=89;1:glyph_id=90;2:glyph_id=91;3:glyph_id=12;
+                    6:glyph_id=92;7:glyph_id=93;default:glyph_id=0;
+                endcase
+            end else begin
+                case(slot)
+                    0:glyph_id=87;1:glyph_id=87;2:glyph_id=88;
+                    4:glyph_id=2;5:glyph_id=1;6:glyph_id=3;7:glyph_id=5;
+                    10:glyph_id=4;11:glyph_id=3;default:glyph_id=0;
+                endcase
+            end
+        end else if ((state==ST_CAROUSEL) && !visual_mode && y>=392 && y<408 && x>=64 && x<608) begin
+            font_col=x[3:0];font_row=y[3:0]-8;
+            text_color=24'h849DB4;text_region=1;
+            case(x[9:4])
+                4:glyph_id=5;5:glyph_id=8;6:glyph_id=94;7:glyph_id=95;
+                19:glyph_id=2;20:glyph_id=96;
+                31:glyph_id=2;32:glyph_id=1;33:glyph_id=96;
+                34:glyph_id=3;35:glyph_id=5;36:glyph_id=96;
+                default:glyph_id=0;
+            endcase
+        end else if ((state == ST_CAROUSEL) &&
                      (ticker_local_x < 11'd224) &&
                      (y >= 9'd432) && (y < 9'd464)) begin
             local_x = ticker_local_x[9:0];
@@ -533,23 +598,27 @@ always @* begin
         if (y < 9'd64)
             rgb_comb = {1'b0,rgb_comb[23:17],1'b0,rgb_comb[15:9],1'b0,rgb_comb[7:1]};
 
-        // Carousel spectrum shares the normal OSD stage instead of adding a
-        // new top-level RGB mux.  Frame-locked controls prevent raster tearing;
-        // a shallow leakage pattern keeps the 32 bars sparse and believable.
-        if ((state == ST_CAROUSEL) && spectrum_active_q &&
-            (audio_level_q != 8'd0) && (y[8:5] == 4'd11) &&
-            (x >= 10'd64) && (x < 10'd576)) begin
-            spectrum_bin = 5'd31 - ((x - 10'd64) >> 4);
-            if ((x[3:0] < 4'd12) &&
-                (y >= (9'd384 - {3'd0,spectrum_height_q}))) begin
-                if (spectrum_bin >= 5'd22)
-                    rgb_comb = 24'h37DFFF;
-                else if (spectrum_bin >= 5'd11)
-                    rgb_comb = 24'h36E58D;
-                else if (spectrum_bin >= 5'd4)
-                    rgb_comb = 24'hFFD05A;
-                else
-                    rgb_comb = 24'hFF625F;
+        // Read-side RAM outputs correspond to registered x/y in this stage.
+        // No additional RGB stage or top-level output mux is introduced.
+        if(state==ST_CAROUSEL && x>=64 && x<576 && y>=320 && y<392) begin
+            rgb_comb=24'h0B1624;
+            if(y==320 || y==344 || y==368 || y==391 || x[6:0]==64) rgb_comb=24'h23384C;
+            if(!visual_mode) begin
+                if(visual_fft_valid && x[3:0]<12) begin
+                    if(visual_height!=0 && visual_distance<=visual_height) begin
+                        if(y<344) rgb_comb=24'hFFCF66;
+                        else if(y<368) rgb_comb=24'h42E5AF;
+                        else rgb_comb=24'h37CFFF;
+                    end
+                    if(visual_peak!=0 && visual_distance==visual_peak) rgb_comb=24'hFFF0C2;
+                end
+            end else begin
+                if(y==356) rgb_comb=24'h466078;
+                if(visual_wave_valid) begin
+                    if(wave_left_pixel) rgb_comb=24'h37DFFF;
+                    if(wave_right_pixel) rgb_comb=24'hFFB85C;
+                    if(wave_left_pixel && wave_right_pixel) rgb_comb=24'hE8F4FF;
+                end
             end
         end
 
@@ -571,26 +640,6 @@ always @* begin
                 rgb_comb = rgb_comb | 24'h121A23;
         end
 
-        // Lightweight 32-bin spectrum. The cue generator supplies the known
-        // fundamental, while adjacent leakage and the weak odd harmonics of
-        // its triangle wave keep the result sparse and physically plausible.
-        // High frequencies are on the left and low frequencies on the right.
-        if ((state != ST_CAROUSEL) &&
-            (y >= 9'd416) && (y < 9'd468) && (x >= 10'd64) && (x < 10'd576)) begin
-            spectrum_bin = 5'd31 - ((x - 10'd64) >> 4);
-            if ((x[3:0] < 4'd12) &&
-                spectrum_active_q && (audio_level_q != 8'd0) &&
-                (y >= (9'd468 - {3'd0,spectrum_height_q}))) begin
-                if (spectrum_bin >= 5'd22)
-                    rgb_comb = 24'h37DFFF;
-                else if (spectrum_bin >= 5'd11)
-                    rgb_comb = 24'h36E58D;
-                else if (spectrum_bin >= 5'd4)
-                    rgb_comb = 24'hFFD05A;
-                else
-                    rgb_comb = 24'hFF625F;
-            end
-        end
     end
 
 end

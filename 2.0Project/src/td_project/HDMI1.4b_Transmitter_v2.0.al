@@ -95,7 +95,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="51"/>
+                    <Attr Name="CompileOrder" Val="52"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/top_tf_hdmi_audio.v">
@@ -151,6 +151,14 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="50"/>
+                </FileInfo>
+            </File>
+            <File Path="../user_source/hdl_source/saixian_audio_visualizer.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
                     <Attr Name="CompileOrder" Val="49"/>
                 </FileInfo>
             </File>
@@ -159,7 +167,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="50"/>
+                    <Attr Name="CompileOrder" Val="51"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/saixian_battle_result_fx_pipelined.v">
@@ -167,7 +175,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="52"/>
+                    <Attr Name="CompileOrder" Val="53"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/SD/ax_debounce.v">
