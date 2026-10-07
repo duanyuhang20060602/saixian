@@ -846,11 +846,14 @@ always @(posedge clk or posedge rst) begin
         // words and all metadata equally. This cuts colour priority decoding
         // away from the physical RAM setup path without another line buffer.
         scene_token_q<=scene_token;
-        words_stage0<={atlas_word,red_word,result_word};
+        // Dictionary atlases use two synchronous reads. Absorb that extra
+        // read in the old word-only register stage; metadata latency stays
+        // identical. The red atlas still has one read and retains its delay.
+        words_stage0[47:32]<=red_word;
         offsets_stage0<={bit_offset,red_bit_offset,result_bit_offset};
         flags_stage0<={ink_q,red_ink_q,result_ink_q,de_q,vs_q,red_q};
         // Isolate physical ROM-bank selection from the variable bit-pair mux.
-        atlas_word_q<=words_stage0[79:48];red_word_q<=words_stage0[47:32];result_word_q<=words_stage0[31:0];
+        atlas_word_q<=atlas_word;red_word_q<=words_stage0[47:32];result_word_q<=result_word;
         bit_offset_q<=offsets_stage0[13:9];red_bit_offset_q<=offsets_stage0[8:5];result_bit_offset_q<=offsets_stage0[4:0];
         {ink_raw,red_ink_raw,result_ink_raw,de_raw,vs_raw,red_raw}<=flags_stage0;
         scene_raw<=scene_token_q[23:0];scene_palette_valid<=scene_token_q[30];
@@ -920,52 +923,79 @@ endmodule
 
 module saixian_sprint_atlas(input wire clk, input wire [12:0] addr,
                             output wire [31:0] bits);
-`ifdef VICTORY_SIM
-reg [31:0] memory [0:8191];
-reg [31:0] read_bits;
-initial $readmemh("src/user_source/hdl_source/saixian_sprint_atlas.hex",memory);
-always @(posedge clk) read_bits<=memory[addr];
-assign bits=read_bits;
-`else
-EG_LOGIC_BRAM #(
- .DATA_WIDTH_A(32),.ADDR_WIDTH_A(13),.DATA_DEPTH_A(8192),
- .DATA_WIDTH_B(32),.ADDR_WIDTH_B(13),.DATA_DEPTH_B(8192),
- .BYTE_ENABLE(0),.MODE("SP"),.REGMODE_A("NOREG"),.REGMODE_B("NOREG"),
- .WRITEMODE_A("NORMAL"),.WRITEMODE_B("NORMAL"),.RESETMODE("SYNC"),
- .DEBUGGABLE("NO"),.PACKABLE("NO"),.FORCE_KEEP("OFF"),
- .INIT_FILE("../../user_source/hdl_source/saixian_sprint_atlas.mif"),
- .FILL_ALL("NONE"),.IMPLEMENT("32K")
-) u_rom(
- .doa(bits),.dob(),.dia(32'd0),.dib(32'd0),
- .cea(1'b1),.ocea(1'b0),.clka(clk),.wea(1'b0),.rsta(1'b0),
- .ceb(1'b0),.oceb(1'b0),.clkb(1'b0),.web(1'b0),.rstb(1'b0),
- .bea(1'b0),.beb(1'b0),.addra(addr),.addrb(13'd0)
-);
-`endif
+saixian_dictionary_atlas #(.ADDR(13),.NAME("saixian_sprint_atlas")) u_dictionary(clk,addr,bits);
 endmodule
 
 module saixian_victory_atlas(input wire clk, input wire [11:0] addr,
                             output wire [31:0] bits);
+saixian_dictionary_atlas #(.ADDR(12),.NAME("saixian_victory_atlas")) u_dictionary(clk,addr,bits);
+endmodule
+
+// Two-clock, lossless atlas storage. Pack two low bytes or eight high
+// pairs per native 16-bit word; low address bits select after the RAM read.
+module saixian_dictionary_atlas #(parameter ADDR=12,parameter NAME="saixian_victory_atlas")(
+    input clk,input [ADDR-1:0] addr,output [31:0] bits
+);
 `ifdef VICTORY_SIM
-reg [31:0] memory [0:4095];
+reg [15:0] index_low[0:(1<<(ADDR-1))-1],index_high[0:(1<<(ADDR-3))-1];
+reg [31:0] dictionary[0:1023];
+reg [15:0] low_q,high_q;
+reg [2:0] select_q;
+wire [1:0] high_bits=high_q >> (select_q*2);
+wire [7:0] low_bits=low_q >> (select_q[0]*8);
+wire [9:0] index_q={high_bits,low_bits};
 reg [31:0] read_bits;
-initial $readmemh("src/user_source/hdl_source/saixian_victory_atlas.hex",memory);
-always @(posedge clk) read_bits<=memory[addr];
+initial begin
+    $readmemh({"src/user_source/hdl_source/",NAME,"_index_lo.hex"},index_low);
+    $readmemh({"src/user_source/hdl_source/",NAME,"_index_hi.hex"},index_high);
+    $readmemh({"src/user_source/hdl_source/",NAME,"_dict.hex"},dictionary);
+end
+always @(posedge clk) begin
+    low_q<=index_low[addr[ADDR-1:1]];high_q<=index_high[addr[ADDR-1:3]];
+    select_q<=addr[2:0];read_bits<=dictionary[index_q];
+end
 assign bits=read_bits;
 `else
+wire [15:0] low_q,high_q;
+reg [2:0] select_q;
+always @(posedge clk) select_q<=addr[2:0];
+wire [1:0] high_bits=high_q >> (select_q*2);
+wire [7:0] low_bits=low_q >> (select_q[0]*8);
+wire [9:0] index_q={high_bits,low_bits};
+genvar lane;
+generate for(lane=0;lane<2;lane=lane+1) begin: index_lanes
+localparam SHIFT=lane==0 ? 1 : 3;
+localparam INDEX_ADDR=ADDR-SHIFT;
+wire [15:0] lane_q;
+if(lane==0) assign low_q=lane_q;
+else assign high_q=lane_q;
 EG_LOGIC_BRAM #(
- .DATA_WIDTH_A(32),.ADDR_WIDTH_A(12),.DATA_DEPTH_A(4096),
- .DATA_WIDTH_B(32),.ADDR_WIDTH_B(12),.DATA_DEPTH_B(4096),
+ .DATA_WIDTH_A(16),.ADDR_WIDTH_A(INDEX_ADDR),.DATA_DEPTH_A(1<<INDEX_ADDR),
+ .DATA_WIDTH_B(16),.ADDR_WIDTH_B(INDEX_ADDR),.DATA_DEPTH_B(1<<INDEX_ADDR),
  .BYTE_ENABLE(0),.MODE("SP"),.REGMODE_A("NOREG"),.REGMODE_B("NOREG"),
  .WRITEMODE_A("NORMAL"),.WRITEMODE_B("NORMAL"),.RESETMODE("SYNC"),
  .DEBUGGABLE("NO"),.PACKABLE("NO"),.FORCE_KEEP("OFF"),
- .INIT_FILE("../../user_source/hdl_source/saixian_victory_atlas.mif"),
+ .INIT_FILE({"../../user_source/hdl_source/",NAME,lane==0 ? "_index_lo.mif" : "_index_hi.mif"}),
  .FILL_ALL("NONE"),.IMPLEMENT("32K")
 ) u_rom(
+ .doa(lane_q),.dob(),.dia(16'd0),.dib(16'd0),
+ .cea(1'b1),.ocea(1'b0),.clka(clk),.wea(1'b0),.rsta(1'b0),
+ .ceb(1'b0),.oceb(1'b0),.clkb(1'b0),.web(1'b0),.rstb(1'b0),
+ .bea(1'b0),.beb(1'b0),.addra(addr[ADDR-1:SHIFT]),.addrb({INDEX_ADDR{1'b0}})
+);
+end endgenerate
+EG_LOGIC_BRAM #(
+ .DATA_WIDTH_A(32),.ADDR_WIDTH_A(10),.DATA_DEPTH_A(1024),
+ .DATA_WIDTH_B(32),.ADDR_WIDTH_B(10),.DATA_DEPTH_B(1024),
+ .BYTE_ENABLE(0),.MODE("SP"),.REGMODE_A("NOREG"),.REGMODE_B("NOREG"),
+ .WRITEMODE_A("NORMAL"),.WRITEMODE_B("NORMAL"),.RESETMODE("SYNC"),
+ .DEBUGGABLE("NO"),.PACKABLE("NO"),.FORCE_KEEP("OFF"),
+ .INIT_FILE({"../../user_source/hdl_source/",NAME,"_dict.mif"}),
+ .FILL_ALL("NONE"),.IMPLEMENT("32K")
+) dictionary_rom(
  .doa(bits),.dob(),.dia(32'd0),.dib(32'd0),
  .cea(1'b1),.ocea(1'b0),.clka(clk),.wea(1'b0),.rsta(1'b0),
  .ceb(1'b0),.oceb(1'b0),.clkb(1'b0),.web(1'b0),.rstb(1'b0),
- .bea(1'b0),.beb(1'b0),.addra(addr),.addrb(12'd0)
-);
+ .bea(1'b0),.beb(1'b0),.addra(index_q),.addrb(10'd0));
 `endif
 endmodule

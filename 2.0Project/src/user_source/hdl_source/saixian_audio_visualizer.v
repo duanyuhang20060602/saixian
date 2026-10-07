@@ -186,12 +186,23 @@ always @* begin
     endcase
 end
 reg [8:0] twiddle_index;
-wire [31:0] twiddle_q;
 wire [15:0] hann_q;
-saixian_av_ram #(.WIDTH(32),.ADDR(9),.INIT_FILE({`AV_ROM_ROOT,"saixian_av_twiddle.hex"})) twiddle_rom(
-    .clk(clk),.we(1'b0),.wa(9'd0),.wd(32'd0),.ra(twiddle_index),.rd(twiddle_q));
-saixian_av_ram #(.WIDTH(16),.ADDR(10),.INIT_FILE({`AV_ROM_ROOT,"saixian_av_hann.hex"})) hann_rom(
-    .clk(clk),.we(1'b0),.wa(10'd0),.wd(16'd0),.ra(load_index),.rd(hann_q));
+wire [15:0] twiddle_serial_q;
+wire [15:0] hann_half_q;
+wire [8:0] hann_addr=load_index[9] ? -load_index[8:0] : load_index[8:0];
+reg hann_peak;
+always @(posedge clk) begin
+    hann_peak<=load_index==10'd512;
+end
+assign hann_q=hann_peak ? 16'd32767 : hann_half_q;
+// Read real and imaginary coefficients during existing A/B data fetches.
+// Symmetry + serialized 16-bit reads fit both in one native 512x16 RAM9K.
+wire twiddle_imag_read=state==GET_A || state==WAIT_B;
+wire twiddle_half=twiddle_imag_read ^ twiddle_index[8];
+saixian_av_ram #(.WIDTH(16),.ADDR(9),.INIT_FILE({`AV_ROM_ROOT,"saixian_av_twiddle_serial.hex"})) twiddle_rom(
+    .clk(clk),.we(1'b0),.wa(9'd0),.wd(16'd0),.ra({twiddle_index[7:0],twiddle_half}),.rd(twiddle_serial_q));
+saixian_av_ram #(.WIDTH(16),.ADDR(9),.INIT_FILE({`AV_ROM_ROOT,"saixian_av_hann_half.hex"})) hann_rom(
+    .clk(clk),.we(1'b0),.wa(9'd0),.wd(16'd0),.ra(hann_addr),.rd(hann_half_q));
 function [9:0] reverse10;
     input [9:0] v;integer b;
     begin for(b=0;b<10;b=b+1) reverse10[b]=v[9-b];end
@@ -200,7 +211,7 @@ reg [9:0] fft_addr;
 wire [31:0] fft_q;
 wire fft_we=state==WIN_WRITE || state==WRITE_A || state==WRITE_B;
 reg signed [15:0] ar,ai,br,bi;
-wire signed [15:0] wr=twiddle_q[31:16],wi=twiddle_q[15:0];
+reg signed [15:0] wr,wi;
 reg signed [31:0] p1,p2,p3;
 reg signed [16:0] tr,ti;
 reg signed [15:0] out_br,out_bi;
@@ -243,10 +254,31 @@ always @* begin
     endcase
 end
 reg result_pending;
-reg [31:0] band_rom[0:31]; /* fehdl force_ram=1, ram_style="bram" */
 reg [31:0] band_q;
-initial $readmemh({`AV_ROM_ROOT,"saixian_av_bands.hex"},band_rom);
-always @(posedge clk) band_q<=band_rom[band];
+// Only 32 fixed descriptors: decode constants instead of dedicating two
+// 512-word RAMs to a mostly empty table. Keep the same registered interface.
+function [31:0] band_descriptor;
+    input [4:0] index;
+    begin case(index)
+        0:band_descriptor=32'h00028000;1:band_descriptor=32'h00038000;
+        2:band_descriptor=32'h00048000;3:band_descriptor=32'h00058000;
+        4:band_descriptor=32'h00068000;5:band_descriptor=32'h00078000;
+        6:band_descriptor=32'h00088000;7:band_descriptor=32'h00098000;
+        8:band_descriptor=32'h000a8000;9:band_descriptor=32'h000b8000;
+        10:band_descriptor=32'h000c8000;11:band_descriptor=32'h000d8000;
+        12:band_descriptor=32'h000e8000;13:band_descriptor=32'h000f8000;
+        14:band_descriptor=32'h00132000;15:band_descriptor=32'h00172000;
+        16:band_descriptor=32'h001b2000;17:band_descriptor=32'h00211555;
+        18:band_descriptor=32'h00291000;19:band_descriptor=32'h00311000;
+        20:band_descriptor=32'h003c0ba3;21:band_descriptor=32'h004909d9;
+        22:band_descriptor=32'h00590800;23:band_descriptor=32'h006c06bd;
+        24:band_descriptor=32'h00830591;25:band_descriptor=32'h009f0492;
+        26:band_descriptor=32'h00c103c4;27:band_descriptor=32'h00eb030c;
+        28:band_descriptor=32'h011d028f;29:band_descriptor=32'h015b0211;
+        30:band_descriptor=32'h01a501bb;31:band_descriptor=32'h02000168;
+    endcase end
+endfunction
+always @(posedge clk) band_q<=band_descriptor(band);
 // Calibration: Hann coherent gain=.5; FFT is /1024; average stereo
 // bin energy E maps to amplitude squared 16*E/(32768^2).
 // height = clamp(72 + 3.0103*log2(E) - 78.2678,0,72).
@@ -291,28 +323,32 @@ reg [12:0] log_prefix;
 wire [6:0] target_height=prefix_height(log_prefix);
 // Serial 32-band smoothing. History is private; pixel reads use a separate
 // double-buffered snapshot. Exactly one arithmetic path serves all bars.
-reg [1:0] publish_state;
+reg [2:0] publish_state;
 reg [4:0] publish_index;
 reg publish_clear,publish_new,write_display_bank,display_bank,snapshot_pending;
 reg [31:0] history_write;
 reg [15:0] display_write;
-wire [31:0] history_q;
+reg [31:0] history_q;
+wire [31:0] metadata_q;
 wire [15:0] snapshot_q;
-wire [15:0] working_target_q;
+wire [15:0] working_target_q=metadata_q[15:0];
 wire [6:0] next_target=publish_new ? working_target_q[6:0] : history_q[6:0];
 wire [6:0] old_height=history_q[13:7],old_peak=history_q[20:14];
 wire [4:0] old_hold=history_q[25:21];
 wire [6:0] smoothed_height=next_target>=old_height ? next_target : old_height>1 ? old_height-2 : 0;
 wire [6:0] smoothed_peak=next_target>=old_peak ? next_target : old_hold!=0 ? old_peak : old_peak!=0 ? old_peak-1'b1 : 0;
 wire [4:0] smoothed_hold=next_target>=old_peak ? 5'd18 : old_hold!=0 ? old_hold-1'b1 : 0;
-saixian_av_ram #(.WIDTH(32),.ADDR(9)) history_ram(
-    .clk(clk),.we(publish_state==3),.wa({4'd0,publish_index}),.wd(history_write),
-    .ra({4'd0,publish_index}),.rd(history_q));
-saixian_av_ram #(.WIDTH(16),.ADDR(9)) target_ram(
-    .clk(clk),.we(state==LOG_ENERGY),.wa({4'd0,band}),.wd({9'd0,target_height}),
-    .ra({4'd0,publish_index}),.rd(working_target_q));
+// Pack the 32 histories and 32 incoming targets in one shared RAM pair.
+// The publisher reads them serially; a target write waits at LOG_ENERGY
+// while publication owns the write port. Pixel RAM is still independent.
+wire metadata_target_write=state==LOG_ENERGY && publish_state==0;
+saixian_av_ram #(.WIDTH(32),.ADDR(9)) metadata_ram(
+    .clk(clk),.we(publish_state==4 || metadata_target_write),
+    .wa(metadata_target_write ? {3'd0,1'b1,band} : {4'd0,publish_index}),
+    .wd(metadata_target_write ? {25'd0,target_height} : history_write),
+    .ra({3'd0,(publish_state==2),publish_index}),.rd(metadata_q));
 saixian_av_ram #(.WIDTH(16),.ADDR(9)) display_ram(
-    .clk(clk),.we(publish_state==3),.wa({3'd0,write_display_bank,publish_index}),.wd(display_write),
+    .clk(clk),.we(publish_state==4),.wa({3'd0,write_display_bank,publish_index}),.wd(display_write),
     .ra({3'd0,display_bank,read_band}),.rd(snapshot_q));
 always @* begin
     read_height=valid ? snapshot_q[6:0] : 0;
@@ -346,12 +382,13 @@ always @(posedge clk or posedge rst) begin
         end
         case(publish_state)
             1: publish_state<=2;
-            2: begin
+            2:begin history_q<=metadata_q;publish_state<=3;end
+            3: begin
                 history_write<=publish_clear ? 0 : {6'd0,smoothed_hold,smoothed_peak,smoothed_height,next_target};
                 display_write<=publish_clear ? 0 : {2'd0,smoothed_peak,smoothed_height};
-                publish_state<=3;
+                publish_state<=4;
             end
-            3: if(publish_index==31) begin
+            4: if(publish_index==31) begin
                 publish_state<=0;snapshot_pending<=1;publish_clear<=0;
                 if(publish_new) result_pending<=0;
             end else begin publish_index<=publish_index+1'b1;publish_state<=1;end
@@ -374,9 +411,13 @@ always @(posedge clk or posedge rst) begin
             end else begin load_index<=load_index+1'b1;state<=LOAD_WAIT;end
             READ_A: begin fft_addr<=addr_a;twiddle_index<=next_twiddle;state<=WAIT_A;end
             WAIT_A: state<=GET_A;
-            GET_A: begin ar<=fft_q[15:0];ai<=fft_q[31:16];fft_addr<=addr_b;state<=WAIT_B;end
+            GET_A: begin ar<=fft_q[15:0];ai<=fft_q[31:16];wr<=twiddle_serial_q;fft_addr<=addr_b;state<=WAIT_B;end
             WAIT_B: state<=GET_B;
-            GET_B: begin br<=fft_q[15:0];bi<=fft_q[31:16];state<=MUL1;end
+            GET_B: begin
+                br<=fft_q[15:0];bi<=fft_q[31:16];
+                wi<=twiddle_index[8] ? (twiddle_index[7:0]==0 ? 16'h8000 : -$signed(twiddle_serial_q)) : twiddle_serial_q;
+                state<=MUL1;
+            end
             MUL1: begin mul_a<=br;mul_b<=wr;state<=MUL2;end
             MUL2: begin mul_a<=bi;mul_b<=wi;state<=MUL3;end
             MUL3: begin p1<=product;mul_a<=br;mul_b<=wi;state<=MUL4;end
@@ -422,7 +463,7 @@ always @(posedge clk or posedge rst) begin
             NORM4: begin normalized<=shared_sum;state<=NORM_DONE;end
             NORM_DONE: begin normalized<=shared_sum;state<=LOG_PREP;end
             LOG_PREP: begin log_prefix<=energy_prefix(normalized);state<=LOG_ENERGY;end
-            LOG_ENERGY: begin
+            LOG_ENERGY: if(publish_state==0) begin
                 if(band==31) state<=PUBLISH;
                 else begin band<=band+1'b1;energy_index<=energy_index+1'b1;energy_sum<=0;state<=BAND_WAIT;end
             end

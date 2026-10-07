@@ -17,12 +17,22 @@ def generate():
         'saixian_av_hann.hex': [q15(.5-.5*math.cos(2*math.pi*n/1024)) for n in range(1024)],
         'saixian_av_twiddle.hex': [(q15(math.cos(2*math.pi*n/1024)) << 16) | q15(-math.sin(2*math.pi*n/1024)) for n in range(512)],
     }
+    tables['saixian_av_hann_half.hex'] = tables['saixian_av_hann.hex'][:512]
+    tables['saixian_av_twiddle_quarter.hex'] = tables['saixian_av_twiddle.hex'][:256]
+    tables['saixian_av_twiddle_serial.hex'] = [part for word in tables['saixian_av_twiddle.hex'][:256]
+                                             for part in (word >> 16, word & 65535)]
     for name, values in tables.items():
-        width = 8 if 'twiddle' in name else 4
+        wide = 'twiddle' in name and 'serial' not in name
+        width = 8 if wide else 4
         (ROOT/name).write_text(''.join(f'{v:0{width}x}\n' for v in values), encoding='ascii')
         # Production ROMs use explicit 512x16 EG4 RAM9K blocks.
+        if 'quarter' in name:
+            mif='WIDTH=32;\nDEPTH=256;\nADDRESS_RADIX=HEX;\nDATA_RADIX=HEX;\nCONTENT BEGIN\n'
+            mif+=''.join(f'{i:03X} : {v:08X};\n' for i,v in enumerate(values))+'END;\n'
+            (ROOT/f'{name}.mif').write_text(mif,encoding='ascii')
+            continue
         for bank in range((len(values)+511)//512):
-            for lane in range(2 if 'twiddle' in name else 1):
+            for lane in range(2 if wide else 1):
                 words=[(v>>(16*lane))&65535 for v in values[bank*512:(bank+1)*512]]
                 mif='WIDTH=16;\nDEPTH=512;\nADDRESS_RADIX=HEX;\nDATA_RADIX=HEX;\nCONTENT BEGIN\n'
                 mif+=''.join(f'{i:03X} : {v:04X};\n' for i,v in enumerate(words))+'END;\n'

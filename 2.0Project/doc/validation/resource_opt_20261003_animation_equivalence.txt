@@ -1,0 +1,2 @@
+PASS      589836 complete RGB/DE/VS comparisons against accepted uncompressed RTL across 9 scenes and 4 phases
+tests/tb_compact_animation_equivalence.v:54: $finish called at 5898410000 (1ps)

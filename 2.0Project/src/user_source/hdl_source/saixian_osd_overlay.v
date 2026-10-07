@@ -91,6 +91,8 @@ reg        text_enable_q2;
 reg [23:0] text_color_q2;
 reg [23:0] render_rgb_q2;
 reg [23:0] rgb_comb;
+reg [23:0] visual_plot_rgb,visual_plot_rgb_q;
+reg visual_plot_active_q;
 reg        de;
 reg [9:0]  x;
 reg [8:0]  y;
@@ -108,6 +110,32 @@ wire wave_right_pixel=wave_amplitude >= $signed({visual_wave[15],visual_wave[15:
 always @(posedge clk) begin
     visual_distance<=9'd391-y_i;
     wave_amplitude<=9'd356-y_i;
+end
+wire visual_plot_active=de && display_valid_q && error_code_q==0 && !settings_mode &&
+    state==ST_CAROUSEL && x>=64 && x<576 && y>=320 && y<392;
+// Compute the RAM-backed plot in parallel with the general OSD renderer.
+// Its merge uses the existing following register stage, so RAM comparisons
+// no longer traverse the entire settings/ticker/background priority cone.
+always @* begin
+    visual_plot_rgb=24'h0B1624;
+    if(y==320 || y==344 || y==368 || y==391 || x[6:0]==64) visual_plot_rgb=24'h23384C;
+    if(!visual_mode) begin
+        if(visual_fft_valid && x[3:0]<12) begin
+            if(visual_height!=0 && visual_distance<=visual_height) begin
+                if(y<344) visual_plot_rgb=24'hFFCF66;
+                else if(y<368) visual_plot_rgb=24'h42E5AF;
+                else visual_plot_rgb=24'h37CFFF;
+            end
+            if(visual_peak!=0 && visual_distance==visual_peak) visual_plot_rgb=24'hFFF0C2;
+        end
+    end else begin
+        if(y==356) visual_plot_rgb=24'h466078;
+        if(visual_wave_valid) begin
+            if(wave_left_pixel) visual_plot_rgb=24'h37DFFF;
+            if(wave_right_pixel) visual_plot_rgb=24'hFFB85C;
+            if(wave_left_pixel && wave_right_pixel) visual_plot_rgb=24'hE8F4FF;
+        end
+    end
 end
 
 saixian_font_rom u_font_rom(
@@ -598,30 +626,6 @@ always @* begin
         if (y < 9'd64)
             rgb_comb = {1'b0,rgb_comb[23:17],1'b0,rgb_comb[15:9],1'b0,rgb_comb[7:1]};
 
-        // Read-side RAM outputs correspond to registered x/y in this stage.
-        // No additional RGB stage or top-level output mux is introduced.
-        if(state==ST_CAROUSEL && x>=64 && x<576 && y>=320 && y<392) begin
-            rgb_comb=24'h0B1624;
-            if(y==320 || y==344 || y==368 || y==391 || x[6:0]==64) rgb_comb=24'h23384C;
-            if(!visual_mode) begin
-                if(visual_fft_valid && x[3:0]<12) begin
-                    if(visual_height!=0 && visual_distance<=visual_height) begin
-                        if(y<344) rgb_comb=24'hFFCF66;
-                        else if(y<368) rgb_comb=24'h42E5AF;
-                        else rgb_comb=24'h37CFFF;
-                    end
-                    if(visual_peak!=0 && visual_distance==visual_peak) rgb_comb=24'hFFF0C2;
-                end
-            end else begin
-                if(y==356) rgb_comb=24'h466078;
-                if(visual_wave_valid) begin
-                    if(wave_left_pixel) rgb_comb=24'h37DFFF;
-                    if(wave_right_pixel) rgb_comb=24'hFFB85C;
-                    if(wave_left_pixel && wave_right_pixel) rgb_comb=24'hE8F4FF;
-                end
-            end
-        end
-
         if ((state == ST_RUNNING || state == ST_PAUSED) &&
             ((x < 10'd6) || (x > 10'd633) || (y < 9'd6) || (y > 9'd473))) begin
             if (state == ST_PAUSED || seconds[0])
@@ -660,6 +664,7 @@ always @(posedge clk or posedge rst) begin
         text_enable_q <= 1'b0;
         text_color_q <= 24'd0;
         render_rgb_q <= 24'd0;
+        visual_plot_rgb_q<=0;visual_plot_active_q<=0;
         display_valid_q<=0;
         error_code_q<=0;
         audio_level_q <= 8'd0;
@@ -688,6 +693,7 @@ always @(posedge clk or posedge rst) begin
         text_enable_q <= display_valid_q || (error_code_q != 0);
         text_color_q <= text_color;
         render_rgb_q <= rgb_comb;
+        visual_plot_rgb_q<=visual_plot_rgb;visual_plot_active_q<=visual_plot_active;
         spectrum_height_q <= spectrum_one_peak_height(
             spectrum_bin_i, spectrum_tone_bin_q, audio_level_q);
         // Freeze the spectrum controls for the whole video frame.  Updating
@@ -704,7 +710,7 @@ always @(posedge clk or posedge rst) begin
         text_region_q2 <= text_region_q;
         text_enable_q2 <= text_enable_q;
         text_color_q2 <= text_color_q;
-        render_rgb_q2 <= render_rgb_q;
+        render_rgb_q2 <= visual_plot_active_q ? visual_plot_rgb_q : render_rgb_q;
         rgb_out <= (text_region_q2 && font_pixel_q && text_enable_q2) ?
                    text_color_q2 : render_rgb_q2;
     end

@@ -1,0 +1,4 @@
+PASS 25554 independent full-width header references: exhaustive byte mutations, random fields, valid gaps, mode hold, reset
+tests/tb_media_header.v:94: $finish called at 18910011000 (1ps)
+PASS image metadata: 17/20/32-bit sector boundaries, five records, exact dimensions, payload lifetime and reset/rescan
+tests/tb_image_metadata.v:63: $finish called at 400000 (1ps)

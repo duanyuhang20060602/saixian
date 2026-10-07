@@ -4,6 +4,9 @@ $vvp = 'C:/iverilog/bin/vvp.exe'
 Push-Location (Split-Path $PSScriptRoot -Parent)
 try {
     $jobs = @(
+        @('tb_light_bmp_compare', 'tests/tb_light_bmp_compare.v', 'src/user_source/hdl_source/SD/bmp_read.v'),
+        @('tb_compact_atlas', 'tests/tb_compact_atlas.v', 'src/user_source/hdl_source/saixian_battle_result_fx_pipelined.v'),
+        @('tb_compact_fft_rom', 'tests/tb_compact_fft_rom.v', 'src/user_source/hdl_source/saixian_audio_visualizer.v'),
         @('tb_audio_visual_key3', 'tests/tb_audio_visual_key3.v', 'src/user_source/hdl_source/saixian_audio_visualizer.v'),
         @('tb_audio_visual_wave', 'tests/tb_audio_visual_wave.v', 'src/user_source/hdl_source/saixian_audio_visualizer.v'),
         @('tb_audio_visual_render', 'tests/tb_audio_visual_render.v', 'src/user_source/hdl_source/saixian_osd_overlay.v'),
@@ -47,16 +50,22 @@ try {
         @('tb_enhance', 'tests/tb_enhance.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
         @('tb_enhance_numeric', 'tests/tb_enhance_numeric.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
         @('tb_enhance_detail', 'tests/tb_enhance_detail.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
-        @('tb_pcm_snapshot', 'tests/tb_pcm_snapshot.v', 'src/user_source/hdl_source/saixian_osd_overlay.v')
+        @('tb_pcm_snapshot', 'tests/tb_pcm_snapshot.v', 'src/user_source/hdl_source/saixian_osd_overlay.v'),
+        @('tb_media_header', 'tests/tb_media_header.v', 'src/user_source/hdl_source/SD/saixian_media_header.v'),
+        @('tb_image_metadata', 'tests/tb_image_metadata.v', 'src/user_source/hdl_source/SD/sd_card_bmp.v')
     )
     foreach ($job in $jobs) {
         $testCache = 'E:/Codex/Temp/saixian_four_features_tests'
         New-Item -ItemType Directory -Force -Path $testCache | Out-Null
         $target = Join-Path $testCache ($job[0] + '.vvp')
         $options = @('-g2012', '-DVICTORY_SIM', '-s', $job[0], '-o', $target)
+        if($job[0] -eq 'tb_image_metadata'){$options+='-i'}
         if ($job[0] -eq 'tb_sdram_refresh_timer') { $options += @('-DSDRAM_REFRESH_TIMER_SIM', '-I', 'src/td_project') }
         if ($job[0] -in @('tb_audio_visual_pcm_tap', 'tb_picture_navigation', 'tb_navigation_cycles', 'tb_navigation_uart', 'tb_frame_config', 'tb_frame_handshake', 'tb_music_start', 'tb_hmi_music', 'tb_boot_load_order', 'tb_startup_retry_integration')) { $options += '-i' }
         $sources = $job[1..($job.Count - 1)]
+        if($sources -contains 'src/user_source/hdl_source/SD/bmp_read.v'){
+            $sources += 'src/user_source/hdl_source/SD/saixian_media_header.v'
+        }
         if ($sources -contains 'src/user_source/hdl_source/top_tf_hdmi_audio.v') { $sources += 'src/user_source/hdl_source/saixian_audio_visualizer.v' }
         & $iv @options @sources
         if ($LASTEXITCODE -ne 0) { throw "Compile failed: $($job[0])" }

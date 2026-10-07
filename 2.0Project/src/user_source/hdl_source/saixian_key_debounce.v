@@ -13,9 +13,10 @@ localparam integer COUNT_MAX = (CLK_FREQ_HZ / 1000) * DEBOUNCE_MS;
 reg sync0;
 reg sync1;
 reg stable_n;
-// 75 MHz x 20 ms = 1,500,000 clocks, which does not fit in 20 bits.
-// A 32-bit counter also keeps this module correct if the pixel clock changes.
-reg [31:0] count;
+// Derive width from the configured duration: 75 MHz x 20 ms needs 21 bits.
+// Preserve the exact pulse cycle, including a one-cycle debounce parameter.
+localparam integer COUNT_BITS = (COUNT_MAX > 1) ? $clog2(COUNT_MAX) : 1;
+reg [COUNT_BITS-1:0] count;
 
 always @(posedge clk or posedge rst) begin
     if (rst) begin
@@ -37,7 +38,7 @@ always @(posedge clk or posedge rst) begin
             if (!sync1)
                 press_pulse <= 1'b1;
         end else begin
-            count <= count + 32'd1;
+            count <= count + 1'b1;
         end
     end
 end

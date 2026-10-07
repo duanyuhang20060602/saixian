@@ -1,0 +1,4 @@
+PASS light mapper 3579360 exact address checks; 1090920 complete controller cycles, 983040 issued pixels across 24 requests
+tests/tb_light_frame_equivalence.v:79: $finish called at 14488590000 (1ps)
+PASS 4500072 exact debounce/scan cycles, 75MHz 20ms, bounce, release, one-cycle and three-cycle parameters
+tests/tb_light_timers_equivalence.v:30: $finish called at 45000720000 (1ps)

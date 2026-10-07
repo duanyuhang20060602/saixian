@@ -1,12 +1,20 @@
 # 赛显 2.0：真实音频频谱与双声道波形
 
+**2026-10-07 资源优化候选：** 保留成功 2.0 的 SDRAM/HDMI/FIFO、VGA 清晰版缩放与增强代码，只优化素材目录和文件头判定。LUT 15252→14565（少 687，4.50%），寄存器 10326→9749；RAM9K 55、RAM32K 11、DSP 11 不变。建立 +0.110ns、保持 +0.022ns，总违例零；原 47 项回归与新增 2 项通过。**新位流实板待验证，原成功默认位流仍保留。**
+
+当前源码对应 [HDMI1.4b_Transmitter_v2.0.bit](releases/HDMI1.4b_Transmitter_v2.0.bit)，请重新 Add 此文件烧录；不与 `src/td_project` 内的旧默认位流混用。[匹配源码与报告完整包](releases/HDMI1.4b_Transmitter_v2.0.zip)、[本轮说明与 GitHub 清晰度修复核对](doc/资源优化与清晰度保持.md)。以下 2026-10-03 记录属于本轮前的对照版本。
+
 平台：安路 EG4S20BG256，TD 6.2.168116；当前实物串口屏 `TJC8048T070_011R`，800×480。原 `TJC8048X570_011` 工程仍保留。
 
-## 当前版本（2026-10-02）
+## 当前版本（2026-10-03）
 
 首页显示来自实际 HDMI 音频的 1024 点 FFT、32 根频谱柱；KEY3 长按一秒在频谱与双声道波形间切换，持续按住不重复切换，首页短按松开进入设置。设置和比赛保留原 KEY3 操作。模式和显示快照在帧边界切换，不改 HMI、音乐素材或时钟约束。
 
-44 项回归和 13 类独立 FFT 数值参考测试通过。完整 TD 布线建立/保持 WNS 为 +0.021/+0.024 ns，TNS 均为零；LUT 80.96%、RAM9K 60/64、RAM32K 14/16、DSP 11/29。当前默认位流与 `src/td_project/SAIXIAN_2.0_REAL_AUDIO_VISUAL_20261002.bit` 匹配。**实板五首音乐与连续一小时验收待进行。** 使用 `build_saixian.ps1` 复现官方面积优化参数；GUI 默认策略可能打包超容量。详见 [实现、报告与实板待验说明](doc/真实音频可视化_20261002.md)。
+上一轮自写 FFT 常量压缩、共享元数据 RAM、动画无损字典 ROM、图片插值范围化简及 OSD 流水线重排，释放 RAM9K 5 块和 RAM32K 3 块；用户反馈该版实测良好。本轮参考安装包例程，自写共享转场地址核心、参数化窄计数器及 BMP 字节并行边界比较，直接接入正式 2.0。
+
+本轮整机 LUT 从 15987 降到 15252/19600（77.82%），减少 735 个；RAM9K 55/64、RAM32K 11/16、DSP 11/29。完整 TD 布线建立/保持 WNS +0.284/+0.030 ns，TNS 均为零，STA 覆盖率 99.96%。47 项回归、3579360 次地址参考、1090920 周期帧读取与 4500072 周期计时器输出对照通过。FFT、波形和动画源码沿用上一轮合格版。
+
+当前默认位流与 `src/td_project/SAIXIAN_2.0_LIGHT_EXAMPLES_20261003.bit` 匹配。**本轮位流实板验收待进行。** 使用 `build_saixian.ps1` 复现面积优化参数；GUI 默认策略可能打包超容量。详见 [轻量例程与本轮实现验证](doc/赛显轻量例程与2.0优化_20261003.md)、[可复用例程](examples/saixian_lightweight/README.md)；[上一轮存储优化](doc/资源优化研究与实现_20261003.md) 和 [2026-10-02 音频可视化](doc/真实音频可视化_20261002.md) 为历史交付记录。
 
 ## 上一版本（2026-10-01）
 
@@ -18,7 +26,7 @@
 
 ## 烧录、接线与验证
 
-- **当前 FPGA 下载文件**：[真实音频可视化版](src/td_project/SAIXIAN_2.0_REAL_AUDIO_VISUAL_20261002.bit)，709940 字节，SHA256 `A9027AD61A81F7CCE7F243F906CF900901ED848CA081F6101C197F5F31FB7988`；默认 `HDMI1.4b_Transmitter_v2.0.bit` 与其一致。上一版 [NAV_WRAP_FIX](src/td_project/SAIXIAN_2.0_NAV_WRAP_FIX_20261001.bit) 和原 [KEY2 稳定版](src/td_project/SAIXIAN_2.0_KEY2_BLUE_SKIP_RED_20261001.bit) 保留用于回退。
+- **当前 FPGA 下载文件**：[轻量例程优化版](src/td_project/SAIXIAN_2.0_LIGHT_EXAMPLES_20261003.bit)，691316 字节，SHA256 `90EFFA219A0B14F9A25E56BEB5C3870A658E66C74D606A588168D0F597F04876`；默认 `HDMI1.4b_Transmitter_v2.0.bit` 与其一致。用户反馈实测良好的 [上一轮存储优化版](src/td_project/SAIXIAN_2.0_COMPACT_STORAGE_20261003.bit) 和 [音频可视化版](src/td_project/SAIXIAN_2.0_REAL_AUDIO_VISUAL_20261002.bit) 保留用于回退。
 - **当前新屏已烧录文件**：[saixian_TJC8048T070.tft](hmi/saixian_TJC8048T070.tft)，源工程 [saixian_TJC8048T070.HMI](hmi/saixian_TJC8048T070.HMI)。屏序列号 `E467C05117335E28`，PC 下载时 COM10，运行 115200、8N1。本次更新无需重烧新屏。
 - 新屏已通过官方编辑器编译和下载，实物串口查询的 18 个反馈控件、五个页面通知通过；已修复 T0 背景切图兼容问题。详情见 [屏幕交付与验证](hmi/README.md)。原 X570 文件只用于对应旧屏。
 - **接线**：屏 TX→J1 第 1 脚 GPIOA_0/D14；屏 RX←J1 第 2 脚 GPIOA_1/G11；GND→J1 第 12 或 30 脚。新屏信号为用户确认的 3.3 V TTL；VCC 按屏幕电源标注，不能把信号电平当成供电电压。接 FPGA 前拔下 USB 转 TTL 的 TX/RX，避免发送端并联。
@@ -34,7 +42,7 @@
 - FPGA 动画：[赛果 RTL](src/user_source/hdl_source/saixian_battle_result_fx_pipelined.v)，配套 `saixian_*_atlas.hex/.mif` 保留。
 - TD 工程：[HDMI1.4b_Transmitter_v2.0.al](src/td_project/HDMI1.4b_Transmitter_v2.0.al)。
 - 构建：[build_saixian.ps1](build_saixian.ps1)，失败或过期的候选不会替换最后合格位流。
-- 回归：[tests/run_stability.ps1](tests/run_stability.ps1)，当前常规套件为脚本列出的 39 项。
+- 回归：[tests/run_stability.ps1](tests/run_stability.ps1)，当前常规套件为脚本列出的 47 项。
 - 最终时序：[final_timing.rpt](src/td_project/final_timing.rpt)。
 - 资源：[HDMI1.4b_Transmitter_v2.0_phy.area](src/td_project/HDMI1.4b_Transmitter_v2.0_phy.area)。
 - 功能、算法及历史修复：[功能与算法应用报告](doc/功能与算法应用报告.md)。

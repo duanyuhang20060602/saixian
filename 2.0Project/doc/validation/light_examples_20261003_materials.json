@@ -1,0 +1,146 @@
+[
+  {
+    "archive": "../HX4S20_Contest_202606/2_Example/DEMO_TD版本6.2.1.zip",
+    "sha256": "5b581169c760402010285496d3a1ec6c028e748e7210c5041054ad8a170aaacf",
+    "rtl_archive_md_entries": 240,
+    "selected_sources": [
+      {
+        "path": "DEMO/11_Di_TRemble/DECL7S.v",
+        "sha256": "7d318f1ac4040b4e5419eac5890f9678b51af31b1dd6e99decd48a60083d79aa",
+        "bytes": 1093
+      },
+      {
+        "path": "DEMO/11_Di_TRemble/DECL7SH.v",
+        "sha256": "4f8cdc3a211e3a52a8b67607f961af57d47955a885c572b4c43804051fa7f2a1",
+        "bytes": 1135
+      },
+      {
+        "path": "DEMO/11_Di_TRemble/DI_TRemble.v",
+        "sha256": "1773a2eeb96112ec9b13550e4dcda7c9cb3e523e7b433749f51aba95244c4e6c",
+        "bytes": 878
+      },
+      {
+        "path": "DEMO/11_Di_TRemble/ERZP.v",
+        "sha256": "df6058d2fee531e8a2122b120ec769ae4835177b801bf2436da0475aecd3f31a",
+        "bytes": 793
+      },
+      {
+        "path": "DEMO/11_Di_TRemble/MUX21B.v",
+        "sha256": "d2d5ef9980d731bf5ee9970e8e219525f69d14a1ade68b793d59b53cd038173d",
+        "bytes": 293
+      },
+      {
+        "path": "DEMO/11_Di_TRemble/MUX21a.v",
+        "sha256": "fb9474dfbb18005c8cd7b1328b3bf3eeca1bcbb40ed359a75ab59a37c0527dc5",
+        "bytes": 353
+      },
+      {
+        "path": "DEMO/11_Di_TRemble/clkdiv.v",
+        "sha256": "08022535bace900159fd3c4d9b829e7b0b68ad178ef6913c9bf4d6d2eeeb6871",
+        "bytes": 294
+      },
+      {
+        "path": "DEMO/11_Di_TRemble/cnt8.v",
+        "sha256": "a61f3312e327bc50aada26013615c08af53f147d2ab970b74b3141fc0856025f",
+        "bytes": 134
+      },
+      {
+        "path": "DEMO/11_Di_TRemble/sm_scnt.v",
+        "sha256": "2c84064ba8c4762d7ba3c4518897c23c507556fc3e12ee2732cd599ac0c8d59f",
+        "bytes": 1935
+      },
+      {
+        "path": "DEMO/15_VGA/VGAV.v",
+        "sha256": "820af697d0ea8a119aad0b2a929389ee9818f11fd64d6c0e9f0dc29dddf27c43",
+        "bytes": 1875
+      },
+      {
+        "path": "DEMO/18_sd_card_audio/al_ip/afifo_8i_32o_1024.v",
+        "sha256": "c4ef15e1aa769a779f4d1f464c10a71859dec68106f720fd92ed294e70360016",
+        "bytes": 35276
+      },
+      {
+        "path": "DEMO/18_sd_card_audio/al_ip/sys_pll.v",
+        "sha256": "d704d04211e4d4313271dc14bfca15297564de122982f60ee3f04b0fcd37eec4",
+        "bytes": 2055
+      },
+      {
+        "path": "DEMO/18_sd_card_audio/ax_debounce.v",
+        "sha256": "3d9ccb8416408d92d30016bfe5c6b978d91f4ae4240107f726f0a10ecf1ad1e3",
+        "bytes": 2227
+      },
+      {
+        "path": "DEMO/18_sd_card_audio/sd_card_cmd.v",
+        "sha256": "5426042053eadc6c951dd18ec67129ac3902746916974b0354d1ef38f53e109f",
+        "bytes": 8900
+      },
+      {
+        "path": "DEMO/18_sd_card_audio/sd_card_sec_read_write.v",
+        "sha256": "2b061dc1032e728a11d26f36cc97c9b5c4c5942d8b4ae852dc6f521370e57e43",
+        "bytes": 5872
+      },
+      {
+        "path": "DEMO/18_sd_card_audio/sd_card_test.v",
+        "sha256": "a3bbc3603a02b160b72a189f7a9ca7e885f25366c4b002b05a8b38e82d5f8ea1",
+        "bytes": 4606
+      },
+      {
+        "path": "DEMO/18_sd_card_audio/sd_card_top.v",
+        "sha256": "9d18a005a3bfc3d3aff99e1f6bb086eeb0cf5668ced673432d92dee6b7f49409",
+        "bytes": 7400
+      },
+      {
+        "path": "DEMO/18_sd_card_audio/seg_decoder.v",
+        "sha256": "51e9e21f7c27717fc693970406aff8df01f60da97f2a6a56c1b7758bd8289ffa",
+        "bytes": 764
+      },
+      {
+        "path": "DEMO/18_sd_card_audio/seg_scan.v",
+        "sha256": "0c02514d0b87ba93082699e82a75db414a858473a654a44c0a18f69cf0cb532b",
+        "bytes": 1845
+      },
+      {
+        "path": "DEMO/18_sd_card_audio/spi_master.v",
+        "sha256": "1e5263ec00b0d2703bc2c9ab19457a59df37991a4f404d2b5a061e13d8024944",
+        "bytes": 3790
+      }
+    ]
+  },
+  {
+    "archive": "../HX4S20_Contest_202606/7_lab_ex_2026_nosoft/全国大学生嵌入式芯片与系统设计竞赛'2026选题指南_康芯.zip",
+    "sha256": "324c4b5e82a048eefe8800b2ae3a676cf4cbef021199de1852c07962cce52619",
+    "rtl_archive_md_entries": 91,
+    "selected_sources": [
+      {
+        "path": "lab_ex5_i2s/src/user_source/hdl_source/key_remove_shakes.v",
+        "sha256": "8832f59e7ba94bfb8cf31e4f5a772ef7177d5257a5a2532d53cbfa1d9b7f5cd9",
+        "bytes": 1762
+      },
+      {
+        "path": "lab_ex5_i2s/src/user_source/hdl_source/SD/spi_master.v",
+        "sha256": "37f7a21144fa5cca3cc5c3b5f68a5ad40b3108336b600e45a1367734ac61403c",
+        "bytes": 3655
+      },
+      {
+        "path": "lab_ex5_i2s/src/user_source/hdl_source/SD/seg_scan.v",
+        "sha256": "08759c329c33cdb7a6070e0b46773f0a6c9c8052b51652dec29406b9a9dac1e3",
+        "bytes": 1847
+      },
+      {
+        "path": "lab_ex5_i2s/src/user_source/hdl_source/SD/frame_fifo_write.v",
+        "sha256": "ef0f46443b6f79ebb9fbba8f39b11dca90ee7e9ae4637c1d45786744d964e540",
+        "bytes": 11551
+      },
+      {
+        "path": "lab_ex5_i2s/src/user_source/hdl_source/SD/frame_fifo_read.v",
+        "sha256": "5952075b213ec638f5c9bb238d4d4162685f9e9b5e752674f0e68a92dbec83ac",
+        "bytes": 10172
+      },
+      {
+        "path": "lab_ex5_i2s/src/user_source/hdl_source/SD/bmp_read.v",
+        "sha256": "8b81edee7e1ac61e02652c9416c05f6a32768acd5a9639365bc7bf87fa4febaa",
+        "bytes": 11339
+      }
+    ]
+  }
+]

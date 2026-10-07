@@ -34,6 +34,12 @@ assign write_vga = 1'b0;
 
 // Slow cards can need several seconds to leave idle after ACMD41. The error
 // recovery path automatically resets and retries the controller.
+// Widths follow existing legal bounds; values and interface timing are unchanged.
+function integer bound_width;
+ input [63:0] limit;integer k;
+ begin bound_width=1;for(k=0;k<64;k=k+1)if((limit>>k)!=0)bound_width=k+1;end
+endfunction
+localparam SECTOR_BITS=bound_width(SCAN_MAX_SECTOR);
 localparam [31:0] INIT_TIMEOUT_CYCLES = CLK_FREQ_HZ * 8;
 // Reading a 921654-byte BMP uses one CMD17 transaction per sector.  Some
 // large/slow TF cards need more than five seconds even though every transfer
@@ -63,11 +69,11 @@ wire [2:0] scan_found_total, init_stage;
 
 reg scan_start_pulse, scan_stop_req, load_start_pulse, op_abort, scan_kicked;
 reg [31:0] load_sector;
-reg [31:0] image_sector0, image_sector1, image_sector2, image_sector3, image_sector4;
-reg [31:0] sprint_background_sector;
+reg [SECTOR_BITS-1:0] image_sector0, image_sector1, image_sector2, image_sector3, image_sector4;
+reg [SECTOR_BITS-1:0] sprint_background_sector;
 reg sprint_background_found, loading_sprint_background;
-reg [15:0] image_width0, image_width1, image_width2, image_width3, image_width4;
-reg [15:0] image_height0, image_height1, image_height2, image_height3, image_height4;
+reg [10:0] image_width0, image_width1, image_width2, image_width3, image_width4;
+reg [10:0] image_height0, image_height1, image_height2, image_height3, image_height4;
 reg [2:0] current_image, pending_image, desired_image;
 reg [1:0] current_buf;
 // Three RGB565 slots fit within the existing SDRAM. Index 2 stays reserved
@@ -80,13 +86,17 @@ reg load_issue_pending;
 reg load_busy, source_started, source_done, write_finish_seen, awaiting_commit, display_committed;
 reg desired_slide_right, load_slide_right;
 reg reload_first_after_scan;
-reg [31:0] init_timer, load_timer, auto_timer, recovery_timer, scan_idle_timer;
-reg [31:0] audio_start_sector0, audio_start_sector1, audio_start_sector2, audio_start_sector3, audio_start_sector4;
+reg [bound_width(INIT_TIMEOUT_CYCLES)-1:0] init_timer;
+reg [bound_width(LOAD_TIMEOUT_CYCLES)-1:0] load_timer;
+reg [bound_width(AUTO_CYCLES)-1:0] auto_timer;
+reg [bound_width(RECOVERY_CYCLES)-1:0] recovery_timer;
+reg [bound_width(SCAN_IDLE_CYCLES)-1:0] scan_idle_timer;
+reg [SECTOR_BITS-1:0] audio_start_sector0, audio_start_sector1, audio_start_sector2, audio_start_sector3, audio_start_sector4;
 reg [31:0] audio_data_bytes0, audio_data_bytes1, audio_data_bytes2, audio_data_bytes3, audio_data_bytes4;
 reg [2:0] audio_track_sel0, audio_track_sel1;
 reg audio_track_toggle0, audio_track_toggle1, audio_track_toggle_seen;
 reg audio_stream_restart;
-reg [34:0] scan_timer;
+reg [bound_width(SCAN_TIMEOUT_CYCLES)-1:0] scan_timer;
 reg [2:0] prev_sync, next_sync, commit_sync, wrfin_sync;
 reg [1:0] carousel_sync;
 
@@ -234,11 +244,8 @@ end
 always @(posedge clk or posedge rst) begin
     if (rst) begin
         scan_start_pulse <= 0; scan_stop_req <= 0; load_start_pulse <= 0; op_abort <= 0; load_sector <= 0;
-        scan_kicked <= 0; image_sector0 <= 0; image_sector1 <= 0; image_sector2 <= 0; image_sector3 <= 0; image_sector4 <= 0;
-        sprint_background_sector <= 0; sprint_background_found <= 0;
+        scan_kicked <= 0; sprint_background_found <= 0;
         sprint_background_ready <= 0; loading_sprint_background <= 0;
-        image_width0 <= 0; image_width1 <= 0; image_width2 <= 0; image_width3 <= 0; image_width4 <= 0;
-        image_height0 <= 0; image_height1 <= 0; image_height2 <= 0; image_height3 <= 0; image_height4 <= 0;
         pending_width <= 0; pending_height <= 0; source_width <= 0; source_height <= 0;
         current_image <= 0; pending_image <= 0; desired_image <= 0; current_buf <= 0;
         cache_valid <= 0; load_prefetch <= 0; load_initial <= 0; loading_image <= 0;
@@ -317,12 +324,9 @@ always @(posedge clk or posedge rst) begin
             cache_valid <= 0; load_prefetch <= 0;
             desired_image <= 0;
             desired_slide_right <= 0;
-            image_sector0 <= 0; image_sector1 <= 0; image_sector2 <= 0; image_sector3 <= 0; image_sector4 <= 0;
-            sprint_background_sector <= 0; sprint_background_found <= 0;
+            sprint_background_found <= 0;
             sprint_background_ready <= 0; loading_sprint_background <= 0;
-            image_width0 <= 0; image_width1 <= 0; image_width2 <= 0; image_width3 <= 0; image_width4 <= 0;
-            image_height0 <= 0; image_height1 <= 0; image_height2 <= 0; image_height3 <= 0; image_height4 <= 0;
-        end
+            end
 
         if (scan_kicked && !scan_done && error_code == 0) begin
             if (scan_timer < SCAN_TIMEOUT_CYCLES) scan_timer <= scan_timer + 1'b1;

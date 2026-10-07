@@ -60,24 +60,39 @@ localparam ST_CHECK     = 3'd5;
 reg [2:0]  state;
 reg [9:0]  rd_cnt;
 
-reg [7:0]  header_0;
-reg [7:0]  header_1;
-reg [31:0] dib_header_size;
-reg [31:0] file_len;
-reg [31:0] pixel_offset;
-reg [31:0] width;
-reg [31:0] height;
-reg [15:0] planes;
-reg [15:0] bit_count;
-reg [31:0] compression;
-reg [31:0] x_pixels_per_metre, y_pixels_per_metre;
+wire parsed_b,parsed_m,parsed_dib,parsed_planes,parsed_bits24,parsed_uncompressed;
+wire parsed_sprint_x,parsed_sprint_y,parsed_magic,parsed_rate,parsed_bits16,parsed_stereo;
+// Compatibility/debug views encode only predicates for fields never used as
+// numbers. Actual file/offset/length values remain full-width.
+wire [7:0] header_0=parsed_b ? 8'h42 : 8'd0;
+wire [7:0] header_1=parsed_m ? 8'h4d : 8'd0;
+wire [31:0] dib_header_size=parsed_dib ? 32'd40 : 32'd0;
+wire [31:0] file_len,pixel_offset,width,height;
+wire [15:0] planes=parsed_planes ? 16'd1 : 16'd0;
+wire [15:0] bit_count=parsed_bits24 ? 16'd24 : 16'd0;
+wire [31:0] compression=parsed_uncompressed ? 32'd0 : 32'd1;
+wire [31:0] x_pixels_per_metre=parsed_sprint_x ? 32'd12345 : 32'd0;
+wire [31:0] y_pixels_per_metre=parsed_sprint_y ? 32'd54321 : 32'd0;
 wire sprint_background_tag = (x_pixels_per_metre == 32'd12345) &&
                              (y_pixels_per_metre == 32'd54321);
-reg [63:0] audio_magic;
-reg [31:0] audio_data_len;
-reg [31:0] audio_sample_rate;
-reg [15:0] audio_bits;
-reg [15:0] audio_channels;
+wire [63:0] audio_magic=parsed_magic ? 64'h3130304455415853 : 64'd0;
+wire [31:0] audio_data_len;
+wire [31:0] audio_sample_rate=parsed_rate ? 32'd48000 : 32'd0;
+wire [15:0] audio_bits=parsed_bits16 ? 16'd16 : 16'd0;
+wire [15:0] audio_channels=parsed_stereo ? 16'd2 : 16'd0;
+
+saixian_media_header header_parser(
+    .clk(clk),.rst(rst | op_abort),
+    .valid(((state==ST_SCAN)||(state==ST_LOAD_HDR)) &&
+           sd_sec_read_data_valid && rd_cnt<10'd64),
+    .scan_audio(state==ST_SCAN),.index(rd_cnt[5:0]),.data(sd_sec_read_data),
+    .bmp_b(parsed_b),.bmp_m(parsed_m),.dib_ok(parsed_dib),.planes_ok(parsed_planes),
+    .bits24_ok(parsed_bits24),.compression_zero(parsed_uncompressed),
+    .sprint_x_ok(parsed_sprint_x),.sprint_y_ok(parsed_sprint_y),
+    .audio_magic_ok(parsed_magic),.rate_ok(parsed_rate),
+    .bits16_ok(parsed_bits16),.stereo_ok(parsed_stereo),
+    .file_len(file_len),.pixel_offset(pixel_offset),.width(width),.height(height),
+    .audio_data_len(audio_data_len));
 
 reg [31:0] scan_sector;
 reg [31:0] load_sector_latched;
@@ -138,12 +153,23 @@ assign header_geometry_ok = (width[31:16]  == 16'd0) &&
                       (height[15:0]  <= 16'd1080) &&
                       (bit_count    == 16'd24) &&
                       (compression  == 32'd0);
-// Compare upper/lower halves in parallel instead of putting a full 32-bit
-// carry comparator in series with pixel assembly. Preserve all header bits.
-wire payload_started = (bmp_len_cnt[31:16] > pixel_offset[31:16]) ||
-    ((bmp_len_cnt[31:16] == pixel_offset[31:16]) && (bmp_len_cnt[15:0] >= pixel_offset[15:0]));
-wire before_file_end = (bmp_len_cnt[31:16] < file_len[31:16]) ||
-    ((bmp_len_cnt[31:16] == file_len[31:16]) && (bmp_len_cnt[15:0] < file_len[15:0]));
+// Parallel byte comparisons and flat prefix terms avoid a long carry-based
+// compare in the pixel clock-enable cone. Preserve every 32-bit header bit.
+function less_bytes;
+    input [31:0] a,b;
+    reg [3:0] eq,lt;
+    integer i;
+    begin
+        for(i=0;i<4;i=i+1) begin
+            eq[i]=a[i*8+:8]==b[i*8+:8];
+            lt[i]=a[i*8+:8]<b[i*8+:8];
+        end
+        less_bytes=lt[3] | (eq[3]&lt[2]) |
+                   (eq[3]&eq[2]&lt[1]) | (eq[3]&eq[2]&eq[1]&lt[0]);
+    end
+endfunction
+wire payload_started = !less_bytes(bmp_len_cnt,pixel_offset);
+wire before_file_end = less_bytes(bmp_len_cnt,file_len);
 assign bmp_data_valid = sd_sec_read_data_valid && payload_started && before_file_end;
 assign file_sector_count = (file_len == 32'd0) ? 32'd1 : ((file_len + 32'd511) >> 9);
 assign next_scan_sector_if_miss  = scan_sector + 32'd1;
@@ -178,121 +204,6 @@ always @(posedge clk or posedge rst) begin
             rd_cnt <= 10'd0;
     end else begin
         rd_cnt <= 10'd0;
-    end
-end
-
-always @(posedge clk or posedge rst) begin
-    if (rst) begin
-        header_0     <= 8'd0;
-        header_1     <= 8'd0;
-        dib_header_size <= 32'd0;
-        file_len     <= 32'd0;
-        pixel_offset <= 32'd54;
-        width        <= 32'd0;
-        height       <= 32'd0;
-        planes       <= 16'd0;
-        bit_count    <= 16'd0;
-        compression  <= 32'd0;
-        x_pixels_per_metre <= 32'd0;
-        y_pixels_per_metre <= 32'd0;
-    end else if (op_abort) begin
-        header_0     <= 8'd0;
-        header_1     <= 8'd0;
-        dib_header_size <= 32'd0;
-        file_len     <= 32'd0;
-        pixel_offset <= 32'd54;
-        width        <= 32'd0;
-        height       <= 32'd0;
-        planes       <= 16'd0;
-        bit_count    <= 16'd0;
-        compression  <= 32'd0;
-        x_pixels_per_metre <= 32'd0;
-        y_pixels_per_metre <= 32'd0;
-    end else if (((state == ST_SCAN) || (state == ST_LOAD_HDR)) && sd_sec_read_data_valid) begin
-        case (rd_cnt)
-            10'd0 : header_0 <= sd_sec_read_data;
-            10'd1 : header_1 <= sd_sec_read_data;
-
-            10'd2 : file_len[7:0] <= sd_sec_read_data;
-            10'd3 : file_len[15:8] <= sd_sec_read_data;
-            10'd4 : file_len[23:16] <= sd_sec_read_data;
-            10'd5 : file_len[31:24] <= sd_sec_read_data;
-
-            10'd10: pixel_offset[7:0] <= sd_sec_read_data;
-            10'd11: pixel_offset[15:8] <= sd_sec_read_data;
-            10'd12: pixel_offset[23:16] <= sd_sec_read_data;
-            10'd13: pixel_offset[31:24] <= sd_sec_read_data;
-
-            10'd14: dib_header_size[7:0] <= sd_sec_read_data;
-            10'd15: dib_header_size[15:8] <= sd_sec_read_data;
-            10'd16: dib_header_size[23:16] <= sd_sec_read_data;
-            10'd17: dib_header_size[31:24] <= sd_sec_read_data;
-
-            10'd18: width[7:0] <= sd_sec_read_data;
-            10'd19: width[15:8] <= sd_sec_read_data;
-            10'd20: width[23:16] <= sd_sec_read_data;
-            10'd21: width[31:24] <= sd_sec_read_data;
-
-            10'd22: height[7:0] <= sd_sec_read_data;
-            10'd23: height[15:8] <= sd_sec_read_data;
-            10'd24: height[23:16] <= sd_sec_read_data;
-            10'd25: height[31:24] <= sd_sec_read_data;
-
-            10'd26: planes[7:0] <= sd_sec_read_data;
-            10'd27: planes[15:8] <= sd_sec_read_data;
-
-            10'd28: bit_count[7:0] <= sd_sec_read_data;
-            10'd29: bit_count[15:8] <= sd_sec_read_data;
-
-            10'd30: compression[7:0] <= sd_sec_read_data;
-            10'd31: compression[15:8] <= sd_sec_read_data;
-            10'd32: compression[23:16] <= sd_sec_read_data;
-            10'd33: compression[31:24] <= sd_sec_read_data;
-            10'd38: x_pixels_per_metre[7:0] <= sd_sec_read_data;
-            10'd39: x_pixels_per_metre[15:8] <= sd_sec_read_data;
-            10'd40: x_pixels_per_metre[23:16] <= sd_sec_read_data;
-            10'd41: x_pixels_per_metre[31:24] <= sd_sec_read_data;
-            10'd42: y_pixels_per_metre[7:0] <= sd_sec_read_data;
-            10'd43: y_pixels_per_metre[15:8] <= sd_sec_read_data;
-            10'd44: y_pixels_per_metre[23:16] <= sd_sec_read_data;
-            10'd45: y_pixels_per_metre[31:24] <= sd_sec_read_data;
-            default: ;
-        endcase
-    end
-end
-
-// Capture the compact audio metadata independently of the BMP header fields.
-always @(posedge clk or posedge rst) begin
-    if (rst || op_abort) begin
-        audio_magic <= 64'd0;
-        audio_data_len <= 32'd0;
-        audio_sample_rate <= 32'd0;
-        audio_bits <= 16'd0;
-        audio_channels <= 16'd0;
-    end else if ((state == ST_SCAN) && sd_sec_read_data_valid) begin
-        case (rd_cnt)
-            10'd0 : audio_magic[7:0] <= sd_sec_read_data;
-            10'd1 : audio_magic[15:8] <= sd_sec_read_data;
-            10'd2 : audio_magic[23:16] <= sd_sec_read_data;
-            10'd3 : audio_magic[31:24] <= sd_sec_read_data;
-            10'd4 : audio_magic[39:32] <= sd_sec_read_data;
-            10'd5 : audio_magic[47:40] <= sd_sec_read_data;
-            10'd6 : audio_magic[55:48] <= sd_sec_read_data;
-            10'd7 : audio_magic[63:56] <= sd_sec_read_data;
-            10'd8 : audio_data_len[7:0] <= sd_sec_read_data;
-            10'd9 : audio_data_len[15:8] <= sd_sec_read_data;
-            10'd10: audio_data_len[23:16] <= sd_sec_read_data;
-            10'd11: audio_data_len[31:24] <= sd_sec_read_data;
-            10'd12: audio_sample_rate[7:0] <= sd_sec_read_data;
-            10'd13: audio_sample_rate[15:8] <= sd_sec_read_data;
-            10'd14: audio_sample_rate[23:16] <= sd_sec_read_data;
-            10'd15: audio_sample_rate[31:24] <= sd_sec_read_data;
-            10'd16: audio_bits[7:0] <= sd_sec_read_data;
-            10'd17: audio_bits[15:8] <= sd_sec_read_data;
-            10'd18: audio_channels[7:0] <= sd_sec_read_data;
-            10'd19: audio_channels[15:8] <= sd_sec_read_data;
-            default: ;
-        endcase
     end
 end
 
@@ -684,13 +595,12 @@ wire h_available=(h_position[26:16]<sample_x) ||
 wire [7:0] h_weight=vga_crisp ? 8'd0 : h_position[15:8];
 wire [23:0] h_left=(sample_x==0 || h_position[15:0]==0 ||
                    (vga_crisp && h_position[15])) ? current_pixel : left_pixel;
-function [7:0] clamp;
-    input signed [18:0] n;
-    begin clamp=(n<0) ? 0 : ((n>255) ? 255 : n[7:0]); end
-endfunction
-wire [7:0] hr=clamp($signed({1'b0,h_base[23:16]})+(hp_r>>>8));
-wire [7:0] hg=clamp($signed({1'b0,h_base[15:8]})+(hp_g>>>8));
-wire [7:0] hb=clamp($signed({1'b0,h_base[7:0]})+(hp_b>>>8));
+// base + floor((current-base)*weight/256) stays between the two
+// unsigned 8-bit endpoints for weight 0..255. The old 19-bit clamps are
+// unreachable; retain exactly the low 8 bits of that proven-bounded sum.
+wire [7:0] hr=h_base[23:16]+hp_r[15:8];
+wire [7:0] hg=h_base[15:8]+hp_g[15:8];
+wire [7:0] hb=h_base[7:0]+hp_b[15:8];
 wire [15:0] h_word={hr[7:3],hg[7:2],hb[7:3]};
 reg [1:0] read_chunk, read_bank;
 wire [15:0] bank_read [0:2];
@@ -723,6 +633,9 @@ reg [23:0] selected_current, selected_previous;
 reg [7:0] selected_weight;
 reg [23:0] mix_base;
 reg signed [17:0] vp_r, vp_g, vp_b;
+wire [7:0] vr=mix_base[23:16]+vp_r[15:8];
+wire [7:0] vg=mix_base[15:8]+vp_g[15:8];
+wire [7:0] vb=mix_base[7:0]+vp_b[15:8];
 reg [15:0] current_word, previous_word;
 reg [23:0] current_rgb, previous_rgb;
 always @* begin
@@ -846,9 +759,7 @@ always @(posedge clk or posedge rst) begin
         end
         if(mix_valid) begin
             pixel_out_valid<=1;
-            pixel_out<={clamp($signed({1'b0,mix_base[23:16]})+(vp_r>>>8)),
-                        clamp($signed({1'b0,mix_base[15:8]})+(vp_g>>>8)),
-                        clamp($signed({1'b0,mix_base[7:0]})+(vp_b>>>8))};
+            pixel_out<={vr,vg,vb};
             if(mix_last) active<=0;
         end
     end

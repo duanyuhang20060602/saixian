@@ -1,0 +1,2 @@
+PASS 100000 OSD pixel comparisons against accepted RTL: FFT/wave, text, all pages, settings, errors and DE
+tests/tb_compact_osd_equivalence.v:39: $finish called at 1000050000 (1ps)

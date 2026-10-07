@@ -16,8 +16,9 @@ parameter CLK_FREQ = 50000000; //clock frequency
 
 parameter SCAN_COUNT = CLK_FREQ /(SCAN_FREQ * 6) - 1;
 
-reg[31:0] scan_timer;  //scan time counter
-reg[3:0] scan_sel;     //Scan select counter
+localparam integer TIMER_BITS = (SCAN_COUNT > 0) ? $clog2(SCAN_COUNT + 1) : 1;
+reg[TIMER_BITS-1:0] scan_timer;  // Exact configured scan interval.
+reg[2:0] scan_sel;              // Six display positions.
 always@(posedge clk or negedge rst_n)
 begin
 	if(rst_n == 1'b0)

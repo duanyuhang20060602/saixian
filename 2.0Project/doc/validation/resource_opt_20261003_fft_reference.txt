@@ -1,0 +1,14 @@
+PASS silence: max FFT amplitude error 0.000 LSB
+PASS dc: max FFT amplitude error 0.000 LSB
+PASS single: max FFT amplitude error 7.064 LSB
+PASS antiphase: max FFT amplitude error 6.551 LSB
+PASS left_only: max FFT amplitude error 4.995 LSB
+PASS right_only: max FFT amplitude error 4.995 LSB
+PASS dual_tone: max FFT amplitude error 5.992 LSB
+PASS off_bin: max FFT amplitude error 6.035 LSB
+PASS fullscale: max FFT amplitude error 5.292 LSB
+PASS half_volume: max FFT amplitude error 6.873 LSB
+PASS square: max FFT amplitude error 6.782 LSB
+PASS impulse: max FFT amplitude error 1.422 LSB
+PASS noise: max FFT amplitude error 4.730 LSB
+PASS independent NumPy oracle: 13 signals, stereo cancellation protection, -6dB volume and -3dB single channel
