@@ -1,0 +1,11 @@
+
+PASS photo independent integer reference: range-gated causal 3x3, four strengths, edges, detail clamp (       3072 pixels)
+E:\Codex\Work\saixian_photo\comparison\tb_photo_reference.v:53: $finish called at 35480000 (1ps)
+
+
+
+PASS actual enhancer: 921600 aligned RGB565 pixels, exact bypass, full-frame processing (gain=1)
+E:\Codex\Work\saixian_photo\comparison\tb_image_stage.v:34: $finish called at 9281040000 (1ps)
+
+PASS actual enhancer: 921600 aligned RGB565 pixels, exact bypass, full-frame processing (gain=1)
+E:\Codex\Work\saixian_photo\comparison\tb_image_stage.v:34: $finish called at 9281040000 (1ps)

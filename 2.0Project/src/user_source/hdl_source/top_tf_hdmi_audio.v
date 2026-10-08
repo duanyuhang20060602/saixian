@@ -707,7 +707,7 @@ wire enhanced_de, enhanced_vs;
 wire [10:0] enhanced_x;
 wire [9:0] enhanced_y;
 wire [1:0] adaptive_gain;
-saixian_adaptive_enhance u_enhance(
+saixian_adaptive_enhance #(.PHOTO_SMOOTH(1)) u_enhance(
     .clk(video_clk),.rst(rst_video),.de(de),.vs(vs),.x(pixel_x),.y(pixel_y),
     .rgb_in(video_rgb_raw),.frame_tick(frame_tick),
     .statistics_enable(display_valid && !transition_active && !battle_busy),
@@ -1408,7 +1408,7 @@ endmodule
 // pixels in the statistics. Range gating protects strong edges. This is a
 // compact edge-aware filter, NOT a full bilateral/Retinex/CLAHE algorithm.
 module saixian_adaptive_enhance #(
-    parameter integer WIDTH=1280, SPLIT_X=640
+    parameter integer WIDTH=1280, SPLIT_X=640, PHOTO_SMOOTH=0
 )(
     input wire clk,rst,de,vs,frame_tick,statistics_enable,
     input wire [10:0] x,input wire [9:0] y,
@@ -1474,7 +1474,13 @@ reg signed [7:0] tone_term;
 always @* begin
     // Preserve low-contrast lettering/texture rather than replacing it with
     // the causal neighborhood average. Keep the existing edge sharpening.
-    if(detail>=-3 && detail<=3) detail_term=0;
+    if(PHOTO_SMOOTH && strength==1) begin
+        // Range-gated neighbours have already rejected strong edges.
+        // Blend halfway toward the centre-weighted mean. Symmetric rounding
+        // avoids the negative-value bias of an arithmetic right shift.
+        if(detail>0) detail_term=-((detail+1)>>>1);
+        else detail_term=((-detail+1)>>>1);
+    end else if(detail>=-3 && detail<=3) detail_term=0;
     else case(strength)
         0:detail_term=0;1:detail_term=detail>>>1;
         2:detail_term=detail;default:detail_term=detail+(detail>>>1);

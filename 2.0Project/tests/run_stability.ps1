@@ -50,6 +50,10 @@ try {
         @('tb_enhance', 'tests/tb_enhance.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
         @('tb_enhance_numeric', 'tests/tb_enhance_numeric.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
         @('tb_enhance_detail', 'tests/tb_enhance_detail.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
+        @('tb_photo_detail', 'tests/tb_photo_detail.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
+        @('tb_photo_pipeline', 'tests/tb_photo_pipeline.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
+        @('tb_photo_numeric', 'tests/tb_photo_numeric.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
+        @('tb_photo_quality', 'tests/tb_photo_quality.v', 'src/user_source/hdl_source/top_tf_hdmi_audio.v'),
         @('tb_pcm_snapshot', 'tests/tb_pcm_snapshot.v', 'src/user_source/hdl_source/saixian_osd_overlay.v'),
         @('tb_media_header', 'tests/tb_media_header.v', 'src/user_source/hdl_source/SD/saixian_media_header.v'),
         @('tb_image_metadata', 'tests/tb_image_metadata.v', 'src/user_source/hdl_source/SD/sd_card_bmp.v')

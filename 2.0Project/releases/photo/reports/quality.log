@@ -1,0 +1,2 @@
+PASS photo synthetic blocks: variation 1632 vs old 1792; strong edge, no overshoot, 1024 pixels
+2.0Project/tests/tb_photo_quality.v:46: $finish called at 11820000 (1ps)

@@ -2,3 +2,6 @@
 *.bmp binary
 *.bit binary
 *.hex text eol=lf
+
+# Preserve release source bytes for source_manifest.json hash verification.
+src/user_source/** -text
