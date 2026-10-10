@@ -1,0 +1,2 @@
+# Keep the tested snapshot byte-for-byte so validation.json hashes remain valid.
+* -text

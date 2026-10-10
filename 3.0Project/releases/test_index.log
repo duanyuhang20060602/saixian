@@ -1,0 +1,2 @@
+PASS index: valid descriptor and misaligned/range offset, length, file boundary and duration failures distinguished as E3B/E3C/E3D/E3E
+tests/tb_index.v:39: $finish called at 1440000 (1ps)

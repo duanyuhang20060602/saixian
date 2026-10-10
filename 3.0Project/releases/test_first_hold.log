@@ -1,0 +1,2 @@
+PASS first-image hold: extra startup hold, then original frame schedule resumes
+tests/tb_first_hold.v:18: $finish called at 1510000 (1ps)

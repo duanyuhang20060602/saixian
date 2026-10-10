@@ -1,0 +1,19 @@
+PASS cache: full SDRAM CRC readback, native FIFO, aligned 64-word physical reads, 8-word descriptors/prefixes, 1-word tail and boundary-crossing logical streams
+PASS cache: post-upload corruption rejected as memory error 9 (E29)
+PASS cache diagnostics: upload corruption E2A; known-pattern zeros E2E, ones E2F, one-word late E2C, early E2D, other mismatch E2B; first bad word captured; no playback on errors
+tests/tb_cache.v:94: $finish called at 196770000 (1ps)
+PASS native upload: 100/50 MHz asynchronous FIFO; 4096 exact words across pointer wraps; upload CRC, known-pattern BIST and full cache CRC; deferred launches
+PASS native upload: one-bit corruption after FIFO isolated as E2A before SDRAM BIST
+tests/tb_upload_memory.v:56: $finish called at 2738790000 (1ps)
+early_reproduction
+PASS read alignment reproduction: one-cycle early SDRAM data reproduces physical E2D with original direct connection
+tests/tb_cache.v:81: $finish called at 15510000 (1ps)
+early_capture
+PASS cache: full SDRAM CRC readback, native FIFO, aligned 64-word physical reads, 8-word descriptors/prefixes, 1-word tail and boundary-crossing logical streams
+PASS cache: post-upload corruption rejected as memory error 9 (E29)
+PASS cache diagnostics: upload corruption E2A; known-pattern zeros E2E, ones E2F, one-word late E2C, early E2D, other mismatch E2B; first bad word captured; no playback on errors
+tests/tb_cache.v:94: $finish called at 196770000 (1ps)
+native_upload_early_capture
+PASS native upload: 100/50 MHz asynchronous FIFO; 4096 exact words across pointer wraps; upload CRC, known-pattern BIST and full cache CRC; deferred launches
+PASS native upload: one-bit corruption after FIFO isolated as E2A before SDRAM BIST
+tests/tb_upload_memory.v:56: $finish called at 2738790000 (1ps)

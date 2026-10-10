@@ -1,0 +1,17 @@
+# TD and simulation intermediates
+__pycache__/
+*.py[cod]
+*.vvp
+src/td_project/log/
+src/td_project/.*.f
+*.db
+*.logw
+
+# Publish the tested programming images and reproducible validation evidence.
+!src/td_project/HDMI1.4b_Transmitter_v3.0.bit
+!src/td_project/HDMI1.4b_Transmitter_v3.0_QuadWrite.bit
+!src/td_project/final_timing.rpt
+!releases/HDMI1.4b_Transmitter_v3.0.bit
+!releases/HDMI1.4b_Transmitter_v3.0_QuadWrite.bit
+!releases/*.rpt
+!releases/test_*.log

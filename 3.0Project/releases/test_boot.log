@@ -1,0 +1,2 @@
+PASS boot: animated spinner without TF/FIFO, minimum dwell, prepared first-frame commit, exact RGB565 pixels/black border, seamless later commit
+tests/tb_boot.v:36: $finish called at 2270000 (1ps)

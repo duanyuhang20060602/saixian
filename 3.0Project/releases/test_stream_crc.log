@@ -1,0 +1,2 @@
+PASS stream CRC: precheck before frame writes; E37/E33/E38 block publication; no completion before patch drain; valid stream publishes
+tests/tb_stream_crc.v:46: $finish called at 1610000 (1ps)

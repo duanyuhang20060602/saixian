@@ -1,0 +1,2 @@
+PASS quad patches:         111 words, all lanes/boundaries/refresh; aligned four-beat masked patches, four contiguous words coalesced, drain before completion, neighbors intact, active-frame protection
+tests/tb_patch_quads.v:83: $finish called at 43440000 (1ps)

@@ -1,0 +1,2 @@
+PASS diagnostic: fault priority, E11/E27/E39/E40/E2A/E2F, CRC/mismatch pages, key debounce, held key and exit reset; automatic E2D/E29 pages without SW2 or KEY1
+tests/tb_status.v:40: $finish called at 2070000 (1ps)
