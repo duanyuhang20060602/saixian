@@ -1,0 +1,3 @@
+# Preserve the exact exported HDL/IP bytes referenced by the manifest.
+* -text
+*.bit binary

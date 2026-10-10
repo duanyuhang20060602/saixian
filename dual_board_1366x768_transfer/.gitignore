@@ -1,0 +1,16 @@
+src_unused/
+**/*.db
+**/*.qor
+**/*.timing
+**/*.log
+**/*.logw
+**/*_Runs/
+**/flow.status
+**/place_flow.status
+**/route_flow.status
+**/td_project/.*.f
+**/td_project/*.bit
+__pycache__/
+*.raw
+!bitstreams/
+!bitstreams/*.bit

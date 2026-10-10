@@ -1,5 +1,14 @@
 # saixian
 
+## 本分支：双板 FPGA 图片传输，B → A
+
+**分支 `codex/dual-board-1366x768-transfer-v1` 专门发布双板代码及 bit 流，重点为两个板子的图片传输协议与握手。**
+
+- [双板工程、角色与 bit 下载](dual_board_1366x768_transfer/README.md)
+- [板间传输代码、接线与状态数字](dual_board_1366x768_transfer/TRANSFER.md)
+- 1366×768 / 60Hz；B 内置图 → A 接收 / SDRAM / HDMI 已由用户确认正常。
+- SD 图片版本同时保留，固定纹波仍待定位，未标注为修复完成。
+
 ## 3.0：单板 TF 动图播放
 
 [3.0Project 工程与使用说明](3.0Project/README.md)包含 TD 工程、Verilog 源码、引脚/时序约束、已验证位流、TF 素材和验证报告。

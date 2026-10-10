@@ -1,0 +1,113 @@
+{
+  "format": "1366x768 / 60 Hz",
+  "device": "HX4S20 / EG4S20BG256",
+  "link_clock_hz": 12500000,
+  "frame_pixels": 1049088,
+  "rgb565_frame_bytes": 2098176,
+  "hardware_results": {
+    "builtin_B_to_A": "user confirmed working",
+    "A_local_HDMI": "user confirmed working",
+    "SD_picture_path": "fixed artifacts remain; B SD/decode/scaling/storage path requires diagnosis; exact fault unconfirmed"
+  },
+  "projects": {
+    "board_a_receiver": {
+      "setup_wns_ns": 0.765,
+      "hold_wns_ns": 0.052,
+      "source_sha256": {
+        "projects/board_a_receiver/src/td_project/BOARD_A_1366X768_60HZ_SD_LINK.al": "a1bf9da274d9364ec215cf800985541d5832a012340a0f06a5f9e6ac8b09a084",
+        "projects/board_a_receiver/src/td_project/build_board.tcl": "5445475491c3c2813e84cd257b3af3f68bf86ef200ff82a566f6f1ae5b4d6c96",
+        "projects/board_a_receiver/src/user_source/constraints_source/BOARD_A_RECEIVER_pins.adc": "4f7d081d430e950c8f4e5339a35d4139c3f543efaf99b93cb176ceeb0d8a0ec3",
+        "projects/board_a_receiver/src/user_source/constraints_source/BOARD_A_RECEIVER_timing.sdc": "aa8ea61dfde11bcaf380effba25aa200f4796342345f0c48ce444ce395848359",
+        "projects/board_a_receiver/src/user_source/hdl_source/dual_still_link_rx.v": "ab66ff5d5251e6efc50bb7263f2ce54361167d896a2ee2150a0ede8b32565a91",
+        "projects/board_a_receiver/src/user_source/hdl_source/dual_still_reset_sync.v": "86a363f9bf457e59e19470eadc14b89eef30a3d9142874ab0c20ced49b8cecac",
+        "projects/board_a_receiver/src/user_source/hdl_source/frame_pixels.v": "7fc3a4f69c2f2bc001a6ac4211bc39b6137431fe446bdb7cf23aa8b16f2fe0e7",
+        "projects/board_a_receiver/src/user_source/hdl_source/frame_store.v": "0b625cb882da602f96ea70014a37e3fe439086b4229c65080389640c88039828",
+        "projects/board_a_receiver/src/user_source/hdl_source/hdmi_minimal_tx.v": "d04ecced3d1869088b848290a84ea576cd30724100cc39a232b6176d96e6929b",
+        "projects/board_a_receiver/src/user_source/hdl_source/hdmi_output_diagnostics.v": "d9d76f42d177f8b42f1527c9f5f56f054bf32a810bdb030c612cb544d0866df5",
+        "projects/board_a_receiver/src/user_source/hdl_source/hdmi_phy_warpper.v": "416b082b0987001bdbc0a7e20a557cb8fb1dca34e25dc881e6d28a8cb3cf4300",
+        "projects/board_a_receiver/src/user_source/hdl_source/lane_lvds_10_1.v": "de9529321354f04837e051d0ec1681cf44783d4be3284703a788e081147500bc",
+        "projects/board_a_receiver/src/user_source/hdl_source/top_board_a.v": "8f2aacd5d97ff2db71b0027ba5236f21f780c058b8876b22fd3a3b66c9a08319",
+        "projects/board_a_receiver/src/user_source/hdl_source/video_pll.v": "7900d44aeda6b4e31ac5d71fbe6bd89f65ab15ac07df93a6d10cf50dca255a61",
+        "projects/board_a_receiver/src/user_source/hdl_source/include/global_def.v": "db5b9b6f6a08e7b8ea0d9709f1595da17dc86061e94576fc3ccdee733a94efd2",
+        "projects/board_a_receiver/src/user_source/hdl_source/include/sdr_as_ram.enc.v": "767dbdfbd83d42223b77dfa7deab42ce8216a8fd6f6cb41b7e7593d9a345ba57",
+        "projects/board_a_receiver/src/user_source/hdl_source/include/sdr_init_ref.enc.v": "7f9f9fe090c896b4fcfd0f61c97e65183e1d231edaeae879a122d56d5f86761c",
+        "projects/board_a_receiver/src/user_source/hdl_source/include/sdr_wrrd.enc.v": "c7d7fe07d75f66aa88d9f986b3006319c995162434f104f9990664b374cdfdd2",
+        "projects/board_a_receiver/src/user_source/hdl_source/IP/afifo_16_32_256.tcl": "5807155b00f2f749328339e01a85b4bb836f91598286dd167513836b60af33db",
+        "projects/board_a_receiver/src/user_source/hdl_source/IP/afifo_16_32_256.v": "acee22723ed0bc9029b6f40879d52734b645466cdb9fae7919297263e7858e55",
+        "projects/board_a_receiver/src/user_source/hdl_source/IP/afifo_32_16_256.tcl": "5807155b00f2f749328339e01a85b4bb836f91598286dd167513836b60af33db",
+        "projects/board_a_receiver/src/user_source/hdl_source/IP/afifo_32_16_256.v": "a3c84d9b9a083d1eb2e82f0047aaa1a2d0d0d7ff96bf8dc8159d334c6096b6a8",
+        "projects/board_a_receiver/src/user_source/hdl_source/IP/sys_pll.v": "e06175af354747970d18fe6b3439ef74ccf0d2bbb88dcd3a63a0dca7ed87bd16",
+        "projects/board_a_receiver/src/user_source/hdl_source/SD/frame_fifo_read.v": "1ed81a869e20fb786fe5b8d48d74a1ee2c739adb31bcefa0f257232fa51016dd",
+        "projects/board_a_receiver/src/user_source/hdl_source/SD/frame_fifo_write.v": "7d16f58b25895f1b882a14b4579cdf8306ac8773006f7123052e4c311456cd1a",
+        "projects/board_a_receiver/src/user_source/hdl_source/SD/frame_read_write.v": "28bb1fe15ac117fc4cb6c2efc5aa3cf79f48e0a0961de016107470eb408013a9",
+        "projects/board_a_receiver/src/user_source/hdl_source/SD/sdram.v": "2d985c2477384e677c25714241e1a50206def8916aa03189a5b313b2d22dfc99"
+      }
+    },
+    "board_b_sd_sender": {
+      "setup_wns_ns": 0.009,
+      "hold_wns_ns": 0.027,
+      "source_sha256": {
+        "projects/board_b_sd_sender/src/td_project/BOARD_B_1366X768_60HZ_SD_LINK.al": "a8d137b4fa6e3b9c9b693db2cb85b05f5d8bc17ef6dd57960bf2da95a358c2a0",
+        "projects/board_b_sd_sender/src/td_project/build_board.tcl": "6698c89fa39edafd99c749745122fc7dbed93fed80da988f65af93ec3304fad1",
+        "projects/board_b_sd_sender/src/user_source/constraints_source/BOARD_B_SENDER_pins.adc": "68c7332d5deb066d3b7dbbb13744cdef7521356c574c7c4ce44671c013c060bc",
+        "projects/board_b_sd_sender/src/user_source/constraints_source/BOARD_B_SENDER_timing.sdc": "3d3071c32a5ea6b813ad6c934ae2e851dad8b6745bca60837c7a8509ed7b3ade",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/builtin_link_pll.v": "7e098765019ca30ee8df0d91c614260d9b4321b396337713b32c35005dfc995d",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/dual_still_reset_sync.v": "86a363f9bf457e59e19470eadc14b89eef30a3d9142874ab0c20ced49b8cecac",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/frame_store.v": "0b625cb882da602f96ea70014a37e3fe439086b4229c65080389640c88039828",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/link_sender.v": "7bd8f57b48d8edcdd975fa84d8c57174fccaa695ce6f10810ba6b7ffe91b4187",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/top_board_b.v": "bf866cbeaf7ba814ac64aabc9dd8383715cba1fc396510624937b863cd052a08",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/include/global_def.v": "db5b9b6f6a08e7b8ea0d9709f1595da17dc86061e94576fc3ccdee733a94efd2",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/include/sdr_as_ram.enc.v": "767dbdfbd83d42223b77dfa7deab42ce8216a8fd6f6cb41b7e7593d9a345ba57",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/include/sdr_init_ref.enc.v": "7f9f9fe090c896b4fcfd0f61c97e65183e1d231edaeae879a122d56d5f86761c",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/include/sdr_wrrd.enc.v": "c7d7fe07d75f66aa88d9f986b3006319c995162434f104f9990664b374cdfdd2",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/IP/afifo_16_32_256.tcl": "5807155b00f2f749328339e01a85b4bb836f91598286dd167513836b60af33db",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/IP/afifo_16_32_256.v": "acee22723ed0bc9029b6f40879d52734b645466cdb9fae7919297263e7858e55",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/IP/afifo_32_16_256.tcl": "5807155b00f2f749328339e01a85b4bb836f91598286dd167513836b60af33db",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/IP/afifo_32_16_256.v": "a3c84d9b9a083d1eb2e82f0047aaa1a2d0d0d7ff96bf8dc8159d334c6096b6a8",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/IP/sys_pll.v": "e06175af354747970d18fe6b3439ef74ccf0d2bbb88dcd3a63a0dca7ed87bd16",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/SD/bmp_read.v": "4203ad2c766070c1be57b8c2843d889d43f8914b6ee9b29d10d3e7dff4433401",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/SD/frame_fifo_read.v": "1ed81a869e20fb786fe5b8d48d74a1ee2c739adb31bcefa0f257232fa51016dd",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/SD/frame_fifo_write.v": "7d16f58b25895f1b882a14b4579cdf8306ac8773006f7123052e4c311456cd1a",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/SD/frame_read_write.v": "28bb1fe15ac117fc4cb6c2efc5aa3cf79f48e0a0961de016107470eb408013a9",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/SD/saixian_media_header.v": "f8092e34232ab7d5a379903b7f8602168ca3b89d5397d8a222c55ba45332271e",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/SD/sdram.v": "2d985c2477384e677c25714241e1a50206def8916aa03189a5b313b2d22dfc99",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/SD/sd_card_bmp.v": "dc97fa076684abe9dfd1268066f33b672e6bab33dfc46781e4f833062d6246de",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/SD/sd_card_cmd.v": "1a59839c2f2c22670a69a24b94e551a30c53c8f52acc170816b63db30a28d08c",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/SD/sd_card_sec_read_write.v": "928b1714098046907b392b4253abca4b8204a20e3d3eb218792926069a3b1ad4",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/SD/sd_card_top.v": "2eb44743f198fa8b6a34c09f2421c580ebc1c8169da658e0a93dbd399cfa1441",
+        "projects/board_b_sd_sender/src/user_source/hdl_source/SD/spi_master.v": "37f7a21144fa5cca3cc5c3b5f68a5ad40b3108336b600e45a1367734ac61403c"
+      }
+    },
+    "board_b_builtin_sender": {
+      "setup_wns_ns": 32.704,
+      "hold_wns_ns": 0.024,
+      "source_sha256": {
+        "projects/board_b_builtin_sender/src/td_project/BOARD_B_BUILTIN_1366X768_LINK_DIAGNOSTIC.al": "17dd552a64084b5a63a9384526919f4732ed797a835e87bd0c67f3377a79651b",
+        "projects/board_b_builtin_sender/src/td_project/build_board.tcl": "3e75ab62c5bc9468eea71bb3b61462e5f6a2b5185f879ab131dcd9048beefdcd",
+        "projects/board_b_builtin_sender/src/user_source/constraints_source/BOARD_B_SENDER_pins.adc": "68c7332d5deb066d3b7dbbb13744cdef7521356c574c7c4ce44671c013c060bc",
+        "projects/board_b_builtin_sender/src/user_source/constraints_source/BOARD_B_SENDER_timing.sdc": "94aaf9eac3fed5f13049074d554c84530d7f66f6cb94f59e59f305262f46689b",
+        "projects/board_b_builtin_sender/src/user_source/hdl_source/builtin_link_pll.v": "7e098765019ca30ee8df0d91c614260d9b4321b396337713b32c35005dfc995d",
+        "projects/board_b_builtin_sender/src/user_source/hdl_source/builtin_pattern565.v": "5fefc162a0a5ee4c6efb630da0cefd16c5097fed169a14980d660da29d6b78cb",
+        "projects/board_b_builtin_sender/src/user_source/hdl_source/dual_still_reset_sync.v": "86a363f9bf457e59e19470eadc14b89eef30a3d9142874ab0c20ced49b8cecac",
+        "projects/board_b_builtin_sender/src/user_source/hdl_source/top_builtin_diagnostic.v": "d749012755ec5c6cfa73e657ee50de8b0e56f36164a28ac7d56d0bfbfc1fcc8d"
+      }
+    }
+  },
+  "bitstreams": {
+    "BOARD_A_1366X768_60HZ_SD_LINK.bit": {
+      "role": "board_a_receiver",
+      "sha256": "c1ca99596f6895b62c3251be2b4b54e2eecd195c5368333ccb177c1345bd9867",
+      "size_bytes": 629643
+    },
+    "BOARD_B_1366X768_60HZ_SD_LINK.bit": {
+      "role": "board_b_sd_sender",
+      "sha256": "d5140f3e0082a5b6f11403371a1f801a1e73d744b904eada2016664a36f213c1",
+      "size_bytes": 629642
+    },
+    "BOARD_B_BUILTIN_1366X768_LINK_DIAGNOSTIC.bit": {
+      "role": "board_b_builtin_sender",
+      "sha256": "bf8af43f21eb8c9e2f029790ad1ccf43e3135478f52dacff3d8f292ad846522b",
+      "size_bytes": 631970
+    }
+  }
+}
