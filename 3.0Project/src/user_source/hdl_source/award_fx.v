@@ -220,10 +220,10 @@ wire [6:0] wave=wave_curve(distance[8:3]);
 wire signed [7:0] intensity=tag0[5] ? $signed({1'b0,breath(motion0[9:4])})-8'sd32 : $signed({1'b0,wave})-8'sd32;
 wire signed [12:0] weighted=$signed({1'b0,tag0[4:1]})*intensity;
 wire [15:0] seed=seed_for_column(x[10:5]);
-function [12:0] sprite_address;
+function [13:0] sprite_address;
  input [1:0] layer;input [10:0] px;input [9:0] py,clock_phase;input [15:0] random_seed;
  reg [9:0] center_y;reg [4:0] sway_phase;reg signed [6:0] sway;
- reg [6:0] center_x;reg [10:0] dx,dy;reg [2:0] orientation;
+ reg [6:0] center_x;reg [10:0] dx,dy;reg [3:0] orientation;
  begin
   case(layer)
    0:center_y=clock_phase+random_seed[9:0];
@@ -235,11 +235,11 @@ function [12:0] sprite_address;
   sway=sway_phase[4] ? 7'sd15-$signed({3'd0,sway_phase[3:0]}) : $signed({3'd0,sway_phase[3:0]});
   center_x=7'd8+{3'd0,random_seed[14:11]}+(sway>>>2);
   dx={6'd0,px[4:0]}+11'd16-center_x;dy={1'b0,py}+11'd16-center_y;
-  orientation=clock_phase[6:4]+random_seed[15:13]+{layer,1'b0};
-  sprite_address=px<1280 && py<548 && dx<32 && dy<32 ? {orientation,dy[4:0],dx[4:0]} : 13'd0;
+  orientation=clock_phase[6:3]+random_seed[15:12]+{layer,2'b0};
+  sprite_address=px<1280 && py<548 && dx<32 && dy<32 ? {orientation,dy[4:0],dx[4:0]} : 14'd0;
  end
 endfunction
-reg [12:0] address0,address1,address2,address3;
+reg [13:0] address0,address1,address2,address3;
 reg [23:0] base1,flow2;reg signed [9:0] gain1;
 wire [7:0] sprite0,sprite1,sprite2,sprite3;
 award_sprite_rom sprites(clk,address0,address1,address2,address3,sprite0,sprite1,sprite2,sprite3);

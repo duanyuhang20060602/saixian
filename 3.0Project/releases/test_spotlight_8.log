@@ -1,0 +1,2 @@
+PASS light rejection case           8: corrupt metadata/descriptor/CRC not published
+tests/tb_spotlight.v:104: $finish called at 11807782000 (1ps)

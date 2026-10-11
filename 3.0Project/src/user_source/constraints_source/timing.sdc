@@ -13,3 +13,6 @@ set_false_path -from [get_regs {por_count[22]}] -to [get_clocks {hdmi_5x_clk}]
 # clock period instead of masking payload paths with clock-group exceptions.
 set_max_delay -from [get_regs {*/primary_addr_gray_reg[*]}] -to [get_regs {*/sync_r1[*]}] 9.700 -datapath_only
 set_false_path -hold -to [get_regs {*/sync_r1[*]}]
+
+# Bundled request payload stays stable until the acknowledged row transfer.
+set_false_path -to [get_regs {lights/request_sync[0] lights/request_frame_meta[*] lights/request_row_meta[*] lights/request_initial_meta lights/video_error_sync[0] lights/done_sync[0] lights/startup_sync[0] lights/pause_meta}]

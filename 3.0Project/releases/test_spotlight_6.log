@@ -1,0 +1,2 @@
+PASS row deadline: stalled initial SDRAM fetch diagnosed as error 7; no stale light publication
+tests/tb_spotlight.v:99: $finish called at 12019392000 (1ps)

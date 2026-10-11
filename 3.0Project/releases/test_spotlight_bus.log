@@ -1,0 +1,6 @@
+complete raster 1 index=0 phase=0 refreshes=4216 max_job=1201 clocks
+complete raster 2 index=0 phase=1 refreshes=6332 max_job=1202 clocks
+complete raster 3 index=0 phase=2 refreshes=8447 max_job=1202 clocks
+complete raster 4 index=1 phase=0 refreshes=10563 max_job=1210 clocks
+PASS rolling SDRAM: 3686400 exact RGB pixels, 4 complete 720p scans including temporal interpolation and frame switch, 10563 refreshes, 264 row jobs, max job 1210 mem clocks; zero HDMI FIFO underflows
+tests/tb_spotlight_bus.v:104: $finish called at 82392900439 (1ps)

@@ -4,6 +4,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 root=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(root/'tools'))
 from delta_codec import encode,decode
+from resource_profile import HIGH_ROWS
 def prepare():
     assets=root/'examples/TF卡素材'
     raw=(assets/'base_tagged_rgb565.bin').read_bytes()
@@ -16,6 +17,13 @@ def prepare():
      payload+=stream;payload+=bytes((-len(stream))%512)
     maps=(assets/'spotlight_maps.bin').read_bytes()
     assert len(maps)==120*14400
+    # The reduced on-chip light cache relies on protected rows being zero.
+    assert all(not any(maps[i*14400+68*160:(i+1)*14400]) for i in range(120))
+    for frame in range(120):
+     for y,(base,first,count) in enumerate(HIGH_ROWS):
+      for x in range(40):
+       if not first<=x<first+count:
+        assert all(v<128 for v in maps[frame*14400+y*160+x*4:frame*14400+y*160+x*4+4]), 'MSB profile requires recompilation'
     map_table_offset=(1536+len(payload))//4
     map_table=bytearray(2048);map_payload=bytearray()
     for i in range(120):
@@ -31,7 +39,8 @@ def prepare():
     assert total+3686400<=8388608
     (assets/'AWARD720.DLT').write_bytes(blob)
     (assets/'spotlight_maps.bin').write_bytes(maps)
-    report=dict(format='SXDLT004',base_image_frames=1,light_field_frames=120,light_field_size=[160,90],light_field_bytes_per_frame=14400,interpolation='Two light-frame buffers, temporal blend at each HDMI frame',display_frames_per_light_frame=6,loop_seconds_at_current_pixel_clock=120*6*1650*750/75000000,package_bytes=total,external_sdram_bytes=total+3686400,asset_sha256=hashlib.sha256(blob).hexdigest(),payload_crc32=f'{zlib.crc32(full_payload):08X}',preserved_effects=['trophy flow','wall breathing','large gold foil'],preview_scope='Software choreography reference; field sampling and RGB565 output require board comparison')
+    report=dict(format='SXDLT004',base_image_frames=1,light_field_frames=120,light_field_size=[160,90],light_field_bytes_per_frame=14400,interpolation='Two temporal fields in external SDRAM; four rolling rows per field with spatial/temporal interpolation',display_frames_per_light_frame=6,loop_seconds_at_current_pixel_clock=120*6*1650*750/75000000,package_bytes=total,external_sdram_bytes=total+3686400,asset_sha256=hashlib.sha256(blob).hexdigest(),payload_crc32=f'{zlib.crc32(full_payload):08X}',preserved_effects=['trophy flow','wall breathing','curved twisting gold ribbons'],preview_scope='Software choreography reference; field sampling and RGB565 output require board comparison')
+    report.update(onchip_light_rows=4,onchip_light_allocated_bytes=2048,onchip_light_meaningful_bytes=1280,interpolation_register_bytes=640,sprite_logical_size=[32,32],sprite_stored_size=[21,20],lossless_resource_storage=True,playback_speed_multiplier=2,effective_display_frames_per_light_frame=3,effective_loop_seconds=5.94,brightness_precision_bits=8)
     (assets/'manifest.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
     work=Path('E:/Codex/Temp/saixian_softflow720_tests');work.mkdir(parents=True,exist_ok=True)
     (work/'package_bytes.hex').write_text('\n'.join(f'{b:02x}' for b in blob)+'\n')

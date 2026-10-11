@@ -12,6 +12,6 @@ set area_option -packarea
 set arr_filter on
 set arr_rwns -100000
 set drHoldFix on
-set phyWildParams {place seed 23 route post_route_opt high route effort high gate map_mode area_prior gate pack_seq_in_io off}
+set phyWildParams {place seed 31 route post_route_opt high route effort high gate map_mode area_prior gate pack_seq_in_io off}
 if {[info exists ::env(SAIXIAN_PLACE_SEED)]} {set phyWildParams [list place seed $::env(SAIXIAN_PLACE_SEED) route post_route_opt high route effort high gate map_mode area_prior gate pack_seq_in_io off]}
 source {C:/Anlogic/TD_6.2.1_Engineer_6.2.168.116/doc/scripts/DefaultFlow.tcl}

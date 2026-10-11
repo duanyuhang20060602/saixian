@@ -1,0 +1,2 @@
+PASS sprite_storage:       65536 exact opacity/shade samples on four ports, all sixteen flip poses and transparent margins; unchanged one-cycle latency
+tests/tb_sprite_storage.v:18: $finish called at 163846000 (1ps)

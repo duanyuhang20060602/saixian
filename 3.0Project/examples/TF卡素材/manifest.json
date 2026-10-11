@@ -7,7 +7,7 @@
     90
   ],
   "light_field_bytes_per_frame": 14400,
-  "interpolation": "Two light-frame buffers, temporal blend at each HDMI frame",
+  "interpolation": "Two temporal fields in external SDRAM; four rolling rows per field with spatial/temporal interpolation",
   "display_frames_per_light_frame": 6,
   "loop_seconds_at_current_pixel_clock": 11.88,
   "package_bytes": 3238400,
@@ -17,7 +17,33 @@
   "preserved_effects": [
     "trophy flow",
     "wall breathing",
-    "large gold foil"
+    "tilted fluttering gold foil strips"
   ],
-  "preview_scope": "Software choreography reference; field sampling and RGB565 output require board comparison"
+  "preview_scope": "Software choreography reference; field sampling and RGB565 output require board comparison",
+  "onchip_light_rows": 4,
+  "onchip_light_allocated_bytes": 2048,
+  "onchip_light_meaningful_bytes": 1280,
+  "sprite_logical_size": [
+    32,
+    32
+  ],
+  "sprite_stored_size": [
+    21,
+    20
+  ],
+  "lossless_resource_storage": true,
+  "playback_speed_multiplier": 2,
+  "effective_display_frames_per_light_frame": 3,
+  "effective_loop_seconds": 5.94,
+  "brightness_precision_bits": 8,
+  "interpolation_register_bytes": 640,
+  "ribbon_poses": 16,
+  "ribbon_footprint": [
+    16,
+    16
+  ],
+  "ribbon_storage": "FPGA sixteen-pose ROM with four-bit coverage and pose-based metallic reflection; no TF ribbon data",
+  "ribbon_motion": "Tilted rigid foil tumble and face/edge flipping based on supplied award video; fixed slight bow",
+  "ribbon_front_width_pixels": 7.6,
+  "ribbon_dynamic_bend_peak_to_peak_pixels": 0.0
 }

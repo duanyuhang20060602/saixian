@@ -10,9 +10,10 @@ for name,sources in {
  'spotlight':['src/user_source/hdl_source/spotlight_player.v','tests/tb_spotlight.v'],
  'single_plate':['src/user_source/hdl_source/delta_player.v','src/user_source/hdl_source/delta_decoder.v','tests/tb_single_plate.v']
 }.items():
+ if len(sys.argv)>1 and name!='spotlight':continue
  binary=WORK/(name+'.vvp')
  subprocess.run(['C:/iverilog/bin/iverilog.exe','-g2012','-s','tb_'+name,'-o',str(binary),*sources],cwd=ROOT,check=True)
- cases=range(4) if name=='spotlight' else [0]
+ cases=(list(map(int,sys.argv[1:])) if len(sys.argv)>1 else range(9)) if name=='spotlight' else [0]
  for bad in cases:
   args=[f'+package={hexfile.as_posix()}',f'+words={words}',f'+bad={bad}'] if name=='spotlight' else []
   result=subprocess.run(['C:/iverilog/bin/vvp.exe',str(binary),*args],cwd=ROOT,capture_output=True,text=True)
