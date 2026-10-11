@@ -3,7 +3,7 @@ module tb_decoder;
 reg clk=0;always #10 clk=~clk;
 reg rst=1,start=0,target=0;reg [20:0] encoded_words=0;
 wire pop,patch_valid,done,error,busy;wire [20:0] addr;wire [31:0] value;
-reg [31:0] package_words[0:363391];reg [31:0] image[0:921599],expected[0:460799];
+reg [31:0] package_words[0:809599];reg [31:0] image[0:921599],expected[0:460799];
 reg [1023:0] path;string folder,expected_path;
 integer ptr=0,cycle=0,i,j,pass,writes=0;
 reg negative=0;reg [31:0] bad_word=0;

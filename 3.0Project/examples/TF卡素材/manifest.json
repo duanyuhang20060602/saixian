@@ -1,0 +1,23 @@
+{
+  "format": "SXDLT004",
+  "base_image_frames": 1,
+  "light_field_frames": 120,
+  "light_field_size": [
+    160,
+    90
+  ],
+  "light_field_bytes_per_frame": 14400,
+  "interpolation": "Two light-frame buffers, temporal blend at each HDMI frame",
+  "display_frames_per_light_frame": 6,
+  "loop_seconds_at_current_pixel_clock": 11.88,
+  "package_bytes": 3238400,
+  "external_sdram_bytes": 6924800,
+  "asset_sha256": "6ba3b06f56978615f436e680fd459e7113bceba6317dbe9fe1ab42d936358c27",
+  "payload_crc32": "E80CDB84",
+  "preserved_effects": [
+    "trophy flow",
+    "wall breathing",
+    "large gold foil"
+  ],
+  "preview_scope": "Software choreography reference; field sampling and RGB565 output require board comparison"
+}

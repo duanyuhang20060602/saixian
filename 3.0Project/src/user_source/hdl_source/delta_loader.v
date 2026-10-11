@@ -27,7 +27,7 @@ wire bad_input=in_block[9] || (loading && bytes_loaded[1:0]==3 && fifo_full);
 always @(posedge clk)begin
  if(rst)begin header_checks<=0;crc_checks<=0;last_sector<=0;end
  else begin
-  header_checks[0]<=header[63:0]==(FORMAT_VERSION==3 ? 64'h333030544c445853 : FORMAT_VERSION==2 ? 64'h323030544c445853 : 64'h313030544c445853);
+  header_checks[0]<=header[63:0]==(FORMAT_VERSION==4 ? 64'h343030544c445853 : FORMAT_VERSION==3 ? 64'h333030544c445853 : FORMAT_VERSION==2 ? 64'h323030544c445853 : 64'h313030544c445853);
   header_checks[1]<=header[79:64]==FORMAT_VERSION && header[95:80]==512;
   header_checks[2]<=header[111:96]==WIDTH && header[127:112]==HEIGHT;
   header_checks[3]<=header[159:134]==0 && header[133:128]!=0;

@@ -5,3 +5,5 @@ releases/*.rpt -whitespace
 *.bin binary
 *.DLT binary
 *.gif binary
+
+*.mp4 binary

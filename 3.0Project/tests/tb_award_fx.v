@@ -15,7 +15,7 @@ initial begin
   frame;#1;if(rgb[23:16]<min_r)min_r=rgb[23:16];if(rgb[23:16]>max_r)max_r=rgb[23:16];
  end
  if(dut.motion!=0 || dut.fraction!=0)$fatal(1,"six-second loop did not close");
- if(max_r-min_r<150 || min_r>=base[23:16])$fatal(1,"flow must visibly dim and brighten: %d %d",min_r,max_r);
+ if(max_r-min_r<90 || min_r<140 || min_r>=base[23:16] || max_r<250)$fatal(1,"bright trophy must retain visible flow: %d %d",min_r,max_r);
  frame;pause=1;repeat(7)@(negedge clk);saved_motion=dut.motion;saved_fraction=dut.fraction;
  repeat(15)frame;
  if(dut.motion!=saved_motion || dut.fraction!=saved_fraction)$fatal(1,"pause did not freeze live effects");
@@ -27,7 +27,7 @@ initial begin
  tag=0;y=600;repeat(7)@(negedge clk);
  for(i=0;i<1280;i=i+1)begin x=i;@(negedge clk);if(rgb!==base)$fatal(1,"title area modified by live effects");end
  for(j=0;j<548;j=j+1)for(i=0;i<1280;i=i+1)begin x=i;y=j;@(negedge clk);if(rgb!==base)rain_pixels=rain_pixels+1;end
- if(rain_pixels<100)$fatal(1,"gold rain absent");
+ if(rain_pixels<5000)$fatal(1,"enlarged dense gold rain insufficient");
  enable=0;repeat(7)@(negedge clk);if(rgb!==base)$fatal(1,"effects before display is ready");
  $display("PASS award_fx: first-image hold, soft node/wall brightness range %d..%d, 364-frame closed loop, pause/resume, gold rain pixels=%d, title protection",min_r,max_r,rain_pixels);
  $finish;

@@ -1,6 +1,6 @@
 // Two frame buffers stay identical after each commit by replaying the delta
 // into the old, now-inactive buffer. No full-frame copy per animation frame.
-module delta_player #(parameter FRAME_WORDS=115200,parameter TICKS_PER_FRAME=825000,parameter INITIAL_HOLD_TICKS=0,parameter VERIFY_STREAM=0,parameter WAIT_PATCH_DRAIN=0)(
+module delta_player #(parameter SINGLE_PLATE=0,parameter FRAME_WORDS=115200,parameter TICKS_PER_FRAME=825000,parameter INITIAL_HOLD_TICKS=0,parameter VERIFY_STREAM=0,parameter WAIT_PATCH_DRAIN=0)(
  input clk,input rst,input cache_ready,input [20:0] file_words,input [5:0] frame_count,
  output stream_start,output [20:0] stream_offset,output [20:0] stream_words,input stream_ack,
  input [31:0] cmd_data,input cmd_valid,output cmd_pop,
@@ -91,7 +91,7 @@ always @(posedge clk)begin
     active<=publish_slot;
     if(bootstrap)begin
      bootstrap<=0;descriptor<=1;target<=1;duration<=next_duration;
-     deadline<=clock_ticks+next_duration+INITIAL_HOLD_TICKS;state<=INDEX_START;
+     deadline<=clock_ticks+next_duration+INITIAL_HOLD_TICKS;state<=SINGLE_PLATE ? 5'd10 : INDEX_START;
     end else begin
      // Pause stops presentation time; resuming does not fast-forward frames.
      deadline<=deadline+next_duration+pause;

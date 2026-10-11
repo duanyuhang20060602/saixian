@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Project Version="3" Minor="2" Path=".">
+<Project Version="3" Minor="2" Path="E:/Codex/Downloads/qiansai/3.0Project/src/td_project">
     <Project_Created_Time></Project_Created_Time>
     <TD_Version>6.2.168116</TD_Version>
     <Name>HDMI1.4b_Transmitter_v3.0_720p_SoftFlow</Name>
@@ -237,7 +237,7 @@
                     <Attr Name="CompileOrder" Val="28"/>
                 </FileInfo>
             </File>
-        </Verilog>
+        <File Path="../user_source/hdl_source/spotlight_player.v"><FileInfo><Attr Name="UsedInSyn" Val="true"/><Attr Name="UsedInP&R" Val="true"/><Attr Name="BelongTo" Val="design_1"/><Attr Name="CompileOrder" Val="29"/></FileInfo></File></Verilog>
         <ADC_FILE>
             <File Path="../user_source/constraints_source/pin.adc">
                 <FileInfo>

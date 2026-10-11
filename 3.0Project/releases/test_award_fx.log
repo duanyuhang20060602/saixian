@@ -1,2 +1,2 @@
-PASS award_fx: first-image hold, soft node/wall brightness range          93..        255, 364-frame closed loop, pause/resume, gold rain pixels=       1653, title protection
+PASS award_fx: first-image hold, soft node/wall brightness range          93..        255, 364-frame closed loop, pause/resume, gold rain pixels=      13611, title protection
 tests/tb_award_fx.v:33: $finish called at 7092100000 (1ps)

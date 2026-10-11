@@ -29,5 +29,6 @@
   "rtl/award_sprite_rom.v": "../user_source/hdl_source/award_sprite_rom.v",
   "vendor/include/global_def.v": "../user_source/hdl_source/include/global_def.v",
   "constraints/pin.adc": "../user_source/constraints_source/pin.adc",
-  "constraints/timing.sdc": "../user_source/constraints_source/timing.sdc"
+  "constraints/timing.sdc": "../user_source/constraints_source/timing.sdc",
+  "rtl/spotlight_player.v": "../user_source/hdl_source/spotlight_player.v"
 }

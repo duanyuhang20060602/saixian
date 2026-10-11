@@ -1,0 +1,2 @@
+PASS single_plate: verified bootstrap in both buffers, publication acknowledged, command port released with no later requests
+tests/tb_single_plate.v:28: $finish called at 3040000 (1ps)

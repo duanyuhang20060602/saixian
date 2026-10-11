@@ -5,7 +5,7 @@
 module tb_pipeline;
 reg clk=0,vclk=0;always #10 clk=~clk;always #6.666667 vclk=~vclk;
 reg rst=1,pause=0;
-reg [31:0] package_words[0:363391],ram[0:2097151],expected[0:460799];
+reg [31:0] package_words[0:809599],ram[0:2097151],expected[0:460799];
 string folder,path,expected_path;
 integer uploaded=0,cycle=0,i,b,commits=0,pixels=0,presentation_cycle,last_presentation=0,max_commits=999;
 integer wr_beats=0;reg was_wr=0;reg [20:0] previous_wa;
@@ -63,7 +63,7 @@ end
 // Prevent launching a transaction on the same cycle refresh starts.
 wire inhibit_refresh=refreshing || (refresh_pending && memory_bus.state==0 && !busy);
 delta_memory #(.VERIFY_CACHE(1),.FRAME_WORDS(460800)) memory_bus(clk,rst,1'b1,inhibit_refresh,busy,rd,ra,rd_valid,rd_data,wr,wa,wd,
- uploaded==363392,21'd363392,uploaded==363392,uploaded==363392 ? 9'd0 : 9'd256,
+ uploaded==809600,21'd809600,uploaded==809600,uploaded==809600 ? 9'd0 : 9'd256,
  package_words[uploaded],up_pop,cache_ready,fs[2],ds,as,vreset,vpush,vdata,vcount,
  stream_start,stream_offset,stream_words,stream_ack,stream_reset,cmd_push,cmd_data,cmd_count,
  patch_valid,patch_addr,patch_data,patch_ready,bus_error,,32'hC165A3F0,,mask,patch_drained);
@@ -72,7 +72,7 @@ wfifo_32_32_512 command_fifo(.rst(rst|stream_reset),.clkw(clk),.clkr(clk),.we(cm
 rfifo_32_32_512 #(.SHOW_AHEAD_EN(1'b1)) video_fifo(.rst(rst|vreset),.clkw(clk),.clkr(vclk),
  .we(vpush),.di(vdata),.re(pop),.dout(vhead),.full_flag(vfull),.empty_flag(vempty),
  .wrusedw(vcount),.rdusedw(),.valid(),.afull(),.aempty());
-delta_player #(.FRAME_WORDS(460800),.VERIFY_STREAM(1),.WAIT_PATCH_DRAIN(1)) player(clk,rst,cache_ready,21'd363392,6'd1,stream_start,stream_offset,stream_words,
+delta_player #(.FRAME_WORDS(460800),.VERIFY_STREAM(1),.WAIT_PATCH_DRAIN(1)) player(clk,rst,cache_ready,21'd809600,6'd1,stream_start,stream_offset,stream_words,
  stream_ack,cmd_head,!cmd_empty,cmd_pop,patch_valid,patch_addr,patch_data,patch_ready,pub,pub_slot,cs[2],pause,
  player_error,late,source,descriptor,player_state,,patch_drained);
 delta_video #(.SCENE_WIDTH(1280),.SCENE_HEIGHT(720)) video(vclk,rst,pub,pub_slot,vhead,vempty,pop,rgb,de,vs,commit,frame,active,visible,underflow,1'b0);

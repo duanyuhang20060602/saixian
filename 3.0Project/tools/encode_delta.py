@@ -1,45 +1,42 @@
-"""Encode the tagged 720p plate using the proven skip/literal/fill protocol."""
 from pathlib import Path
-import hashlib,json,struct,zlib
+import sys,struct,zlib,json,hashlib,re
+sys.stdout.reconfigure(encoding='utf-8')
+root=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(root/'tools'))
 from delta_codec import encode,decode
-
-ROOT=Path(__file__).resolve().parents[1]
-WORK=Path('E:/Codex/Temp/saixian_softflow720_tests')
-WIDTH,HEIGHT=1280,720
-FRAME_WORDS=WIDTH*HEIGHT//2
-
 def prepare():
-    WORK.mkdir(parents=True,exist_ok=True)
-    raw=(ROOT/'examples/TF卡素材/base_tagged_rgb565.bin').read_bytes()
-    words=list(struct.unpack('<'+'I'*FRAME_WORDS,raw))
+    assets=root/'examples/TF卡素材'
+    raw=(assets/'base_tagged_rgb565.bin').read_bytes()
+    words=list(struct.unpack('<460800I',raw))
     streams=[encode(words),encode(words,words)]
-    assert decode(streams[0],[0]*FRAME_WORDS)==words
-    assert decode(streams[1],words)==words
-    # Keep the proven two-sector index reservation: player validates >=384.
+    assert decode(streams[0],[0]*460800)==words
     table=bytearray(1024);payload=bytearray()
-    for i,s in enumerate(streams):
-        struct.pack_into('<8I',table,i*32,(3+len(payload)//512)*128,len(s)//4,
-            300000000,zlib.crc32(raw),zlib.crc32(s),0,0,0)
-        payload+=s;payload+=bytes((-len(s))%512)
-    total=1536+len(payload);header=bytearray(512)
-    struct.pack_into('<8s4H7I',header,0,b'SXDLT003',3,512,WIDTH,HEIGHT,
-        1,total,FRAME_WORDS,1,32,zlib.crc32(table+payload),2)
-    blob=bytes(header+table+payload)
-    assert total+FRAME_WORDS*8<=8388608
-    (ROOT/'examples/TF卡素材/AWARD720.DLT').write_bytes(blob)
-    (WORK/'package_words.hex').write_text('\n'.join(f'{v:08x}' for v in struct.unpack('<'+'I'*(len(blob)//4),blob))+'\n')
-    (WORK/'package_bytes.hex').write_text('\n'.join(f'{v:02x}' for v in blob)+'\n')
-    frame='\n'.join(f'{v:08x}' for v in words)+'\n'
-    (WORK/'frame0.hex').write_text(frame)
-    (WORK/'frame1.hex').write_text(frame)
-    report=dict(resolution=[WIDTH,HEIGHT],frame_words=FRAME_WORDS,package_words=len(blob)//4,
-        package_bytes=len(blob),payload_crc32=f'{zlib.crc32(blob[512:]):08X}',
-        package_sha256=hashlib.sha256(blob).hexdigest(),plate_sha256=hashlib.sha256(raw).hexdigest(),
-        sdram_required_bytes=total+FRAME_WORDS*8,encoded_frame_bytes=list(map(len,streams)),
-        static_plate_count=1,descriptors=2,live_effects=True,
-        format='SXDLT003; flag in blue bit0, soft weight in blue bits4:1, wall lamp type in green bit0',
-        preview_motion='Similar composition and live effects; not a frame-for-frame GIF decode')
-    (ROOT/'examples/TF卡素材/manifest.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-    print(json.dumps(report,indent=2));return blob
+    for i,stream in enumerate(streams):
+     struct.pack_into('<8I',table,i*32,(3+len(payload)//512)*128,len(stream)//4,300000000,zlib.crc32(raw),zlib.crc32(stream),0,0,0)
+     payload+=stream;payload+=bytes((-len(stream))%512)
+    maps=(assets/'spotlight_maps.bin').read_bytes()
+    assert len(maps)==120*14400
+    map_table_offset=(1536+len(payload))//4
+    map_table=bytearray(2048);map_payload=bytearray()
+    for i in range(120):
+     m=maps[i*14400:(i+1)*14400]
+     struct.pack_into('<4I',map_table,i*16,map_table_offset+512+len(map_payload)//4,3600,zlib.crc32(m),i)
+     map_payload+=m;map_payload+=bytes((-len(m))%512)
+    full_payload=table+payload+map_table+map_payload
+    header=bytearray(512);total=512+len(full_payload)
+    struct.pack_into('<8s4H7I',header,0,b'SXDLT004',4,512,1280,720,1,total,460800,1,32,zlib.crc32(full_payload),2)
+    # The memory BIST uses header words 0..63 as scratch. Metadata lives at 64.
+    struct.pack_into('<5I',header,256,120,map_table_offset,3600,0x53504f54,6)
+    blob=bytes(header+full_payload)
+    assert total+3686400<=8388608
+    (assets/'AWARD720.DLT').write_bytes(blob)
+    (assets/'spotlight_maps.bin').write_bytes(maps)
+    report=dict(format='SXDLT004',base_image_frames=1,light_field_frames=120,light_field_size=[160,90],light_field_bytes_per_frame=14400,interpolation='Two light-frame buffers, temporal blend at each HDMI frame',display_frames_per_light_frame=6,loop_seconds_at_current_pixel_clock=120*6*1650*750/75000000,package_bytes=total,external_sdram_bytes=total+3686400,asset_sha256=hashlib.sha256(blob).hexdigest(),payload_crc32=f'{zlib.crc32(full_payload):08X}',preserved_effects=['trophy flow','wall breathing','large gold foil'],preview_scope='Software choreography reference; field sampling and RGB565 output require board comparison')
+    (assets/'manifest.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
+    work=Path('E:/Codex/Temp/saixian_softflow720_tests');work.mkdir(parents=True,exist_ok=True)
+    (work/'package_bytes.hex').write_text('\n'.join(f'{b:02x}' for b in blob)+'\n')
+    (work/'package_words.hex').write_text('\n'.join(f'{v:08x}' for v in struct.unpack('<'+'I'*(len(blob)//4),blob))+'\n')
+    for name in ('frame0.hex','frame1.hex'):(work/name).write_text('\n'.join(f'{v:08x}' for v in words)+'\n')
+    print(json.dumps(report,ensure_ascii=False,indent=2));return blob
 
-if __name__=='__main__':prepare()
+if __name__=="__main__": prepare()

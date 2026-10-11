@@ -1,25 +1,25 @@
 {
-  "hardware_validation": "pending",
+  "hardware_validation": "User reports the current smoother foil/light revision works well on 2026-10-11; independent extended-duration hardware testing is not recorded.",
   "prior_successful_hardware": "User reports QuadWrite 480x480 penguin version works well; bit SHA256 afd6b3f323d1dd910b52fed8e827a98614115955ecc63dfdd81b555b8ab405df",
   "resolution": "1280x720 full-screen plate with soft mesh/node flow, antialiased foil and wall-lamp breathing",
   "frame_words": 460800,
   "frame_buffer_bytes": 3686400,
-  "sdram_required_bytes": 5139968,
-  "asset_bytes": 1453568,
-  "asset_sha256": "4adf1b6696401faa8e4c7f6d165b3a2d67ffdc49d4d933ac2781056f1b0e5c5b",
-  "payload_crc32": "C165A3F0",
-  "bit_sha256": "dc38426083b4690bd26c00b8e46481f5679c1a60af36dbacc9e3f651a4af999f",
+  "sdram_required_bytes": 6924800,
+  "asset_bytes": 3238400,
+  "asset_sha256": "6ba3b06f56978615f436e680fd459e7113bceba6317dbe9fe1ab42d936358c27",
+  "payload_crc32": "E80CDB84",
+  "bit_sha256": "ffd1bb31cff6cdac378b4e5a656fc3f8a64d944b9d8c603d0987eabb9cef8118",
   "sources": {
-    "src/user_source/hdl_source/award_fx.v": "df876ba61be05a838bacb645f39002e7f1f5e3c85e6021589fbe348c126d552c",
-    "src/user_source/hdl_source/award_sprite_rom.v": "78b9a5941893a9cb50aad9c8e00d49e932cd552fa3176c39aa99f1b0ba3a382a",
+    "src/user_source/hdl_source/award_fx.v": "3e4bd7f68a78e8dea61aeca61ac547bd44b4c69b573013d425be6672ee8cf038",
+    "src/user_source/hdl_source/award_sprite_rom.v": "e0d3dd7cd47b51a4628cf914b3d8c1ff42fb738c627b26f10a633b3e894f8675",
     "src/user_source/hdl_source/delta_decoder.v": "ada20fb2b3f6cec9515d8c8013023f62b6cbd171dbdb941311b5c22d0e27ecf3",
-    "src/user_source/hdl_source/delta_loader.v": "62a33a4b944481dc113062ce30349021ef0b1dbaf6dc269218cf9086ddea0f64",
+    "src/user_source/hdl_source/delta_loader.v": "35c48d2ba0383ea6d8f10d926454d2d1617d6c1b4b3f5e283e949c9a033b0cde",
     "src/user_source/hdl_source/delta_memory.v": "722f665ba5dae7f8adf089eeed4a88894d4b192bbec930327cb93bc32aba1492",
-    "src/user_source/hdl_source/delta_player.v": "120acf7a5b6d8c2ba1165c15c530901f4477d16ec02c5bf17d9a663032b6ff1c",
+    "src/user_source/hdl_source/delta_player.v": "2ac6e40395c95ec71b10e96cc4e13a4fbd0a5c71befc35930fcce564f4914391",
     "src/user_source/hdl_source/delta_read_capture.v": "60af35a688fcc77e2dc2a9f0b40d31def4488cf0a2c7cd2d01646b7d6e590f6a",
     "src/user_source/hdl_source/delta_status.v": "73b31a78c38b51d69e4013e32ddc9348cd2037363f3b956c05caeccb3df17a28",
     "src/user_source/hdl_source/delta_video.v": "044b062a5d53e5cfb73bd09b6ab935e0e4aa80c6c1d156865b0908067bb1bcaf",
-    "src/user_source/hdl_source/top_tf_hdmi_delta.v": "72c4e0a90a4f4f262c84232711d6961adbbf3b7f797f22dbfb1878e7d9283ad4",
+    "src/user_source/hdl_source/top_tf_hdmi_delta.v": "63501f42dc9e7eab1ef3c752b2d306ac11fd33512513a42aa5a2ac808a8944a6",
     "src/user_source/hdl_source/hdmi1.4b_transmitter_core/hdmi_1_4b_transmitter_core_wrapper.enc.v": "867e0b0bdd874bc383d00918c9e1be3fe01edf41f343b6a0d73e262776596a63",
     "src/user_source/hdl_source/hdmi_phy_warpper.v": "416b082b0987001bdbc0a7e20a557cb8fb1dca34e25dc881e6d28a8cb3cf4300",
     "src/user_source/hdl_source/include/global_def.v": "db5b9b6f6a08e7b8ea0d9709f1595da17dc86061e94576fc3ccdee733a94efd2",
@@ -40,19 +40,20 @@
     "src/user_source/hdl_source/SD/spi_master.v": "37f7a21144fa5cca3cc5c3b5f68a5ad40b3108336b600e45a1367734ac61403c",
     "src/user_source/hdl_source/video_rgb_to_axis_640x480.v": "d4f72469d8639f2fbe2dc9e4d14f8910fd509caff1b3acfd9bf820f90c21bd76",
     "src/user_source/constraints_source/pin.adc": "b5c916c70d5c489ddcbdea522538d1e83cb30019c36859e3da957eb71cf91112",
-    "src/user_source/constraints_source/timing.sdc": "78078da832c6aec67ea71c744c4af2700813f451264313d31e4736d7bb127d6b"
+    "src/user_source/constraints_source/timing.sdc": "78078da832c6aec67ea71c744c4af2700813f451264313d31e4736d7bb127d6b",
+    "src/user_source/hdl_source/spotlight_player.v": "422ed9bfbfb839eb02a1f15f67246009e7f75157bf41ac28992e5a6e01999ca5"
   },
   "resources": {
-    "lut": 6327,
-    "reg": 4954,
-    "bram": 20,
+    "lut": 10003,
+    "reg": 5682,
+    "bram": 54,
     "bram32k": 0,
-    "dsp": 5,
+    "dsp": 16,
     "pll": 2
   },
-  "setup_wns_ns": 0.08,
+  "setup_wns_ns": 0.04,
   "setup_tns_ns": 0.0,
-  "hold_wns_ns": 0.027,
+  "hold_wns_ns": 0.03,
   "hold_tns_ns": 0.0,
   "tests": [
     "decoder",
@@ -76,33 +77,7 @@
   "preview_sample_fps": 12,
   "preview_frames": 72,
   "wall_breathing": true,
-  "effect_revision": "R2: proportional dimming between moving highlights and stronger wall breathing",
-  "real_plate_contrast": {
-    "previous": {
-      "wall": {
-        "pixels": 19495,
-        "median_red_range": 48,
-        "mean_red_range": 52
-      },
-      "trophy": {
-        "pixels": 28932,
-        "median_red_range": 24,
-        "mean_red_range": 35
-      }
-    },
-    "revised": {
-      "wall": {
-        "pixels": 19495,
-        "median_red_range": 120,
-        "mean_red_range": 97
-      },
-      "trophy": {
-        "pixels": 28932,
-        "median_red_range": 87,
-        "mean_red_range": 85
-      }
-    }
-  },
+  "effect_revision": "Native 32x32 area-antialiased foil, Gaussian soft-edge spotlights, 120 stored light frames, rounded temporal phase, ordered sublevel quantization; trophy flow and wall breathing preserved",
   "live_loop_video_frames": 364,
   "live_loop_seconds": 6.005999999999999,
   "clocks_hz": {
@@ -113,13 +88,52 @@
   },
   "sdram_phase_ns": 7,
   "startup": "Independent spinner; full TF/upload/BIST/readback CRC gates; full 720p plate decode into both buffers; first-image hold; live flow/rain",
-  "limits": "Encrypted SDRAM controller and HDMI PHY require new board validation. Continuous TF file required. Six-bit effect tags reduce marked gold pixel precision; live effects approximate the approved software preview.",
-  "note": "Native FIFO/raster model checks three complete 720p presentations and 2764800 exact plate pixels; live effect logic separately checks hold, phase closure, pause/resume, luminance contrast, rain and title protection.",
-  "project_directory": "3.0Project",
-  "project_file": "3.0Project/src/td_project/HDMI1.4b_Transmitter_v3.0_720p_SoftFlow.al",
-  "user_feedback": {
-    "date": "2026-10-11",
-    "quote": "效果不错",
-    "scope": "User approval of the current effect; no independent long-duration board test recorded"
-  }
+  "limits": "One tagged 720p base plus 120 animated 160x90 light fields; not full-raster video decoding. Contiguous TF storage required. Board smoothness and visual quality need hardware acceptance.",
+  "note": "942080 exact light RGB pixels including one full 720p raster; 720 uninterrupted display ticks under producer stalls with 112us refill deadline; all 120 CRC-checked frames, loop, pause/resume, title and seven-stage DE/VS pass.",
+  "project_directory": "E:/Codex/Downloads/qiansai/3.0Project",
+  "project_file": "E:/Codex/Downloads/qiansai/3.0Project/src/td_project/HDMI1.4b_Transmitter_v3.0_720p_SoftFlow.al",
+  "preview_file": "releases/聚光灯_配套数据预览.mp4",
+  "preview_sha256": "f2be1272de7d50f5d4a9c81fb05fdcfb676559e7e753000851ad39f80924e0f9",
+  "fresh_regression_tests": [
+    "award_fx",
+    "decoder",
+    "loader",
+    "boot",
+    "status",
+    "first_hold",
+    "index",
+    "stream_crc",
+    "video_latency",
+    "cache",
+    "spotlight",
+    "light_bad_metadata",
+    "light_bad_descriptor",
+    "light_bad_crc",
+    "single_plate"
+  ],
+  "retained_regression_tests": [
+    "axis",
+    "patch_quads",
+    "pipeline"
+  ],
+  "retained_evidence_scope": "Prior unchanged SDRAM protocol, patch masks and HDMI axis evidence retained. New 720p light raster, timing, award latency and producer-stall deadline tested separately.",
+  "preview_matches_effect_source": false,
+  "foil_reference_affected_pixels": 11969,
+  "format": "SXDLT004",
+  "base_image_frames": 1,
+  "light_field_frames": 120,
+  "light_field_size": [
+    160,
+    90
+  ],
+  "spotlight_pipeline_cycles": 7,
+  "total_rendering_pipeline_cycles": 12,
+  "light_loop_seconds": 11.88,
+  "light_frame_buffers_bytes": 28800,
+  "preview_scope": "Fresh 72-frame sparse RTL award render composed with exact software light-field sampling and RGB arithmetic; 30fps preview samples every other HDMI tick; award samples at 12fps; not complete RTL or board capture",
+  "preview_approval": "User approved searchlight choreography and requested retaining flow and breathing",
+  "display_frames_per_light_frame": 6,
+  "place_seed": 23,
+  "user_feedback": "2026-10-11: user reports current revision effect looks good and requests replacing the existing champion branch.",
+  "github_preview_file": "releases/聚光灯_配套数据预览.mp4"
 }

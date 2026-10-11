@@ -1,0 +1,2 @@
+PASS spotlight: 120 CRC-checked frames, 720 uninterrupted display ticks with stalled producer, full loop, pause/resume,      942080 exact RGB pixels, title protection and 7-stage spatial/temporal DE/VS alignment
+tests/tb_spotlight.v:107: $finish called at 107085468000 (1ps)

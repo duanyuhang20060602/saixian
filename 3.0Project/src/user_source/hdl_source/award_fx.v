@@ -20,7 +20,7 @@ always @(posedge clk)begin
  end
 end
 function [15:0] seed_for_column;
- input [4:0] column;
+ input [5:0] column;
  begin case(column)
  0:seed_for_column=16'h0581;1:seed_for_column=16'h184d;2:seed_for_column=16'h6a39;3:seed_for_column=16'h3318;
  4:seed_for_column=16'h92e5;5:seed_for_column=16'h7c91;6:seed_for_column=16'h492d;7:seed_for_column=16'h257a;
@@ -219,8 +219,8 @@ wire [6:0] wave=wave_curve(distance[8:3]);
 // Both effects have a dark phase: the plate highlights must not hide the sweep.
 wire signed [7:0] intensity=tag0[5] ? $signed({1'b0,breath(motion0[9:4])})-8'sd32 : $signed({1'b0,wave})-8'sd32;
 wire signed [12:0] weighted=$signed({1'b0,tag0[4:1]})*intensity;
-wire [15:0] seed=seed_for_column(x[10:6]);
-function [10:0] sprite_address;
+wire [15:0] seed=seed_for_column(x[10:5]);
+function [12:0] sprite_address;
  input [1:0] layer;input [10:0] px;input [9:0] py,clock_phase;input [15:0] random_seed;
  reg [9:0] center_y;reg [4:0] sway_phase;reg signed [6:0] sway;
  reg [6:0] center_x;reg [10:0] dx,dy;reg [2:0] orientation;
@@ -233,13 +233,13 @@ function [10:0] sprite_address;
   endcase
   sway_phase=clock_phase[8:4]+random_seed[4:0]+{3'd0,layer};
   sway=sway_phase[4] ? 7'sd15-$signed({3'd0,sway_phase[3:0]}) : $signed({3'd0,sway_phase[3:0]});
-  center_x=7'd16+{2'd0,random_seed[14:10]}+(sway>>>1)-7'd4;
-  dx={5'd0,px[5:0]}+11'd8-center_x;dy={1'b0,py}+11'd8-center_y;
+  center_x=7'd8+{3'd0,random_seed[14:11]}+(sway>>>2);
+  dx={6'd0,px[4:0]}+11'd16-center_x;dy={1'b0,py}+11'd16-center_y;
   orientation=clock_phase[6:4]+random_seed[15:13]+{layer,1'b0};
-  sprite_address=px<1280 && py<548 && dx<16 && dy<16 ? {orientation,dy[3:0],dx[3:0]} : 11'd0;
+  sprite_address=px<1280 && py<548 && dx<32 && dy<32 ? {orientation,dy[4:0],dx[4:0]} : 13'd0;
  end
 endfunction
-reg [10:0] address0,address1,address2,address3;
+reg [12:0] address0,address1,address2,address3;
 reg [23:0] base1,flow2;reg signed [9:0] gain1;
 wire [7:0] sprite0,sprite1,sprite2,sprite3;
 award_sprite_rom sprites(clk,address0,address1,address2,address3,sprite0,sprite1,sprite2,sprite3);
@@ -277,7 +277,7 @@ always @(posedge clk)begin
  if(rst)begin base0<=0;tag0<=0;live0<=0;phase0<=0;x0<=0;y0<=0;motion0<=0;seed0<=0;selected3<=0;flow3<=0;base1<=0;gain1<=0;flow2<=0;rgb<=0;address0<=0;address1<=0;address2<=0;address3<=0;end
  else begin
   base0<=base_rgb;tag0<=tag;live0<=live;phase0<=phase;x0<=x;y0<=y;motion0<=motion;seed0<=seed;
-  base1<=base0;gain1<=live0 && tag0[0] ? weighted>>>2 : 10'sd0;
+  base1<=base0;gain1<=live0 && tag0[0] ? ((weighted>>>2)+(tag0[5] ? 10'sd0 : 10'sd88)) : 10'sd0;
   address0<=live0 ? sprite_address(0,x0,y0,motion0,seed0) : 0;
   address1<=live0 ? sprite_address(1,x0,y0,motion0,seed0^16'h5429) : 0;
   address2<=live0 ? sprite_address(2,x0,y0,motion0,seed0^16'h9561) : 0;

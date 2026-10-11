@@ -42,7 +42,7 @@ wire upload_we,upload_full,upload_empty,upload_pop,upload_done;
 wire [31:0] upload_data,upload_head;wire [8:0] upload_count;
 wire [20:0] file_words_sd;wire [5:0] frame_count_sd;wire [2:0] sd_error;
 wire [31:0] payload_crc_sd;reg [31:0] payload_crc_meta,payload_crc_sync;
-delta_loader #(.WIDTH(1280),.HEIGHT(720),.FORMAT_VERSION(3)) loader(sd_card_clk,rst_sd,sd_init,sec_req,sec_addr,sec_valid,sec_data,sec_end,upload_full,
+delta_loader #(.WIDTH(1280),.HEIGHT(720),.FORMAT_VERSION(4)) loader(sd_card_clk,rst_sd,sd_init,sec_req,sec_addr,sec_valid,sec_data,sec_end,upload_full,
   upload_we,upload_data,upload_done,file_words_sd,frame_count_sd,sd_error,,payload_crc_sd);
 wfifo_32_32_512 upload_fifo(.rst(rst_sd|rst_mem),.clkw(sd_card_clk),.clkr(ext_mem_clk),
  .we(upload_we),.di(upload_data),.re(upload_pop),.dout(upload_head),.full_flag(upload_full),
@@ -72,6 +72,13 @@ wire patch_valid,patch_ready,patch_drained;wire [20:0] patch_addr;wire [31:0] pa
 wire [3:0] memory_error,player_error;wire [31:0] late_count;wire [159:0] memory_debug;
 wire [191:0] player_debug;
 wire publish_toggle,publish_slot,commit_toggle,frame_toggle,active_slot,display_valid;
+wire p_start,p_pop,l_start,l_pop;wire [20:0] p_offset,p_words,l_offset,l_words;
+wire [4:0] player_state;wire [3:0] light_error;wire [6:0] light_frame;
+wire light_owner=display_sync && player_state==5'd10;
+assign stream_start=light_owner ? l_start : p_start;
+assign stream_offset=light_owner ? l_offset : p_offset;
+assign stream_words=light_owner ? l_words : p_words;
+assign cmd_pop=light_owner ? l_pop : p_pop;
 (* async_reg="true",keep="true" *)reg [2:0] frame_sync,commit_sync;
 (* async_reg="true",keep="true" *)reg active_meta,active_sync,display_meta,display_sync,pause_meta,pause_sync;
 always @(posedge ext_mem_clk)begin
@@ -90,10 +97,10 @@ delta_memory #(.VERIFY_CACHE(1),.FRAME_WORDS(460800)) memory_bus(ext_mem_clk,rst
 wfifo_32_32_512 command_fifo(.rst(rst_mem|stream_reset),.clkw(ext_mem_clk),.clkr(ext_mem_clk),
  .we(cmd_push),.di(cmd_data),.re(cmd_pop),.dout(cmd_head),.full_flag(),.empty_flag(cmd_empty),
  .rdusedw(cmd_count),.wrusedw(),.valid(),.afull(),.aempty());
-delta_player #(.FRAME_WORDS(460800),.INITIAL_HOLD_TICKS(50000000),.VERIFY_STREAM(1),.WAIT_PATCH_DRAIN(1)) player(ext_mem_clk,rst_mem,cache_ready,file_words_sync,frame_count_sync,
- stream_start,stream_offset,stream_words,stream_ack,cmd_head,!cmd_empty,cmd_pop,
+delta_player #(.SINGLE_PLATE(1),.FRAME_WORDS(460800),.INITIAL_HOLD_TICKS(50000000),.VERIFY_STREAM(1),.WAIT_PATCH_DRAIN(1)) player(ext_mem_clk,rst_mem,cache_ready,file_words_sync,frame_count_sync,
+ p_start,p_offset,p_words,stream_ack && !light_owner,cmd_head,!cmd_empty && !light_owner,p_pop,
  patch_valid,patch_addr,patch_data,patch_ready,publish_toggle,publish_slot,commit_sync[2],pause_sync,
-  player_error,late_count,,,,player_debug,patch_drained);
+  player_error,late_count,,,player_state,player_debug,patch_drained);
 (* async_reg="true",keep="true" *)reg hpd_meta,hpd_sync;
 always @(posedge video_clk)begin
  if(rst_video)begin hpd_meta<=0;hpd_sync<=0;end
@@ -105,8 +112,15 @@ rfifo_32_32_512 #(.SHOW_AHEAD_EN(1'b1)) video_fifo(.rst(rst_mem|rst_video|video_
  .full_flag(video_full),.empty_flag(video_empty),.wrusedw(video_count),.rdusedw(),.valid(),.afull(),.aempty());
 delta_video #(.SCENE_WIDTH(1280),.SCENE_HEIGHT(720),.LIVE_AWARD(1),.SHOW_BOOT_SPINNER(1),.MIN_BOOT_FRAMES(96)) video_scan(video_clk,rst_video,publish_toggle,publish_slot,video_head,video_empty,video_pop,
  rgb,render_de,render_vs,commit_toggle,frame_toggle,active_slot,display_valid,underrun_latched,sw[0]);
+wire [23:0] light_rgb;wire light_de,light_vs;
+spotlight_player lights(.mem_clk(ext_mem_clk),.mem_rst(rst_mem),.enable(light_owner),.file_words(file_words_sync),
+ .stream_start(l_start),.stream_offset(l_offset),.stream_words(l_words),.stream_ack(stream_ack && light_owner),
+ .data(cmd_head),.data_valid(!cmd_empty && light_owner),.pop(l_pop),.error(light_error),
+ .video_clk(video_clk),.video_rst(rst_video),.display_valid(display_valid),.pause(sw[0]),
+ .rgb_in(rgb),.de_in(render_de),.vs_in(render_vs),.rgb_out(light_rgb),.de_out(light_de),.vs_out(light_vs),
+ .frame_index(light_frame),.initialized());
 wire axis_user,axis_valid,axis_last,axis_ready;wire [23:0] axis_data;
-video_rgb_to_axis_640x480 #(.H_ACTIVE(1280)) axis_pack(video_clk,rst_video,render_vs,render_de,rgb,
+video_rgb_to_axis_640x480 #(.H_ACTIVE(1280)) axis_pack(video_clk,rst_video,light_vs,light_de,light_rgb,
  axis_user,axis_valid,axis_last,axis_data);
 reg [26:0] edid_wait;reg edid_trigger;
 always @(posedge video_clk)begin
@@ -129,8 +143,8 @@ hdmi_1_4b_transmitter_core_wrapper #(
  .O_ch0_tmds_data(t0),.O_ch1_tmds_data(t1),.O_ch2_tmds_data(t2),.O_clk_tmds_data(tc));
 hdmi_phy_wrapper #(.DEVICE("EG")) u_hdmi_phy(video_clk,hdmi_5x_clk,hdmi_reset[2],t0,t1,t2,tc,
  HDMI_D0_P,HDMI_D1_P,HDMI_D2_P,HDMI_CLK_P);
-assign led={sd_error!=0 || memory_error!=0 || player_error!=0 || underrun_latched,hpd_sync,sd_init,display_valid};
- delta_status diagnostics(clk,reset_request,sd_error,sd_init_stage,memory_error,player_error,underrun_latched,seg_sel,seg_data,
+assign led={sd_error!=0 || memory_error!=0 || player_error!=0 || light_error!=0 || underrun_latched,hpd_sync,sd_init,display_valid};
+ delta_status diagnostics(clk,reset_request,sd_error,sd_init_stage,memory_error,(light_error!=0 ? 4'd15 : player_error),underrun_latched,seg_sel,seg_data,
   sw[1],key[0],player_error!=0 && memory_error==0 && sd_error==0 ? player_debug : {payload_crc_sync,memory_debug});
  assign hmi_uart_tx=1'b1;
 endmodule

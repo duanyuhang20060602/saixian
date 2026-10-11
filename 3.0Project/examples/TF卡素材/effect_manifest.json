@@ -4,5 +4,5 @@
   "nodes": 171,
   "marked_pixels": 59381,
   "wall_pixels": 19495,
-  "format": "SXDLT003; blue bit0 flag, blue bits4:1 soft alpha, green bit0 wall type"
+  "format": "SXDLT004; blue bit0 flag, blue bits4:1 soft alpha, green bit0 wall type"
 }
