@@ -1,0 +1,26 @@
+{
+  "previous": {
+    "wall": {
+      "pixels": 19495,
+      "median_red_range": 48,
+      "mean_red_range": 52
+    },
+    "trophy": {
+      "pixels": 28932,
+      "median_red_range": 24,
+      "mean_red_range": 35
+    }
+  },
+  "revised": {
+    "wall": {
+      "pixels": 19495,
+      "median_red_range": 120,
+      "mean_red_range": 97
+    },
+    "trophy": {
+      "pixels": 28932,
+      "median_red_range": 87,
+      "mean_red_range": 85
+    }
+  }
+}

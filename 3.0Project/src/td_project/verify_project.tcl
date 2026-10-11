@@ -1,7 +1,7 @@
 set alRun phy_1
 set device_name eagle_s20.db
 set package_name EG4S20BG256
-set prj_name {HDMI1.4b_Transmitter_v3.0}
+set prj_name {HDMI1.4b_Transmitter_v3.0_720p_SoftFlow}
 set top_model_name {top}
 set ADCList {{../user_source/constraints_source/pin.adc}}
 set SDCList {{../user_source/constraints_source/timing.sdc}}

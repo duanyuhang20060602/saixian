@@ -1,3 +1,3 @@
-PASS decoder: all 27 original RGB565 frames, loop-back delta, both mirrored buffers; writes=    1069022
+PASS decoder: 720p tagged plate, no-op loop delta, both mirrored buffers; writes=     921600
 PASS decoder: six error kinds, offending command, word position and final cursor; encoded input CRC for every frame and loop-back
-tests/tb_decoder.v:47: $finish called at 36741800000 (1ps)
+tests/tb_decoder.v:47: $finish called at 28258780000 (1ps)

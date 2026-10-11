@@ -1,6 +1,6 @@
 // Two frame buffers stay identical after each commit by replaying the delta
 // into the old, now-inactive buffer. No full-frame copy per animation frame.
-module delta_player #(parameter TICKS_PER_FRAME=825000,parameter INITIAL_HOLD_TICKS=0,parameter VERIFY_STREAM=0,parameter WAIT_PATCH_DRAIN=0)(
+module delta_player #(parameter FRAME_WORDS=115200,parameter TICKS_PER_FRAME=825000,parameter INITIAL_HOLD_TICKS=0,parameter VERIFY_STREAM=0,parameter WAIT_PATCH_DRAIN=0)(
  input clk,input rst,input cache_ready,input [20:0] file_words,input [5:0] frame_count,
  output stream_start,output [20:0] stream_offset,output [20:0] stream_words,input stream_ack,
  input [31:0] cmd_data,input cmd_valid,output cmd_pop,
@@ -28,7 +28,7 @@ assign stream_start=state==INDEX_START || state==DATA_START || state==VERIFY_STA
 assign stream_offset=state==INDEX_START ? 21'd128+{12'd0,descriptor,3'b0} : data_offset;
 assign stream_words=state==INDEX_START ? 21'd8 : data_words;
 assign cmd_pop=state==INDEX_READ || state==VERIFY_READ ? cmd_valid : decode_pop;
-delta_decoder #(.WAIT_DRAIN(WAIT_PATCH_DRAIN)) decode(clk,rst,decode_start,target,data_words,cmd_data,cmd_valid,decode_pop,
+delta_decoder #(.WAIT_DRAIN(WAIT_PATCH_DRAIN),.FRAME_WORDS(FRAME_WORDS)) decode(clk,rst,decode_start,target,data_words,cmd_data,cmd_valid,decode_pop,
  patch_valid,patch_addr,patch_data,patch_ready,decode_done,decode_error,decode_busy,
  decode_kind,decode_fault,decoded_crc,patch_drained);
 always @(posedge clk)begin

@@ -1,43 +1,25 @@
 {
-  "hardware_validation": "user-reported-pass",
-  "resolution": "1280x720; centered original 480x480 scene; black borders",
-  "original_motion_preserved": true,
-  "color_format": "RGB565",
-  "original_frame_count": 27,
-  "original_frame_ms": 40,
-  "startup": "Procedural spinner independent of TF/SDRAM; min 96 video frames; validated first frame; initial extra 1 s hold; original GIF playback",
-  "prior_hardware_observation": "ReadAlign cb6d2261: user reports d4 E39, spinner only, LED1 off; pages 0..5 give expected/upload/readback CRC EA54DD20 identically, so full cache gate passed on hardware",
-  "fix": "QuadWrite: aligned four-word bursts, mask untouched words and coalesce contiguous patches; completion waits for bus drain; retain read/cache gates; verify pre-read and consumed encoded CRC; E31..E38 diagnostics; SDRAM shift advanced from 8 ns to 7 ns for setup margin",
-  "root_cause": "Old patch bus definitely violated APUG011 four-word addressing/mask contract; old code rejection reproduced. This is a concrete defect, but its causal relation to physical E39 and the playback result still require board validation",
-  "official_reference": "APUG011 v1.2 sections 2.3.4, 2.4 and 3; supplied sdr_wrrd.enc.v matches reference design SHA256 c7d7fe07d75f66aa88d9f986b3006319c995162434f104f9990664b374cdfdd2",
-  "video_refresh_hz": 60.60606060606061,
-  "video_clock_hz": 75000000,
-  "serial_clock_hz": 375000000,
-  "setup_wns_ns": 0.063,
-  "setup_tns_ns": 0.0,
-  "hold_wns_ns": 0.035,
-  "hold_tns_ns": 0.0,
-  "resources": {
-    "lut": 5718,
-    "reg": 4705,
-    "bram": 16,
-    "bram32k": 0,
-    "dsp": 0,
-    "pll": 2
-  },
-  "bit_sha256": "afd6b3f323d1dd910b52fed8e827a98614115955ecc63dfdd81b555b8ab405df",
-  "asset_sha256": "17b4fc2a39d15ab6767fdc8cc8f0a31dac34934b97130fd8932b4c743c67c61a",
-  "asset_bytes": 1890304,
-  "sdram_bytes": 2811904,
+  "hardware_validation": "pending",
+  "prior_successful_hardware": "User reports QuadWrite 480x480 penguin version works well; bit SHA256 afd6b3f323d1dd910b52fed8e827a98614115955ecc63dfdd81b555b8ab405df",
+  "resolution": "1280x720 full-screen plate with soft mesh/node flow, antialiased foil and wall-lamp breathing",
+  "frame_words": 460800,
+  "frame_buffer_bytes": 3686400,
+  "sdram_required_bytes": 5139968,
+  "asset_bytes": 1453568,
+  "asset_sha256": "4adf1b6696401faa8e4c7f6d165b3a2d67ffdc49d4d933ac2781056f1b0e5c5b",
+  "payload_crc32": "C165A3F0",
+  "bit_sha256": "dc38426083b4690bd26c00b8e46481f5679c1a60af36dbacc9e3f651a4af999f",
   "sources": {
-    "src/user_source/hdl_source/delta_decoder.v": "c7a86cfa3fe4a363c82cebf735ff1df9786a7fd14647083a0fd3bdf2932b12a7",
-    "src/user_source/hdl_source/delta_loader.v": "d52196aaf2a1baf6a1333bb50bd57589aa6ba0f59ea9a455ac052da5dd804023",
-    "src/user_source/hdl_source/delta_memory.v": "7e3a3eaf1ee6af8b3cde1e41630de100f61c802b74294ec4a01fdf61abb6fb76",
-    "src/user_source/hdl_source/delta_player.v": "f095f806e99d95d24270577d8231d6b23fb19469c5134b7c74fb4ced1bfe1cc9",
+    "src/user_source/hdl_source/award_fx.v": "df876ba61be05a838bacb645f39002e7f1f5e3c85e6021589fbe348c126d552c",
+    "src/user_source/hdl_source/award_sprite_rom.v": "78b9a5941893a9cb50aad9c8e00d49e932cd552fa3176c39aa99f1b0ba3a382a",
+    "src/user_source/hdl_source/delta_decoder.v": "ada20fb2b3f6cec9515d8c8013023f62b6cbd171dbdb941311b5c22d0e27ecf3",
+    "src/user_source/hdl_source/delta_loader.v": "62a33a4b944481dc113062ce30349021ef0b1dbaf6dc269218cf9086ddea0f64",
+    "src/user_source/hdl_source/delta_memory.v": "722f665ba5dae7f8adf089eeed4a88894d4b192bbec930327cb93bc32aba1492",
+    "src/user_source/hdl_source/delta_player.v": "120acf7a5b6d8c2ba1165c15c530901f4477d16ec02c5bf17d9a663032b6ff1c",
     "src/user_source/hdl_source/delta_read_capture.v": "60af35a688fcc77e2dc2a9f0b40d31def4488cf0a2c7cd2d01646b7d6e590f6a",
     "src/user_source/hdl_source/delta_status.v": "73b31a78c38b51d69e4013e32ddc9348cd2037363f3b956c05caeccb3df17a28",
-    "src/user_source/hdl_source/delta_video.v": "93ce0383859a015cef8837b460b65037200d10f0cb0b49668c084510cd073050",
-    "src/user_source/hdl_source/top_tf_hdmi_delta.v": "536cd47d3dad6d596db44e1dd3f68a0c0a779dd3cb05b48ddb8df464303a6783",
+    "src/user_source/hdl_source/delta_video.v": "044b062a5d53e5cfb73bd09b6ab935e0e4aa80c6c1d156865b0908067bb1bcaf",
+    "src/user_source/hdl_source/top_tf_hdmi_delta.v": "72c4e0a90a4f4f262c84232711d6961adbbf3b7f797f22dbfb1878e7d9283ad4",
     "src/user_source/hdl_source/hdmi1.4b_transmitter_core/hdmi_1_4b_transmitter_core_wrapper.enc.v": "867e0b0bdd874bc383d00918c9e1be3fe01edf41f343b6a0d73e262776596a63",
     "src/user_source/hdl_source/hdmi_phy_warpper.v": "416b082b0987001bdbc0a7e20a557cb8fb1dca34e25dc881e6d28a8cb3cf4300",
     "src/user_source/hdl_source/include/global_def.v": "db5b9b6f6a08e7b8ea0d9709f1595da17dc86061e94576fc3ccdee733a94efd2",
@@ -60,29 +42,84 @@
     "src/user_source/constraints_source/pin.adc": "b5c916c70d5c489ddcbdea522538d1e83cb30019c36859e3da957eb71cf91112",
     "src/user_source/constraints_source/timing.sdc": "78078da832c6aec67ea71c744c4af2700813f451264313d31e4736d7bb127d6b"
   },
-  "tests": {
-    "decoder": "all 27 frames plus loop delta; both buffers; invalid streams",
-    "loader": "full upload/CRC; corruption/truncation/stall",
-    "pipeline": "Four original presentations with native FIFOs/raster; exact pixels, strict four-word writes and masks, ten-cycle SDRAM model",
-    "budget": "Full original loop and pause/resume; real clock-rate video demand; encoded stream CRC, strict four-word writes and masks, ten-cycle SDRAM model",
-    "axis": "7680 pixels; correct SOF/EOL",
-    "boot": "No-TF spinner/rotation/dwell; first-frame RGB565/black border; later buffer commit",
-    "status": "Fault priorities, word/CRC pages, debounced key; automatic BIST/decoder/CRC pages and code restoration without SW2/KEY1",
-    "first_hold": "Additional first-image hold followed by original schedule",
-    "cache": "Upload CRC, BIST, E2A..E2F injections, full CRC E29; native command FIFO and 100/50 MHz upload FIFO; early-data model reproduces E2D, previous-cycle capture passes CRC/index/tails/boundaries and fault rejection",
-    "index": "Valid descriptor plus offset/length/boundary/duration errors",
-    "stream_crc": "Pre-read CRC E37, invalid decoded command E33 and structurally valid changed stream E38 block publication",
-    "patch_quads": "111 words/all lanes/boundaries; four aligned beats, masks, contiguous coalescing, drain, neighbors preserved, active-frame guard; old one-beat implementation rejected"
+  "resources": {
+    "lut": 6327,
+    "reg": 4954,
+    "bram": 20,
+    "bram32k": 0,
+    "dsp": 5,
+    "pll": 2
   },
-  "limits": "Encrypted SDRAM controller and HDMI PHY require physical board validation; TF raw sectors require contiguous file",
-  "strategy": "TD 6.2.168116; seed12; original frequencies; SDRAM shift 7 ns/126 degrees; pack_seq_in_io off",
-  "gate_db_sha256": "52cd106d6eb957eeddc5477f8b3c589b8d7fbf6bacf952925a5286bb664fa123",
+  "setup_wns_ns": 0.08,
+  "setup_tns_ns": 0.0,
+  "hold_wns_ns": 0.027,
+  "hold_tns_ns": 0.0,
+  "tests": [
+    "decoder",
+    "loader",
+    "pipeline",
+    "axis",
+    "boot",
+    "status",
+    "first_hold",
+    "cache",
+    "index",
+    "stream_crc",
+    "patch_quads",
+    "award_fx",
+    "video_latency",
+    "rtl_preview"
+  ],
+  "live_effects": true,
+  "frame_for_frame_gif_playback": false,
+  "effect_pipeline_cycles": 5,
+  "preview_sample_fps": 12,
+  "preview_frames": 72,
+  "wall_breathing": true,
+  "effect_revision": "R2: proportional dimming between moving highlights and stronger wall breathing",
+  "real_plate_contrast": {
+    "previous": {
+      "wall": {
+        "pixels": 19495,
+        "median_red_range": 48,
+        "mean_red_range": 52
+      },
+      "trophy": {
+        "pixels": 28932,
+        "median_red_range": 24,
+        "mean_red_range": 35
+      }
+    },
+    "revised": {
+      "wall": {
+        "pixels": 19495,
+        "median_red_range": 120,
+        "mean_red_range": 97
+      },
+      "trophy": {
+        "pixels": 28932,
+        "median_red_range": 87,
+        "mean_red_range": 85
+      }
+    }
+  },
+  "live_loop_video_frames": 364,
+  "live_loop_seconds": 6.005999999999999,
+  "clocks_hz": {
+    "tf": 100000000,
+    "sdram": 50000000,
+    "pixel": 75000000,
+    "serial": 375000000
+  },
+  "sdram_phase_ns": 7,
+  "startup": "Independent spinner; full TF/upload/BIST/readback CRC gates; full 720p plate decode into both buffers; first-image hold; live flow/rain",
+  "limits": "Encrypted SDRAM controller and HDMI PHY require new board validation. Continuous TF file required. Six-bit effect tags reduce marked gold pixel precision; live effects approximate the approved software preview.",
+  "note": "Native FIFO/raster model checks three complete 720p presentations and 2764800 exact plate pixels; live effect logic separately checks hold, phase closure, pause/resume, luminance contrast, rain and title protection.",
   "project_directory": "3.0Project",
-  "project_file": "3.0Project/src/td_project/HDMI1.4b_Transmitter_v3.0.al",
-  "hardware_observation": {
-    "date": "2026-10-10",
-    "report": "效果非常好",
-    "revision": "QuadWrite",
-    "scope": "User reports successful board result after delivery; no independent long-duration hardware measurements were performed."
+  "project_file": "3.0Project/src/td_project/HDMI1.4b_Transmitter_v3.0_720p_SoftFlow.al",
+  "user_feedback": {
+    "date": "2026-10-11",
+    "quote": "效果不错",
+    "scope": "User approval of the current effect; no independent long-duration board test recorded"
   }
 }

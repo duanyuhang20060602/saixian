@@ -1,2 +1,2 @@
 PASS HDMI pixel adapter: 7680 pixels, exact SOF and end-of-line markers
-delta_player/tests/tb_axis.v:23: $finish called at 77340000 (1ps)
+tests/tb_axis.v:23: $finish called at 77340000 (1ps)

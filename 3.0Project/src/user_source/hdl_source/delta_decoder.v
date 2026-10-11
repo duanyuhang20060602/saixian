@@ -1,6 +1,6 @@
 // Commands: 00 skip unchanged pairs, 01 literal pairs, 10 repeated pair.
 // Writes are accepted at their unmasked beat; completion waits for bus drain.
-module delta_decoder #(parameter WAIT_DRAIN=0)(
+module delta_decoder #(parameter WAIT_DRAIN=0,parameter FRAME_WORDS=115200)(
  input clk,input rst,input start,input target,
  input [20:0] encoded_words,input [31:0] stream_data,input stream_valid,output stream_pop,
  output patch_valid,output [20:0] patch_addr,output [31:0] patch_data,input patch_ready,
@@ -8,7 +8,7 @@ module delta_decoder #(parameter WAIT_DRAIN=0)(
  output reg [3:0] error_kind,output [95:0] fault_data,output [31:0] encoded_crc,input patch_drained
 );
 localparam IDLE=0,CMD=1,LITERAL=2,FILL_WORD=3,FILL=4,FINISH=5;
-reg [2:0] state;reg [20:0] remaining;reg [16:0] cursor,run;
+reg [2:0] state;reg [20:0] remaining;reg [18:0] cursor,run;
 reg [31:0] fill_data;reg target_latch;
 reg [31:0] crc,consumed,fault_word,fault_index,fault_cursor,last_command;
 assign encoded_crc=crc^32'hffffffff;
@@ -19,7 +19,7 @@ function [31:0] crc_word;
 endfunction
 wire [1:0] kind=stream_data[31:30];wire [29:0] count=stream_data[29:0];
 assign patch_valid=busy && ((state==LITERAL && stream_valid)||(state==FILL));
-assign patch_addr=(target_latch ? 21'd115200 : 21'd0)+cursor;
+assign patch_addr=(target_latch ? FRAME_WORDS : 21'd0)+cursor;
 assign patch_data=state==FILL ? fill_data : stream_data;
 assign stream_pop=busy && stream_valid &&
  ((state==CMD && remaining!=0)||(state==FILL_WORD && remaining!=0)||
@@ -38,19 +38,19 @@ always @(posedge clk)begin
    case(state)
    CMD:begin
     if(remaining==0)begin
-     if(cursor==115200)begin state<=FINISH;end
+     if(cursor==FRAME_WORDS)begin state<=FINISH;end
      else begin error<=1;error_kind<=6;busy<=0;state<=IDLE;
-      fault_word<=last_command;fault_index<=consumed;fault_cursor<={15'd0,cursor};end
+      fault_word<=last_command;fault_index<=consumed;fault_cursor<={13'd0,cursor};end
     end else if(stream_valid)begin
      remaining<=remaining-1'b1;last_command<=stream_data;
-     if(kind==3 || count==0 || count>115200-cursor ||
+     if(kind==3 || count==0 || count>FRAME_WORDS-cursor ||
         (kind==1 && count>remaining-1) || (kind==2 && remaining<2))begin
       error<=1;busy<=0;state<=IDLE;
-      error_kind<=kind==3 ? 4'd2 : count==0 ? 4'd1 : count>115200-cursor ? 4'd3 :
+      error_kind<=kind==3 ? 4'd2 : count==0 ? 4'd1 : count>FRAME_WORDS-cursor ? 4'd3 :
                    kind==1 && count>remaining-1 ? 4'd4 : 4'd5;
-      fault_word<=stream_data;fault_index<=consumed;fault_cursor<={15'd0,cursor};
-     end else if(kind==0)begin cursor<=cursor+count[16:0];end
-     else begin run<=count[16:0];state<=kind==1 ? LITERAL : FILL_WORD;end
+      fault_word<=stream_data;fault_index<=consumed;fault_cursor<={13'd0,cursor};
+     end else if(kind==0)begin cursor<=cursor+count[18:0];end
+     else begin run<=count[18:0];state<=kind==1 ? LITERAL : FILL_WORD;end
     end
    end
    FILL_WORD:if(stream_valid)begin fill_data<=stream_data;remaining<=remaining-1'b1;state<=FILL;end

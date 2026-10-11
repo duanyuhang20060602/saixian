@@ -1,7 +1,7 @@
 from pathlib import Path
 import subprocess
 ROOT=Path(__file__).resolve().parents[1]
-WORK=Path('E:/Codex/Temp/saixian_delta_tests');WORK.mkdir(parents=True,exist_ok=True)
+WORK=Path('E:/Codex/Temp/saixian_softflow720_tests');WORK.mkdir(parents=True,exist_ok=True)
 binary=WORK/'axis.vvp'
 subprocess.run(['C:/iverilog/bin/iverilog.exe','-g2012','-s','tb_axis','-o',str(binary),
                'src/user_source/hdl_source/video_rgb_to_axis_640x480.v','tests/tb_axis.v'],cwd=ROOT,check=True)
