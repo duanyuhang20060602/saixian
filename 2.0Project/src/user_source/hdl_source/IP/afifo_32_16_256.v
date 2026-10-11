@@ -17,7 +17,8 @@ module rfifo_32_32_512 #(parameter DATA_WIDTH_W = 32,
         parameter AL_FULL_NUM = 509, 
         parameter AL_EMPTY_NUM = 2, 
         parameter SHOW_AHEAD_EN = 1'b0, 
-        parameter OUTREG_EN = "NOREG") (
+        parameter OUTREG_EN = "NOREG",
+        parameter FAST_FULL_COMPARE = 1'b0) (
     //SHOWAHEAD mode enable
     //OUTREG, NOREG
     //independent clock mode,fixed as asynchronous reset
@@ -151,7 +152,12 @@ module rfifo_32_32_512 #(parameter DATA_WIDTH_W = 32,
     // generate all output flag and count below;
     // ============================================= 
     // generate fifo full_flag indicator
-    assign full_flag = ((wr_addr_diff >= FULL_NUM) ? 1'b1 : 1'b0) ; 
+    // Modulo pointer difference is all ones exactly when advancing the write
+    // pointer would reach the synchronized read pointer.  Reuse the increment
+    // instead of putting the occupancy subtraction on the RAM write-enable path.
+    wire [ADDR_WIDTH_W-1:0] next_wr_addr = wr_addr + 1'b1;
+    assign full_flag = FAST_FULL_COMPARE ? (next_wr_addr == shift_rdaddr) :
+                       ((wr_addr_diff >= FULL_NUM) ? 1'b1 : 1'b0);
     // generate fifo afull indicator
     assign afull = ((wr_addr_diff >= AL_FULL_NUM) ? 1'b1 : 1'b0) ; 
     // generate fifo empty_flag indicator

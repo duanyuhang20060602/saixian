@@ -34,7 +34,10 @@ reg [10:0] peak_decay_count;
 reg [32:0] sample_sum;
 wire [16:0] attack_samples = segment_samples - samples_left;
 
-wire sample_tick = (sample_sum >= CLK_FREQ_HZ);
+// Compare the accumulator against the threshold before the rate addition.
+// This is the same tick, without an adder feeding the cue control comparator.
+wire sample_tick = (CLK_FREQ_HZ >= SAMPLE_RATE_HZ) ?
+    (sample_acc >= CLK_FREQ_HZ-SAMPLE_RATE_HZ) : (sample_sum >= CLK_FREQ_HZ);
 wire signed [23:0] triangle = phase_acc[31] ?
                               -$signed({1'b0, phase_acc[30:8]}) :
                                $signed({1'b0, phase_acc[30:8]});

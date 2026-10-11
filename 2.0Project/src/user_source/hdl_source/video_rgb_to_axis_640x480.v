@@ -46,7 +46,8 @@ always @(posedge I_clk or posedge I_rst) begin
         if (I_de) begin
             if (!S_de_1d) begin
                 // 一行首像素
-                S_x_cnt <= 11'd0;
+                // Carry over the board-validated 3.0 end-of-line correction.
+                S_x_cnt <= 11'd1;
                 if (S_frame_arm) begin
                     O_video_user <= 1'b1;
                     S_frame_arm  <= 1'b0;

@@ -2,6 +2,8 @@
 module frame_read_write
 #
 (
+	parameter ENABLE_DELTA = 0,
+    parameter INDEPENDENT_VIDEO = 0,
 	parameter MEM_DATA_BITS          = 32,
 	parameter READ_DATA_BITS         = 32,
 	parameter WRITE_DATA_BITS        = 32,
@@ -13,6 +15,17 @@ module frame_read_write
 	parameter FRAME_HEIGHT           = 480
 ) 
 (
+    input delta_mode,
+    input delta_upload_reset, delta_upload_we, delta_upload_pop,
+    input [31:0] delta_upload_data,
+    output [31:0] delta_upload_head,
+    output [8:0] delta_upload_count,
+    output delta_upload_empty,
+    input delta_video_reset, delta_video_push, delta_video_pop,
+    input [31:0] delta_video_data,
+    output [31:0] delta_video_head,
+    output [8:0] delta_video_count,
+    input background_busy, output photo_bus_claim,
 	input                            rst,                  
 	input                            mem_clk,                    // external memory controller user interface clock
 	input							 Sdr_init_done,
@@ -83,6 +96,9 @@ module frame_read_write
 	output                           write_fifo_full             // write-side overflow diagnostic
 
 );
+wire use_delta = ENABLE_DELTA && delta_mode;
+wire use_delta_video = use_delta && !INDEPENDENT_VIDEO;
+wire read_bus_claim;
 wire[BURST_BITS - 1:0]                           wrusedw;                    // write used words
 wire[BURST_BITS - 1:0]                           rdusedw;                    // read used words
 
@@ -94,21 +110,26 @@ wire                                 write_fifo_aclr;            // fifo Asynchr
 
 wire O_wr_busy;
 wire O_rd_busy;
+assign photo_bus_claim = read_bus_claim || O_wr_busy || App_wr_en;
 
 assign App_wr_busy = O_wr_busy;//下个时钟写指令拉高
 assign App_rd_busy = O_rd_busy;//读指令还没有过去十个时钟;因为写指令优先，不需要在意下个时钟是否是读指令
 assign App_wr_dm = 4'b0000;
+assign delta_upload_head = App_wr_din;
+assign delta_upload_count = rdusedw;
+assign delta_video_head = read_data;
+assign delta_video_count = wrusedw;
 
 //instantiate an asynchronous FIFO 
 wfifo_32_32_512 write_buf
 	(
 	.clkr                      	(mem_clk                  ),          // Read side clock
 	.clkw                      	(write_clk                ),          // Write side clock
-	.rst                       	(rst | write_fifo_aclr    ),          // Reset also before first request
-	.we                      	(write_en                 ),          // Write Request
-	.re                      	(App_wr_en        		  ),          // Read Request
-	.di                       	(write_data               ),          // Input Data
-	.empty_flag                 (                         ),          // Read side Empty flag
+	.rst                       	(rst | (use_delta ? delta_upload_reset : write_fifo_aclr)    ),          // Reset also before first request
+	.we                      	(use_delta ? delta_upload_we : write_en),          // Write Request
+	.re                      	(use_delta ? delta_upload_pop : App_wr_en),          // Read Request
+	.di                       	(use_delta ? delta_upload_data : write_data),          // Input Data
+	.empty_flag                 (delta_upload_empty       ),          // Read side Empty flag
 	.full_flag                  (write_fifo_full          ),          // Write side Full flag
 	.wrusedw                	(              	  		  ),          // Read Used Words
 	.rdusedw                	(rdusedw                  ),          // Write Used Words
@@ -128,12 +149,12 @@ frame_fifo_write
 ) 
 frame_fifo_write_m0              
 (  
-	.rst                        (rst                      ),
+	.rst                        (rst | use_delta          ),
 	.mem_clk                    (mem_clk                  ),
     .Sdr_init_done				(Sdr_init_done),
 	.Sdr_init_ref_vld			(Sdr_init_ref_vld),
     .Sdr_busy					(Sdr_busy),
-	.App_rd_busy				(App_rd_busy),
+	.App_rd_busy				(App_rd_busy || (INDEPENDENT_VIDEO && background_busy)),
     .O_wr_busy					(O_wr_busy),
 	
 	.App_wr_en					(App_wr_en),
@@ -153,14 +174,15 @@ frame_fifo_write_m0
 );
 
 //instantiate an asynchronous FIFO 
-rfifo_32_32_512 read_buf
+saixian_shared_video_fifo read_buf
 	(
+    .read_ahead(use_delta_video),
 	.clkr                     	(read_clk                   ),          // Read side clock
 	.clkw                     	(mem_clk                    ),          // Write side clock
-	.rst                      	(rst | read_fifo_aclr       ),          // Reset also before first request
-	.we                     	(Sdr_rd_en       			),          // Write Request
-	.re                     	(read_en && !read_fifo_empty),          // Never pop an empty FIFO
-	.di                      	(Sdr_rd_dout                ),          // Input Data
+	.rst                      	(rst | (use_delta_video ? delta_video_reset : read_fifo_aclr)       ),          // Reset also before first request
+	.we                     	(use_delta_video ? delta_video_push : Sdr_rd_en),          // Write Request
+	.re                     	(use_delta_video ? delta_video_pop : (read_en && !read_fifo_empty)),          // Never pop an empty FIFO
+	.di                      	(use_delta_video ? delta_video_data : Sdr_rd_dout),          // Input Data
 	.empty_flag					(read_fifo_empty            ),          // Read side Empty flag
 	.full_flag					(                           ),          // Write side Full flag
 	.wrusedw                	(wrusedw         	  	  		 ),          // Read Used Words
@@ -179,7 +201,7 @@ frame_fifo_read
 )
 frame_fifo_read_m0
 (
-	.rst                        (rst                      ),
+	.rst                        (rst | use_delta_video          ),
 	.mem_clk                    (mem_clk                  ),
     .Sdr_init_done				(Sdr_init_done),
 	.Sdr_init_ref_vld			(Sdr_init_ref_vld),
@@ -208,7 +230,8 @@ frame_fifo_read_m0
     .buffer0_vga                (buffer0_vga              ),
     .buffer1_vga                (buffer1_vga              ),
 	.fifo_aclr                  (read_fifo_aclr           ),
-	.wrusedw                	(wrusedw                  )
+	.wrusedw                	(wrusedw                  ),
+    .background_busy(INDEPENDENT_VIDEO && (background_busy || Sdr_busy || Sdr_init_ref_vld)),.bus_claim(read_bus_claim)
 );
 
 endmodule

@@ -163,10 +163,38 @@ wire [5:0] seconds;
 wire [3:0] countdown_value, cue_event;
 wire carousel_mode;
 wire battle_busy;
+wire tf_active,tf_display,tf_mode_sd,tf_mode_mem,photo_reset_sd,photo_reset_video,shared_memory_reset;
+wire photo_media_idle,photo_media_pause,photo_bus_claim,photo_card_reset,tf_video_empty;
+reg tf_raster_de,tf_raster_vs;
+always @(posedge video_clk or posedge rst_video)begin
+    if(rst_video)begin tf_raster_de<=0;tf_raster_vs<=0;end
+    else begin tf_raster_de<=de;tf_raster_vs<=vs;end
+end
+wire tf_sd_cs,tf_sd_sck,tf_sd_mosi,photo_sd_cs,photo_sd_sck,photo_sd_mosi;
+wire tf_upload_reset,tf_upload_we,tf_upload_pop,tf_upload_empty;
+wire [31:0] tf_upload_data,tf_upload_head;
+wire [8:0] tf_upload_count,tf_video_count;
+wire tf_video_reset,tf_video_push,tf_video_pop;
+wire [31:0] tf_video_data,tf_video_head;
+wire tf_app_rd,tf_app_wr;wire [20:0] tf_rd_addr,tf_wr_addr;
+wire [31:0] tf_wr_data;wire [3:0] tf_wr_dm;
+wire [23:0] tf_rgb;wire tf_de,tf_vs,tf_frame_tick,tf_initialized,tf_visible,tf_underflow;
+wire [2:0] tf_sd_error;wire [3:0] tf_memory_error,tf_player_error;
+wire shared_sd_reset,shared_sd_initialized,tf_sector_req,photo_sector_req;
+wire shared_sector_valid,shared_sector_end;wire [7:0] shared_sector_data;
+wire [31:0] tf_sector_addr,photo_sector_addr;wire [2:0] shared_init_stage;
+sd_card_top #(.SPI_LOW_SPEED_DIV(248),.SPI_HIGH_SPEED_DIV(2)) u_shared_sd_host(
+    .clk(sd_card_clk),.rst(shared_sd_reset | photo_card_reset),.SD_nCS(sd_ncs),.SD_DCLK(sd_dclk),.SD_MOSI(sd_mosi),.SD_MISO(sd_miso),
+    .sd_init_done(shared_sd_initialized),.init_stage(shared_init_stage),
+    .sd_sec_read(tf_mode_sd ? tf_sector_req : photo_sector_req),
+    .sd_sec_read_addr(tf_mode_sd ? tf_sector_addr : photo_sector_addr),
+    .sd_sec_read_data(shared_sector_data),.sd_sec_read_data_valid(shared_sector_valid),.sd_sec_read_end(shared_sector_end),
+    .sd_sec_write(1'b0),.sd_sec_write_addr(32'd0),.sd_sec_write_data(8'd0),.sd_sec_write_data_req(),.sd_sec_write_end());
 wire sprint_result_active;
 wire carousel_play = carousel_mode && !battle_busy;
 wire settings_mode;
-wire [2:0] setting_item;
+wire [3:0] setting_item;
+wire audio_repair_setting;
 wire [3:0] volume_setting, brightness_setting, contrast_setting, saturation_setting;
 wire [1:0] sharpness_setting;
 wire invert_setting, vintage_setting;
@@ -204,6 +232,7 @@ saixian_settings_controller #(.CLK_FREQ_HZ(VIDEO_CLK_HZ)) u_settings(
     .key_enter_exit((key3_press && settings_mode) || key3_home_short),.key_increase(key4_short_pulse),
     .hmi_setting_valid(hmi_setting_valid),.hmi_setting_id(hmi_setting_id),
     .hmi_setting_value(hmi_setting_value),.hmi_reset_defaults(hmi_reset_defaults),
+    .audio_repair_setting(audio_repair_setting),
     .settings_mode(settings_mode),.setting_item(setting_item),
     .volume_setting(volume_setting),.brightness_setting(brightness_setting),
     .contrast_setting(contrast_setting),.saturation_setting(saturation_setting),
@@ -408,8 +437,11 @@ end
 // window even when only five images are visible in the directory.
 // Five full-length AUD tracks plus six BMPs can exceed the former 256 MiB
 // raw-sector search window if FAT32 places them after a free-space gap.
-sd_card_bmp #(.CLK_FREQ_HZ(100_000_000),.SCAN_START_SECTOR(0),.SCAN_MAX_SECTOR(1048575),.SCAN_TARGET_COUNT(6)) u_sd_bmp(
-    .clk(sd_card_clk),.rst(rst_sd | sd_startup_hold),.prev_req_toggle(prev_req_toggle),.next_req_toggle(next_req_toggle),
+sd_card_bmp #(.SHARED_SD_HOST(1),.TWO_PHOTO_BUFFERS(1),.CLK_FREQ_HZ(100_000_000),.SCAN_START_SECTOR(0),.SCAN_MAX_SECTOR(1048575),.SCAN_TARGET_COUNT(6)) u_sd_bmp(
+    .shared_sd_initialized(shared_sd_initialized),.shared_init_stage(shared_init_stage),
+    .shared_sector_data(shared_sector_data),.shared_sector_valid(shared_sector_valid && !tf_mode_sd),
+    .shared_sector_end(shared_sector_end && !tf_mode_sd),.shared_sector_req(photo_sector_req),.shared_sector_addr(photo_sector_addr),
+    .clk(sd_card_clk),.rst(photo_reset_sd),.prev_req_toggle(prev_req_toggle),.next_req_toggle(next_req_toggle),
     .carousel_mode(carousel_play && !settings_mode),.display_commit_toggle(frame_commit_toggle),.state_code(sd_state_code),
     .sd_init_done_o(sd_init_done),.scan_done_o(scan_done),.image_count(image_count),.error_code(sd_error),
     .source_width(source_width_sd),.source_height(source_height_sd),
@@ -421,11 +453,12 @@ sd_card_bmp #(.CLK_FREQ_HZ(100_000_000),.SCAN_START_SECTOR(0),.SCAN_MAX_SECTOR(1
     .audio_fifo_wrusedw(audio_fifo_wrusedw),.audio_pcm_we(audio_pcm_we_sd),
     .audio_pcm_word(audio_pcm_word_sd),.audio_found_o(audio_file_found_sd),
     .audio_track_index(audio_track_index),.audio_track_toggle(audio_track_toggle),.audio_track_count_o(audio_track_count_sd),
-    .SD_nCS(sd_ncs),.SD_DCLK(sd_dclk),.SD_MOSI(sd_mosi),.SD_MISO(sd_miso)
+    .SD_nCS(photo_sd_cs),.SD_DCLK(photo_sd_sck),.SD_MOSI(photo_sd_mosi),.SD_MISO(sd_miso),
+    .media_pause(photo_media_pause),.media_idle(photo_media_idle),.card_reset_request(photo_card_reset)
 );
 
 saixian_transition u_transition(
-    .clk(video_clk),.rst(rst_video),.frame_tick(frame_tick),.frame_ready_toggle(frame_ready_toggle),.ready_buf_idx(ready_buf_idx),
+    .clk(video_clk),.rst(photo_reset_video),.frame_tick(frame_tick),.frame_ready_toggle(frame_ready_toggle),.ready_buf_idx(ready_buf_idx),
     .ready_slide_right(ready_slide_right),.active_buf_idx(active_buf_idx),.slide_new_buf_idx(slide_new_buf_idx),
     .frame_commit_toggle(frame_commit_toggle),.display_valid(display_valid),.transition_active(transition_active),
     .transition_mode(transition_mode),.slide_offset(slide_offset),.slide_right(slide_right),.transition_level(transition_level)
@@ -455,13 +488,18 @@ wire [ADDR_BITS-1:0] App_rd_addr, App_wr_addr;
 wire [MEM_DATA_BITS-1:0] Sdr_rd_dout, App_wr_din;
 wire [3:0] App_wr_dm;
 
-frame_read_write #(.WRITE_V_FLIP(1),.FRAME_WIDTH(640),.FRAME_HEIGHT(720)) u_frame_rw(
-    .mem_clk(ext_mem_clk),.rst(rst_mem),.Sdr_init_done(Sdr_init_done),.Sdr_init_ref_vld(Sdr_init_ref_vld),.Sdr_busy(Sdr_busy),
-    .App_rd_en(App_rd_en),.App_rd_addr(App_rd_addr),.Sdr_rd_en(Sdr_rd_en),.Sdr_rd_dout(Sdr_rd_dout),
-    .read_clk(video_clk),.read_req(video_read_req),.read_req_ack(video_read_req_ack),.read_finish(),
+frame_read_write #(.ENABLE_DELTA(1),.INDEPENDENT_VIDEO(1),.WRITE_V_FLIP(1),.FRAME_WIDTH(640),.FRAME_HEIGHT(720)) u_frame_rw(
+    .delta_mode(tf_mode_sd),
+    .background_busy(tf_mode_mem),.photo_bus_claim(photo_bus_claim),
+    .delta_upload_reset(tf_upload_reset),.delta_upload_we(tf_upload_we),.delta_upload_data(tf_upload_data),
+    .delta_upload_pop(tf_upload_pop),.delta_upload_head(tf_upload_head),.delta_upload_count(tf_upload_count),
+    .delta_upload_empty(tf_upload_empty),
+    .mem_clk(ext_mem_clk),.rst(shared_memory_reset),.Sdr_init_done(Sdr_init_done),.Sdr_init_ref_vld(Sdr_init_ref_vld),.Sdr_busy(Sdr_busy),
+    .App_rd_en(App_rd_en),.App_rd_addr(App_rd_addr),.Sdr_rd_en(Sdr_rd_en && !tf_mode_mem),.Sdr_rd_dout(Sdr_rd_dout),
+    .read_clk(video_clk),.read_req(video_read_req && !tf_display),.read_req_ack(video_read_req_ack),.read_finish(),
     .read_addr_0(BUF0_ADDR),.read_addr_1(BUF1_ADDR),.read_addr_2(SPRINT_BG_ADDR),.read_addr_3(BUF3_ADDR),
     .read_addr_index(sprint_read_enabled ? 2'd2 : active_buf_idx),
-    .read_len(FRAME_WORDS),.read_en(video_read_en),.read_data(video_read_data),.read_fifo_empty(video_read_empty),
+    .read_len(FRAME_WORDS),.read_en(video_read_en && !tf_display),.read_data(video_read_data),.read_fifo_empty(video_read_empty),
     .slide_active(transition_active && !sprint_read_enabled),.slide_old_index(active_buf_idx),.slide_new_index(slide_new_buf_idx),
     .slide_offset({1'b0,slide_offset[10:1]}),.slide_right(slide_right),.transition_mode(transition_mode),
     .buffer0_vga(buffer0_vga_sd),.buffer1_vga(buffer1_vga_sd),
@@ -473,9 +511,30 @@ frame_read_write #(.WRITE_V_FLIP(1),.FRAME_WIDTH(640),.FRAME_HEIGHT(720)) u_fram
     .write_fifo_full(write_fifo_full)
 );
 
-sdram u_sdram(.Clk(ext_mem_clk),.Clk_sft(ext_mem_clk_sft),.Rst(rst_mem),.Sdr_init_done(Sdr_init_done),
-    .Sdr_init_ref_vld(Sdr_init_ref_vld),.Sdr_busy(Sdr_busy),.App_wr_en(App_wr_en),.App_wr_addr(App_wr_addr),
-    .App_wr_dm(App_wr_dm),.App_wr_din(App_wr_din),.App_rd_en(App_rd_en),.App_rd_addr(App_rd_addr),
+saixian_tf_preload u_tf_animation(
+    .prepare(battle_busy),.show(tf_display),.photo_idle(photo_media_idle),.photo_bus_claim(photo_bus_claim),
+    .photo_pause(photo_media_pause),.observed_sector(tf_mode_sd ? tf_sector_addr : photo_sector_addr),
+    .raster_x(pixel_x),.raster_y(pixel_y),.raster_de(tf_raster_de),.raster_vs(tf_raster_vs),.raster_frame(frame_tick),
+    .shared_sd_reset(shared_sd_reset),.shared_sd_initialized(shared_sd_initialized),
+    .sector_req(tf_sector_req),.sector_addr(tf_sector_addr),.sector_data(shared_sector_data),
+    .sector_valid(shared_sector_valid),.sector_end(shared_sector_end),
+    .sd_clk(sd_card_clk),.mem_clk(ext_mem_clk),.video_clk(video_clk),
+    .rst_sd(rst_sd | sd_startup_hold),.rst_mem(rst_mem),.rst_video(rst_video),.active(tf_active),
+    .mode_sd(tf_mode_sd),.mode_mem(tf_mode_mem),.photo_reset_sd(photo_reset_sd),
+    .photo_reset_video(photo_reset_video),.memory_reset(shared_memory_reset),
+    .sdr_init(Sdr_init_done),.sdr_refresh(Sdr_init_ref_vld),.sdr_busy(Sdr_busy),
+    .rd_valid(Sdr_rd_en && tf_mode_mem),.rd_data(Sdr_rd_dout),.app_rd(tf_app_rd),.rd_addr(tf_rd_addr),
+    .app_wr(tf_app_wr),.wr_addr(tf_wr_addr),.wr_data(tf_wr_data),.wr_dm(tf_wr_dm),
+    .upload_reset(tf_upload_reset),.upload_we(tf_upload_we),.upload_data(tf_upload_data),.upload_full(write_fifo_full),
+    .upload_empty(tf_upload_empty),.upload_count(tf_upload_count),.upload_head(tf_upload_head),.upload_pop(tf_upload_pop),
+    .video_reset(tf_video_reset),.video_push(tf_video_push),.video_data(tf_video_data),.video_count(tf_video_count),
+    .video_head(tf_video_head),.video_empty(tf_video_empty),.video_pop(tf_video_pop),
+    .rgb(tf_rgb),.de(tf_de),.vs(tf_vs),.frame_tick(tf_frame_tick),.initialized(tf_initialized),.visible(tf_visible),
+    .sd_error(tf_sd_error),.memory_error(tf_memory_error),.player_error(tf_player_error),.underflow(tf_underflow));
+
+sdram u_sdram(.Clk(ext_mem_clk),.Clk_sft(ext_mem_clk_sft),.Rst(shared_memory_reset),.Sdr_init_done(Sdr_init_done),
+    .Sdr_init_ref_vld(Sdr_init_ref_vld),.Sdr_busy(Sdr_busy),.App_wr_en(!shared_memory_reset && (tf_mode_mem ? tf_app_wr : App_wr_en)),.App_wr_addr(tf_mode_mem ? tf_wr_addr : App_wr_addr),
+    .App_wr_dm(tf_mode_mem ? tf_wr_dm : App_wr_dm),.App_wr_din(tf_mode_mem ? tf_wr_data : App_wr_din),.App_rd_en(!shared_memory_reset && (tf_mode_mem ? tf_app_rd : App_rd_en)),.App_rd_addr(tf_mode_mem ? tf_rd_addr : App_rd_addr),
     .Sdr_rd_en(Sdr_rd_en),.Sdr_rd_dout(Sdr_rd_dout));
 
 wire audio_valid;
@@ -544,7 +603,7 @@ wire [8:0] audio_fifo_rdusedw;
 wire audio_fifo_re;
 wire audio_fifo_reset = rst_sd | rst_video | ~sd_init_done | (audio_fifo_flush_count != 0);
 
-rfifo_32_32_512 u_audio_fifo(
+rfifo_32_32_512 #(.FAST_FULL_COMPARE(1'b1)) u_audio_fifo(
     .rst(audio_fifo_reset),.clkw(sd_card_clk),.clkr(video_clk),
     .we(audio_pcm_we_sd && !audio_fifo_full),.di(audio_pcm_word_sd),
     .re(audio_fifo_re),.dout(audio_fifo_dout),.valid(audio_fifo_valid),
@@ -564,13 +623,27 @@ saixian_pcm_player u_bgm_player(
     .audio_active(bg_audio_active),.spectrum_tone_bin(bg_spectrum_tone_bin)
 );
 
-wire signed [24:0] audio_mix_left = ($signed(bg_audio_left) >>> 1) + ($signed(cue_audio_left) >>> 1);
-wire signed [24:0] audio_mix_right = ($signed(bg_audio_right) >>> 1) + ($signed(cue_audio_right) >>> 1);
+// The player updates PCM on cue_audio_valid. Start processing one cycle later;
+// completion is well before the next 48 kHz HDMI acceptance edge.
+reg repair_sample_valid;
+always @(posedge video_clk or posedge rst_video)
+    if (rst_video) repair_sample_valid <= 1'b0;
+    else repair_sample_valid <= cue_audio_valid;
+wire [23:0] repaired_bg_left, repaired_bg_right;
+saixian_audio_repair u_audio_repair(
+    .clk(video_clk),.rst(rst_video),.clear(audio_fifo_reset || !bgm_play_enable),
+    .sample_valid(repair_sample_valid),.enable(audio_repair_setting),
+    .left_in(bg_audio_left[23:8]),.right_in(bg_audio_right[23:8]),
+    .left_out(repaired_bg_left[23:8]),.right_out(repaired_bg_right[23:8]),.out_valid());
+assign repaired_bg_left[7:0]=8'd0;
+assign repaired_bg_right[7:0]=8'd0;
+wire signed [24:0] audio_mix_left = ($signed(repaired_bg_left) >>> 1) + ($signed(cue_audio_left) >>> 1);
+wire signed [24:0] audio_mix_right = ($signed(repaired_bg_right) >>> 1) + ($signed(cue_audio_right) >>> 1);
 assign audio_valid = cue_audio_valid;
 assign audio_left_raw = cue_spectrum_active ?
-                        (bg_audio_active ? audio_mix_left[23:0] : cue_audio_left) : bg_audio_left;
+                        (bg_audio_active ? audio_mix_left[23:0] : cue_audio_left) : repaired_bg_left;
 assign audio_right_raw = cue_spectrum_active ?
-                         (bg_audio_active ? audio_mix_right[23:0] : cue_audio_right) : bg_audio_right;
+                         (bg_audio_active ? audio_mix_right[23:0] : cue_audio_right) : repaired_bg_right;
 assign audio_level_raw = (bg_audio_level > cue_audio_level) ? bg_audio_level : cue_audio_level;
 assign spectrum_active = bg_audio_active | cue_spectrum_active;
 assign spectrum_tone_bin = cue_spectrum_active ? cue_spectrum_tone_bin : bg_spectrum_tone_bin;
@@ -587,7 +660,7 @@ always @(posedge video_clk or posedge rst_video) begin
         audio_level_raw_q <= audio_level_raw;
     end
 end
-saixian_audio_volume u_volume(.volume_setting(volume_setting),.audio_left_in(audio_left_raw_q),
+saixian_audio_volume #(.PIPELINE(1)) u_volume(.clk(video_clk),.rst(rst_video),.volume_setting(volume_setting),.audio_left_in(audio_left_raw_q),
     .audio_right_in(audio_right_raw_q),.level_in(audio_level_raw_q),.audio_left_out(audio_left_data),
     .audio_right_out(audio_right_data),.level_out(audio_level));
 audio_arc_calculate #(.ACR_N(6144)) u_acr(.I_clk(video_clk),.I_rst(rst_video),.I_audio_valid(audio_valid),
@@ -801,6 +874,7 @@ saixian_osd_overlay u_osd(.clk(video_clk),.rst(rst_video),.frame_tick(frame_tick
     .source_width_bcd(source_width_bcd),.source_height_bcd(source_height_bcd),
     .error_code(error_code),.transition_active(transition_active),.transition_level(transition_level),
     .audio_level(audio_level),.spectrum_active(spectrum_active),.spectrum_tone_bin(spectrum_tone_bin),
+    .audio_repair_setting(audio_repair_setting),
     .settings_mode(settings_mode),.setting_item(setting_item),
     .volume_setting(volume_setting),.brightness_setting(brightness_setting),
     .contrast_setting(contrast_setting),.sharpness_setting(sharpness_setting),
@@ -892,13 +966,14 @@ saixian_key2_result_router u_key2_result_router(
     .continue_pulse(key2_result_continue),.blue_select(key2_result_blue_select),
     .red_select(key2_result_red_select)
 );
-saixian_battle_result_fx u_battle_result(
+saixian_battle_result_fx #(.TF_ANIMATION_ENABLE(1),.AUTO_SPRINT_PODIUM(1),.TF_READY_GATED(1)) u_battle_result(
     .clk(video_clk),.rst(rst_video),.frame_tick(frame_tick),
     .trigger(key2_result_continue),
     .select_blue((hmi_result_blue & carousel_mode & ~settings_mode) | key2_result_blue_select),
     .select_red((hmi_result_red & carousel_mode & ~settings_mode) | key2_result_red_select),
     .select_sprint(hmi_result_sprint & carousel_mode & ~settings_mode),.stop(hmi_result_stop),
-    .busy(battle_busy),.sprint_active(sprint_result_active),
+    .busy(battle_busy),.sprint_active(sprint_result_active),.tf_active(tf_active),
+    .tf_ready(tf_visible && tf_sd_error==0 && tf_memory_error==0 && tf_player_error==0),.tf_display(tf_display),
     .sprint_background_valid(sprint_background_ready_video),
     .x_in(battle_x_pipe),.y_in(battle_y_pipe),
     .de_in(de_pipe),.vs_in(vs_pipe),.rgb_in(osd_rgb_pipe),
@@ -907,10 +982,30 @@ saixian_battle_result_fx u_battle_result(
 
 wire axis_s_user, axis_s_valid, axis_s_last, axis_s_ready;
 wire [23:0] axis_s_data;
+// Both renderers share the raster. Switch inside vertical blanking after
+// their pipelines have seen VS, so entry/exit cannot splice an active line
+// or turn the different VS pipeline delays into an extra sync edge.
+reg tf_output_select;reg [6:0] tf_switch_delay;
+always @(posedge video_clk or posedge rst_video)begin
+    if(rst_video)begin tf_output_select<=0;tf_switch_delay<=0;end
+    else if(frame_tick)tf_switch_delay<=7'd64;
+    else if(tf_switch_delay!=0)begin
+        tf_switch_delay<=tf_switch_delay-1'b1;
+        if(tf_switch_delay==1)tf_output_select<=tf_display;
+    end
+end
+wire axis_vs=tf_output_select ? tf_vs : battle_vs;
+wire axis_de=tf_output_select ? tf_de : battle_de;
 // Output-only diagnostic: constant gray bypasses BMP, SDRAM and picture
 // processing, but retains the normal timing and HDMI transmitter chain.
-wire [23:0] axis_rgb = VIDEO_PATH_TEST_PATTERN ? 24'h808080 : battle_rgb;
-video_rgb_to_axis_640x480 #(.H_ACTIVE(1280)) u_axis(.I_clk(video_clk),.I_rst(rst_video),.I_vs(battle_vs),.I_de(battle_de),.I_rgb(axis_rgb),
+// A handoff still reads TF data, but never replays the power-on indicator.
+reg tf_has_played;
+always @(posedge video_clk or posedge rst_video)
+    if (rst_video) tf_has_played <= 1'b0;
+    else if (tf_active) tf_has_played <= 1'b1;
+wire hide_photo_loading = tf_has_played && !display_valid && error_code == 0;
+wire [23:0] axis_rgb = VIDEO_PATH_TEST_PATTERN ? 24'h808080 : (tf_output_select ? tf_rgb : (hide_photo_loading ? 24'd0 : battle_rgb));
+video_rgb_to_axis_640x480 #(.H_ACTIVE(1280)) u_axis(.I_clk(video_clk),.I_rst(rst_video),.I_vs(axis_vs),.I_de(axis_de),.I_rgb(axis_rgb),
     .O_video_user(axis_s_user),.O_video_valid(axis_s_valid),.O_video_last(axis_s_last),.O_video_data(axis_s_data));
 
 wire [9:0] tmds_ch0_data, tmds_ch1_data, tmds_ch2_data, tmds_clk_data;
@@ -975,11 +1070,12 @@ seg_scan u_seg(.clk(clk),.rst_n(~rst_clk),.seg_sel(seg_sel),.seg_data(seg_data),
     .seg_data_0({1'b1,seg_code}),.seg_data_1({1'b1,seg_image_code}),.seg_data_2({1'b1,seg_hmi_units_code}),
     .seg_data_3({1'b1,seg_hmi_tens_code}),.seg_data_4({1'b1,7'b1111111}),.seg_data_5({1'b1,7'b1111111}));
 
-assign led[0] = carousel_mode;
-assign led[1] = sd_init_done;
+assign led[0] = tf_active ? tf_visible : carousel_mode;
+assign led[1] = tf_active ? tf_initialized : sd_init_done;
 assign led[2] = hpd_present;
 // LED4 indicates an E-code, video FIFO underflow, or write FIFO overflow.
-assign led[3] = (error_code != 0) | video_underflow | write_overflow_latched;
+assign led[3] = tf_active ? ((tf_sd_error!=0) || (tf_memory_error!=0) || (tf_player_error!=0) || tf_underflow) :
+    ((error_code != 0) | video_underflow | write_overflow_latched);
 
 endmodule
 
@@ -1246,8 +1342,9 @@ module saixian_settings_controller #(
     input  wire [2:0] hmi_setting_id,
     input  wire [7:0] hmi_setting_value,
     input  wire       hmi_reset_defaults,
+    output reg        audio_repair_setting,
     output reg        settings_mode,
-    output reg [2:0]  setting_item,
+    output reg [3:0]  setting_item,
     output reg [3:0]  volume_setting,
     output reg [3:0]  brightness_setting,
     output reg [3:0]  contrast_setting,
@@ -1287,6 +1384,7 @@ always @(posedge clk or posedge rst) begin
         invert_setting     <= 1'b0;
         vintage_setting    <= 1'b0;
         enhancement_setting <= 2'd1;
+        audio_repair_setting <= 1'b0;
         idle_timer         <= 33'd0;
     end else if (hmi_reset_defaults) begin
         volume_setting     <= 4'd5;
@@ -1297,6 +1395,7 @@ always @(posedge clk or posedge rst) begin
         invert_setting     <= 1'b0;
         vintage_setting    <= 1'b0;
         enhancement_setting <= 2'd1;
+        audio_repair_setting <= 1'b0;
         idle_timer         <= 33'd0;
     end else if (hmi_setting_valid) begin
         idle_timer <= 33'd0;
@@ -1332,7 +1431,7 @@ always @(posedge clk or posedge rst) begin
         if (key_enter_exit)
             settings_mode <= 1'b0;
         else if (key_next_item)
-            setting_item <= (setting_item == 3'd7) ? 3'd0 : setting_item + 1'b1;
+            setting_item <= (setting_item == 4'd8) ? 4'd0 : setting_item + 1'b1;
         else if (key_decrease) begin
             case (setting_item)
                 2'd0: if (volume_setting     != 0) volume_setting     <= volume_setting - 1'b1;
@@ -1343,6 +1442,7 @@ always @(posedge clk or posedge rst) begin
                 3'd5: invert_setting <= 1'b0;
                 3'd6: vintage_setting <= 1'b0;
                 3'd7: if(enhancement_setting!=0) enhancement_setting<=enhancement_setting-1'b1;
+                4'd8: audio_repair_setting <= 1'b0;
             endcase
         end else if (key_increase) begin
             case (setting_item)
@@ -1354,53 +1454,107 @@ always @(posedge clk or posedge rst) begin
                 3'd5: invert_setting <= 1'b1;
                 3'd6: vintage_setting <= 1'b1;
                 3'd7: if(enhancement_setting<2) enhancement_setting<=enhancement_setting+1'b1;
+                4'd8: audio_repair_setting <= 1'b1;
             endcase
         end
     end
 end
 endmodule
 
-module saixian_audio_volume(
-    input  wire [3:0]  volume_setting,
-    input  wire [23:0] audio_left_in,
-    input  wire [23:0] audio_right_in,
-    input  wire [7:0]  level_in,
-    output reg  [23:0] audio_left_out,
-    output reg  [23:0] audio_right_out,
-    output reg  [7:0]  level_out
+module saixian_audio_volume #(parameter PIPELINE=0)(
+    input wire [3:0] volume_setting,
+    input wire [23:0] audio_left_in, audio_right_in,
+    input wire [7:0] level_in,
+    output wire [23:0] audio_left_out, audio_right_out,
+    output wire [7:0] level_out,
+    input wire clk,rst
 );
+// Zero remains mute. Levels 1..6 use original levels 3..8;
+// levels 7..8 add two more steps of 1/8 above unity.
+// Use a wider intermediate so positive/negative peaks saturate, never wrap.
 function signed [23:0] scale_sample;
     input signed [23:0] sample;
     input [3:0] level;
+    reg signed [4:0] gain;
+    reg signed [28:0] product, value;
     begin
-        case (level)
-            4'd0: scale_sample = 24'sd0;
-            4'd1: scale_sample = sample >>> 4;
-            4'd2: scale_sample = sample >>> 3;
-            4'd3: scale_sample = sample >>> 2;
-            4'd4: scale_sample = sample >>> 1;
-            4'd5: scale_sample = (sample >>> 1) + (sample >>> 3);
-            4'd6: scale_sample = (sample >>> 1) + (sample >>> 2);
-            4'd7: scale_sample = sample - (sample >>> 3);
-            default: scale_sample = sample;
+        case(level)
+            0: gain=0;
+            1: gain=2;
+            2: gain=4;
+            3: gain=5;
+            4: gain=6;
+            5: gain=7;
+            6: gain=8;
+            7: gain=9;
+            default: gain=10;
         endcase
+        product=sample*gain;
+        value=product>>>3;
+        if(value>29'sd8388607) scale_sample=24'sh7fffff;
+        else if(value< -29'sd8388608) scale_sample=24'sh800000;
+        else scale_sample=value[23:0];
     end
 endfunction
-always @* begin
-    audio_left_out  = scale_sample($signed(audio_left_in), volume_setting);
-    audio_right_out = scale_sample($signed(audio_right_in), volume_setting);
-    case (volume_setting)
-        4'd0: level_out = 8'd0;
-        4'd1: level_out = level_in >> 4;
-        4'd2: level_out = level_in >> 3;
-        4'd3: level_out = level_in >> 2;
-        4'd4: level_out = level_in >> 1;
-        4'd5: level_out = (level_in >> 1) + (level_in >> 3);
-        4'd6: level_out = (level_in >> 1) + (level_in >> 2);
-        4'd7: level_out = level_in - (level_in >> 3);
-        default: level_out = level_in;
-    endcase
+function [7:0] scale_level;
+    input [7:0] value;
+    input [3:0] level;
+    reg [8:0] wide;
+    begin
+        case(level)
+            0: wide=9'd0;
+            1: wide=value >> 2;
+            2: wide=value >> 1;
+            3: wide=(value >> 1)+(value >> 3);
+            4: wide=(value >> 1)+(value >> 2);
+            5: wide=value-(value >> 3);
+            6: wide=value;
+            7: wide={1'b0,value}+(value >> 3);
+            default: wide={1'b0,value}+(value >> 2);
+        endcase
+        scale_level=wide>255 ? 8'd255 : wide[7:0];
+    end
+endfunction
+function signed [4:0] gain_for_level;
+input [3:0] level;
+begin
+case(level)
+ 0:gain_for_level=0;1:gain_for_level=2;2:gain_for_level=4;
+ 3:gain_for_level=5;4:gain_for_level=6;5:gain_for_level=7;
+ 6:gain_for_level=8;7:gain_for_level=9;default:gain_for_level=10;
+endcase
 end
+endfunction
+function signed [23:0] clip_product;
+input signed [28:0] product;
+reg signed [28:0] value;
+begin
+ value=product>>>3;
+ if(value>29'sd8388607)clip_product=24'sh7fffff;
+ else if(value< -29'sd8388608)clip_product=24'sh800000;
+ else clip_product=value[23:0];
+end
+endfunction
+generate if(PIPELINE) begin: pipelined
+ wire signed [4:0] gain=gain_for_level(volume_setting);
+ reg signed [28:0] left_product,right_product;
+ reg [7:0] meter;
+ always @(posedge clk or posedge rst)begin
+  if(rst)begin left_product<=0;right_product<=0;meter<=0;end
+  else begin
+   left_product<=$signed(audio_left_in)*gain;
+   right_product<=$signed(audio_right_in)*gain;
+   meter<=scale_level(level_in,volume_setting);
+  end
+ end
+ assign audio_left_out=clip_product(left_product);
+ assign audio_right_out=clip_product(right_product);
+ assign level_out=meter;
+end else begin: combinational
+ assign audio_left_out=scale_sample($signed(audio_left_in),volume_setting);
+ assign audio_right_out=scale_sample($signed(audio_right_in),volume_setting);
+ assign level_out=scale_level(level_in,volume_setting);
+end endgenerate
 endmodule
 
 // Seven-cycle causal 3x3 luminance processor. All taps refer to the current
@@ -1471,22 +1625,24 @@ wire [9:0] pair0={1'b0,p0_q}+p1_q,pair1={1'b0,p2_q}+p3_q;
 wire signed [9:0] residual=$signed({1'b0,y1})-$signed({1'b0,neighborhood[11:4]});
 reg signed [9:0] detail_term;
 reg signed [7:0] tone_term;
+// Clamp outside the useful range before the narrow arithmetic. This keeps
+// the exact signed rounding and +/-12 bound without a wide add/negate/clamp.
+wire signed [5:0] small_detail=detail[5:0];
+wire signed [5:0] smooth_positive=-((small_detail+6'sd1)>>>1);
+wire signed [5:0] smooth_negative=((-small_detail+6'sd1)>>>1);
+wire signed [4:0] sharp_pair=$signed(detail[4:0])+($signed(detail[4:0])>>>1);
 always @* begin
-    // Preserve low-contrast lettering/texture rather than replacing it with
-    // the causal neighborhood average. Keep the existing edge sharpening.
     if(PHOTO_SMOOTH && strength==1) begin
-        // Range-gated neighbours have already rejected strong edges.
-        // Blend halfway toward the centre-weighted mean. Symmetric rounding
-        // avoids the negative-value bias of an arithmetic right shift.
-        if(detail>0) detail_term=-((detail+1)>>>1);
-        else detail_term=((-detail+1)>>>1);
+        if(detail>=23) detail_term=-10'sd12;
+        else if(detail<=-23) detail_term=10'sd12;
+        else detail_term=detail>0 ? smooth_positive : smooth_negative;
     end else if(detail>=-3 && detail<=3) detail_term=0;
     else case(strength)
-        0:detail_term=0;1:detail_term=detail>>>1;
-        2:detail_term=detail;default:detail_term=detail+(detail>>>1);
+        0:detail_term=0;
+        1:detail_term=detail>=24 ? 10'sd12 : (detail<=-23 ? -10'sd12 : (small_detail>>>1));
+        2:detail_term=detail>=12 ? 10'sd12 : (detail<=-12 ? -10'sd12 : detail);
+        default:detail_term=detail>=8 ? 10'sd12 : (detail<=-8 ? -10'sd12 : sharp_pair);
     endcase
-    if(detail_term>12) detail_term=12;
-    if(detail_term< -12) detail_term=-12;
     case(gain)
         0:tone_term=0;
         // Half the previous lift: retain more mid-tone contrast/headroom.

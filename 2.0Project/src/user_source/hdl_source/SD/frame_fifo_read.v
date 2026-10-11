@@ -36,7 +36,8 @@ module frame_fifo_read
     input                            buffer0_vga,
     input                            buffer1_vga,
     output reg                       fifo_aclr,
-    input [BURST_BITS-1:0]           wrusedw
+    input [BURST_BITS-1:0]           wrusedw,
+    input background_busy, output bus_claim
 );
 
 localparam S_IDLE           = 4'd0;
@@ -94,6 +95,7 @@ wire rd_vld = (state == S_READ_BURST && burst_cnt >= BURST_SIZE);
 wire rd_burst_finish = rd_vld && (rd_delay == 4'd10);
 assign read_finish = (state == S_END);
 assign O_rd_busy = (state == S_READ_BURST);
+assign bus_claim = O_rd_busy || App_rd_en || (state==S_CHECK_FIFO && !read_req_d2 && wrusedw<FIFO_DEPTH-BURST_SIZE && !App_wr_busy);
 assign App_rd_en = App_rd_en_d0;
 assign App_rd_addr = App_rd_addr_r;
 
@@ -248,7 +250,7 @@ always @(posedge mem_clk or posedge rst) begin
             S_CHECK_FIFO: begin
                 if (read_req_d2)
                     state <= S_ACK;
-                else if ((wrusedw < FIFO_DEPTH - BURST_SIZE) && !App_wr_busy) begin
+                else if ((wrusedw < FIFO_DEPTH - BURST_SIZE) && !App_wr_busy && !(background_busy===1'b1)) begin
                     state <= S_READ_BURST;
                     App_rd_en_r <= 1;
                 end
@@ -297,7 +299,16 @@ reg [11:0] delta;
 reg [ADDR_BITS-1:0] selected_base;
 reg signed [13:0] local_column;
 wire signed [ADDR_BITS-1:0] extended_column=local_column;
-assign address=selected_base+extended_column;
+// Carry-select split keeps the row-base path out of a 21-bit ripple chain.
+// Both high candidates are computed before the low carry chooses one.
+generate if(ADDR_BITS>12)begin:carry_select
+ wire [12:0] low_sum={1'b0,selected_base[11:0]}+{1'b0,extended_column[11:0]};
+ wire [ADDR_BITS-13:0] high0=selected_base[ADDR_BITS-1:12]+extended_column[ADDR_BITS-1:12];
+ wire [ADDR_BITS-13:0] high1=selected_base[ADDR_BITS-1:12]+(extended_column[ADDR_BITS-1:12]+1'b1);
+ assign address={low_sum[12] ? high1 : high0,low_sum[11:0]};
+end else begin:short_address
+ assign address=selected_base+extended_column;
+end endgenerate
 always @* begin
     split=WIDTH_U-{1'b0,offset};
     half_reveal=offset>>1;

@@ -4,6 +4,10 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 
+# Reproducible TF integration simulation artifacts stay local.
+/2.0Project/validation/key2_tf_20261010/
+*.vvp
+
 # Vendor installers, archives and large reference videos remain on local disk.
 # They are not suitable for normal Git history.
 *.exe
@@ -44,3 +48,15 @@ Desktop.ini
 # Generated HMI UI previews/resources; editable specifications remain tracked
 **/doc/hmi_ui/*.png
 
+
+# Frozen native build inputs are shipped in the GitHub Release source archive.
+# The tracked baseline.json pins their hashes; generated databases stay local.
+
+# Implemented-netlist audit exports are carried inside the release source zip.
+/2.0Project/releases/*/verification/static_bus_eco/
+
+# Local historical deliveries and vendor netlist exports.
+/2.0Project/releases/key2_tf_20261010/
+/2.0Project/releases/key2_tf_preload_20261010/
+/2.0Project/src/td_project/top_out.v
+/2.0Project/top_inst.bid

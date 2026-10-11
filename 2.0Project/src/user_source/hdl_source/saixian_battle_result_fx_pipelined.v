@@ -1,6 +1,6 @@
 // Blue or red victory -> eight-runner ranking -> compact top three.
 // A generic trigger advances from a held page; direct inputs select a result.
-module saixian_battle_result_fx(
+module saixian_battle_result_fx #(parameter TF_ANIMATION_ENABLE=0, parameter AUTO_SPRINT_PODIUM=0,parameter TF_READY_GATED=0)(
     input wire clk, rst, frame_tick, trigger,
     input wire select_blue, select_red, select_sprint, stop,
     input wire [10:0] x_in,
@@ -10,8 +10,10 @@ module saixian_battle_result_fx(
     input wire sprint_background_valid,
     output wire busy,
     output wire sprint_active,
+    output wire tf_active,
     output reg de_out, vs_out,
-    output reg [23:0] rgb_out
+    output reg [23:0] rgb_out,
+    input tf_ready,output tf_display
 );
 // Uniform entry pipeline precomputes diagonal cuts before title slice mux.
 // RGB, coordinates and sidebands always traverse the same stage.
@@ -34,7 +36,7 @@ end
 localparam IDLE=3'd0, PLAY=3'd1, HOLD=3'd2,
            RANK_IN=3'd3, RANK_HOLD=3'd4,
            PODIUM_IN=3'd5, PODIUM_HOLD=3'd6,
-           RED_PLAY=4'd7, RED_HOLD=4'd8;
+           RED_PLAY=4'd7, RED_HOLD=4'd8, TF_PLAY=4'd9,TF_WAIT=4'd10;
 reg [3:0] state;
 reg pending;
 reg stop_pending;
@@ -46,6 +48,8 @@ reg [7:0] result_frame;
 reg [11:0] wipe_edge, sheen_edge;
 reg [4:0] title_drop;
 reg [10:0] gold_line_edge;
+assign tf_active = (state == TF_PLAY || state == TF_WAIT);
+assign tf_display = (state == TF_PLAY);
 assign busy = (state != IDLE) || pending || (direct_pending != 0);
 wire [1:0] direct_choice = select_blue ? 2'd1 :
                            select_red ? 2'd2 :
@@ -126,7 +130,7 @@ always @(posedge clk or posedge rst) begin
         else if(select_sprint) direct_pending<=2'd3;
         // Presses during animated transitions never queue a later skip.
         if(trigger && (state==IDLE || state==HOLD || state==RED_HOLD ||
-                       state==RANK_HOLD || state==PODIUM_HOLD)) pending<=1;
+                       state==RANK_HOLD || state==PODIUM_HOLD || state==TF_PLAY || state==TF_WAIT)) pending<=1;
         if(frame_tick) begin
             // Frame-rate accent follows the champion's entrance, then freezes.
             if(state==RANK_IN || state==IDLE) gold_line_edge<=11'd220;
@@ -170,11 +174,11 @@ always @(posedge clk or posedge rst) begin
                 if(pending || trigger) begin
                     // Blue victory continues directly to the ranking.  Red
                     // victory remains available only through select_red.
-                    state<=RANK_IN; pending<=0; result_frame<=0;
+                    state<=RANK_IN; pending<=0; result_frame<=0; auto_podium<=AUTO_SPRINT_PODIUM;
                 end
             end else if(state==RED_HOLD) begin
                 if(pending || trigger) begin
-                    state<=RANK_IN; pending<=0; result_frame<=0;
+                    state<=RANK_IN; pending<=0; result_frame<=0; auto_podium<=AUTO_SPRINT_PODIUM;
                 end
             end else if(state==RANK_IN) begin
                 pending<=0;
@@ -195,8 +199,14 @@ always @(posedge clk or posedge rst) begin
                 pending<=0;
                 if(result_frame==8'd95) state<=PODIUM_HOLD;
                 else result_frame<=result_frame+8'd1;
+            end else if(TF_READY_GATED && state==PODIUM_HOLD && (pending || trigger))begin
+                state<=tf_ready ? TF_PLAY : TF_WAIT;pending<=0;
+            end else if(state==TF_WAIT)begin
+                if(pending || trigger)begin state<=IDLE;pending<=0;result_frame<=0;red_selected<=0;end
+                else if(tf_ready)state<=TF_PLAY;
             end else if(pending || trigger) begin
-                state<=IDLE; pending<=0; frame_count<=0; result_frame<=0; auto_podium<=0;
+                state<=(TF_ANIMATION_ENABLE && state==PODIUM_HOLD) ? TF_PLAY : IDLE;
+                pending<=0; frame_count<=0; result_frame<=0; auto_podium<=0;
                 red_selected<=0;
             end
         end
@@ -389,7 +399,7 @@ always @(posedge clk or posedge rst) begin
 end
 
 wire rank_mode = (state==RANK_IN || state==RANK_HOLD);
-wire podium_mode = (state==PODIUM_IN || state==PODIUM_HOLD);
+wire podium_mode = (state==PODIUM_IN || state==PODIUM_HOLD || state==TF_WAIT);
 assign sprint_active = rank_mode || podium_mode;
 reg [3:0] row_id;
 reg [9:0] row_y;
@@ -437,6 +447,7 @@ reg pre_row_text_valid;
 wire [5:0] row_text_offset=raster_y[5:0]-row_y[5:0];
 wire row_text_valid=!row_id[3] && row_text_offset<6'd28;
 reg [11:0] pre_row_shift;
+reg [11:0] pre_medal_positive,pre_medal_negative;
 reg [11:0] pre_x_atlas;
 reg [8:0] pre_header_x;
 reg [7:0] pre_header_y;
@@ -467,6 +478,7 @@ reg [23:0] pre_rgb;
 always @(posedge clk or posedge rst) begin
     if(rst) begin
         pre_x<=0; pre_y<=0; pre_row_text_valid<=0; pre_row_shift<=0;
+        pre_medal_positive<=0;pre_medal_negative<=0;
         pre_x_atlas<=0;
         pre_header_x<=0;pre_header_y<=0;
         pre_atlas_x<=0; pre_atlas_y<=0; pre_frame_count<=0;
@@ -477,6 +489,10 @@ always @(posedge clk or posedge rst) begin
     end else begin
         pre_x<=raster_x; pre_y<=raster_y; pre_row_text_valid<=row_text_valid;
         pre_row_shift<=row_shift;
+        // Move constant center subtraction before the displacement addition.
+        // Both signs are computed in parallel; no extra video clock latency.
+        pre_medal_positive<={1'b0,raster_x}-12'd270;
+        pre_medal_negative<=12'd270-{1'b0,raster_x};
         // Subtract from x in parallel with row displacement selection,
         // rather than serializing y decode -> shift mux -> subtraction.
         pre_x_atlas<={1'b0,raster_x}-(rank_mode ? 12'd124 : 12'd384);
@@ -542,8 +558,9 @@ always @* begin
         default: begin medal_center_y=0; medal_top_y=0; end
     endcase
 end
-wire [11:0] medal_dx = (pre_row_x_virtual>=12'd270) ?
-                        pre_row_x_virtual-12'd270 : 12'd270-pre_row_x_virtual;
+wire [11:0] medal_positive=pre_medal_positive+pre_row_shift;
+wire [11:0] medal_negative=pre_medal_negative-pre_row_shift;
+wire [11:0] medal_dx = (pre_row_x_virtual>=12'd270) ? medal_positive : medal_negative;
 wire [9:0] medal_dy = (pre_y>=medal_center_y) ?
                        pre_y-medal_center_y : medal_center_y-pre_y;
 wire [9:0] ribbon_age = pre_y-medal_top_y;

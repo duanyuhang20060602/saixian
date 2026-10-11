@@ -23,7 +23,8 @@ module saixian_osd_overlay(
     input  wire        spectrum_active,
     input  wire [4:0]  spectrum_tone_bin,
     input  wire        settings_mode,
-    input  wire [2:0]  setting_item,
+    input  wire [3:0]  setting_item,
+    input  wire        audio_repair_setting,
     input  wire [3:0]  volume_setting,
     input  wire [3:0]  brightness_setting,
     input  wire [3:0]  contrast_setting,
@@ -51,7 +52,7 @@ localparam ST_RUNNING  = 4'd6;
 localparam ST_PAUSED   = 4'd7;
 localparam ST_FINISH   = 4'd8;
 
-wire [3:0] row0_value = setting_item[2] ? saturation_setting : volume_setting;
+wire [3:0] row0_value = setting_item[3] ? {3'd0,audio_repair_setting} : setting_item[2] ? saturation_setting : volume_setting;
 wire [3:0] row1_value = setting_item[2] ? {3'd0,invert_setting} : brightness_setting;
 wire [3:0] row2_value = setting_item[2] ? {3'd0,vintage_setting} : contrast_setting;
 wire [3:0] row3_value = setting_item[2] ? {2'd0,enhancement_setting} : {2'd0,sharpness_setting};
@@ -360,7 +361,19 @@ always @* begin
             glyph_id = (slot == 0) ? 7'd72 : ((slot == 1) ? 7'd73 : 7'd0);
             text_region = 1'b1;
             text_color = 24'h7DE3FF;
-        end else if ((x >= 10'd160) && (x < 10'd224) &&
+        end else if (setting_item[3] && (x >= 10'd128) && (x < 10'd256) &&
+                     (y >= 9'd144) && (y < 9'd176)) begin
+            local_x=x-10'd128;slot=local_x[8:5];
+            font_col=local_x[4:1];font_row=(y-9'd144)>>1;
+            case(slot)
+                0:glyph_id=7'd74; // 音
+                1:glyph_id=7'd101; // 频
+                2:glyph_id=7'd102; // 修
+                3:glyph_id=7'd85; // 复
+                default:glyph_id=0;
+            endcase
+            text_region=1'b1;text_color=24'hFFFFFF;
+        end else if (!setting_item[3] && (x >= 10'd160) && (x < 10'd224) &&
                      (((y >= 9'd144) && (y < 9'd176)) ||
                       ((y >= 9'd200) && (y < 9'd232)) ||
                       ((y >= 9'd256) && (y < 9'd288)) ||
@@ -387,7 +400,7 @@ always @* begin
             end
             text_region = 1'b1;
             text_color = 24'hFFFFFF;
-        end else if ((x >= 10'd464) && (x < 10'd496) &&
+        end else if ((!setting_item[3] || y < 9'd176) && (x >= 10'd464) && (x < 10'd496) &&
                      (((y >= 9'd144) && (y < 9'd176)) ||
                       ((y >= 9'd200) && (y < 9'd232)) ||
                       ((y >= 9'd256) && (y < 9'd288)) ||
@@ -583,11 +596,11 @@ always @* begin
         if ((x >= 10'd112) && (x < 10'd528) && (y >= 9'd64) && (y < 9'd384))
             rgb_comb = 24'h101827;
 
-        if (((y >= 9'd136) && (y < 9'd184)) ||
+        if ((!setting_item[3] || y < 9'd184) && (((y >= 9'd136) && (y < 9'd184)) ||
             ((y >= 9'd192) && (y < 9'd240)) ||
             ((y >= 9'd248) && (y < 9'd296)) ||
-            ((y >= 9'd304) && (y < 9'd352))) begin
-            if (y < 9'd184) begin setting_value = row0_value; setting_bar_width = row0_value * 10'd24; end
+            ((y >= 9'd304) && (y < 9'd352)))) begin
+            if (y < 9'd184) begin setting_value = row0_value; setting_bar_width = setting_item[3] ? (audio_repair_setting ? 10'd192 : 10'd0) : row0_value * 10'd24; end
             else if (y < 9'd240) begin setting_value = row1_value; setting_bar_width = setting_item[2] ? (invert_setting ? 10'd192 : 10'd0) : brightness_setting * 10'd24; end
             else if (y < 9'd296) begin setting_value = row2_value; setting_bar_width = setting_item[2] ? (vintage_setting ? 10'd192 : 10'd0) : contrast_setting * 10'd24; end
             else begin setting_value = row3_value; setting_bar_width = row3_value * 10'd64; end
@@ -599,7 +612,7 @@ always @* begin
                 if ((x >= 10'd128) && (x < 10'd512)) rgb_comb = 24'h203B5A;
             end
 
-            if ((!setting_item[2] || y < 9'd304) && (x >= 10'd248) && (x < 10'd440) &&
+            if ((!setting_item[2] || y < 9'd304) && (x >= (setting_item[3] ? 10'd272 : 10'd248)) && (x < 10'd440) &&
                 (((y >= 9'd154) && (y < 9'd166)) ||
                  ((y >= 9'd210) && (y < 9'd222)) ||
                  ((y >= 9'd266) && (y < 9'd278)) ||

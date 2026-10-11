@@ -4,4 +4,13 @@
 *.hex text eol=lf
 
 # Preserve release source bytes for source_manifest.json hash verification.
-src/user_source/** -text
+src/** -text
+src/**/*.rpt text eol=lf
+src/**/*.area text eol=lf
+src/**/*.vhd text eol=lf
+tests/** -text
+build_key2_tf.ps1 -text
+README.md -text
+KEY2_TF动图使用说明.md -text
+doc/音频修复锐化版_20261010.md -text
+examples/TF卡新增动图/** -text

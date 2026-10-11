@@ -112,6 +112,18 @@ reg        check_from_load;
 reg [31:0] file_sector_count_latched;
 reg        audio_header_ok_latched;
 reg [31:0] audio_data_len_latched;
+// The AUD length is complete hundreds of byte clocks before sector end.
+// Prepare its wrapped 32-bit skip and target in separate cycles, so CHECK
+// only compares the already prepared address against the current limit.
+reg [31:0] audio_skip_sectors,audio_scan_target;
+always @(posedge clk)begin
+    if(rst || op_abort)begin audio_skip_sectors<=0;audio_scan_target<=0;end
+    else begin
+        audio_skip_sectors<=32'd1+((audio_data_len+32'd511)>>9);
+        audio_scan_target<=scan_sector+audio_skip_sectors;
+    end
+end
+
 reg [2:0]  audio_found_count;
 reg        sprint_tag_latched;
 
@@ -447,14 +459,14 @@ always @(posedge clk or posedge rst) begin
                         // Skip the aligned metadata sector and the complete
                         // PCM payload instead of scanning 96k audio sectors.
                         if (((scan_found_total >= scan_target_count) && (audio_found_count >= 3'd4)) ||
-                            ((scan_sector + 32'd1 + ((audio_data_len_latched + 32'd511) >> 9)) > scan_max_sector)) begin
+                            ((audio_scan_target) > scan_max_sector)) begin
                             scan_done        <= 1'b1;
                             state            <= ST_IDLE;
-                            sd_sec_read_addr <= scan_sector + 32'd1 + ((audio_data_len_latched + 32'd511) >> 9);
-                            scan_sector      <= scan_sector + 32'd1 + ((audio_data_len_latched + 32'd511) >> 9);
+                            sd_sec_read_addr <= audio_scan_target;
+                            scan_sector      <= audio_scan_target;
                         end else begin
-                            sd_sec_read_addr <= scan_sector + 32'd1 + ((audio_data_len_latched + 32'd511) >> 9);
-                            scan_sector      <= scan_sector + 32'd1 + ((audio_data_len_latched + 32'd511) >> 9);
+                            sd_sec_read_addr <= audio_scan_target;
+                            scan_sector      <= audio_scan_target;
                             state            <= ST_SCAN;
                         end
                     end else if (header_basic_ok_latched && header_geometry_ok_latched) begin
@@ -685,6 +697,12 @@ always @(posedge clk or posedge rst) begin
         h_run<=0;v_run<=0;h_valid<=0;h_calc_valid<=0;read_valid<=0;select_valid<=0;mix_valid<=0;pixel_out_valid<=0;
     end else begin
         pixel_out_valid<=0;h_calc_valid<=0;h_valid<=h_calc_valid;read_valid<=vertical_step;select_valid<=read_valid;mix_valid<=select_valid;
+        // Data is consumed only when h_calc_valid is set. Capture it every
+        // cycle to keep the endpoint/availability comparison off its enable.
+        h_calc_base<=h_left;h_calc_weight<=h_weight;
+        hd_r<=$signed({1'b0,current_pixel[23:16]})-$signed({1'b0,h_left[23:16]});
+        hd_g<=$signed({1'b0,current_pixel[15:8]})-$signed({1'b0,h_left[15:8]});
+        hd_b<=$signed({1'b0,current_pixel[7:0]})-$signed({1'b0,h_left[7:0]});
         // Limit the vertical line burst to 6.25 Mpixel/s at 100 MHz.
         // Without pacing, packed writes can reach 50 Mword/s and compete
         // with the 75 MHz video consumer on the 50 MHz SDRAM interface.
@@ -723,10 +741,6 @@ always @(posedge clk or posedge rst) begin
         if(h_run) begin
             if(h_available) begin
                 h_calc_valid<=1;h_calc_addr<=hx;h_calc_bank<=h_bank;h_calc_row<=sample_y;h_calc_last<=(hx==OUT_WIDTH-1);
-                h_calc_base<=h_left;h_calc_weight<=h_weight;
-                hd_r<=$signed({1'b0,current_pixel[23:16]})-$signed({1'b0,h_left[23:16]});
-                hd_g<=$signed({1'b0,current_pixel[15:8]})-$signed({1'b0,h_left[15:8]});
-                hd_b<=$signed({1'b0,current_pixel[7:0]})-$signed({1'b0,h_left[7:0]});
                 if(hx==OUT_WIDTH-1) begin hx<=0;xpos<=0;h_run<=0;end
                 else begin hx<=hx+1'b1;xpos<=xpos+x_step;end
             end else h_run<=0;

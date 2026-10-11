@@ -1,10 +1,15 @@
 module sd_card_bmp #(
+    parameter SHARED_SD_HOST = 0,
+    parameter TWO_PHOTO_BUFFERS = 0,
     parameter integer CLK_FREQ_HZ       = 100_000_000,
     parameter [31:0]  SCAN_START_SECTOR = 32'd0,
     parameter [31:0]  SCAN_MAX_SECTOR   = 32'd131071,
     parameter [2:0]   SCAN_TARGET_COUNT = 3'd5
 )(
     input clk, input rst,
+    input shared_sd_initialized,input [2:0] shared_init_stage,
+    input [7:0] shared_sector_data,input shared_sector_valid,shared_sector_end,
+    output shared_sector_req,output [31:0] shared_sector_addr,
     input prev_req_toggle, input next_req_toggle, input carousel_mode,
     input display_commit_toggle,
     output [3:0] state_code,
@@ -25,7 +30,8 @@ module sd_card_bmp #(
     input [2:0] audio_track_index,
     input audio_track_toggle,
     output reg [2:0] audio_track_count_o,
-    output SD_nCS, output SD_DCLK, output SD_MOSI, input SD_MISO
+    output SD_nCS, output SD_DCLK, output SD_MOSI, input SD_MISO,
+    input media_pause, output media_idle, output card_reset_request
 );
 
 reg [15:0] pending_width, pending_height;
@@ -201,7 +207,7 @@ function [1:0] buffer_to_fill;
         // another write during a transition, so its old/new slots stay intact.
         if (current_buf != 0 && (!cache_valid[0] || cached_image[0] != keep_image)) buffer_to_fill = 0;
         else if (current_buf != 1 && (!cache_valid[1] || cached_image[1] != keep_image)) buffer_to_fill = 1;
-        else buffer_to_fill = 3;
+        else buffer_to_fill = TWO_PHOTO_BUFFERS ? (current_buf==0 ? 2'd1 : 2'd0) : 2'd3;
     end
 endfunction
 // Break index wrapping -> cache lookup -> victim selection into two clocks.
@@ -219,6 +225,7 @@ always @(posedge clk or posedge rst) begin
         neighbor_current <= current_image; neighbor_count <= image_count;
     end
 end
+wire pause_media = TWO_PHOTO_BUFFERS && media_pause;
 wire neighbors_ready = neighbor_current == current_image && neighbor_count == image_count;
 wire following_cached = image_is_cached(following_image,cache_valid,cached_image[0],cached_image[1],cached_image[3]);
 wire preceding_cached = image_is_cached(preceding_image,cache_valid,cached_image[0],cached_image[1],cached_image[3]);
@@ -431,7 +438,7 @@ always @(posedge clk or posedge rst) begin
             awaiting_commit <= 1;
         end
 
-        if (scan_done && image_count != 0 && neighbors_ready && !load_busy && !awaiting_commit && bmp_ready &&
+        if (!pause_media && scan_done && image_count != 0 && neighbors_ready && !load_busy && !awaiting_commit && bmp_ready &&
             !publish_cached && !prev_pulse && !next_pulse) begin
             // The tagged BMP is a dedicated 100 m background. Load once into
             // buffer 2; buffers 0/1 and all five carousel slots remain
@@ -467,8 +474,8 @@ always @(posedge clk or posedge rst) begin
                 load_issue_pending <= 1; load_busy <= 1; load_prefetch <= 0; load_initial <= 1; cache_valid <= 0;
                 source_started <= 0; source_done <= 0; write_finish_seen <= 0; load_timer <= 0;
             end else if (carousel_on && image_count > 1 && display_committed &&
-                         desired_image == current_image && (!following_cached || !preceding_cached)) begin
-                loading_image <= prefetch_image;
+                         desired_image == current_image && (TWO_PHOTO_BUFFERS ? (desired_slide_right ? !preceding_cached : !following_cached) : (!following_cached || !preceding_cached))) begin
+                loading_image <= TWO_PHOTO_BUFFERS ? (desired_slide_right ? preceding_image : following_image) : prefetch_image;
                 write_buf_idx <= buffer_to_fill(prefetch_keep);
                 cache_valid[buffer_to_fill(prefetch_keep)] <= 0;
                 load_issue_pending <= 1; load_busy <= 1; load_prefetch <= 1; load_initial <= 0;
@@ -550,7 +557,7 @@ end
 
 saixian_sd_audio_stream u_audio_stream(
     .clk(clk), .rst(rst | op_abort | audio_stream_restart),
-    .enable(audio_found_o && sd_init_done),
+    .enable(audio_found_o && sd_init_done && !pause_media),
     .start_sector(selected_audio_start_sector), .data_bytes(selected_audio_data_bytes),
     .fifo_wrusedw(audio_fifo_wrusedw),
     .sd_sec_read(audio_sd_sec_read), .sd_sec_read_addr(audio_sd_sec_read_addr),
@@ -569,7 +576,7 @@ always @(posedge clk or posedge rst) begin
         read_owner <= 2'd0;
         read_addr_latched <= 32'd0;
     end else if (read_owner == 2'd0) begin
-        if (audio_sd_sec_read) begin
+        if (!pause_media && audio_sd_sec_read) begin
             read_owner <= 2'd2;
             read_addr_latched <= audio_sd_sec_read_addr;
         end else if (bmp_sd_sec_read) begin
@@ -581,6 +588,8 @@ always @(posedge clk or posedge rst) begin
     end
 end
 
+assign media_idle = scan_done && bmp_ready && !load_busy && !load_issue_pending && !awaiting_commit && read_owner==0;
+assign card_reset_request = op_abort;
 assign sd_sec_read = (read_owner != 2'd0);
 assign sd_sec_read_addr = read_addr_latched;
 assign bmp_sd_sec_read_data_valid = sd_sec_read_data_valid && (read_owner == 2'd1);
@@ -589,6 +598,14 @@ assign audio_sd_sec_read_data_valid = sd_sec_read_data_valid && (read_owner == 2
 assign audio_sd_sec_read_end = sd_sec_read_end && (read_owner == 2'd2);
 
 // 100 MHz / ((2 + 2) * 2) = 12.5 MHz for extra MISO timing margin.
+assign shared_sector_req=sd_sec_read;
+assign shared_sector_addr=sd_sec_read_addr;
+generate if(SHARED_SD_HOST)begin:external_host
+ assign sd_init_done=shared_sd_initialized;assign init_stage=shared_init_stage;
+ assign sd_sec_read_data=shared_sector_data;assign sd_sec_read_data_valid=shared_sector_valid;
+ assign sd_sec_read_end=shared_sector_end;
+ assign SD_nCS=1'b1;assign SD_DCLK=1'b0;assign SD_MOSI=1'b1;
+end else begin:internal_host
 sd_card_top #(
     .SPI_LOW_SPEED_DIV(248),
     .SPI_HIGH_SPEED_DIV(2)
@@ -600,6 +617,7 @@ sd_card_top #(
     .sd_sec_write(1'b0), .sd_sec_write_addr(32'd0), .sd_sec_write_data(8'd0),
     .sd_sec_write_data_req(), .sd_sec_write_end()
 );
+end endgenerate
 
 endmodule
 
