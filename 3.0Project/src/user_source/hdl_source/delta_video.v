@@ -1,25 +1,34 @@
-module delta_video #(parameter SHOW_BOOT_SPINNER=0,parameter MIN_BOOT_FRAMES=0)(
+module delta_video #(parameter SCENE_WIDTH=480,SCENE_HEIGHT=480,LIVE_AWARD=0,parameter SHOW_BOOT_SPINNER=0,parameter MIN_BOOT_FRAMES=0)(
  input clk,input rst,input publish_toggle,input publish_slot,
  input [31:0] head,input empty,output pop,
  output reg [23:0] rgb,output reg de_out,output reg vs_out,
  output reg commit_toggle,output reg frame_toggle,output reg active_slot,
- output reg display_valid,output reg underrun_latched
+ output reg display_valid,output reg underrun_latched,input pause_fx
 );
 (* async_reg="true",keep="true" *)reg [2:0] publish_sync;
 (* async_reg="true",keep="true" *)reg slot_meta,slot_sync;
 reg [10:0] h;reg [9:0] v;reg frame_bad;
 wire frame_tick=h==0 && v==0;
 wire de=h>=260 && h<1540 && v>=25 && v<745;
-wire scene=display_valid && h>=660 && h<1140 && v>=145 && v<625;
+wire scene=display_valid && h>=260+(1280-SCENE_WIDTH)/2 && h<260+(1280+SCENE_WIDTH)/2 && v>=25+(720-SCENE_HEIGHT)/2 && v<25+(720+SCENE_HEIGHT)/2;
 assign pop=scene && h[0] && !frame_bad && !empty;
 wire [15:0] pixel=h[0] ? head[31:16] : head[15:0];
-wire [23:0] expanded={pixel[15:11],pixel[15:13],pixel[10:5],pixel[10:9],pixel[4:0],pixel[4:2]};
+wire [4:0] blue=LIVE_AWARD ? (pixel[0] ? {1'b0,pixel[10:7]} : {pixel[4:1],1'b0}) : pixel[4:0];
+wire [5:0] green=LIVE_AWARD && pixel[0] ? {pixel[10:6],1'b0} : pixel[10:5];
+wire [23:0] expanded={pixel[15:11],pixel[15:13],green,green[5:4],blue,blue[4:2]};
+wire [23:0] effect_rgb;
+generate if(LIVE_AWARD)begin
+ award_fx effect(clk,rst,display_valid,pause_fx,frame_tick,h-11'd260,v-10'd25,expanded,pixel[5:0],effect_rgb);
+end else begin assign effect_rgb=expanded;end endgenerate
+reg [4:0] de_delay,vs_delay,scene_delay,bad_delay;
+reg [23:0] boot0,boot1,boot2,boot3,boot4;
 wire [23:0] boot_rgb;wire boot_done;
 delta_boot_spinner #(.MIN_FRAMES(MIN_BOOT_FRAMES)) boot(clk,rst,frame_tick,h,v,boot_rgb,boot_done);
 always @(posedge clk)begin
  if(rst)begin h<=0;v<=0;publish_sync<=0;slot_meta<=0;slot_sync<=0;
   commit_toggle<=0;frame_toggle<=0;active_slot<=0;display_valid<=0;
-  frame_bad<=0;underrun_latched<=0;rgb<=0;de_out<=0;vs_out<=0;end
+  frame_bad<=0;underrun_latched<=0;rgb<=0;de_out<=0;vs_out<=0;
+  de_delay<=0;vs_delay<=0;scene_delay<=0;bad_delay<=0;boot0<=0;boot1<=0;boot2<=0;boot3<=0;boot4<=0;end
  else begin
   publish_sync<={publish_sync[1:0],publish_toggle};slot_meta<=publish_slot;slot_sync<=slot_meta;
   if(h==1649)begin h<=0;if(v==749)v<=0;else v<=v+1'b1;end else h<=h+1'b1;
@@ -30,9 +39,16 @@ always @(posedge clk)begin
    end
   end
   if(scene && empty)begin frame_bad<=1;underrun_latched<=1;end
-  rgb<=!display_valid && SHOW_BOOT_SPINNER ? boot_rgb :
-       scene && !frame_bad && !empty ? expanded : 24'd0;
-  de_out<=de;vs_out<=v<5;
+  de_delay<={de_delay[3:0],de};vs_delay<={vs_delay[3:0],v<5};
+  scene_delay<={scene_delay[3:0],scene};bad_delay<={bad_delay[3:0],frame_bad||empty};
+  boot0<=boot_rgb;boot1<=boot0;boot2<=boot1;boot3<=boot2;boot4<=boot3;
+  if(LIVE_AWARD)begin
+   rgb<=!display_valid && SHOW_BOOT_SPINNER ? boot4 : scene_delay[4] && !bad_delay[4] ? effect_rgb : 24'd0;
+   de_out<=de_delay[4];vs_out<=vs_delay[4];
+  end else begin
+   rgb<=!display_valid && SHOW_BOOT_SPINNER ? boot_rgb : scene && !frame_bad && !empty ? expanded : 24'd0;
+   de_out<=de;vs_out<=v<5;
+  end
  end
 end
 endmodule

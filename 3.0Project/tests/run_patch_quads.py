@@ -1,6 +1,6 @@
 from pathlib import Path
 import subprocess
-ROOT=Path(__file__).resolve().parents[1];TEMP=Path('E:/Codex/Temp/saixian_delta_tests')
+ROOT=Path(__file__).resolve().parents[1];TEMP=Path('E:/Codex/Temp/saixian_softflow720_tests')
 binary=TEMP/'patch_quads.vvp'
 subprocess.run(['C:/iverilog/bin/iverilog.exe','-g2012','-s','tb_patch_quads','-o',str(binary),
  'src/user_source/hdl_source/delta_memory.v','tests/tb_patch_quads.v'],cwd=ROOT,check=True)

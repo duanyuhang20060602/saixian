@@ -3,7 +3,7 @@ module tb_boot;
 reg clk=0;always #5 clk=~clk;
 reg rst=1,pub=0,slot=0;reg [31:0] head=32'h07e0f800;reg empty=1;
 wire pop,commit,frame,active,visible,underflow,de,vs;wire [23:0] rgb;
-delta_video #(.SHOW_BOOT_SPINNER(1),.MIN_BOOT_FRAMES(96)) dut(clk,rst,pub,slot,head,empty,pop,rgb,de,vs,commit,frame,active,visible,underflow);
+delta_video #(.SHOW_BOOT_SPINNER(1),.MIN_BOOT_FRAMES(96)) dut(clk,rst,pub,slot,head,empty,pop,rgb,de,vs,commit,frame,active,visible,underflow,1'b0);
 integer i;reg [23:0] old;
 task tick;
  begin @(negedge clk);dut.h=0;dut.v=0;@(negedge clk);dut.h=1;dut.v=0;end

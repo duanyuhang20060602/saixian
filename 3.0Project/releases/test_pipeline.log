@@ -1,6 +1,3 @@
-commit=1 original_frame=0 at_ms=49.503 late=0
-commit=2 original_frame=1 at_ms=99.005 late=0
-commit=3 original_frame=2 at_ms=132.007 late=0
-commit=4 original_frame=3 at_ms=181.509 late=0
-PASS pipeline: 4 original presentations with native FIFOs and video raster, exact RGB565 scene and black borders, pixels=1843200, zero underruns, max mirror/prepare<=0 ticks; encrypted SDRAM model not included
-tests/tb_pipeline.v:105: $finish called at 181509181672 (1ps)
+commit=1 original_frame=0 at_ms=148.508 late=0
+PASS pipeline: three complete 1280x720 presentations, 2764800 exact pixels, native FIFOs, full cache CRC and strict masked four-word writes; zero underflows
+tests/tb_pipeline.v:90: $finish called at 197898515431 (1ps)

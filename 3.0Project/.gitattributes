@@ -1,2 +1,7 @@
-# Keep the tested snapshot byte-for-byte so validation.json hashes remain valid.
-* -text
+# Preserve the exact verified HDL/constraint bytes recorded in validation.json.
+src/user_source/** -text -whitespace
+releases/*.rpt -whitespace
+*.bit binary
+*.bin binary
+*.DLT binary
+*.gif binary

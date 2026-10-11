@@ -1,0 +1,2 @@
+PASS video_latency: 921600 exact RGB pixels, first/last pixels and HDMI DE/VS aligned through five-stage effects
+tests/tb_video_latency.v:29: $finish called at 24666496000 (1ps)

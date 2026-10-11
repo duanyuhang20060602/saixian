@@ -1,16 +1,15 @@
 # saixian
 
-## 3.0：单板 TF 动图播放
+## 3.0：720P 奖杯画面与实时光效
 
-[3.0Project 工程与使用说明](3.0Project/README.md)包含 TD 工程、Verilog 源码、引脚/时序约束、已验证位流、TF 素材和验证报告。
+[3.0Project](3.0Project)统一保存当前版本：HX4S20C / EG4S20BG256 单板输出 1280×720，显示冠军奖杯、节点流光、金色纸屑和墙体灯光呼吸。启动顺序为转圈、首帧显示、实时动画。
 
-- 开发板：HX4S20C / EG4S20BG256；HDMI_A 输出 1280×720，原素材 480×480 居中，周围黑边。
-- 启动：转圈 → 首帧额外停留约 1 秒 → 原 27 帧动图循环。SW1 暂停/继续。
-- [打开 TD 工程](3.0Project/src/td_project/HDMI1.4b_Transmitter_v3.0.al)。
-- [下载 QuadWrite 位流](3.0Project/src/td_project/HDMI1.4b_Transmitter_v3.0_QuadWrite.bit)，BitWriter 选择 PROGRAM_SRAM。
-- TF 卡素材：[TROPHY.DLT](3.0Project/examples/TF卡素材/TROPHY.DLT)，首帧包含在包内；当前读取方式要求文件连续存储。
-- 验证：完整 27 帧及循环、暂停恢复、像素比对、视频带宽和布线时序通过。2026-10-10 用户上板反馈“效果非常好”；未进行独立长时间实板测量。
+FPGA 从 TF 卡读取底图及效果标记，实时计算动画。保留原有 SDRAM 四字分组写入、双缓冲和 CRC 检查。
 
-QuadWrite 按官方 SDRAM 四字分组规则修正补丁写入，并保留掩码、写入排空和 CRC 检查。具体依据与历史故障见[资料复核](3.0Project/doc/安路资料复核.md)，软件/时序记录见 [validation.json](3.0Project/releases/validation.json)。
+- TD 工程：[HDMI1.4b_Transmitter_v3.0_720p_SoftFlow.al](3.0Project/src/td_project/HDMI1.4b_Transmitter_v3.0_720p_SoftFlow.al)。
+- 配套位流：[HDMI1.4b_Transmitter_v3.0_720p_SoftFlow.bit](3.0Project/releases/HDMI1.4b_Transmitter_v3.0_720p_SoftFlow.bit)。
+- TF 卡素材：[AWARD720.DLT](3.0Project/examples/TF卡素材/AWARD720.DLT)，首帧包含在包内；当前读取方式要求文件连续存储。
+- 实际 RTL 预览：[GIF](3.0Project/releases/实际RTL预览_R2.gif)。
+- 验证记录：[validation.json](3.0Project/releases/validation.json)，包含源码、素材及位流校验值、仿真结果和布线时序。Setup WNS 为 +0.080 ns，Hold WNS 为 +0.027 ns。
 
-原有版本继续保留在仓库中。
+2026-10-11 用户反馈“效果不错”；独立长时间实板测试尚未记录。历史 480×480 版本保留在 Git 提交历史中。

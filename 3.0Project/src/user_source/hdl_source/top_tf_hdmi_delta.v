@@ -42,7 +42,7 @@ wire upload_we,upload_full,upload_empty,upload_pop,upload_done;
 wire [31:0] upload_data,upload_head;wire [8:0] upload_count;
 wire [20:0] file_words_sd;wire [5:0] frame_count_sd;wire [2:0] sd_error;
 wire [31:0] payload_crc_sd;reg [31:0] payload_crc_meta,payload_crc_sync;
-delta_loader loader(sd_card_clk,rst_sd,sd_init,sec_req,sec_addr,sec_valid,sec_data,sec_end,upload_full,
+delta_loader #(.WIDTH(1280),.HEIGHT(720),.FORMAT_VERSION(3)) loader(sd_card_clk,rst_sd,sd_init,sec_req,sec_addr,sec_valid,sec_data,sec_end,upload_full,
   upload_we,upload_data,upload_done,file_words_sd,frame_count_sd,sd_error,,payload_crc_sd);
 wfifo_32_32_512 upload_fifo(.rst(rst_sd|rst_mem),.clkw(sd_card_clk),.clkr(ext_mem_clk),
  .we(upload_we),.di(upload_data),.re(upload_pop),.dout(upload_head),.full_flag(upload_full),
@@ -81,7 +81,7 @@ always @(posedge ext_mem_clk)begin
   active_meta<=active_slot;active_sync<=active_meta;display_meta<=display_valid;display_sync<=display_meta;
   pause_meta<=sw[0];pause_sync<=pause_meta;end
 end
-delta_memory #(.VERIFY_CACHE(1)) memory_bus(ext_mem_clk,rst_mem,sdr_init,sdr_ref,sdr_busy,
+delta_memory #(.VERIFY_CACHE(1),.FRAME_WORDS(460800)) memory_bus(ext_mem_clk,rst_mem,sdr_init,sdr_ref,sdr_busy,
  app_rd,rd_addr,sdr_valid,captured_rd_data,app_wr,wr_addr,wr_data,
  upload_done_sync,file_words_sync,upload_empty,upload_count,upload_head,upload_pop,cache_ready,
  frame_sync[2],display_sync,active_sync,video_fifo_reset,video_push,video_data,video_count,
@@ -90,7 +90,7 @@ delta_memory #(.VERIFY_CACHE(1)) memory_bus(ext_mem_clk,rst_mem,sdr_init,sdr_ref
 wfifo_32_32_512 command_fifo(.rst(rst_mem|stream_reset),.clkw(ext_mem_clk),.clkr(ext_mem_clk),
  .we(cmd_push),.di(cmd_data),.re(cmd_pop),.dout(cmd_head),.full_flag(),.empty_flag(cmd_empty),
  .rdusedw(cmd_count),.wrusedw(),.valid(),.afull(),.aempty());
-delta_player #(.INITIAL_HOLD_TICKS(50000000),.VERIFY_STREAM(1),.WAIT_PATCH_DRAIN(1)) player(ext_mem_clk,rst_mem,cache_ready,file_words_sync,frame_count_sync,
+delta_player #(.FRAME_WORDS(460800),.INITIAL_HOLD_TICKS(50000000),.VERIFY_STREAM(1),.WAIT_PATCH_DRAIN(1)) player(ext_mem_clk,rst_mem,cache_ready,file_words_sync,frame_count_sync,
  stream_start,stream_offset,stream_words,stream_ack,cmd_head,!cmd_empty,cmd_pop,
  patch_valid,patch_addr,patch_data,patch_ready,publish_toggle,publish_slot,commit_sync[2],pause_sync,
   player_error,late_count,,,,player_debug,patch_drained);
@@ -103,8 +103,8 @@ wire video_pop,underrun_latched;wire [23:0] rgb;wire render_de,render_vs;
 rfifo_32_32_512 #(.SHOW_AHEAD_EN(1'b1)) video_fifo(.rst(rst_mem|rst_video|video_fifo_reset),
  .clkw(ext_mem_clk),.clkr(video_clk),.we(video_push),.di(video_data),.re(video_pop),.dout(video_head),
  .full_flag(video_full),.empty_flag(video_empty),.wrusedw(video_count),.rdusedw(),.valid(),.afull(),.aempty());
-delta_video #(.SHOW_BOOT_SPINNER(1),.MIN_BOOT_FRAMES(96)) video_scan(video_clk,rst_video,publish_toggle,publish_slot,video_head,video_empty,video_pop,
- rgb,render_de,render_vs,commit_toggle,frame_toggle,active_slot,display_valid,underrun_latched);
+delta_video #(.SCENE_WIDTH(1280),.SCENE_HEIGHT(720),.LIVE_AWARD(1),.SHOW_BOOT_SPINNER(1),.MIN_BOOT_FRAMES(96)) video_scan(video_clk,rst_video,publish_toggle,publish_slot,video_head,video_empty,video_pop,
+ rgb,render_de,render_vs,commit_toggle,frame_toggle,active_slot,display_valid,underrun_latched,sw[0]);
 wire axis_user,axis_valid,axis_last,axis_ready;wire [23:0] axis_data;
 video_rgb_to_axis_640x480 #(.H_ACTIVE(1280)) axis_pack(video_clk,rst_video,render_vs,render_de,rgb,
  axis_user,axis_valid,axis_last,axis_data);

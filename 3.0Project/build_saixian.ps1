@@ -5,8 +5,8 @@ $saveDir='E:/Codex/Temp/saixian_v3_project_build'
 New-Item -ItemType Directory -Force -Path $saveDir | Out-Null
 Push-Location (Join-Path $PSScriptRoot 'src/td_project')
 try {
- $bit='HDMI1.4b_Transmitter_v3.0.bit'
- $report='HDMI1.4b_Transmitter_v3.0_pr.timing'
+ $bit='HDMI1.4b_Transmitter_v3.0_720p_SoftFlow.bit'
+ $report='HDMI1.4b_Transmitter_v3.0_720p_SoftFlow_pr.timing'
  Copy-Item -LiteralPath $bit -Destination (Join-Path $saveDir 'last_timing_pass.bit') -Force
  & $td 'build_saixian.tcl' *> 'build_console.log'
  $log=Get-Content -LiteralPath 'build_console.log' -Raw

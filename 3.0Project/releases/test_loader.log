@@ -1,3 +1,3 @@
-PASS loader: complete original-action package upload, CRC32, 27-frame header and stop after preload
+PASS loader: complete original-action package upload, CRC32, 720p format-3 header and stop after preload
 PASS loader: CRC corruption, truncated sector, read stall rejected
-tests/tb_loader.v:44: $finish called at 38332240000 (1ps)
+tests/tb_loader.v:44: $finish called at 29512220000 (1ps)
