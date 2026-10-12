@@ -1,0 +1,48 @@
+# Board B: TF reader and sender. EG4S20BG256.
+set_pin_assignment { clk } { LOCATION = R7; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { transfer_done } { LOCATION = A4; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; }
+set_pin_assignment { transfer_error } { LOCATION = A3; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; }
+set_pin_assignment { sd_ncs } { LOCATION = A12; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { sd_dclk } { LOCATION = A14; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { sd_miso } { LOCATION = B14; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { sd_mosi } { LOCATION = A13; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_data[0] } { LOCATION = P4; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_data[1] } { LOCATION = N4; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_data[2] } { LOCATION = N3; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_data[3] } { LOCATION = M5; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_data[4] } { LOCATION = M3; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_data[5] } { LOCATION = M4; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_data[6] } { LOCATION = L3; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_data[7] } { LOCATION = J3; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_data[8] } { LOCATION = J4; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_data[9] } { LOCATION = H4; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_data[10] } { LOCATION = N1; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_data[11] } { LOCATION = M2; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_data[12] } { LOCATION = M1; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_data[13] } { LOCATION = L1; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_data[14] } { LOCATION = H2; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_data[15] } { LOCATION = H1; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_clk } { LOCATION = G1; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_valid } { LOCATION = G3; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_sof } { LOCATION = L4; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_eof } { LOCATION = L5; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { link_ready } { LOCATION = K6; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { image_ack } { LOCATION = H3; IOSTANDARD = LVCMOS33; }
+
+set_pin_assignment { seg_data[0] } { LOCATION = C15; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; PULLTYPE = NONE; }
+set_pin_assignment { seg_data[1] } { LOCATION = C16; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; PULLTYPE = NONE; }
+set_pin_assignment { seg_data[2] } { LOCATION = B6; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; PULLTYPE = NONE; }
+set_pin_assignment { seg_data[3] } { LOCATION = A5; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; PULLTYPE = NONE; }
+set_pin_assignment { seg_data[4] } { LOCATION = B5; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; PULLTYPE = NONE; }
+set_pin_assignment { seg_data[5] } { LOCATION = A8; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; PULLTYPE = NONE; }
+set_pin_assignment { seg_data[6] } { LOCATION = A7; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; PULLTYPE = NONE; }
+set_pin_assignment { seg_data[7] } { LOCATION = A6; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; PULLTYPE = NONE; }
+set_pin_assignment { seg_sel[0] } { LOCATION = E12; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; PULLTYPE = NONE; }
+set_pin_assignment { seg_sel[1] } { LOCATION = E10; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; PULLTYPE = NONE; }
+set_pin_assignment { seg_sel[2] } { LOCATION = C13; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; PULLTYPE = NONE; }
+set_pin_assignment { seg_sel[3] } { LOCATION = F10; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; PULLTYPE = NONE; }
+set_pin_assignment { seg_sel[4] } { LOCATION = E11; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; PULLTYPE = NONE; }
+set_pin_assignment { seg_sel[5] } { LOCATION = D11; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; PULLTYPE = NONE; }
+
+set_pin_assignment { control_rx } { LOCATION = H5; IOSTANDARD = LVCMOS33; PULLTYPE = PULLUP; }
+set_pin_assignment { control_tx } { LOCATION = F3; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; }

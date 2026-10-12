@@ -1,0 +1,2 @@
+PASS early-data model APPLY_ALIGN=          0: 4096 words, 16 bursts, first/last word, FIFO wrap, 100/50/75MHz; baseline error at0=a5000001, aligned clean
+PASS early-data model APPLY_ALIGN=          1: 4096 words, 16 bursts, first/last word, FIFO wrap, 100/50/75MHz; baseline error at0=00000000, aligned clean

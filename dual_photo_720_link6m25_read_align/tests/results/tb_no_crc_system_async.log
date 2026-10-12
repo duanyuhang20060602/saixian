@@ -1,0 +1,4 @@
+PASS 100 manual switches, six-image wrapping, real UART/link, backpressure and slot protection
+PASS latest-direction merge during receive/transition
+PASS no frame CRC: complete modified frame committed without CRC rejection/retry
+PASS independent A/B resets and rediscovery

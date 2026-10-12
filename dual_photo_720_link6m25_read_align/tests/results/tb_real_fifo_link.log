@@ -1,0 +1,1 @@
+PASS actual vendor read/write FIFOs, 2048 ordered words, asynchronous clocks and full/empty backpressure

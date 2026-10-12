@@ -1,3 +1,13 @@
+## 最新阶段快照：双板720p A读数据对齐版
+
+[工程、接线与烧录说明](dual_photo_720_link6m25_read_align/README.md) · [实板状态](dual_photo_720_link6m25_read_align/HARDWARE_STATUS.json)
+
+**2026-10-12 实板反馈：720p版本已修复，用户确认。此前误将768p图片当作720p测试图，已更正原来的干扰判断。**
+
+匹配源码、A/B bit与打包文件见工程的 `delivery` 目录。输出1280×720，板间6.25MHz；增强/锐化与图片CRC关闭。原始1366×768目标尚未完成。
+
+---
+
 # saixian
 
 ## 本分支：双板 FPGA 图片传输，B → A

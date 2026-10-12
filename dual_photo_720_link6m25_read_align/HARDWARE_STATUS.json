@@ -1,0 +1,13 @@
+{
+  "reported_date": "2026-10-12",
+  "source": "user corrected hardware feedback",
+  "user_feedback": "改为已经修复，我错把它768的图片看作720p的了",
+  "acceptance": "720p interference fixed per user confirmation",
+  "known_issue": "previous interference report corrected: 768p image was mistaken for a 720p test image",
+  "resolution": [
+    1280,
+    720
+  ],
+  "continuous_100_switch_hardware_test": "not reported",
+  "original_1366x768_goal_acceptance": "not assessed by this 720p result"
+}

@@ -1,0 +1,1 @@
+PASS actual vendor read/write FIFOs, 2048 ordered words, 2ns receiver clock skew / 3ns signal delays and full/empty backpressure

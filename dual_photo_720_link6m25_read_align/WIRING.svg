@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="530" viewBox="0 0 1000 530">
+ <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#315fba"/></marker></defs>
+ <rect width="1000" height="530" fill="#f6f8fc"/>
+ <g font-family="Microsoft YaHei, sans-serif" fill="#172b4d">
+  <text x="42" y="46" font-size="27" font-weight="bold">2.0 Photo 双板 · 新增 UART 接线</text>
+  <text x="42" y="78" font-size="17">3.3V TTL · 115200 · 8N1 · 两板共地 · 按 J2 的 1 脚标记认脚</text>
+  <rect x="40" y="110" width="320" height="320" rx="14" fill="white" stroke="#aabbd4"/>
+  <rect x="640" y="110" width="320" height="320" rx="14" fill="white" stroke="#aabbd4"/>
+  <text x="70" y="152" font-size="24" font-weight="bold">A 板：HDMI 输出</text>
+  <text x="670" y="152" font-size="24" font-weight="bold">B 板：SD 读卡</text>
+  <g font-size="19">
+   <text x="70" y="217">J2-25 / H5 / TX</text><text x="670" y="217">J2-25 / H5 / RX</text>
+   <text x="70" y="288">J2-26 / F3 / RX</text><text x="670" y="288">J2-26 / F3 / TX</text>
+   <text x="70" y="357">J2-12 或 J2-30 / GND</text><text x="670" y="357">J2-12 或 J2-30 / GND</text>
+  </g>
+  <g stroke="#315fba" stroke-width="4" marker-end="url(#arrow)">
+   <path d="M350 210H640"/><path d="M650 280H360"/>
+  </g>
+  <path d="M350 350H650" stroke="#57736b" stroke-width="4"/>
+  <g text-anchor="middle" font-size="17">
+   <text x="500" y="197">第 1 根：A → B</text><text x="500" y="267">第 2 根：B → A</text>
+   <text x="500" y="337">共地</text>
+  </g>
+  <text x="70" y="396" font-size="16">串口屏：D14 RX / G11 TX</text>
+  <text x="670" y="396" font-size="16">SD 卡只接 B 板</text>
+  <text x="42" y="468" font-size="18">同号脚相连；A、B 的 TX/RX 分配相反。现有 16 位像素线及握手线继续保留。</text>
+  <text x="42" y="503" font-size="16">A：KEY1 上一张 · KEY4 下一张 · KEY3 设置；HDMI 接 A 板 HDMI_A。</text>
+ </g>
+</svg>

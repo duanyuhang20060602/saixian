@@ -1,0 +1,12 @@
+{
+  "reference": "dual_photo_720_noenhance",
+  "link_clock_before_hz": 12500000,
+  "link_clock_after_hz": 6250000,
+  "changed_rtl": [
+    "projects\\board_b\\src\\user_source\\hdl_source\\builtin_link_pll.v"
+  ],
+  "a_receiver_period_ns": 160,
+  "uart_baud": 115200,
+  "frame_pixels": 921600,
+  "frame_words": 460800
+}

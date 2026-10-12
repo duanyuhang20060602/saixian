@@ -1,0 +1,13 @@
+{
+  "source": "dual_photo_720_link6m25",
+  "A_read_data_delay_cycles": 1,
+  "A_valid_delay_cycles": 0,
+  "B_RTL_changed": false,
+  "link_clock_hz": 6250000,
+  "resolution": [
+    1280,
+    720
+  ],
+  "diagnostic_hardware_result": "user reported 500011 on A address-tag read-aligned version",
+  "dual_photo_hardware_acceptance": "pending"
+}

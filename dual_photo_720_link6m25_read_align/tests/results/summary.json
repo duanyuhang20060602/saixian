@@ -1,0 +1,27 @@
+[
+  {
+    "test": "tb_real_fifo_link",
+    "passed": true,
+    "seconds": 5.73
+  },
+  {
+    "test": "tb_real_fifo_link_delay",
+    "passed": true,
+    "seconds": 5.83
+  },
+  {
+    "test": "tb_no_crc_system_async",
+    "passed": true,
+    "seconds": 65.78
+  },
+  {
+    "test": "tb_render",
+    "passed": true,
+    "seconds": 22.78
+  },
+  {
+    "test": "tb_read_data_align",
+    "passed": true,
+    "seconds": 6.56
+  }
+]
