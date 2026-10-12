@@ -69,20 +69,19 @@
         "projects/board_a/src/user_source/hdl_source/SD/sdram.v": "2d985c2477384e677c25714241e1a50206def8916aa03189a5b313b2d22dfc99",
         "projects/board_a/src/user_source/hdl_source/video_pll.v": "9886237a689328f4c36b33f54ef1d4df0d5571277eeba8837013091d0119e142"
       },
-      "hardware_acceptance": "not passed: same interference remains; other parts improved per user feedback",
+      "hardware_acceptance": "720p interference fixed per user confirmation",
       "hardware_feedback": {
         "reported_date": "2026-10-12",
-        "source": "user hardware feedback",
-        "user_feedback": "\u6769\u6b0e\u91dc\u9417\u581f\u6e70\u6d60\u5d86\u6e41\u935a\u5c7e\u7271\u9428\u52ef\u68f6\u68f0\u6a48\u7d1d\u6d63\u55d8\u69f8\u934f\u6735\u7cac\u95ae\u3125\u578e\u93c1\u581f\u7049\u6748\u51a8\u30bd",
-        "acceptance": "partial; known interference remains",
-        "known_issue": "same visible interference as previous version",
-        "other_effects": "user reports other parts perform better",
-        "full_hardware_acceptance_passed": false,
-        "continuous_100_switch_hardware_test": "not reported",
+        "source": "user corrected hardware feedback",
+        "user_feedback": "\u6539\u4e3a\u5df2\u7ecf\u4fee\u590d\uff0c\u6211\u9519\u628a\u5b83768\u7684\u56fe\u7247\u770b\u4f5c720p\u7684\u4e86",
+        "acceptance": "720p interference fixed per user confirmation",
+        "known_issue": "previous interference report corrected: 768p image was mistaken for a 720p test image",
         "resolution": [
           1280,
           720
-        ]
+        ],
+        "continuous_100_switch_hardware_test": "not reported",
+        "original_1366x768_goal_acceptance": "not assessed by this 720p result"
       }
     },
     {
@@ -144,20 +143,19 @@
         "projects/board_b/src/user_source/hdl_source/SD/frame_read_write.v": "28bb1fe15ac117fc4cb6c2efc5aa3cf79f48e0a0961de016107470eb408013a9",
         "projects/board_b/src/user_source/hdl_source/SD/sdram.v": "2d985c2477384e677c25714241e1a50206def8916aa03189a5b313b2d22dfc99"
       },
-      "hardware_acceptance": "not passed: same interference remains; other parts improved per user feedback",
+      "hardware_acceptance": "720p interference fixed per user confirmation",
       "hardware_feedback": {
         "reported_date": "2026-10-12",
-        "source": "user hardware feedback",
-        "user_feedback": "\u6769\u6b0e\u91dc\u9417\u581f\u6e70\u6d60\u5d86\u6e41\u935a\u5c7e\u7271\u9428\u52ef\u68f6\u68f0\u6a48\u7d1d\u6d63\u55d8\u69f8\u934f\u6735\u7cac\u95ae\u3125\u578e\u93c1\u581f\u7049\u6748\u51a8\u30bd",
-        "acceptance": "partial; known interference remains",
-        "known_issue": "same visible interference as previous version",
-        "other_effects": "user reports other parts perform better",
-        "full_hardware_acceptance_passed": false,
-        "continuous_100_switch_hardware_test": "not reported",
+        "source": "user corrected hardware feedback",
+        "user_feedback": "\u6539\u4e3a\u5df2\u7ecf\u4fee\u590d\uff0c\u6211\u9519\u628a\u5b83768\u7684\u56fe\u7247\u770b\u4f5c720p\u7684\u4e86",
+        "acceptance": "720p interference fixed per user confirmation",
+        "known_issue": "previous interference report corrected: 768p image was mistaken for a 720p test image",
         "resolution": [
           1280,
           720
-        ]
+        ],
+        "continuous_100_switch_hardware_test": "not reported",
+        "original_1366x768_goal_acceptance": "not assessed by this 720p result"
       }
     }
   ]

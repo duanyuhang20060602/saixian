@@ -5,7 +5,7 @@ OUT=ROOT/'delivery';OUT.mkdir(parents=True,exist_ok=True)
 def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 def files(role):
     td=ROOT/'projects'/role/'src/td_project'
-    paths=json.loads((td/'sources.json').read_text())
+    paths=json.loads((td/'sources.json').read_text(encoding='utf-8'))
     found={(td/p).resolve() for p in paths}
     found.update((td.parent/'user_source/constraints_source').glob('*'))
     found.update((td.parent/'user_source/hdl_source/include').glob('*.v'))
@@ -17,7 +17,7 @@ def snapshot(role):
     value={'started':time.time(),'source_sha256':hashes(role)}
     (OUT/f'{role}_build_sources.json').write_text(json.dumps(value,indent=2),encoding='utf-8')
 def collect(role):
-    saved=json.loads((OUT/f'{role}_build_sources.json').read_text())
+    saved=json.loads((OUT/f'{role}_build_sources.json').read_text(encoding='utf-8'))
     assert saved['source_sha256']==hashes(role),'Source changed during or after build'
     td=ROOT/'projects'/role/'src/td_project';name=f'PHOTO_{role.upper()}'
     bit=td/(name+'.bit');timing=td/(name+'_pr.timing');area=td/(name+'_phy.area')
@@ -40,9 +40,9 @@ def collect(role):
     (OUT/f'{role}_manifest.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
     print(role,values,resources)
 def package():
-    data=[json.loads((OUT/f'{r}_manifest.json').read_text()) for r in ['board_a','board_b']]
+    data=[json.loads((OUT/f'{r}_manifest.json').read_text(encoding='utf-8')) for r in ['board_a','board_b']]
     for value in data:assert value['source_sha256']==hashes(value['role']),'Sources differ from delivered build'
-    (OUT/'delivery_manifest.json').write_text(json.dumps({'baselines':json.loads((ROOT/'baseline.json').read_text()),'boards':data},indent=2),encoding='utf-8')
+    (OUT/'delivery_manifest.json').write_text(json.dumps({'baselines':json.loads((ROOT/'baseline.json').read_text(encoding='utf-8')),'boards':data},indent=2),encoding='utf-8')
     selected=set()
     for role in ['board_a','board_b']:selected.update(files(role))
     selected.update(ROOT/name for name in ['README.md','VALIDATION.md','COMPARISON_720.md','SOURCE_COMPARISON.md','FLOW_REVIEW.md']);selected.update(ROOT.glob('*.json'));selected.update(ROOT.glob('*.ps1'));selected.update(ROOT.glob('*.svg'))
