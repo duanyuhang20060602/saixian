@@ -1,0 +1,64 @@
+串口命令列表（按当前 HMI）
+
+协议：7字节二进制 55 CMD VALUE 00 FF FF FF，115200、8N1。动态数值用 prints 控件.val,1 发送一个原始字节，不是ASCII数字。
+当前 HMI SHA256：6e841cb6864991d47561bd362c02cfe5aba2e48b28901f64b94c1d46a9742032
+
+CMD | VALUE | 功能 | 当前单板FPGA
+01 | 00 | 比赛开始 | 已有
+02 | 00 | 旧式暂停切换 | 已有；新界面使用06/07
+03 | 00 | 比赛结束 | 已有
+04 | 00 | 上一张 | 已有
+05 | 00 | 下一张 | 已有
+06 | 00 | 暂停 | 已有
+07 | 00 | 继续 | 已有
+08 | 00 | 下一首音乐 | 已有
+09 | 00/01 | 频谱/波形绝对选择 | 新增，需FPGA实现
+0A | 00–03 | 比赛项目0–3 | 新增，需FPGA实现
+10 | 00–03 | 锐化 | 已有
+11 | 00–64 | 亮度0–100 | 已有
+12 | 00–64 | 对比度0–100 | 已有
+13 | 00–64 | 饱和度0–100 | 已有
+14 | 00–64 | 音量输入0–100，FPGA量化为0–8档 | 已有
+15 | 00/01 | 反色关/开 | 已有
+16 | 00/01 | 复古关/开 | 已有
+17 | 00/01/02 | 增强关/开/左右对照 | 已有
+18 | 00/01 | 音频修复关/开 | 新增，需FPGA实现
+1F | 00 | 恢复默认 | 已有
+20 | 00 | 蓝方胜利 | 已有
+21 | 00 | 红方胜利 | 已有
+22 | 00 | 100米排名结果 | 已有
+23 | 00 | 退出结果/TF动图 | 已有
+24 | 00 | 结果动画推进/播放TF动图 | 新增，需FPGA实现
+30 | 00–04 | 页面通知 | 已有
+
+0x64是十进制100。亮度/对比度/饱和度/音量传百分比字节；锐化0–3；增强0–2。
+
+当前工程中新增控件对应事件（均设为触摸释放）：
+
+home.b_fft:
+printh 55 09 00 00 ff ff ff
+
+home.b_wave:
+printh 55 09 01 00 ff ff ff
+
+home.b_proj0 / b_proj1 / b_proj2 / b_proj3:
+printh 55 0a 00 00 ff ff ff
+printh 55 0a 01 00 ff ff ff
+printh 55 0a 02 00 ff ff ff
+printh 55 0a 03 00 ff ff ff
+
+settings.h_enhance（范围0–2）:
+n_enhance.val=h_enhance.val
+printh 55 17
+prints h_enhance.val,1
+printh 00 ff ff ff
+
+settings.bt_audiofix（双态0/1）:
+printh 55 18
+prints bt_audiofix.val,1
+printh 00 ff ff ff
+
+settle_battle.b_advance:
+printh 55 24 00 00 ff ff ff
+
+增强沿用滑动条，不建三个增强按钮。当前HMI的屏幕→FPGA事件，按键及参数详细页面映射见同目录 HMI适配说明.txt。
