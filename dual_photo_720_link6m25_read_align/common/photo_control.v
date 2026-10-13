@@ -110,9 +110,10 @@ always @(posedge clk or posedge rst)begin
 end
 endmodule
 
-module photo_control_b #(parameter CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0)(
+module photo_control_b #(parameter CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SEND_SOURCE_SIZE=0)(
  input clk,rst,uart_rx,output uart_tx,input [2:0] image_count,input media_ready,
  input [1:0] media_slot,input [3:0] media_error,
+ input [15:0] media_source_width,media_source_height,
  output reg media_request,output reg [2:0] media_target,output reg media_release,media_cancel,
  output reg [1:0] transmit_slot,output reg start_toggle,abort_toggle,
  input tx_done,input [31:0] tx_crc,output busy,output reg [3:0] error,output [3:0] debug_state
@@ -128,6 +129,7 @@ localparam DISCOVER=0,HELLO_ACK=1,IDLE=2,LOAD=3,BEGIN_SEND=4,WAIT_READY=5,
 reg [3:0] state;reg [31:0] session,timer;reg [15:0] request_seq;
 assign debug_state=state;
 reg direction;reg [1:0] retries;reg send;reg [159:0] message;reg [31:0] completed_crc;
+reg [15:0] source_width,source_height;
 wire tx_busy,got,bad;wire [159:0] incoming;
 photo_uart #(.CLK_HZ(CLK_HZ)) port(.clk(clk),.rst(rst),.rx(uart_rx),.tx(uart_tx),
  .send(send),.message(message),.busy(tx_busy),.received(got),.received_message(incoming),.bad_packet(bad));
@@ -136,7 +138,8 @@ wire matching=incoming[151:120]==session && incoming[119:104]==request_seq && in
 assign busy=state!=IDLE && state!=DISCOVER;
 always @(posedge clk or posedge rst)begin
  if(rst)begin state<=DISCOVER;session<=0;request_seq<=0;timer<=0;direction<=1;retries<=0;send<=0;message<=0;
-  media_request<=0;media_target<=0;media_release<=0;media_cancel<=0;transmit_slot<=0;start_toggle<=0;abort_toggle<=0;error<=0;completed_crc<=0;end
+  media_request<=0;media_target<=0;media_release<=0;media_cancel<=0;transmit_slot<=0;start_toggle<=0;abort_toggle<=0;error<=0;completed_crc<=0;
+  source_width<=0;source_height<=0;end
  else begin
   timer<=timer+1'b1;send<=0;media_request<=0;media_release<=0;media_cancel<=0;
   if(got && kind==1 && incoming[87:56]==FRAME_BYTES && image_count>0)begin
@@ -157,12 +160,18 @@ always @(posedge clk or posedge rst)begin
     media_request<=1;state<=LOAD;timer<=0;error<=0;
    end
    LOAD:begin
-    if(media_ready)begin transmit_slot<=media_slot;state<=BEGIN_SEND;timer<=0;end
+    if(media_ready)begin
+     transmit_slot<=media_slot;source_width<=media_source_width;source_height<=media_source_height;
+     state<=BEGIN_SEND;timer<=0;
+    end
     else if(media_error!=0)begin error<=media_error;state<=ERROR_SEND;end
     else if(timer>=64'd35*TIME_HZ)begin error<=1;state<=ERROR_SEND;end
    end
    BEGIN_SEND:if(!tx_busy)begin
-    message<=packet(4,session,request_seq,{5'd0,media_target},{7'd0,direction},FRAME_BYTES,0,0);
+    // BEGIN does not carry a frame CRC. Flag 7 selects source-size metadata
+    // in that field; END/ACCEPT/COMMIT retain their existing CRC semantics.
+    message<=packet(4,session,request_seq,{5'd0,media_target},{SEND_SOURCE_SIZE!=0,6'd0,direction},FRAME_BYTES,
+      SEND_SOURCE_SIZE ? {source_width,source_height}:32'd0,0);
     send<=1;state<=WAIT_READY;timer<=0;
    end
    WAIT_READY:if(got && matching && kind==5)begin start_toggle<=~start_toggle;state<=SENDING;timer<=0;end

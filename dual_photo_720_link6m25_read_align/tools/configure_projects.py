@@ -48,7 +48,7 @@ for role,top in [('board_a','top_photo_a'),('board_b','top_photo_b')]:
     for e in list(verilog):verilog.remove(e)
     paths=[p for p in paths if Path(p).name not in excluded | replacements]
     shared=['photo_uart.v','photo_link.v','photo_control.v','photo_status.v',top+'.v']
-    if role=='board_a':shared+=['saixian_transition.v','photo_processing.v','saixian_hmi_uart.v','saixian_key_debounce.v']
+    if role=='board_a':shared+=['photo_resolution_overlay.v','photo_cached_control_a.v','saixian_transition.v','photo_processing.v','saixian_hmi_uart.v','saixian_key_debounce.v','photo_auto_advance.v']
     else:shared+=['photo_sd_cache.v']
     paths+=['../../../../common/'+p for p in shared]
     if role=='board_b':paths+=['../../../../common/photo_sd/'+p.name for p in (ROOT/'common/photo_sd').glob('*.v')]

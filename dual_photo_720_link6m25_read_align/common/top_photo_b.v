@@ -15,11 +15,13 @@ wire [31:0] packed_data,read_data;
 wire [1:0] write_slot,ready_slot,transmit_slot;wire [2:0] count;
 wire media_ready,request,release_slot,cancel,directory_ready;
 wire [2:0] target;wire [3:0] media_error,control_error;
+wire [15:0] media_source_width,media_source_height;
 reg finish_toggle;
 always @(posedge mem_clk or posedge rst_mem)
  if(rst_mem)finish_toggle<=0;else if(finish)finish_toggle<=~finish_toggle;
-photo_sd_cache media(.clk(sd_clk),.rst(rst_sd),.request(request),.target(target),.release_slot(release_slot),.cancel(cancel),
+photo_sd_cache #(.FORWARD_ONLY(1)) media(.clk(sd_clk),.rst(rst_sd),.request(request),.target(target),.release_slot(release_slot),.cancel(cancel),
  .ready(media_ready),.ready_slot(ready_slot),.image_count(count),.error(media_error),.directory_ready(directory_ready),
+ .ready_source_width(media_source_width),.ready_source_height(media_source_height),
  .write_slot(write_slot),.write_req(req),.write_ack(ack),.full(full),.write_en(we),.write_data(packed_data),.finish_toggle(finish_toggle),
  .sd_ncs(sd_ncs),.sd_dclk(sd_dclk),.sd_mosi(sd_mosi),.sd_miso(sd_miso));
 frame_store #(.FLIP(1)) store(.write_slot(write_slot),.read_slot(transmit_slot),.new_slot(2'd0),
@@ -39,8 +41,9 @@ always @(posedge link_clk or posedge rst_link)
  if(rst_link)sent_toggle<=0;else if(sent)sent_toggle<=~sent_toggle;
 wire sent_sd,control_busy;wire [3:0] control_state;
 photo_event_sync sd(.clk(sd_clk),.rst(rst_sd),.toggle(sent_toggle),.pulse(sent_sd));
-photo_control_b #(.CHECK_FRAME_CRC(0)) ctrl(.clk(sd_clk),.rst(rst_sd),.uart_rx(control_rx),.uart_tx(control_tx),
+photo_control_b #(.CHECK_FRAME_CRC(0),.SEND_SOURCE_SIZE(1)) ctrl(.clk(sd_clk),.rst(rst_sd),.uart_rx(control_rx),.uart_tx(control_tx),
  .image_count(directory_ready ? count:3'd0),.media_ready(media_ready),.media_slot(ready_slot),.media_error(media_error),
+ .media_source_width(media_source_width),.media_source_height(media_source_height),
  .media_request(request),.media_target(target),.media_release(release_slot),.media_cancel(cancel),
  .transmit_slot(transmit_slot),.start_toggle(start_toggle),.abort_toggle(abort_toggle),.tx_done(sent_sd),.tx_crc(tx_crc),
  .busy(control_busy),.error(control_error),.debug_state(control_state));

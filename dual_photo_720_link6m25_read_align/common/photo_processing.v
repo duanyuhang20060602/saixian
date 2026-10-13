@@ -13,8 +13,14 @@ module saixian_settings_controller #(
     input  wire [2:0] hmi_setting_id,
     input  wire [7:0] hmi_setting_value,
     input  wire       hmi_reset_defaults,
+    input  wire       effect_valid,
+    input  wire [2:0] effect_value,
+    input  wire       auto_valid,
+    input  wire       auto_value,
     output reg        settings_mode,
-    output reg [2:0]  setting_item,
+    output reg [3:0]  setting_item,
+    output reg [2:0]  effect_select,
+    output reg        auto_enable,
     output reg [3:0]  volume_setting,
     output reg [3:0]  brightness_setting,
     output reg [3:0]  contrast_setting,
@@ -45,7 +51,9 @@ endfunction
 always @(posedge clk or posedge rst) begin
     if (rst) begin
         settings_mode      <= 1'b0;
-        setting_item       <= 3'd0;
+        setting_item       <= 4'd0;
+        effect_select      <= 3'd0;
+        auto_enable        <= 1'b0;
         volume_setting     <= 4'd5;
         brightness_setting <= 4'd4;
         contrast_setting   <= 4'd4;
@@ -56,6 +64,8 @@ always @(posedge clk or posedge rst) begin
         enhancement_setting <= 2'd1;
         idle_timer         <= 33'd0;
     end else if (hmi_reset_defaults) begin
+        effect_select      <= 3'd0;
+        auto_enable        <= 1'b0;
         volume_setting     <= 4'd5;
         brightness_setting <= 4'd4;
         contrast_setting   <= 4'd4;
@@ -65,6 +75,12 @@ always @(posedge clk or posedge rst) begin
         vintage_setting    <= 1'b0;
         enhancement_setting <= 2'd1;
         idle_timer         <= 33'd0;
+    end else if (effect_valid) begin
+        if (effect_value <= 6) effect_select <= effect_value;
+        idle_timer <= 33'd0;
+    end else if (auto_valid) begin
+        auto_enable <= auto_value;
+        idle_timer <= 33'd0;
     end else if (hmi_setting_valid) begin
         idle_timer <= 33'd0;
         case (hmi_setting_id)
@@ -85,7 +101,7 @@ always @(posedge clk or posedge rst) begin
         idle_timer <= 33'd0;
         if (key_enter_exit) begin
             settings_mode <= 1'b1;
-            setting_item  <= 3'd0;
+            setting_item  <= 4'd0;
         end
     end else begin
         if (key_next_item || key_decrease || key_enter_exit || key_increase)
@@ -99,7 +115,7 @@ always @(posedge clk or posedge rst) begin
         if (key_enter_exit)
             settings_mode <= 1'b0;
         else if (key_next_item)
-            setting_item <= (setting_item == 3'd7) ? 3'd0 : setting_item + 1'b1;
+            setting_item <= (setting_item == 4'd9) ? 4'd0 : setting_item + 1'b1;
         else if (key_decrease) begin
             case (setting_item)
                 2'd0: if (volume_setting     != 0) volume_setting     <= volume_setting - 1'b1;
@@ -110,6 +126,8 @@ always @(posedge clk or posedge rst) begin
                 3'd5: invert_setting <= 1'b0;
                 3'd6: vintage_setting <= 1'b0;
                 3'd7: if(enhancement_setting!=0) enhancement_setting<=enhancement_setting-1'b1;
+                4'd8: if(effect_select!=0) effect_select<=effect_select-1'b1;
+                4'd9: auto_enable<=1'b0;
             endcase
         end else if (key_increase) begin
             case (setting_item)
@@ -121,6 +139,8 @@ always @(posedge clk or posedge rst) begin
                 3'd5: invert_setting <= 1'b1;
                 3'd6: vintage_setting <= 1'b1;
                 3'd7: if(enhancement_setting<2) enhancement_setting<=enhancement_setting+1'b1;
+                4'd8: if(effect_select<6) effect_select<=effect_select+1'b1;
+                4'd9: auto_enable<=1'b1;
             endcase
         end
     end

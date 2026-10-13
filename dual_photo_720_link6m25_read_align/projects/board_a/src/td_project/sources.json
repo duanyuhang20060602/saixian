@@ -26,5 +26,8 @@
   "../../../../common/saixian_transition.v",
   "../../../../common/photo_processing.v",
   "../../../../common/saixian_hmi_uart.v",
-  "../../../../common/saixian_key_debounce.v"
+  "../../../../common/saixian_key_debounce.v",
+  "../../../../common/photo_auto_advance.v",
+  "../../../../common/photo_cached_control_a.v",
+  "../../../../common/photo_resolution_overlay.v"
 ]

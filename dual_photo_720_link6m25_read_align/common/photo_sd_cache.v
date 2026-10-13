@@ -1,10 +1,11 @@
 `timescale 1ns/1ps
 // Six-entry directory, three SDRAM slots. A locked transmit slot is never a
 // load destination. Neighbour prefetch runs while the link consumes its slot.
-module photo_sd_cache #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=1048575,FRAME_WORDS=460800)(
+module photo_sd_cache #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=1048575,FRAME_WORDS=460800,FORWARD_ONLY=0)(
  input clk,rst,request,input [2:0] target,input release_slot,cancel,
  output reg ready,output reg [1:0] ready_slot,output reg [2:0] image_count,
  output reg [3:0] error,output directory_ready,
+ output reg [15:0] ready_source_width,ready_source_height,
  output [1:0] write_slot,output write_req,input write_ack,full,
  output reg write_en,output reg [31:0] write_data,input finish_toggle,
  output sd_ncs,sd_dclk,sd_mosi,input sd_miso
@@ -15,11 +16,12 @@ wire [3:0] bmp_state;wire [31:0] bmp_read_addr;wire bmp_read_req;
 wire sector_end,byte_valid,scaler_fault;wire [7:0] byte_data;
 reg scan_start,load_start,abort_op;reg [31:0] load_sector;
 reg [31:0] directory[0:5];reg [2:0] cache_id[0:2];reg [2:0] cache_valid;
+reg [15:0] directory_width[0:5],directory_height[0:5];
 reg [1:0] load_slot;reg [2:0] load_image,current_image,wanted;
 reg demand,scanned,scanning,loading,load_started;
 reg [31:0] timer,init_timer;reg fin_meta,fin_sync,fin_seen;
 reg half;reg [15:0] first;reg [20:0] words;
-reg read_owner;reg [31:0] read_address;
+reg read_owner,read_settle;reg [31:0] read_address;
 assign write_slot=load_slot;
 assign directory_ready=scanned && image_count!=0;
 function [15:0] rgb565;
@@ -31,19 +33,20 @@ endfunction
 function [2:0] prev_id;
  input [2:0] id,count;begin prev_id=id==0 ? count-1:id-1'b1;end
 endfunction
+wire [2:0] second_prefetch=FORWARD_ONLY ? next_id(next_id(current_image,image_count),image_count):prev_id(current_image,image_count);
 reg hit,next_hit,prev_hit;reg [1:0] hit_slot,victim;
 reg victim_ok;integer i;
 always @*begin
  hit=0;hit_slot=0;next_hit=0;prev_hit=0;victim=0;victim_ok=0;
  for(i=0;i<3;i=i+1)begin
-  if(cache_valid[i] && cache_id[i]==wanted)begin hit=1;hit_slot=i;end
+  if(cache_valid[i] && (!loading || load_slot!=i) && cache_id[i]==wanted)begin hit=1;hit_slot=i;end
   if(cache_valid[i] && cache_id[i]==next_id(current_image,image_count))next_hit=1;
-  if(cache_valid[i] && cache_id[i]==prev_id(current_image,image_count))prev_hit=1;
+  if(cache_valid[i] && cache_id[i]==second_prefetch)prev_hit=1;
  end
  // Prefer invalid slots; otherwise evict a non-current, non-locked slot
  // which is not the other neighbour we intend to preserve.
  for(i=2;i>=0;i=i-1)begin
-  if((!ready || ready_slot!=i) && (!loading || load_slot!=i) &&
+  if((!ready || ready_slot!=i) && (!loading || load_slot!=i) && (!demand || !hit || hit_slot!=i) &&
     (!cache_valid[i] || (cache_id[i]!=current_image &&
      (demand || cache_id[i]!=next_id(current_image,image_count)))))begin victim=i;victim_ok=1;end
  end
@@ -51,12 +54,15 @@ always @*begin
   if(!cache_valid[i] && (!ready || ready_slot!=i) && (!loading || load_slot!=i))begin victim=i;victim_ok=1;end
 end
 always @(posedge clk or posedge rst)begin
- if(rst)begin read_owner<=0;read_address<=0;end
- else if(abort_op)read_owner<=0;
+ if(rst)begin read_owner<=0;read_settle<=0;read_address<=0;end
+ else if(abort_op)begin read_owner<=0;read_settle<=0;end
+ // Allow BMP request/address registers to settle after sector completion.
+ // In particular, do not enqueue a stale request at the end of a file.
+ else if(sector_end)begin read_owner<=0;read_settle<=1;end
+ else if(read_settle)read_settle<=0;
  else if(!read_owner && bmp_read_req)begin read_owner<=1;read_address<=bmp_read_addr;end
- else if(sector_end)read_owner<=0;
 end
-sd_card_top #(.SPI_LOW_SPEED_DIV(248),.SPI_HIGH_SPEED_DIV(2)) sd(
+sd_card_top #(.SPI_LOW_SPEED_DIV(248),.SPI_HIGH_SPEED_DIV(2),.READ_MULTIBLOCK(1),.FAST_READ_STREAM(1)) sd(
  .clk(clk),.rst(rst || abort_op),.SD_nCS(sd_ncs),.SD_DCLK(sd_dclk),.SD_MOSI(sd_mosi),.SD_MISO(sd_miso),
  .sd_init_done(initialized),.init_stage(),.sd_sec_read(read_owner),.sd_sec_read_addr(read_address),
  .sd_sec_read_data(byte_data),.sd_sec_read_data_valid(byte_valid),.sd_sec_read_end(sector_end),
@@ -78,6 +84,7 @@ end
 always @(posedge clk or posedge rst)begin
  if(rst)begin
   ready<=0;ready_slot<=0;image_count<=0;error<=0;cache_valid<=0;load_slot<=0;load_image<=0;
+  ready_source_width<=0;ready_source_height<=0;
   current_image<=0;wanted<=0;demand<=0;scanned<=0;scanning<=0;loading<=0;load_started<=0;
   scan_start<=0;load_start<=0;abort_op<=0;load_sector<=0;timer<=0;init_timer<=0;fin_seen<=0;
   half<=0;first<=0;words<=0;write_en<=0;write_data<=0;
@@ -90,7 +97,10 @@ always @(posedge clk or posedge rst)begin
   if(initialized && !scanned && !scanning && bmp_ready)begin scan_start<=1;scanning<=1;image_count<=0;timer<=0;end
   if(scanning)begin
    timer<=timer+1'b1;
-   if(found && image_count<6)begin directory[image_count]<=sector;image_count<=image_count+1'b1;timer<=0;end
+   if(found && image_count<6)begin
+    directory[image_count]<=sector;directory_width[image_count]<=width;directory_height[image_count]<=height;
+    image_count<=image_count+1'b1;timer<=0;
+   end
    if(scan_done || image_count==6)begin scanning<=0;scanned<=1;if(image_count==0 && !found)error<=1;end
    // Stop after a finite idle period on cards with fewer than six images.
    if(timer>=CLK_HZ*20)begin scanning<=0;scanned<=1;abort_op<=1;if(image_count==0)error<=1;end
@@ -98,9 +108,16 @@ always @(posedge clk or posedge rst)begin
   if(request && scanned && target<image_count)begin wanted<=target;demand<=1;ready<=0;error<=0;end
   if(release_slot)begin ready<=0;current_image<=cache_id[ready_slot];end
   if(cancel)begin ready<=0;demand<=0;end
-  if(!loading && scanned && bmp_ready && error==0)begin
-   if(demand && hit && !ready)begin ready<=1;ready_slot<=hit_slot;demand<=0;end
-   else if(demand && !hit && victim_ok)begin
+  // Deliver a complete cached image even while BMP/SD is loading another
+  // slot. ready locks hit_slot until release_slot; load_slot stays separate.
+  // Control pulses win over the previous cycle's pending demand.
+  if(!request && !release_slot && !cancel && scanned && error==0)begin
+   if(demand && hit && !ready)begin
+    ready<=1;ready_slot<=hit_slot;demand<=0;
+    ready_source_width<=directory_width[wanted];ready_source_height<=directory_height[wanted];
+   end
+   else if(!loading && bmp_ready)begin
+   if(demand && !hit && victim_ok)begin
     load_slot<=victim;load_image<=wanted;load_sector<=directory[wanted];load_start<=1;loading<=1;
     cache_valid[victim]<=0;load_started<=0;words<=0;half<=0;fin_seen<=fin_sync;timer<=0;
    end else if(!demand && image_count>1 && !next_hit && victim_ok)begin
@@ -108,9 +125,10 @@ always @(posedge clk or posedge rst)begin
     load_sector<=directory[next_id(current_image,image_count)];load_start<=1;loading<=1;
     cache_valid[victim]<=0;load_started<=0;words<=0;half<=0;fin_seen<=fin_sync;timer<=0;
    end else if(!demand && image_count>1 && next_hit && !prev_hit && victim_ok)begin
-    load_slot<=victim;load_image<=prev_id(current_image,image_count);
-    load_sector<=directory[prev_id(current_image,image_count)];load_start<=1;loading<=1;
+    load_slot<=victim;load_image<=second_prefetch;
+    load_sector<=directory[second_prefetch];load_start<=1;loading<=1;
     cache_valid[victim]<=0;load_started<=0;words<=0;half<=0;fin_seen<=fin_sync;timer<=0;
+   end
    end
   end
   if(loading)begin

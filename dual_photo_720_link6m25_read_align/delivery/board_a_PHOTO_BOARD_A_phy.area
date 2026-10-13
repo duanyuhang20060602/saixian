@@ -8,12 +8,12 @@ IO Statistics
   #inout                    1
 
 Utilization Statistics
-#lut                     3866   out of  19600   19.72%
-#reg                     3345   out of  19600   17.07%
-#le                      4720
-  #lut only              1375   out of   4720   29.13%
-  #reg only               854   out of   4720   18.09%
-  #lut&reg               2491   out of   4720   52.78%
+#lut                     4629   out of  19600   23.62%
+#reg                     3796   out of  19600   19.37%
+#le                      5514
+  #lut only              1718   out of   5514   31.16%
+  #reg only               885   out of   5514   16.05%
+  #lut&reg               2911   out of   5514   52.79%
 #bram                       5   out of     64    7.81%
   #bram9k                   5
   #fifo9k                   0
@@ -147,19 +147,20 @@ Report Clock Domain Luts:
 ----------------------------------------------------------------------------------------------------------------------
   Index   |  Name             |  Frequency   |  LUT As Logic   |  LUT As Shifter   |  LUT As Dram   |  BRAM   |  DSP
 ----------------------------------------------------------------------------------------------------------------------
-  #1      |  board_pixel_clk  |  75MHz       |  1279           |  0                |  0             |  3      |  6
-  #2      |  clk              |  50MHz       |  91             |  0                |  0             |  0      |  0
-  #3      |  ext_mem_clk      |  50MHz       |  297            |  0                |  0             |  4      |  0
-  #4      |  hdmi_5x_clk      |  375MHz      |  37             |  0                |  0             |  0      |  0
-  #5      |  link_clk         |  6MHz        |  61             |  0                |  0             |  2      |  0
+  #1      |  board_pixel_clk  |  75MHz       |  1648           |  0                |  32            |  3      |  6
+  #2      |  clk              |  50MHz       |  90             |  0                |  0             |  0      |  0
+  #3      |  ext_mem_clk      |  50MHz       |  286            |  0                |  0             |  4      |  0
+  #4      |  ext_mem_clk_sft  |  50MHz       |  1              |  0                |  0             |  0      |  0
+  #5      |  hdmi_5x_clk      |  375MHz      |  42             |  0                |  0             |  0      |  0
+  #6      |  link_clk         |  50MHz       |  71             |  0                |  0             |  2      |  0
 ----------------------------------------------------------------------------------------------------------------------
 
 Clock Resource Statistics
 Index     ClockNet                                    Type               DriverType         Driver                        Fanout
-#1        u_video_pll/clk0_buf                        Global             pll                u_video_pll/pll_inst.clkc0    1274
-#2        store/ram/u2_ram/u1_init_ref/Sdr_clk        Global             pll                u_sys_pll/pll_inst.clkc1      560
-#3        clk_dup_1                                   Global             io                 clk_syn_2.di                  121
-#4        store/rw/write_buf/clkw                     Global             io                 link_clk_syn_3.di             91
+#1        u_video_pll/clk0_buf                        Global             pll                u_video_pll/pll_inst.clkc0    1543
+#2        store/ram/u2_ram/u1_init_ref/Sdr_clk        Global             pll                u_sys_pll/pll_inst.clkc1      553
+#3        clk_dup_1                                   Global             io                 clk_syn_2.di                  139
+#4        store/rw/write_buf/clkw                     Global             io                 link_clk_syn_3.di             94
 #5        u_hdmi_phy/u0_lane_lvds_8_1/I_serial_clk    Global             pll                u_video_pll/pll_inst.clkc1    33
 #6        store/ram/u2_ram/SDRAM_CLK                  Global             pll                u_sys_pll/pll_inst.clkc2      0
 #7        u_sys_pll/clk0_buf                          Global             pll                u_sys_pll/pll_inst.clkc0      0
@@ -168,73 +169,74 @@ Report Hierarchy Area:
 +-------------------------------------------------------------------------------------------------------------------------------------+
 |Instance                    |Module                                            |le      |lut     |ripple  |seq     |bram    |dsp     |
 +-------------------------------------------------------------------------------------------------------------------------------------+
-|top                         |top_photo_a                                       |4720    |3271    |595     |3358    |5       |6       |
-|  adjust                    |saixian_picture_adjust_pipe                       |361     |190     |113     |239     |0       |3       |
-|  ctrl                      |photo_control_a                                   |828     |599     |42      |671     |0       |0       |
-|    port                    |photo_uart                                        |533     |413     |19      |450     |0       |0       |
-|  keys[0]$button            |saixian_key_debounce                              |42      |35      |6       |24      |0       |0       |
-|  keys[1]$button            |saixian_key_debounce                              |41      |35      |6       |23      |0       |0       |
+|top                         |top_photo_a                                       |5514    |4003    |626     |3809    |5       |6       |
+|  adjust                    |saixian_picture_adjust_pipe                       |372     |211     |119     |235     |0       |3       |
+|  auto_advance              |photo_auto_advance                                |48      |40      |8       |34      |0       |0       |
+|  ctrl                      |photo_cached_control_a                            |1150    |849     |42      |841     |0       |0       |
+|    port                    |photo_uart                                        |586     |420     |19      |491     |0       |0       |
+|  keys[0]$button            |saixian_key_debounce                              |42      |36      |6       |23      |0       |0       |
+|  keys[1]$button            |saixian_key_debounce                              |44      |38      |6       |25      |0       |0       |
 |  keys[2]$button            |saixian_key_debounce                              |43      |37      |6       |23      |0       |0       |
-|  keys[3]$button            |saixian_key_debounce                              |43      |36      |6       |24      |0       |0       |
-|  pixels                    |frame_pixels                                      |42      |27      |0       |42      |0       |0       |
-|  rx                        |photo_link_receiver                               |122     |108     |6       |85      |0       |0       |
-|  sa                        |photo_event_sync                                  |3       |2       |0       |3       |0       |0       |
+|  keys[3]$button            |saixian_key_debounce                              |41      |35      |6       |23      |0       |0       |
+|  pixels                    |frame_pixels                                      |50      |32      |0       |47      |0       |0       |
+|  resolution_overlay        |photo_resolution_overlay                          |312     |292     |17      |233     |0       |0       |
+|  rx                        |photo_link_receiver                               |139     |123     |6       |94      |0       |0       |
+|  sa                        |photo_event_sync                                  |4       |4       |0       |3       |0       |0       |
 |  sb                        |photo_event_sync                                  |1       |0       |0       |1       |0       |0       |
-|  screen_rx                 |saixian_hmi_uart                                  |135     |126     |9       |93      |0       |0       |
-|  screen_tx                 |saixian_hmi_status_tx                             |284     |256     |28      |144     |1       |0       |
-|  sd                        |photo_event_sync                                  |2       |2       |0       |2       |0       |0       |
-|  settings                  |saixian_settings_controller                       |136     |127     |9       |64      |0       |0       |
-|  status                    |photo_status                                      |93      |63      |9       |57      |0       |0       |
-|  store                     |frame_store                                       |1286    |773     |224     |887     |4       |0       |
-|    ram                     |sdram                                             |432     |200     |9       |418     |0       |0       |
-|      u2_ram                |sdr_as_ram                                        |432     |200     |9       |418     |0       |0       |
-|        u1_init_ref         |sdr_init_ref                                      |111     |44      |9       |97      |0       |0       |
-|        u2_wrrd             |sdr_wrrd                                          |321     |156     |0       |321     |0       |0       |
-|    rw                      |frame_read_write                                  |828     |555     |215     |443     |4       |0       |
-|      frame_fifo_read_m0    |frame_fifo_read                                   |457     |294     |139     |194     |0       |0       |
-|        u_mapper            |saixian_frame_mapper                              |225     |128     |97      |37      |0       |0       |
-|      frame_fifo_write_m0   |frame_fifo_write                                  |143     |106     |36      |67      |0       |0       |
-|      read_buf              |rfifo_32_32_512                                   |117     |76      |20      |94      |2       |0       |
+|  screen_rx                 |saixian_hmi_uart                                  |136     |124     |9       |91      |0       |0       |
+|  screen_tx                 |saixian_hmi_status_tx                             |315     |287     |28      |148     |1       |0       |
+|  settings                  |saixian_settings_controller                       |114     |105     |9       |65      |0       |0       |
+|  status                    |photo_status                                      |81      |57      |9       |58      |0       |0       |
+|  store                     |frame_store                                       |1296    |800     |224     |872     |4       |0       |
+|    ram                     |sdram                                             |417     |204     |9       |394     |0       |0       |
+|      u2_ram                |sdr_as_ram                                        |417     |204     |9       |394     |0       |0       |
+|        u1_init_ref         |sdr_init_ref                                      |104     |57      |9       |89      |0       |0       |
+|        u2_wrrd             |sdr_wrrd                                          |313     |147     |0       |305     |0       |0       |
+|    rw                      |frame_read_write                                  |854     |575     |215     |453     |4       |0       |
+|      frame_fifo_read_m0    |frame_fifo_read                                   |493     |325     |139     |204     |0       |0       |
+|        u_mapper            |saixian_frame_mapper                              |260     |163     |97      |39      |0       |0       |
+|      frame_fifo_write_m0   |frame_fifo_write                                  |134     |97      |36      |69      |0       |0       |
+|      read_buf              |rfifo_32_32_512                                   |111     |82      |20      |87      |2       |0       |
 |        ram_inst            |ram_infer_rfifo_32_32_512                         |0       |0       |0       |0       |2       |0       |
-|        rd_to_wr_cross_inst |fifo_cross_domain_addr_process_al_rfifo_32_32_512 |34      |20      |0       |34      |0       |0       |
-|        wr_to_rd_cross_inst |fifo_cross_domain_addr_process_al_rfifo_32_32_512 |36      |34      |0       |36      |0       |0       |
-|      write_buf             |wfifo_32_32_512                                   |111     |79      |20      |88      |2       |0       |
+|        rd_to_wr_cross_inst |fifo_cross_domain_addr_process_al_rfifo_32_32_512 |30      |25      |0       |30      |0       |0       |
+|        wr_to_rd_cross_inst |fifo_cross_domain_addr_process_al_rfifo_32_32_512 |34      |30      |0       |34      |0       |0       |
+|      write_buf             |wfifo_32_32_512                                   |116     |71      |20      |93      |2       |0       |
 |        ram_inst            |ram_infer_wfifo_32_32_512                         |0       |0       |0       |0       |2       |0       |
-|        rd_to_wr_cross_inst |fifo_cross_domain_addr_process_al_wfifo_32_32_512 |36      |29      |0       |36      |0       |0       |
-|        wr_to_rd_cross_inst |fifo_cross_domain_addr_process_al_wfifo_32_32_512 |28      |27      |0       |28      |0       |0       |
-|    align_read              |photo_sdram_read_align                            |26      |18      |0       |26      |0       |0       |
+|        rd_to_wr_cross_inst |fifo_cross_domain_addr_process_al_wfifo_32_32_512 |33      |23      |0       |33      |0       |0       |
+|        wr_to_rd_cross_inst |fifo_cross_domain_addr_process_al_wfifo_32_32_512 |35      |24      |0       |35      |0       |0       |
+|    align_read              |photo_sdram_read_align                            |25      |21      |0       |25      |0       |0       |
 |  style                     |saixian_hmi_color_style                           |32      |16      |16      |5       |0       |0       |
-|  transition                |saixian_transition                                |45      |40      |0       |45      |0       |0       |
-|  u_clock_check             |hdmi_pixel_clock_monitor                          |199     |109     |20      |159     |0       |0       |
-|  u_hdmi_phy                |hdmi_phy_wrapper                                  |53      |41      |0       |52      |0       |0       |
+|  transition                |saixian_transition                                |50      |47      |0       |48      |0       |0       |
+|  u_clock_check             |hdmi_pixel_clock_monitor                          |197     |135     |20      |155     |0       |0       |
+|  u_hdmi_phy                |hdmi_phy_wrapper                                  |52      |39      |0       |52      |0       |0       |
 |    u0_lane_lvds_8_1        |lane_lvds_10_1                                    |20      |14      |0       |20      |0       |0       |
-|    u1_lane_lvds_8_1        |lane_lvds_10_1                                    |14      |12      |0       |13      |0       |0       |
-|    u2_lane_lvds_8_1        |lane_lvds_10_1                                    |9       |7       |0       |9       |0       |0       |
-|    u3_lane_lvds_8_1        |lane_lvds_10_1                                    |10      |8       |0       |10      |0       |0       |
-|  u_scan                    |hdmi_scan_monitor                                 |197     |160     |37      |111     |0       |0       |
+|    u1_lane_lvds_8_1        |lane_lvds_10_1                                    |12      |10      |0       |12      |0       |0       |
+|    u2_lane_lvds_8_1        |lane_lvds_10_1                                    |8       |6       |0       |8       |0       |0       |
+|    u3_lane_lvds_8_1        |lane_lvds_10_1                                    |12      |9       |0       |12      |0       |0       |
+|  u_scan                    |hdmi_scan_monitor                                 |188     |151     |37      |108     |0       |0       |
 |  u_sys_pll                 |sys_pll                                           |0       |0       |0       |0       |0       |0       |
-|  u_tx                      |hdmi_minimal_tx                                   |409     |276     |34      |316     |0       |0       |
-|    ch0                     |hdmi_minimal_channel                              |72      |65      |7       |37      |0       |0       |
-|    ch1                     |hdmi_minimal_channel                              |34      |27      |7       |24      |0       |0       |
-|    ch2                     |hdmi_minimal_channel                              |50      |43      |7       |23      |0       |0       |
+|  u_tx                      |hdmi_minimal_tx                                   |435     |292     |34      |312     |0       |0       |
+|    ch0                     |hdmi_minimal_channel                              |76      |69      |7       |29      |0       |0       |
+|    ch1                     |hdmi_minimal_channel                              |53      |46      |7       |20      |0       |0       |
+|    ch2                     |hdmi_minimal_channel                              |46      |39      |7       |29      |0       |0       |
 |  u_video_pll               |video_pll                                         |0       |0       |0       |0       |0       |0       |
-|  enhance                   |saixian_adaptive_enhance                          |104     |61      |0       |104     |0       |0       |
-|  rh                        |dual_still_reset_sync                             |3       |0       |0       |3       |0       |0       |
-|  rl                        |dual_still_reset_sync                             |3       |0       |0       |3       |0       |0       |
-|  rm                        |dual_still_reset_sync                             |11      |5       |0       |10      |0       |0       |
-|  rp                        |dual_still_reset_sync                             |21      |12      |0       |20      |0       |0       |
-|  rr                        |dual_still_reset_sync                             |2       |2       |0       |2       |0       |0       |
+|  enhance                   |saixian_adaptive_enhance                          |102     |55      |0       |102     |0       |0       |
+|  rh                        |dual_still_reset_sync                             |3       |1       |0       |3       |0       |0       |
+|  rl                        |dual_still_reset_sync                             |2       |2       |0       |2       |0       |0       |
+|  rm                        |dual_still_reset_sync                             |12      |4       |0       |11      |0       |0       |
+|  rp                        |dual_still_reset_sync                             |26      |17      |0       |23      |0       |0       |
+|  rr                        |dual_still_reset_sync                             |6       |5       |0       |6       |0       |0       |
 +-------------------------------------------------------------------------------------------------------------------------------------+
 
 
 DataNet Average Fanout:
 
    Index     Fanout    Nets  
-    #1         1       4471  
-    #2         2       1012  
-    #3         3       366   
-    #4         4       205   
-    #5        5-10     378   
-    #6       11-50     171   
-    #7       51-100     15   
-  Average     2.34           
+    #1         1       4952  
+    #2         2       1268  
+    #3         3       491   
+    #4         4       232   
+    #5        5-10     479   
+    #6       11-50     222   
+    #7       51-100     11   
+  Average     2.44           

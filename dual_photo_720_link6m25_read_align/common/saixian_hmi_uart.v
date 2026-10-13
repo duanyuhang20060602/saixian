@@ -25,6 +25,10 @@ module saixian_hmi_uart #(
     output reg        setting_valid,
     output reg [2:0]  setting_id,
     output reg [7:0]  setting_value,
+    output reg        effect_valid,
+    output reg [2:0]  effect_value,
+    output reg        auto_valid,
+    output reg        auto_value,
     output reg        reset_defaults_pulse,
     output reg        frame_error_pulse
 );
@@ -145,6 +149,14 @@ task decode_frame;
                 if(frame_value<=2) begin setting_valid<=1'b1;setting_id<=3'd7;setting_value<=frame_value;end
                 else frame_error_pulse<=1'b1;
             end
+            8'h18: begin
+                if (frame_value <= 6) begin effect_valid<=1'b1; effect_value<=frame_value[2:0]; end
+                else frame_error_pulse<=1'b1;
+            end
+            8'h19: begin
+                if (frame_value <= 1) begin auto_valid<=1'b1; auto_value<=frame_value[0]; end
+                else frame_error_pulse<=1'b1;
+            end
             8'h20: begin
                 if (frame_value == 0) result_blue_pulse <= 1'b1;
                 else frame_error_pulse <= 1'b1;
@@ -184,6 +196,10 @@ always @(posedge clk or posedge rst) begin
         setting_valid        <= 1'b0;
         setting_id           <= 3'd0;
         setting_value        <= 8'd0;
+        effect_valid         <= 1'b0;
+        effect_value         <= 3'd0;
+        auto_valid           <= 1'b0;
+        auto_value           <= 1'b0;
         reset_defaults_pulse <= 1'b0;
         frame_error_pulse    <= 1'b0;
     end else begin
@@ -199,6 +215,8 @@ always @(posedge clk or posedge rst) begin
         result_sprint_pulse  <= 1'b0;
         result_stop_pulse    <= 1'b0;
         setting_valid        <= 1'b0;
+        effect_valid         <= 1'b0;
+        auto_valid           <= 1'b0;
         reset_defaults_pulse <= 1'b0;
         frame_error_pulse    <= 1'b0;
 

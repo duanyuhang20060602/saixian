@@ -20,6 +20,7 @@ module sd_card_cmd(
 	output                      nCS_ctrl,                     //SPI module chip select control
 	output reg[15:0]            clk_div,
 	output reg                  spi_wr_req,                   //SPI module data sending request
+	output                      spi_read_stream,spi_read_continue,
 	input                       spi_wr_ack,                   //SPI module data request response
 	output[7:0]                 spi_data_in,                  //SPI module send data
 	input[7:0]                  spi_data_out                  //SPI module data returned
@@ -42,6 +43,7 @@ parameter S_WRITE_BUSY   = 14;
 parameter S_WRITE_ACK    = 15;
 parameter S_ERR          = 16;
 parameter S_END          = 17;
+parameter S_STOP_BUSY    = 18;
 
 reg[4:0]                      state;
 reg                           CS_reg;
@@ -57,6 +59,8 @@ assign block_write_data_rd = (state == S_WRITE_DATA_0);
 assign spi_data_in = send_data;
 assign data_recv = spi_data_out;
 assign nCS_ctrl = CS_reg;
+assign spi_read_stream = state==S_READ;
+assign spi_read_continue = state==S_READ && byte_cnt<16'd513;
 always@(posedge sys_clk or posedge rst)
 begin
 	if(rst == 1'b1)
@@ -104,8 +108,11 @@ begin
 				cmd_req_error <= 1'b0;
 				wr_data_cnt <= 10'd0;
 				//wait for  instruction
-				if(cmd_req == 1'b1)
-					state <= S_CMD_PRE;
+				if(cmd_req == 1'b1)begin
+					// CMD12 must stay selected inside an existing read stream.
+					if(cmd[47:40]==8'd12)begin state<=S_CMD;byte_cnt<=0;spi_wr_req<=0;CS_reg<=0;end
+					else state <= S_CMD_PRE;
+				end
 				else if(block_read_req == 1'b1)
 					state <= S_READ_WAIT;
 				else if(block_write_req == 1'b1)
@@ -132,7 +139,9 @@ begin
 			begin
 				if(spi_wr_ack == 1'b1)
 				begin
-					if((byte_cnt == 16'hffff) || (data_recv != cmd_r1 && data_recv[7] == 1'b0))
+					// Ignore MOSI command clocks and CMD12's extra stuff byte.
+					if(cmd[47:40]==8'd12 && byte_cnt<=16'd6)begin byte_cnt<=byte_cnt+16'd1;end
+					else if((byte_cnt == 16'hffff) || (data_recv != cmd_r1 && data_recv[7] == 1'b0))
 					begin
 						state <= S_ERR;
 						spi_wr_req <= 1'b0;
@@ -141,7 +150,8 @@ begin
 					else if(data_recv == cmd_r1)
 					begin
 						spi_wr_req <= 1'b0;
-						if(cmd_data_len != 16'd0)
+						if(cmd[47:40]==8'd12)begin state<=S_STOP_BUSY;byte_cnt<=0;end
+						else if(cmd_data_len != 16'd0)
 						begin
 							state <= S_CMD_DATA;
 							byte_cnt <= 16'd0;
@@ -319,10 +329,18 @@ begin
 					send_data <= 8'hff;
 				end
 			end
+			S_STOP_BUSY:begin
+				if(spi_wr_ack)begin
+					if(data_recv==8'hff)begin state<=S_END;spi_wr_req<=0;byte_cnt<=0;CS_reg<=1;end
+					else if(byte_cnt==16'hffff)begin state<=S_ERR;spi_wr_req<=0;end
+					else byte_cnt<=byte_cnt+16'd1;
+				end else begin spi_wr_req<=1;send_data<=8'hff;end
+			end
 			S_ERR:
 			begin
 				state <= S_END;
 				cmd_req_error <= 1'b1;
+				CS_reg <= 1'b1;
 			end
 			S_READ_ACK,S_WRITE_ACK,S_END:
 			begin

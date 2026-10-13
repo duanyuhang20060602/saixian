@@ -5,6 +5,7 @@ module saixian_transition(
     input  wire       frame_ready_toggle,
     input  wire [1:0] ready_buf_idx,
     input  wire       ready_slide_right,
+    input  wire [2:0] effect_select, // 0=random, 1..6=the named effects below
     output reg  [1:0] active_buf_idx,
     output reg  [1:0] slide_new_buf_idx,
     output reg        frame_commit_toggle,
@@ -88,6 +89,18 @@ function [2:0] choose_effect;
     end
 endfunction
 
+function [2:0] selected_effect;
+    input [2:0] selection;
+    input [7:0] random_value;
+    input [2:0] previous_effect;
+    begin
+        case (selection)
+            3'd1,3'd2,3'd3,3'd4,3'd5,3'd6: selected_effect=selection-3'd1;
+            default: selected_effect=choose_effect(random_value,previous_effect);
+        endcase
+    end
+endfunction
+
 always @(posedge clk or posedge rst) begin
     if (rst) begin
         ready_sync0         <= 1'b0;
@@ -133,7 +146,7 @@ always @(posedge clk or posedge rst) begin
                     transition_level    <= 6'd0;
                 end else begin
                     transition_active <= 1'b1;
-                    transition_mode   <= choose_effect(effect_lfsr, transition_mode);
+                    transition_mode   <= selected_effect(effect_select,effect_lfsr,transition_mode);
                     slide_right       <= ready_right_sync1;
                     slide_step        <= 5'd0;
                     slide_offset      <= 11'd0;

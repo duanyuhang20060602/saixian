@@ -1,5 +1,5 @@
 
-module spi_master
+module spi_master #(parameter FAST_READ_STREAM=0)
 (
 	input                       sys_clk,
 	input                       rst,
@@ -12,6 +12,7 @@ module spi_master
 	input                       nCS_ctrl,
 	input[15:0]                 clk_div,
 	input                       wr_req,
+	input                       read_stream,read_continue,
 	output                      wr_ack,
 	input[7:0]                  data_in,
 	output[7:0]                 data_out
@@ -32,7 +33,12 @@ reg[4:0]                     clk_edge_cnt;
 assign MOSI = MOSI_shift[7];
 assign DCLK = DCLK_reg;
 assign data_out = MISO_shift;
-assign wr_ack = (state == ACK);
+// Read streaming is restricted to mode 3, divider zero and FF transmit
+// bytes. Consume a completed byte on its trailing half cycle, then launch
+// the next byte's first edge without IDLE/ACK round trips.
+wire fast_read=FAST_READ_STREAM && read_stream && CPOL && CPHA && clk_div==0;
+wire fast_restart=state==LAST_HALF_CYCLE && fast_read && read_continue;
+assign wr_ack = (state == ACK) || (state==LAST_HALF_CYCLE && fast_read);
 assign nCS = nCS_ctrl;
 always@(posedge sys_clk or posedge rst)
 begin
@@ -64,6 +70,9 @@ begin
 				next_state <= DCLK_IDLE;
 		//this is the last data edge
 		LAST_HALF_CYCLE:
+			if(fast_read)
+				next_state <= read_continue ? DCLK_EDGE:ACK_WAIT;
+			else
 			if(clk_cnt == clk_div)
 				next_state <= ACK;
 			else
@@ -93,6 +102,8 @@ always@(posedge sys_clk or posedge rst)
 begin
 	if(rst)
 		clk_cnt <= 16'd0;
+	else if(fast_restart)
+		clk_cnt <= 16'd0;
 	else if(state == DCLK_IDLE || state == LAST_HALF_CYCLE)
 		clk_cnt <= clk_cnt + 16'd1;
 	else
@@ -105,7 +116,7 @@ begin
 		clk_edge_cnt <= 5'd0;
 	else if(state == DCLK_EDGE)
 		clk_edge_cnt <= clk_edge_cnt + 5'd1;
-	else if(state == IDLE)
+	else if(state == IDLE || fast_restart)
 		clk_edge_cnt <= 5'd0;
 end
 //SPI data output
@@ -113,7 +124,7 @@ always@(posedge sys_clk or posedge rst)
 begin
 	if(rst)
 		MOSI_shift <= 8'd0;
-	else if(state == IDLE && wr_req)
+	else if((state == IDLE && wr_req) || fast_restart)
 		MOSI_shift <= data_in;
 	else if(state == DCLK_EDGE)
 		if(CPHA == 1'b0 && clk_edge_cnt[0] == 1'b1)
@@ -126,7 +137,7 @@ always@(posedge sys_clk or posedge rst)
 begin
 	if(rst)
 		MISO_shift <= 8'd0;
-	else if(state == IDLE && wr_req)
+	else if((state == IDLE && wr_req) || fast_restart)
 		MISO_shift <= 8'h00;
 	else if(state == DCLK_EDGE)
 		if(CPHA == 1'b0 && clk_edge_cnt[0] == 1'b0)

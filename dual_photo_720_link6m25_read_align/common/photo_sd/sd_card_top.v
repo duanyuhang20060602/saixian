@@ -2,7 +2,9 @@
 module sd_card_top
 #(
 	parameter  SPI_LOW_SPEED_DIV = 248,         // SD card low speed mode frequency division parameter,spi clk speed = clk speed /((SPI_LOW_SPEED_DIV + 2) * 2 )
-	parameter  SPI_HIGH_SPEED_DIV = 0           // SD card high speed mode frequency division parameter,spi clk speed = clk speed /((SPI_HIGH_SPEED_DIV + 2) * 2 )
+	parameter  SPI_HIGH_SPEED_DIV = 0,          // SD card high speed mode frequency division parameter,spi clk speed = clk speed /((SPI_HIGH_SPEED_DIV + 2) * 2 )
+	parameter  READ_MULTIBLOCK = 0,
+	parameter  FAST_READ_STREAM = 0
 )
 (
 	input            clk,
@@ -46,10 +48,11 @@ wire                 spi_wr_ack;                //SPI module data request respon
 wire[7:0]            spi_data_in;               //SPI module send data
 wire[7:0]            spi_data_out;              //SPI module data returned
 wire[15:0]           clk_div;
+wire spi_read_stream,spi_read_continue;
 sd_card_sec_read_write
 #(
 	.SPI_LOW_SPEED_DIV(SPI_LOW_SPEED_DIV),
-	.SPI_HIGH_SPEED_DIV(SPI_HIGH_SPEED_DIV)
+	.SPI_HIGH_SPEED_DIV(SPI_HIGH_SPEED_DIV),.READ_MULTIBLOCK(READ_MULTIBLOCK)
 )
 sd_card_sec_read_write_m0(
 	.clk                            (clk                    ),
@@ -104,13 +107,15 @@ sd_card_cmd sd_card_cmd_m0(
 	.nCS_ctrl                       (nCS_ctrl               ),
 	.clk_div                        (clk_div                ),
 	.spi_wr_req                     (spi_wr_req             ),
+	.spi_read_stream                (spi_read_stream        ),
+	.spi_read_continue              (spi_read_continue      ),
 	.spi_wr_ack                     (spi_wr_ack             ),
 	.spi_data_in                    (spi_data_in            ),
 	.spi_data_out                   (spi_data_out           )
 
 );
 
-spi_master spi_master_m0(
+spi_master #(.FAST_READ_STREAM(FAST_READ_STREAM)) spi_master_m0(
 	.sys_clk                        (clk                    ),
 	.rst                            (rst                    ),
 	.nCS                            (SD_nCS                 ),
@@ -122,6 +127,8 @@ spi_master spi_master_m0(
 	.CPHA                           (1'b1                   ),
 	.nCS_ctrl                       (nCS_ctrl               ),
 	.wr_req                         (spi_wr_req             ),
+	.read_stream                    (spi_read_stream        ),
+	.read_continue                  (spi_read_continue      ),
 	.wr_ack                         (spi_wr_ack             ),
 	.data_in                        (spi_data_in            ),
 	.data_out                       (spi_data_out           )

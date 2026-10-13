@@ -30,6 +30,7 @@ assign image_ack=done_toggle;
 wire read_req,read_en,read_ack,read_finish,read_empty,init_done;
 wire transition_active,slide_right,display_valid,frame_commit,ready_toggle,ready_right;
 wire [2:0] transition_mode;wire [10:0] slide_offset;wire [5:0] darkness;
+wire [2:0] effect_select;wire auto_enable;
 frame_store #(.FLIP(0)) store(.write_slot(receive_slot),.read_slot(active_slot),.new_slot(new_slot),
  .slide_active(transition_active),.slide_right(slide_right),.slide_offset({1'b0,slide_offset[10:1]}),.transition_mode(transition_mode),
  .mem_clk(mem_clk),.mem_clk_sft(mem_clk_sft),.rst(rst_mem),
@@ -39,6 +40,7 @@ frame_store #(.FLIP(0)) store(.write_slot(receive_slot),.read_slot(active_slot),
 wire hs,vs,de,fs;wire [11:0] x;wire [10:0] y;wire [9:0] blue,green,red;
 wire blank_start=x==0 && y==720;
 wire [23:0] raw_rgb,final_rgb;
+wire [15:0] current_source_width,current_source_height;
 // The FIFO reader takes two cycles, photo enhancement seven, adjustment
 // eight and style/fade/multiply/range four: 21 clocks in all.
 hdmi_minimal_tx #(.EXTERNAL_VIDEO(1),.VIDEO_DELAY(21)) u_tx(.clk(pixel_clk),.rst(rst_pixel),.rgb_in(final_rgb),
@@ -48,7 +50,7 @@ frame_pixels pixels(.clk(pixel_clk),.rst(rst_pixel),.de(de),.x(x),.y(y),.image_v
  .read_ack(read_ack),.empty(read_empty),.data(read_data),.read_req(read_req),.read_en(read_en),.rgb(raw_rgb),
  .armed(armed),.output_started(started),.underflow(underflow));
 saixian_transition transition(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),.frame_ready_toggle(ready_toggle),
- .ready_buf_idx(ready_slot),.ready_slide_right(ready_right),.active_buf_idx(active_slot),.slide_new_buf_idx(new_slot),
+ .ready_buf_idx(ready_slot),.ready_slide_right(ready_right),.effect_select(effect_select),.active_buf_idx(active_slot),.slide_new_buf_idx(new_slot),
  .frame_commit_toggle(frame_commit),.display_valid(display_valid),.transition_active(transition_active),
  .transition_mode(transition_mode),.slide_offset(slide_offset),.slide_right(slide_right),.transition_level(darkness));
 wire [3:0] presses;
@@ -57,29 +59,42 @@ generate for(k=0;k<4;k=k+1)begin:keys
  saixian_key_debounce #(.CLK_FREQ_HZ(75000000)) button(.clk(pixel_clk),.rst(rst_pixel),.key_n(key[k]),.press_pulse(presses[k]));
 end endgenerate
 wire hmi_prev,hmi_next,setting_valid,reset_defaults,page_notify;wire [2:0] setting_id,page_id;wire [7:0] setting_value;
+wire effect_valid,auto_valid,auto_value;wire [2:0] effect_value;
 saixian_hmi_uart #(.CLK_FREQ_HZ(75000000)) screen_rx(.clk(pixel_clk),.rst(rst_pixel),.uart_rx(hmi_uart_rx),
  .prev_pulse(hmi_prev),.next_pulse(hmi_next),.setting_valid(setting_valid),.setting_id(setting_id),.setting_value(setting_value),
+ .effect_valid(effect_valid),.effect_value(effect_value),.auto_valid(auto_valid),.auto_value(auto_value),
  .reset_defaults_pulse(reset_defaults),.page_id(page_id),.page_notify_pulse(page_notify));
-wire settings_mode;wire [3:0] brightness,contrast,saturation,volume;wire [1:0] sharpness,enhancement;wire invert,vintage;
+wire settings_mode;wire [3:0] setting_item;wire [3:0] brightness,contrast,saturation,volume;wire [1:0] sharpness,enhancement;wire invert,vintage;
 // Diagnostic build: HMI/key settings cannot enable enhancement or sharpening.
 assign sharpness=2'd0;assign enhancement=2'd0;
 saixian_settings_controller #(.CLK_FREQ_HZ(75000000)) settings(.clk(pixel_clk),.rst(rst_pixel),.carousel_mode(1'b1),
  .key_next_item(presses[0]),.key_decrease(presses[1]),.key_enter_exit(presses[2]),.key_increase(presses[3]),
  .hmi_setting_valid(setting_valid),.hmi_setting_id(setting_id),.hmi_setting_value(setting_value),.hmi_reset_defaults(reset_defaults),
- .settings_mode(settings_mode),.setting_item(),.volume_setting(volume),.brightness_setting(brightness),.contrast_setting(contrast),
+ .effect_valid(effect_valid),.effect_value(effect_value),.auto_valid(auto_valid),.auto_value(auto_value),
+ .effect_select(effect_select),.auto_enable(auto_enable),
+ .settings_mode(settings_mode),.setting_item(setting_item),.volume_setting(volume),.brightness_setting(brightness),.contrast_setting(contrast),
  .saturation_setting(saturation),.sharpness_setting(),.invert_setting(invert),.vintage_setting(vintage),.enhancement_setting());
 reg armed_meta,armed_sync,fault_meta,fault_sync;
 always @(posedge pixel_clk or posedge rst_pixel)
  if(rst_pixel)begin armed_meta<=0;armed_sync<=0;fault_meta<=0;fault_sync<=0;end
  else begin armed_meta<=rx_armed;armed_sync<=armed_meta;fault_meta<=rx_fault;fault_sync<=fault_meta;end
 wire done_pixel,busy;wire [2:0] count,current;wire [3:0] error,control_state;
+wire auto_next;
+photo_auto_advance auto_advance(.clk(pixel_clk),.rst(rst_pixel),.enable(auto_enable),
+ .display_valid(display_valid),.transition_active(transition_active),.busy(busy),.enough_images(count>1),
+ .settings_mode(settings_mode),.manual_event(presses[0] || presses[3] || hmi_next || reset_defaults),
+ .next_pulse(auto_next));
 photo_event_sync sd(.clk(pixel_clk),.rst(rst_pixel),.toggle(done_toggle),.pulse(done_pixel));
-photo_control_a #(.CHECK_FRAME_CRC(0)) ctrl(.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
- .previous(!settings_mode && (presses[0] || hmi_prev)),.next(!settings_mode && (presses[3] || hmi_next)),
+reg done_pixel_registered;
+always @(posedge pixel_clk or posedge rst_pixel)
+ if(rst_pixel)done_pixel_registered<=0;else done_pixel_registered<=done_pixel;
+photo_cached_control_a #(.CHECK_FRAME_CRC(0)) ctrl(.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
+ .previous(1'b0),.next(!settings_mode && (presses[0] || presses[3] || hmi_next || auto_next)),
  .active_slot(active_slot),.new_slot(new_slot),.transition_active(transition_active),.commit_toggle(frame_commit),
- .receive_slot(receive_slot),.arm_toggle(arm_toggle),.abort_toggle(abort_toggle),.rx_armed(armed_sync),.rx_done(done_pixel),
+ .receive_slot(receive_slot),.arm_toggle(arm_toggle),.abort_toggle(abort_toggle),.rx_armed(armed_sync),.rx_done(done_pixel_registered),
  .rx_fault(fault_sync),.rx_crc(rx_crc),.ready_toggle(ready_toggle),.ready_slot(ready_slot),.ready_right(ready_right),
- .image_count(count),.current_image(current),.busy(busy),.error(error),.debug_state(control_state));
+ .image_count(count),.current_image(current),.busy(busy),.error(error),.debug_state(control_state),
+ .current_source_width(current_source_width),.current_source_height(current_source_height));
 saixian_hmi_status_tx #(.CLK_FREQ_HZ(75000000)) screen_tx(.clk(pixel_clk),.rst(rst_pixel),.image_count(count),
  .audio_count(3'd0),.error_code(error>7 ? 3'd7:error[2:0]),.initializing(count==0),.page_id(page_id),
  .refresh_request(page_notify || setting_valid || reset_defaults),.sharpness(sharpness),.brightness(brightness),.contrast(contrast),
@@ -118,7 +133,9 @@ always @(posedge pixel_clk or posedge rst_pixel)begin
   range_rgb<={8'd16+range_r[15:8],8'd16+range_g[15:8],8'd16+range_b[15:8]};
  end
 end
-assign final_rgb=range_rgb;
+photo_resolution_overlay #(.VIDEO_DELAY(21)) resolution_overlay(.clk(pixel_clk),.rst(rst_pixel),
+ .x(x),.y(y),.de(de),.display_valid(display_valid),
+ .source_width(current_source_width),.source_height(current_source_height),.rgb_in(range_rgb),.rgb_out(final_rgb));
 hdmi_phy_wrapper #(.DEVICE("EG")) u_hdmi_phy(.I_pixel_clk(pixel_clk),.I_serial_clk(serial_clk),.I_rst(rst_serial),
  .I_tmds_channel_0(blue),.I_tmds_channel_1(green),.I_tmds_channel_2(red),.I_tmds_channel_clk(10'b1111100000),
  .O_tmds_ch0_p(HDMI_D0_P),.O_tmds_ch1_p(HDMI_D1_P),.O_tmds_ch2_p(HDMI_D2_P),.O_tmds_clk_p(HDMI_CLK_P));
@@ -128,14 +145,20 @@ hdmi_scan_monitor #(.HT(1650),.VT(750),.HA(1280),.VA(720),.HS(40),.VS(5)) u_scan
 hdmi_pixel_clock_monitor #(.EXPECTED_PIXELS(7500000),.TOLERANCE_PIXELS(75000)) u_clock_check(
  .ref_clk(clk),.pixel_clk(pixel_clk),.arst(!video_lock),.valid(clock_valid),.fault(clock_fault));
 reg hpd_meta,hpd_sync;reg [17:0] status_meta,status_sync;
+reg menu_meta,menu_sync;reg [15:0] menu_digits_meta,menu_digits_sync;
+// photo_status shifts nibble 0 out first, so encode the displayed order in reverse.
+wire [15:0] menu_digits={4'd0,{3'b000,auto_enable},{1'b0,effect_select},setting_item};
 always @(posedge clk or posedge rst_ref)
- if(rst_ref)begin hpd_meta<=0;hpd_sync<=0;status_meta<=0;status_sync<=0;end
+ if(rst_ref)begin hpd_meta<=0;hpd_sync<=0;status_meta<=0;status_sync<=0;
+  menu_meta<=0;menu_sync<=0;menu_digits_meta<=0;menu_digits_sync<=0;end
  else begin hpd_meta<=hdmi_hpd;hpd_sync<=hpd_meta;
+  menu_meta<=settings_mode;menu_sync<=menu_meta;
+  menu_digits_meta<=menu_digits;menu_digits_sync<=menu_digits_meta;
   status_meta<={count,(display_valid ? current+3'd1:3'd0),control_state,error,
    (error!=0 || underflow || scan_fault || clock_fault ? 4'd9:busy ? 4'd3:display_valid ? 4'd5:4'd2)};
   status_sync<=status_meta;end
 photo_status #(.CLK_HZ(50000000)) status(.clk(clk),.rst(rst_ref),.status(hpd_sync ? status_sync[3:0]:4'd0),
  .error(status_sync[7:4]),.state(status_sync[11:8]),.image(status_sync[14:12]),.count(status_sync[17:15]),
- .diagnostic_page(3'd0),.diagnostic_crc(16'd0),.seg_sel(seg_sel),.seg_data(seg_data));
+ .diagnostic_page(menu_sync ? 3'd1:3'd0),.diagnostic_crc(menu_digits_sync),.seg_sel(seg_sel),.seg_data(seg_data));
 assign HDMI_DDC_SCL=1'b1;assign HDMI_DDC_SDA=1'bz;
 endmodule

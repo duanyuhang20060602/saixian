@@ -1,4 +1,16 @@
-## 最新阶段快照：双板720p A读数据对齐版
+## 高速切换版本：双板 720p（2026-10-13）
+
+分支：`codex/dual-photo-720p-high-speed-switch`。
+
+- 板间链路 50 MHz，A 板四图缓存，B 板后台预读及缓存命中并行发送。
+- TF SPI 保持 25 MHz，新增 CMD18 连续扇区读取和连续字节传输。
+- 支持指定/随机转场、自动轮播及 HDMI 原图分辨率显示。
+- 匹配 A/B bit、源码与打包文件见 [工程说明](dual_photo_720_link6m25_read_align/README.md) 的烧录文件链接。
+- A/B 编译、布局布线及静态时序通过。本版未运行仿真，实板兼容性和实际提速待确认；此前 6.25 MHz 实板反馈不代表本版验收。
+
+---
+
+## 历史阶段快照：双板720p A读数据对齐版
 
 [工程、接线与烧录说明](dual_photo_720_link6m25_read_align/README.md) · [实板状态](dual_photo_720_link6m25_read_align/HARDWARE_STATUS.json)
 

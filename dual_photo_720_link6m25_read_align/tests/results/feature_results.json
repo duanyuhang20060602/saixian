@@ -1,0 +1,37 @@
+[
+  {
+    "test": "tb_real_fifo_link_delay",
+    "passed": true,
+    "seconds": 5.7
+  },
+  {
+    "test": "tb_real_fifo_link",
+    "passed": true,
+    "seconds": 5.64
+  },
+  {
+    "test": "tb_no_crc_system_async",
+    "passed": true,
+    "seconds": 63.16
+  },
+  {
+    "test": "tb_hmi",
+    "passed": true,
+    "seconds": 0.16
+  },
+  {
+    "test": "tb_playback_controls",
+    "passed": true,
+    "seconds": 0.12
+  },
+  {
+    "test": "tb_render",
+    "passed": true,
+    "seconds": 22.55
+  },
+  {
+    "test": "tb_read_data_align",
+    "passed": true,
+    "seconds": 6.5
+  }
+]

@@ -2,7 +2,9 @@
 module sd_card_sec_read_write
 #(
 	parameter  SPI_LOW_SPEED_DIV = 248,         // spi clk speed = clk speed /((SPI_LOW_SPEED_DIV + 2) * 2 )
-	parameter  SPI_HIGH_SPEED_DIV = 0           // spi clk speed = clk speed /((SPI_HIGH_SPEED_DIV + 2) * 2 )
+	parameter  SPI_HIGH_SPEED_DIV = 0,          // spi clk speed = clk speed /((SPI_HIGH_SPEED_DIV + 2) * 2 )
+	parameter  READ_MULTIBLOCK = 0,
+	parameter  STREAM_IDLE_CYCLES = 10000
 )
 (
 	input            clk,
@@ -53,9 +55,14 @@ localparam S_WRITE_END          = 15;
 localparam S_READ_END           = 16;
 localparam S_WAIT_READ_WRITE    = 17;
 localparam S_CMD16              = 18;
+localparam S_STREAM_DROP        = 19;
+localparam S_STREAM_STOP        = 20;
 
 reg[4:0]                       state;
 reg[31:0]                      sec_addr;
+reg stream_active,multi_supported;
+reg [31:0] stream_next;
+reg [15:0] stream_idle;
 assign sd_sec_read_data_valid = (state == S_READ) && block_read_valid;
 assign sd_sec_read_data = block_read_data;
 assign sd_sec_read_end = (state == S_READ_END);
@@ -78,6 +85,7 @@ begin
 		sec_addr <= 32'd0;
 		sd_init_done <= 1'b0;
 		init_stage <= 3'd0;
+		stream_active<=0;multi_supported<=READ_MULTIBLOCK!=0;stream_next<=0;stream_idle<=0;
 	end
 	else
 		case(state)
@@ -181,16 +189,21 @@ begin
 			end			
 			S_WAIT_READ_WRITE:
 			begin
-				if(sd_sec_write ==  1'b1)
+				if(stream_active && (sd_sec_write ||
+				   (sd_sec_read && sd_sec_read_addr!=stream_next) || stream_idle>=STREAM_IDLE_CYCLES))begin
+					state<=S_STREAM_STOP;cmd_req<=0;stream_idle<=0;
+				end else if(sd_sec_write ==  1'b1)
 				begin
 					state <= S_CMD24;
 					sec_addr <= sd_sec_write_addr;
 				end
 				else if(sd_sec_read == 1'b1)
 				begin
-					state <= S_CMD17;
+					state <= stream_active ? S_READ:S_CMD17;
 					sec_addr <= sd_sec_read_addr;
 				end
+				if(sd_sec_read || sd_sec_write || !stream_active)stream_idle<=0;
+				else if(stream_idle<STREAM_IDLE_CYCLES)stream_idle<=stream_idle+1'b1;
 
 				spi_clk_div <= 16'd0;
 			end
@@ -226,13 +239,18 @@ begin
 				begin
 					state <= S_READ;
 					cmd_req <= 1'b0;
+					stream_active<=multi_supported;
+				end
+				else if(cmd_req_ack && cmd_req_error && multi_supported)begin
+					// If CMD18 is rejected, retry the same address with CMD17.
+					multi_supported<=0;stream_active<=0;cmd_req<=0;
 				end
 				else
 				begin
 					cmd_req <= 1'b1;
 					cmd_data_len <= 16'd0;
 					cmd_r1 <= 8'h00;
-					cmd <= {8'd17,sec_addr,8'hff};
+					cmd <= {multi_supported ? 8'd18:8'd17,sec_addr,8'hff};
 				end
 			end
 			S_READ:
@@ -253,7 +271,18 @@ begin
 			end
 			S_READ_END:
 			begin
-				state <= S_WAIT_READ_WRITE;
+				stream_next<=sec_addr+32'd1;
+				state <= stream_active ? S_STREAM_DROP:S_WAIT_READ_WRITE;
+			end
+			S_STREAM_DROP:begin
+				// Upper-layer owner drops the completed request before
+				// presenting the next address. Do not replay the old sector.
+				if(!sd_sec_read)begin state<=S_WAIT_READ_WRITE;stream_idle<=0;end
+			end
+			S_STREAM_STOP:begin
+				if(cmd_req_ack)begin
+					cmd_req<=0;stream_active<=0;state<=S_WAIT_READ_WRITE;stream_idle<=0;
+				end else begin cmd_req<=1;cmd<={8'd12,32'd0,8'hff};cmd_r1<=0;cmd_data_len<=0;end
 			end
 			default:
 				state <= S_IDLE;

@@ -1,6 +1,8 @@
-# 2.0 Photo 双板 720p：A读数据对齐阶段快照
+# 高速切换版本：双板 720p，50 MHz 链路与 TF 连续读取
 
-> **实板状态（2026-10-12）：720p版本已修复，用户确认。此前误将768p图片当作720p测试图，现已撤回“仍有相同纹波”的判断。**
+发布分支：`codex/dual-photo-720p-high-speed-switch`；发布日期：2026-10-13。本版未运行仿真，实板兼容性和实际提速待确认。
+
+> 2026-10-12 的实板确认属于此前 6.25 MHz 版本。本次 50 MHz 链路、单向四图缓存仍需重新上板确认。
 >
 > 输出为1280×720。本套A/B bit和源码对应；原始1366×768目标尚未完成。
 
@@ -8,21 +10,30 @@
 
 ## 烧录文件
 
-- A：`delivery/PHOTO_BOARD_A_1280X720_J2_NOCRC_NOENHANCE_LINK6M25_A_READ_ALIGN.bit`
-- B：`delivery/PHOTO_BOARD_B_1280X720_J2_NOCRC_NOENHANCE_LINK6M25_A_READ_ALIGN.bit`
-- 源码与匹配 bit：`delivery/DUAL_PHOTO_1280X720_J2_NOCRC_NOENHANCE_LINK6M25_A_READ_ALIGN_SOURCE_AND_BITS.zip`
+- [A 板 bit](delivery/PHOTO_BOARD_A_1280X720_J2_NOCRC_NOENHANCE_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM.bit)
+- [B 板 bit](delivery/PHOTO_BOARD_B_1280X720_J2_NOCRC_NOENHANCE_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM.bit)
+- [源码与匹配 bit 打包下载](delivery/DUAL_PHOTO_1280X720_J2_NOCRC_NOENHANCE_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM_SOURCE_AND_BITS.zip)
 
-**两板必须同时使用本套 720p bit。不能混用 1366、CRC_DIAG、QUADWRITE 或 B_PATTERN。**
+**两板必须同时使用本套新 bit，不能与此前 6.25 MHz 或 1366×768 版本混用。**
 
 ## 对照条件
 
-- 输出 1280×720，RGB565。每行 640 个 32 位字，每帧 460800 字；三个槽基地址 0、460800、921600。
+- 输出 1280×720，RGB565。每行 640 个 32 位字，每帧 460800 字；A 四个槽基地址 0、460800、921600、1382400，B 保持三个槽。
 - A、B 的 `frame_fifo_read.v`、`frame_fifo_write.v`、`frame_read_write.v` 逐文件恢复 photo release d23efef 原版。
 - A 视频 PLL 直接使用 2.0 原版：像素 75MHz、串行 375MHz。水平总长 1650、垂直总长 750，实际约 60.61Hz；AVI 标记 VIC4。
-- SD、BMP 解析和原缩放算法沿用 photo release，输出改回原 1280×720；640×480 清晰缩放特例保留。原 SD 卡六张图可以继续使用。
-- 三槽缓存、邻图预读、板间控制与显示包装仍是双板实现；本工程不是整个单板 2.0 的逐文件副本。
-- 板间仍为 16 位、6.25MHz、原 HIGH/LOW 时序，图片 CRC32 关闭；UART 包 CRC16 保留。没有 QUADWRITE 动态掩码或填充写入。
-- 增强和锐化在 A 顶层固定为 0，设置操作不能开启；保持原 21 拍显示延迟，亮度、对比度、饱和度及转场保留。KEY1 上一张、KEY4 下一张、KEY3 设置，六图手动循环。
+- SD 读取加入连续字节与 CMD18 多块读取优化，BMP 解析和原缩放算法沿用 photo release，输出改回原 1280×720；640×480 清晰缩放特例保留。原 SD 卡六张图可以继续使用。
+- A 四槽邻图缓存、B 三槽 SD 缓存、板间控制与显示包装仍是双板实现；本工程不是整个单板 2.0 的逐文件副本。
+- 板间为 16 位、50 MHz、原 HIGH/LOW 时序，图片 CRC32 关闭；UART 包 CRC16 保留。没有 QUADWRITE 动态掩码或填充写入。
+- 增强和锐化在 A 顶层固定为 0；保持原 21 拍显示延迟，亮度、对比度、饱和度及转场保留。KEY1/KEY4 均为下一张、KEY3 设置。
+- A 板可选随机或指定转场，自动轮播默认关闭；开启后每次切换完成约 5 秒再请求下一张。具体操作见 [播放控制说明](PLAYBACK_CONTROLS.md)。
+
+## A 板四图缓存
+
+A 优先保存当前、下一张、后第二张、后第三张；B 向后预读两张。B 已缓存的图片可在后台加载其他图片时立即交给链路发送模块，避免被耗时读图阻塞。首图先显示，其余后台补齐；缓存命中直接启动本地转场，切换后补齐新窗口。详见 [四图缓存说明](A_FOUR_CACHE.md)。新控制器尚未进行仿真或实板验证。
+
+## 原图分辨率显示
+
+HDMI 左上角显示原始 BMP 分辨率，例如 `SRC 1920x1080`，实际 HDMI 输出仍为 1280×720。尺寸随 A 缓存槽保存，切换提交后更新；后台预读不会改变当前标注。BEGIN 报文新增源图尺寸元数据，必须同时烧录本套 A/B bit。50 MHz 板间时钟周期 20 ns，数据从下降沿发出、上升沿接收，半周期预算 10 ns；实板线缆与握手稳定性待确认。
 
 ## 接线
 
@@ -35,24 +46,28 @@
 3. 比较色块边界、横线、上下方向，再检查六张图片和快速切图。
 4. 若 720 正常，1366 分辨率/行地址/时钟适配是下一步重点；若仍异常，继续定位 B 读回、板间交付和 A 接收。
 
-原 720p 对照版能正常切图但有局部横带，本版用于检查显示处理是否参与纹波。本版720p实板纹波问题已修复（用户确认）。仿真和 STA 通过不等于毛刺已消除，底层加密 SDRAM 核未进入应用模型仿真。
+此前 6.25 MHz 对照版的固定纹波已由用户确认修复。本次取消上一张并再次提升链路速度，尚无对应实板反馈。仿真和 STA 不能替代真实线缆与 SDRAM 的连续切换检查。
 
 ## 构建
 
-`python tools/run_tests.py --only tb_real_fifo_link tb_real_fifo_link_delay tb_no_crc_system_async tb_render`
+旧控制器的仿真记录仅作为历史参考，不代表四图缓存验证通过。现有 `tb_no_crc_system_async` 使用旧 `photo_control_a`；四图缓存尚需专项仿真。
 
 随后在本目录运行 `./build.ps1`。TD 路径可用 SAIXIAN_TD_ROOT 指定。release 工具检查参与构建源码 SHA256、bit 时间戳和建立/保持时序。VALIDATION.md、delivery_manifest.json 保存最终证据。
 
 板间流程检查见 [FLOW_REVIEW.md](FLOW_REVIEW.md)。
 
-## 时钟对照
+## 历史时钟对照（6.25 MHz 旧版）
 
 从NOENHANCE 12.5MHz版本复制建立独立工程，仅更改B的板间PLL和A的外部接收时钟约束。PLL外部反馈50MHz/8=6.25MHz，CLKC0_DIV=80保持VCO500MHz；A link_clk周期160ns，上升/下降沿相隔80ns。B SDC derive_clocks从实际PLL推导新频率。UART仍115200，SD100MHz、SDRAM50MHz、视频75MHz均保持。
 
-请两板使用本套bit，以相同接线及图片比较纹波是否减轻、消失或位置改变。此次不合入刷新控制修改。降速也会降低SDRAM读写压力，改善不能单独证明线缆是根因。
+上述段落记录旧版降速对照条件。此前版本恢复 12.5 MHz；此前提升到 25 MHz，本次提升到 50 MHz，保留 A 板读数据对齐修正。
 
-## A板读数据对齐迁移版
-本版恢复真实SD卡、六图缓存、板间传输、按键/HMI切图和转场。仅A板SDRAM读数据延迟一拍，valid不延迟；所有其他RTL与LINK6M25版相同。B板尚无地址编码实板证据证明需要同样修正，本次保持其逻辑不变以单独验证A板修正。
+## A板读数据对齐迁移记录
+此前读数据对齐版恢复真实SD卡、六图缓存、板间传输、按键/HMI切图和转场。A板SDRAM读数据延迟一拍，valid不延迟；B板尚无地址编码实板证据证明需要同样修正。
 两板烧录本套文件；SD接B、HDMI接A、沿用原J2接线。增强/锐化和帧CRC继续关闭。支持原SD素材；优先用原生1280x720_纹波测试.bmp比较，避免缩放混叠影响判断。
 地址编码对齐诊断在A板实板显示500011，为本次迁移依据；该结果不等同本双板图片版验收。此次720p先验证，1366x768还有683字行跨度/四字组对齐问题，尚未迁回。
-请检查静态纹波及六图首尾循环、上一张/下一张、快速换方向；建议连续手动切换100次。实板反馈已更正：720p版本已修复，此前混淆了768p与720p测试图片。
+请检查静态纹波及六图首尾循环、连续下一张、首尾循环，并连续手动切换100次。此前 6.25 MHz 版的实板反馈已更正：720p 纹波问题已修复，此前混淆了768p与720p测试图片。
+
+## TF 读取优化
+
+B 板连续扇区采用 CMD18，地址跳转或空闲时用 CMD12 结束；数据字节连续传输，TF 时钟保持 25 MHz。CMD18 命令被拒绝时退回 CMD17。详见 [TF 读取说明](TF_READ_OPTIMIZATION.md)。该路径尚待仿真和实板确认。
