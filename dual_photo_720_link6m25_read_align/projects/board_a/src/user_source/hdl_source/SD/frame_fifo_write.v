@@ -11,6 +11,7 @@ module frame_fifo_write
 	parameter FRAME_HEIGHT           = 480
 )               
 (
+	input high_color,
 	input                            rst,                  
 	input                            mem_clk,                    // external memory controller user interface clock
 	input							 Sdr_init_done,
@@ -47,10 +48,10 @@ localparam ZERO                      = 256'd0;                   //256 bit '0'
 // Vertical flip address mapping for 640x480 frame buffer.
 // Input stream order remains unchanged; only SDRAM write addresses are remapped:
 // stream row 0 -> memory row FRAME_HEIGHT-1, stream row 1 -> memory row FRAME_HEIGHT-2, ...
-localparam [ADDR_BITS - 1:0] VFLIP_FIRST_ADDR_OFFSET = (FRAME_HEIGHT - 1) * FRAME_WIDTH;
+wire [ADDR_BITS - 1:0] VFLIP_FIRST_ADDR_OFFSET = high_color ? 21'd690240:(FRAME_HEIGHT - 1) * FRAME_WIDTH;
 localparam [ADDR_BITS - 1:0] VFLIP_VGA_ADDR_OFFSET = (480 - 1) * FRAME_WIDTH;
-localparam [ADDR_BITS - 1:0] VFLIP_LINE_JUMP         = (FRAME_WIDTH * 2) - 1;
-localparam [15:0]            VFLIP_LINE_LAST_X       = FRAME_WIDTH - 1;
+wire [ADDR_BITS - 1:0] VFLIP_LINE_JUMP = high_color ? 21'd1919:(FRAME_WIDTH * 2) - 1;
+wire [15:0] VFLIP_LINE_LAST_X = high_color ? 16'd959:FRAME_WIDTH-1;
 
 //write state machine code
 localparam S_IDLE                    = 0;                        //idle state,waiting for write
@@ -84,14 +85,15 @@ reg App_wr_en_r;
 reg App_wr_en_d0;
 
 reg  into_burst;
+wire [BURST_BITS-1:0] burst_size=high_color ? 9'd128:BURST_SIZE;
 wire write_data_ready;
 assign write_data_ready = ((write_len_latch <= (rdusedw + write_cnt)) ||
-                           (rdusedw > BURST_SIZE));
+                           (rdusedw > burst_size));
 
 assign App_wr_addr = {App_wr_addr_r[ADDR_BITS - 1:0]};
 //assign O_wr_busy = (state != S_IDLE || (S_IDLE && write_req_d2));
 assign O_wr_busy = (state == S_WRITE_BURST || (state == S_CHECK_FIFO && into_burst));//在突发，或者将要突发，则显示busy
-assign wr_burst_finish = (burst_cnt >= BURST_SIZE);
+assign wr_burst_finish = (burst_cnt >= burst_size);
 assign write_finish = (state == S_END) ? 1'b1 : 1'b0;            //write finish at state 'S_END'
 assign App_wr_en = App_wr_en_d0;
 
@@ -186,7 +188,7 @@ begin
 		else
 			App_wr_addr_r <= App_wr_addr_r;
 		//
-		if(App_wr_en_r && burst_cnt + App_wr_en < BURST_SIZE && (burst_cnt + write_cnt + App_wr_en < write_len_latch))begin
+		if(App_wr_en_r && burst_cnt + App_wr_en < burst_size && (burst_cnt + write_cnt + App_wr_en < write_len_latch))begin
             App_wr_en_d0 <= 1'b1;
         end
 		else
@@ -281,9 +283,9 @@ begin
 					App_wr_en_r <= 1'b0;
 					state <= S_WRITE_BURST_END;
 					//write counter + burst length
-					write_cnt <= write_cnt + BURST_SIZE[ADDR_BITS - 1:0];
+					write_cnt <= write_cnt + {{(ADDR_BITS-BURST_BITS){1'b0}},burst_size};
 					//the next burst write address is generated
-					//wr_burst_addr <= wr_burst_addr + BURST_SIZE[ADDR_BITS - 1:0];
+					//wr_burst_addr <= wr_burst_addr + {{(ADDR_BITS-BURST_BITS){1'b0}},burst_size};
 				end     
 			end
 			S_WRITE_BURST_END:

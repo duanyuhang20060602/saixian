@@ -31,6 +31,7 @@ module saixian_hmi_uart #(
     output reg        auto_valid,
     output reg        auto_value,
     output reg audio_view_valid,audio_view_value,
+    output reg color_mode_valid,color_mode_value,
     output reg        reset_defaults_pulse,
     output reg        frame_error_pulse
 );
@@ -156,6 +157,7 @@ task decode_frame;
                 if (frame_value <= 6) begin effect_valid<=1'b1; effect_value<=frame_value[2:0]; end
                 else frame_error_pulse<=1'b1;
             end
+            8'h1b: if(frame_value<=1)begin color_mode_valid<=1;color_mode_value<=frame_value[0];end else frame_error_pulse<=1;
             8'h1a: if(frame_value<=1)begin audio_view_valid<=1;audio_view_value<=frame_value[0];end else frame_error_pulse<=1;
             8'h19: begin
                 if (frame_value <= 1) begin auto_valid<=1'b1; auto_value<=frame_value[0]; end
@@ -202,8 +204,8 @@ always @(posedge clk or posedge rst) begin
         setting_value        <= 8'd0;
         effect_valid         <= 1'b0;
         effect_value         <= 3'd0;
-        auto_valid           <= 1'b0;audio_view_valid<=0;
-        auto_value           <= 1'b0;audio_view_value<=0;
+        auto_valid           <= 1'b0;audio_view_valid<=0;color_mode_valid<=0;
+        auto_value           <= 1'b0;audio_view_value<=0;color_mode_value<=0;
         reset_defaults_pulse <= 1'b0;
         frame_error_pulse    <= 1'b0;
     end else begin
@@ -220,7 +222,7 @@ always @(posedge clk or posedge rst) begin
         result_stop_pulse    <= 1'b0;
         setting_valid        <= 1'b0;
         effect_valid         <= 1'b0;
-        auto_valid           <= 1'b0;audio_view_valid<=0;
+        auto_valid           <= 1'b0;audio_view_valid<=0;color_mode_valid<=0;
         reset_defaults_pulse <= 1'b0;
         frame_error_pulse    <= 1'b0;
 

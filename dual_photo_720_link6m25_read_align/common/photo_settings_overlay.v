@@ -4,20 +4,20 @@ module photo_settings_overlay #(parameter VIDEO_DELAY=21)(
  input clk,rst,frame_tick,de,settings_mode,updating,
  input [11:0] x,input [10:0] y,input [3:0] setting_item,
  input [3:0] volume,brightness,contrast,saturation,input [1:0] sharpness,enhancement,
- input invert,vintage,input [2:0] effect,input auto_enable,waveform_mode,
+ input invert,vintage,input [2:0] effect,input auto_enable,waveform_mode,high_color,
  input [23:0] rgb_in,output [23:0] rgb_out
 );
 reg visible,pending;reg [3:0] selected;
-reg [3:0] values[0:10];
+reg [3:0] values[0:11];
 always @(posedge clk or posedge rst)begin
  if(rst)begin visible<=0;pending<=0;selected<=0;
   values[0]<=5;values[1]<=4;values[2]<=4;values[3]<=1;values[4]<=4;
-  values[5]<=0;values[6]<=0;values[7]<=1;values[8]<=0;values[9]<=0;values[10]<=0;
+  values[5]<=0;values[6]<=0;values[7]<=1;values[8]<=0;values[9]<=0;values[10]<=0;values[11]<=0;
  end else if(frame_tick)begin
   visible<=settings_mode;pending<=updating;selected<=setting_item;
   values[0]<=volume;values[1]<=brightness;values[2]<=contrast;values[3]<={2'd0,sharpness};values[4]<=saturation;
   values[5]<={3'd0,invert};values[6]<={3'd0,vintage};values[7]<={2'd0,enhancement};
-  values[8]<={1'b0,effect};values[9]<={3'd0,auto_enable};values[10]<={3'd0,waveform_mode};
+  values[8]<=high_color ? 4'd6:{1'b0,effect};values[9]<={3'd0,auto_enable};values[10]<={3'd0,waveform_mode};values[11]<={3'd0,high_color};
  end
 end
 function [6:0] text_glyph;
@@ -195,6 +195,24 @@ function [6:0] text_glyph;
     1:text_glyph=7'd88;
     default:text_glyph=0;
    endcase
+   27:case(index)
+    0:text_glyph=7'd89;
+    1:text_glyph=7'd90;
+    2:text_glyph=7'd91;
+    3:text_glyph=7'd92;
+    default:text_glyph=0;
+   endcase
+   28:case(index)
+    0:text_glyph=7'd93;
+    1:text_glyph=7'd94;
+    default:text_glyph=0;
+   endcase
+   29:case(index)
+    0:text_glyph=7'd95;
+    1:text_glyph=7'd91;
+    2:text_glyph=7'd92;
+    default:text_glyph=0;
+   endcase
    default:text_glyph=0;
  endcase end
 endfunction
@@ -218,7 +236,7 @@ always @*begin
   end else if(y>=96 && y<128 && x>=688 && x<784)begin
    glyph=text_glyph(pending ? 10:11,(x-688)>>5);font_row=label_y[4:1];font_col=(x-688)>>1;text_on=1;
    text_color=pending ? 24'hffd166:24'h7de3ff;
-  end else if(y>=144 && y<496 && row_index<=10)begin
+  end else if(y>=144 && y<528 && row_index<=11)begin
    value=values[row_index];highlight=row_index==selected;
    case(row_index)
     0,1,2,4:bar_width={5'd0,value}*9'd28;
@@ -230,10 +248,11 @@ always @*begin
     5,6,9:value_label=value==0 ? 18:19;
     8:value_label=5'd20+{1'b0,value};
     10:value_label=value==0 ? 16:17;
+    11:value_label=value==0 ? 28:29;
     default:value_label=0;
    endcase
    if(x>=96 && x<288)begin
-    glyph=text_glyph(row_index==0 ? 5'd14:row_index==10 ? 5'd15:{1'b0,row_index},label_x[8:5]);
+    glyph=text_glyph(row_index==0 ? 5'd14:row_index==10 ? 5'd15:row_index==11 ? 5'd27:{1'b0,row_index},label_x[8:5]);
     font_col=label_x[4:1];font_row=row_local[4:1];text_on=1;
    end else if(x>=608 && x<800)begin
     glyph=value_label!=0 ? text_glyph(value_label,value_x[8:5]):value_x[8:5]==0 ? 7'd35+value:7'd0;

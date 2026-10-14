@@ -4,7 +4,8 @@
 module photo_cached_control_a #(
  parameter CLK_HZ=75000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SETTINGS_LINK=0
 )(
- input settings_mode,input [17:0] settings_state,output settings_updating,
+ input settings_mode,input [18:0] settings_state,output settings_updating,
+ output reg high_color,output reg format_changed,
  input clk,rst,uart_rx,output uart_tx,input previous,next,
  input [1:0] active_slot,new_slot,input transition_active,commit_toggle,
  output reg [1:0] receive_slot,output reg arm_toggle,abort_toggle,
@@ -26,7 +27,7 @@ wire settings_focus=settings_mode || settings_dirty || refresh_pending || refres
 wire [4:0] live_context={have_current && settings_focus,(settings_focus ? current_image:3'd0),settings_focus};
 wire context_dirty=SETTINGS_LINK && live_context!=applied_context;
 localparam SETTLE_CYCLES=CLK_HZ/20; // 50 ms quiet interval coalesces bursts.
-reg [17:0] observed_settings;reg [31:0] settings_settle;reg settings_quiet;
+reg [18:0] observed_settings;reg [31:0] settings_settle;reg settings_quiet;
 always @(posedge clk or posedge rst)begin
  if(rst)begin observed_settings<=0;settings_settle<=0;settings_quiet<=0;end
  else if(settings_state!=observed_settings)begin observed_settings<=settings_state;settings_settle<=0;settings_quiet<=0;end
@@ -35,7 +36,8 @@ always @(posedge clk or posedge rst)begin
   if(settings_settle>=SETTLE_CYCLES-1)settings_quiet<=1;
  end
 end
-reg [17:0] applied_settings,sent_settings;reg refresh_pending;
+reg [18:0] applied_settings,sent_settings;reg refresh_pending;
+wire [31:0] frame_bytes=high_color ? 32'd2764800:FRAME_BYTES;
 wire settings_dirty=SETTINGS_LINK && settings_state!=applied_settings;
 assign settings_updating=settings_dirty || refresh_pending || (SETTINGS_LINK && (nav_pending || display_pending));
 reg [3:0] state;reg send;reg [159:0] message;
@@ -85,7 +87,7 @@ endfunction
 function [2:0] lookup;
  input [2:0] image;integer j;
  begin lookup=0;for(j=3;j>=0;j=j-1)
-  if(cache_valid[j] && cache_id[j]==image)lookup={1'b1,j[1:0]};end
+  if((!high_color || j<2) && cache_valid[j] && cache_id[j]==image)lookup={1'b1,j[1:0]};end
 endfunction
 wire [2:0] nav_hit=lookup(nav_target);
 wire [2:0] center=display_pending ? display_target:
@@ -97,7 +99,7 @@ reg [2:0] window_center_q,window_next_q,window_next2_q,window_next3_q;
 reg [25:0] window_context;
 wire [2:0] center_hit=lookup(window_center_q),next_hit=lookup(window_next_q),
            next2_hit=lookup(window_next2_q),next3_hit=lookup(window_next3_q);
-assign cache_window_ready=window_context==fetch_context && have_current && center_hit[2] && next_hit[2] && next2_hit[2] && next3_hit[2];
+assign cache_window_ready=window_context==fetch_context && have_current && center_hit[2] && next_hit[2] && (high_color || (next2_hit[2] && next3_hit[2]));
 reg fetch_needed,demand_fetch,victim_ok;reg [2:0] fetch_target;
 reg [1:0] victim;integer i,reset_index;
 always @*begin
@@ -106,20 +108,20 @@ always @*begin
  else if(have_current && image_count>1)begin
   // Prefetch the following three images in order.
   if(!next_hit[2])begin fetch_needed=1;fetch_target=window_next_q;end
-  else if(!next2_hit[2])begin fetch_needed=1;fetch_target=window_next2_q;end
-  else if(!next3_hit[2])begin fetch_needed=1;fetch_target=window_next3_q;end
+  else if(!high_color && !next2_hit[2])begin fetch_needed=1;fetch_target=window_next2_q;end
+  else if(!high_color && !next3_hit[2])begin fetch_needed=1;fetch_target=window_next3_q;end
  end
  for(i=3;i>=0;i=i-1)begin
-  if(i!=active_slot && (!transition_active || i!=new_slot) &&
+  if((!high_color || i<2) && i!=active_slot && (!transition_active || i!=new_slot) &&
      (!display_pending || i!=ready_slot) && (!nav_pending || !nav_hit[2] || i!=nav_hit[1:0]) &&
      (demand_fetch || (cache_id[i]!=window_center_q && cache_id[i]!=window_next_q &&
-                       cache_id[i]!=window_next2_q && cache_id[i]!=window_next3_q)))begin
+                       (high_color || (cache_id[i]!=window_next2_q && cache_id[i]!=window_next3_q)))))begin
    victim_ok=1;victim=i[1:0];
   end
  end
  // Prefer an empty slot, including a slot invalidated by a failed receive.
  for(i=3;i>=0;i=i-1)begin
-  if(!cache_valid[i] && i!=active_slot && (!transition_active || i!=new_slot) &&
+  if((!high_color || i<2) && !cache_valid[i] && i!=active_slot && (!transition_active || i!=new_slot) &&
      (!display_pending || i!=ready_slot))begin victim_ok=1;victim=i[1:0];end
  end
 end
@@ -140,7 +142,7 @@ always @(posedge clk or posedge rst)begin
 end
 always @(posedge clk or posedge rst)begin
  if(rst)begin
-  count_reply<=0;applied_settings<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};sent_settings<=0;refresh_pending<=0;
+  high_color<=0;format_changed<=0;count_reply<=0;applied_settings<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};sent_settings<=0;refresh_pending<=0;
   applied_context<=31;sent_context<=0;background_transaction<=0;refresh_display<=0;ready_immediate<=0;state<=HELLO_SEND;send<=0;message<=0;session<=1;uptime<=1;timer<=0;request_seq<=0;
   target<=0;direction<=1;done_seen<=0;end_seen<=0;expected_crc<=0;received_crc<=0;retries<=0;
   receive_slot<=1;arm_toggle<=0;abort_toggle<=0;ready_toggle<=0;ready_slot<=0;ready_right<=1;
@@ -150,7 +152,7 @@ always @(posedge clk or posedge rst)begin
   current_source_width<=0;current_source_height<=0;target_width<=0;target_height<=0;display_width<=0;display_height<=0;
   for(reset_index=0;reset_index<4;reset_index=reset_index+1)cache_id[reset_index]<=0;
  end else begin
-  uptime<=uptime+1'b1;timer<=timer+1'b1;send<=0;
+  uptime<=uptime+1'b1;timer<=timer+1'b1;send<=0;format_changed<=0;
   if(got && kind==18 && incoming[151:120]==session && incoming[23:16]>=image_count && incoming[23:16]>0 && incoming[23:16]<=6)begin
    image_count<=incoming[18:16];count_reply<=1;
   end
@@ -188,9 +190,9 @@ always @(posedge clk or posedge rst)begin
      send<=1;state<=WAIT_CONTEXT;timer<=0;
     end
    end else if(settings_dirty)begin
-    if(settings_quiet && settings_state==observed_settings && !tx_busy && !send)begin
+    if(settings_quiet && settings_state==observed_settings && !transition_active && !display_pending && !tx_busy && !send)begin
      sent_settings<=settings_state;
-     message<=packet(12,session,0,0,0,0,{14'd0,settings_state},0);send<=1;state<=WAIT_SETTINGS;timer<=0;
+     message<=packet(12,session,0,0,0,0,{13'd0,settings_state},0);send<=1;state<=WAIT_SETTINGS;timer<=0;
     end
    end else if(refresh_pending)begin
     if(!display_pending && !transition_active)begin
@@ -210,19 +212,24 @@ always @(posedge clk or posedge rst)begin
     else if(timer>=TIME_HZ && !tx_busy && !send)begin message<=packet(16,session,0,0,0,0,0,0);send<=1;timer<=0;end
    end
    WAIT_SETTINGS:begin
-    if(got && kind==13 && incoming[151:120]==session && incoming[41:24]==sent_settings)begin
+    if(got && kind==13 && incoming[151:120]==session && incoming[42:24]==sent_settings)begin
      applied_settings<=sent_settings;refresh_pending<=1;state<=IDLE;timer<=0;
-    end else if(timer>=TIME_HZ)begin applied_settings<=~settings_state;state<=IDLE;timer<=0;end
+     if(high_color!=sent_settings[18])begin
+      high_color<=sent_settings[18];format_changed<=1;cache_valid<=0;have_current<=0;
+      nav_target<=have_current ? current_image:nav_target;nav_right<=1;nav_pending<=0;
+      display_pending<=0;ready_toggle<=0;ready_immediate<=1;refresh_display<=1;
+     end
+    end else if(timer>=(settings_state[18]!=high_color ? 64'd40*TIME_HZ:TIME_HZ))begin applied_settings<=~settings_state;state<=IDLE;timer<=0;end
    end
    GET:if(SETTINGS_LINK && background_transaction && (settings_mode || settings_dirty))state<=IDLE;
        else if(!tx_busy && !send)begin
-    message<=packet(3,session,request_seq,{5'd0,target},{6'd0,1'b1,direction},FRAME_BYTES,0,0);
+    message<=packet(3,session,request_seq,{5'd0,target},{1'b0,high_color,4'd0,1'b1,direction},frame_bytes,0,0);
     send<=1;state<=WAIT_BEGIN;timer<=0;done_seen<=0;end_seen<=0;
    end
    WAIT_BEGIN:begin
     if(SETTINGS_LINK && background_transaction && (settings_mode || settings_dirty) && !tx_busy && !send)begin
      message<=packet(16,session,0,0,0,0,0,0);send<=1;state<=WAIT_CANCEL;timer<=0;
-    end else if(got && matching && kind==4 && incoming[87:56]==FRAME_BYTES)begin
+    end else if(got && matching && kind==4 && incoming[87:56]==frame_bytes && incoming[94]==high_color)begin
      // Metadata belongs to this transfer, never to a background display.
      target_width<=incoming[95] ? incoming[55:40]:16'd0;
      target_height<=incoming[95] ? incoming[39:24]:16'd0;
@@ -233,7 +240,7 @@ always @(posedge clk or posedge rst)begin
    ARM:if(rx_armed)begin state<=READY;timer<=0;end
        else if(timer>=TIME_HZ*2)begin state<=NACK;error<=2;end
    READY:if(!tx_busy && !send)begin
-    message<=packet(5,session,request_seq,{5'd0,target},2,FRAME_BYTES,0,0);send<=1;state<=RECEIVE;timer<=0;
+    message<=packet(5,session,request_seq,{5'd0,target},2,frame_bytes,0,0);send<=1;state<=RECEIVE;timer<=0;
    end
    RECEIVE:begin
     if(rx_done)begin done_seen<=1;received_crc<=rx_crc;end
@@ -250,14 +257,14 @@ always @(posedge clk or posedge rst)begin
     cache_valid[receive_slot]<=1;state<=ACCEPT;timer<=0;
    end
    ACCEPT:if(!tx_busy && !send)begin
-    message<=packet(7,session,request_seq,{5'd0,target},2,FRAME_BYTES,received_crc,0);send<=1;state<=COMMIT;timer<=0;
+    message<=packet(7,session,request_seq,{5'd0,target},2,frame_bytes,received_crc,0);send<=1;state<=COMMIT;timer<=0;
    end
    COMMIT:if(!tx_busy && !send)begin
-    message<=packet(8,session,request_seq,{5'd0,target},2,FRAME_BYTES,received_crc,0);send<=1;state<=IDLE;error<=0;timer<=0;
+    message<=packet(8,session,request_seq,{5'd0,target},2,frame_bytes,received_crc,0);send<=1;state<=IDLE;error<=0;timer<=0;
    end
    NACK:if(!tx_busy && !send)begin
     abort_toggle<=~abort_toggle;
-    message<=packet(9,session,request_seq,{5'd0,target},2,FRAME_BYTES,received_crc,{4'd0,error});send<=1;
+    message<=packet(9,session,request_seq,{5'd0,target},2,frame_bytes,received_crc,{4'd0,error});send<=1;
     done_seen<=0;end_seen<=0;timer<=0;
     if(retries<2)begin retries<=retries+1'b1;state<=WAIT_BEGIN;end else state<=FAILED;
    end

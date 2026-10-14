@@ -36,3 +36,9 @@ set_false_path -from [get_ports {hmi_uart_rx key[*]}]
 set_false_path -to [get_regs -nowarn {*spi_miso_meta* *hpd_audio_meta* *audio_diag_meta*}]
 set_output_delay -clock {board_pixel_clk} -max 2.000 [get_ports {audio_sclk audio_cs audio_mosi}]
 set_output_delay -clock {board_pixel_clk} -min 0.500 [get_ports {audio_sclk audio_cs audio_mosi}]
+set_false_path -to [get_regs -nowarn {*color_meta* *color_link_meta*}]
+
+# RGB format reset is asserted asynchronously, then released by the three
+# local reset flops rcm/rcl. Only asynchronous SR pins are excepted;
+# all register D paths and local reset shift-register paths remain timed.
+set_false_path -from [get_regs -nowarn {image_reset_count* rcm/sync_ff* rcl/sync_ff*}] -to [get_pins -nowarn {*.sr}]

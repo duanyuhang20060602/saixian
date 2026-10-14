@@ -111,14 +111,16 @@ end
 endmodule
 
 module photo_control_b #(parameter CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SEND_SOURCE_SIZE=0,SETTINGS_LINK=0)(
+ input high_color,
  input clk,rst,uart_rx,output uart_tx,input [2:0] image_count,input media_ready,
  input [1:0] media_slot,input [3:0] media_error,
  input [15:0] media_source_width,media_source_height,
  output reg media_request,output reg [2:0] media_target,output reg media_release,media_cancel,
  output reg [1:0] transmit_slot,output reg start_toggle,abort_toggle,
  output reg display_valid,prefetch_pause,output reg [2:0] display_image,
- output reg [17:0] settings_state,input tx_done,input [31:0] tx_crc,output busy,output reg [3:0] error,output [3:0] debug_state
+ output reg [18:0] settings_state,input tx_done,input [31:0] tx_crc,output busy,output reg [3:0] error,output [3:0] debug_state
 );
+wire [31:0] frame_bytes=high_color ? 32'd2764800:FRAME_BYTES;
 localparam TIME_HZ=CLK_HZ/TIMER_SCALE;
 function [159:0] packet;
  input [7:0] kind;input [31:0] session;input [15:0] request_seq;
@@ -152,7 +154,7 @@ always @(posedge clk or posedge rst)begin
    if(retries<2)begin retries<=retries+1'b1;state<=BEGIN_SEND;end
    else begin media_cancel<=1;error<=4;state<=ERROR_SEND;end
   end else if(SETTINGS_LINK && got && kind==12 && incoming[151:120]==session)begin
-   settings_state<=incoming[41:24];settings_reply<=1;
+   settings_state<=incoming[42:24];settings_reply<=1;
   end else if(SETTINGS_LINK && got && incoming[151:120]==session && kind==14)begin
    display_valid<=incoming[89] && incoming[98:96]<image_count;display_image<=incoming[98:96];
    prefetch_pause<=incoming[88];context_reply<=1;
@@ -170,9 +172,9 @@ always @(posedge clk or posedge rst)begin
     message<=packet(17,session,0,0,0,0,0,0);send<=1;cancel_reply<=0;
    end else if(SETTINGS_LINK && context_reply && !tx_busy && !send)begin
     message<=packet(15,session,0,{5'd0,display_image},{6'd0,display_valid,prefetch_pause},0,0,0);send<=1;context_reply<=0;
-   end else if(SETTINGS_LINK && settings_reply && !tx_busy && !send)begin
-    message<=packet(13,session,0,0,0,0,{14'd0,settings_state},0);send<=1;settings_reply<=0;
-   end else if(got && kind==3 && incoming[151:120]==session && incoming[103:96]<image_count && incoming[87:56]==FRAME_BYTES)begin
+   end else if(SETTINGS_LINK && settings_reply && high_color==settings_state[18] && !tx_busy && !send)begin
+    message<=packet(13,session,0,0,0,0,{13'd0,settings_state},0);send<=1;settings_reply<=0;
+   end else if(got && kind==3 && incoming[151:120]==session && incoming[103:96]<image_count && incoming[87:56]==frame_bytes && incoming[94]==high_color && high_color==settings_state[18])begin
     request_seq<=incoming[119:104];media_target<=incoming[98:96];direction<=incoming[88];retries<=0;
     media_request<=1;state<=LOAD;timer<=0;error<=0;
    end else if(image_count!=announced_count && image_count>0 && timer>=TIME_HZ/10 && !tx_busy && !send)begin
@@ -190,7 +192,7 @@ always @(posedge clk or posedge rst)begin
    BEGIN_SEND:if(!tx_busy && !send)begin
     // BEGIN does not carry a frame CRC. Flag 7 selects source-size metadata
     // in that field; END/ACCEPT/COMMIT retain their existing CRC semantics.
-    message<=packet(4,session,request_seq,{5'd0,media_target},{SEND_SOURCE_SIZE!=0,6'd0,direction},FRAME_BYTES,
+    message<=packet(4,session,request_seq,{5'd0,media_target},{SEND_SOURCE_SIZE!=0,high_color,5'd0,direction},frame_bytes,
       SEND_SOURCE_SIZE ? {source_width,source_height}:32'd0,0);
     send<=1;state<=WAIT_READY;timer<=0;
    end
@@ -199,14 +201,14 @@ always @(posedge clk or posedge rst)begin
    SENDING:if(tx_done)begin completed_crc<=tx_crc;state<=END_SEND;timer<=0;end
            else if(timer>=64'd5*TIME_HZ)begin abort_toggle<=~abort_toggle;error<=5;state<=ERROR_SEND;end
    END_SEND:if(!tx_busy && !send)begin
-    message<=packet(6,session,request_seq,{5'd0,media_target},0,FRAME_BYTES,completed_crc,0);send<=1;state<=WAIT_ACCEPT;timer<=0;
+    message<=packet(6,session,request_seq,{5'd0,media_target},0,frame_bytes,completed_crc,0);send<=1;state<=WAIT_ACCEPT;timer<=0;
    end
    WAIT_ACCEPT:if(got && matching && kind==7 && (!CHECK_FRAME_CRC || incoming[55:24]==completed_crc))begin state<=WAIT_COMMIT;timer<=0;end
                else if(timer>=64'd5*TIME_HZ)begin error<=6;state<=ERROR_SEND;end
    WAIT_COMMIT:if(got && matching && kind==8 && (!CHECK_FRAME_CRC || incoming[55:24]==completed_crc))begin media_release<=1;state<=IDLE;timer<=0;end
                else if(timer>=64'd5*TIME_HZ)begin error<=7;state<=ERROR_SEND;end
    ERROR_SEND:if(!tx_busy && !send)begin
-    message<=packet(11,session,request_seq,{5'd0,media_target},0,FRAME_BYTES,0,{4'd0,error});send<=1;
+    message<=packet(11,session,request_seq,{5'd0,media_target},0,frame_bytes,0,{4'd0,error});send<=1;
     media_cancel<=1;abort_toggle<=~abort_toggle;state<=DISCOVER;timer<=0;
    end
    default:state<=DISCOVER;

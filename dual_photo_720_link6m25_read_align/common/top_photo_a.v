@@ -14,6 +14,22 @@ dual_still_reset_sync rp(.clk(pixel_clk),.arst(!video_lock || !sys_lock),.rst(rs
 dual_still_reset_sync rh(.clk(serial_clk),.arst(!video_lock || !sys_lock),.rst(rst_serial));
 dual_still_reset_sync rl(.clk(link_clk),.arst(!sys_lock || !video_lock),.rst(rst_link));
 dual_still_reset_sync rr(.clk(clk),.arst(!sys_lock || !video_lock),.rst(rst_ref));
+wire high_color_requested,high_color,format_changed;
+wire color_mode_valid,color_mode_value;
+reg [5:0] image_reset_count;
+always @(posedge pixel_clk or posedge rst_pixel)
+ if(rst_pixel)image_reset_count<=0;
+ else if(format_changed)image_reset_count<=63;
+ else if(image_reset_count!=0)image_reset_count<=image_reset_count-1'b1;
+wire image_reset=image_reset_count!=0;
+wire rst_image_pixel=rst_pixel || image_reset;
+wire rst_image_mem,rst_image_link;
+dual_still_reset_sync rcm(.clk(mem_clk),.arst(rst_mem || image_reset),.rst(rst_image_mem));
+dual_still_reset_sync rcl(.clk(link_clk),.arst(rst_link || image_reset),.rst(rst_image_link));
+(* async_reg="true" *)reg color_link_meta,color_link_sync;
+always @(posedge link_clk or posedge rst_link)
+ if(rst_link)begin color_link_meta<=0;color_link_sync<=0;end
+ else begin color_link_meta<=high_color;color_link_sync<=color_link_meta;end
 wire req,we,ack,full,finish,rx_done,rx_armed,rx_fault;
 wire [31:0] packed_data,read_data,rx_crc;reg finish_toggle,done_toggle;
 always @(posedge mem_clk or posedge rst_mem)
@@ -24,7 +40,7 @@ wire arm_toggle,abort_toggle,arm,abort;
 wire [1:0] receive_slot,active_slot,new_slot,ready_slot;
 photo_event_sync sa(.clk(link_clk),.rst(rst_link),.toggle(arm_toggle),.pulse(arm));
 photo_event_sync sb(.clk(link_clk),.rst(rst_link),.toggle(abort_toggle),.pulse(abort));
-photo_link_receiver #(.ENABLE_CRC(0),.LEGACY_TIMING(1)) rx(.clk(link_clk),.rst(rst_link),.arm(arm),.abort(abort),.data(link_data),.valid(link_valid),.sof(link_sof),.eof(link_eof),
+photo_link_receiver #(.ENABLE_CRC(0),.LEGACY_TIMING(1)) rx(.high_color(color_link_sync),.clk(link_clk),.rst(rst_image_link),.arm(arm),.abort(abort),.data(link_data),.valid(link_valid),.sof(link_sof),.eof(link_eof),
  .ready(link_ready),.armed(rx_armed),.busy(),.write_req(req),.write_ack(ack),.full(full),.write_en(we),.write_data(packed_data),
  .finish_toggle(finish_toggle),.done(rx_done),.fault(rx_fault),.frame_crc(rx_crc));
 
@@ -32,9 +48,9 @@ wire read_req,read_en,read_ack,read_finish,read_empty,init_done;
 wire transition_active,slide_right,display_valid,frame_commit,ready_toggle,ready_right,ready_immediate;
 wire [2:0] transition_mode;wire [10:0] slide_offset;wire [5:0] darkness;
 wire [2:0] effect_select;wire auto_enable;
-frame_store #(.FLIP(0)) store(.write_slot(receive_slot),.read_slot(active_slot),.new_slot(new_slot),
+frame_store #(.FLIP(0)) store(.high_color(high_color),.write_slot(receive_slot),.read_slot(active_slot),.new_slot(new_slot),
  .slide_active(transition_active),.slide_right(slide_right),.slide_offset({1'b0,slide_offset[10:1]}),.transition_mode(transition_mode),
- .mem_clk(mem_clk),.mem_clk_sft(mem_clk_sft),.rst(rst_mem),
+ .mem_clk(mem_clk),.mem_clk_sft(mem_clk_sft),.rst(rst_image_mem),
  .write_clk(link_clk),.write_req(req),.write_en(we && !full),.write_data(packed_data),.write_ack(ack),.write_finish(finish),.write_full(full),
  .read_clk(pixel_clk),.read_req(read_req),.read_en(read_en),.read_ack(read_ack),.read_finish(read_finish),
  .read_empty(read_empty),.read_data(read_data),.init_done(init_done));
@@ -48,11 +64,11 @@ wire [15:0] current_source_width,current_source_height;
 hdmi_minimal_tx #(.EXTERNAL_VIDEO(1),.VIDEO_DELAY(21)) u_tx(.clk(pixel_clk),.rst(rst_pixel),.rgb_in(final_rgb),
  .blue(),.green(),.red(),.hs(hs),.vs(vs),.de(de),.frame_start(fs),.x(x),.y(y));
 wire armed,started,underflow;
-frame_pixels pixels(.clk(pixel_clk),.rst(rst_pixel),.de(de),.x(x),.y(y),.image_valid(display_valid),
+frame_pixels pixels(.high_color(high_color),.clk(pixel_clk),.rst(rst_image_pixel),.de(de),.x(x),.y(y),.image_valid(display_valid),
  .read_ack(read_ack),.empty(read_empty),.data(read_data),.read_req(read_req),.read_en(read_en),.rgb(raw_rgb),
  .armed(armed),.output_started(started),.underflow(underflow));
-saixian_transition #(.ALLOW_IMMEDIATE(1)) transition(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),.frame_ready_toggle(ready_toggle),
- .ready_buf_idx(ready_slot),.ready_slide_right(ready_right),.ready_immediate(ready_immediate),.effect_select(effect_select),.active_buf_idx(active_slot),.slide_new_buf_idx(new_slot),
+saixian_transition #(.ALLOW_IMMEDIATE(1)) transition(.clk(pixel_clk),.rst(rst_image_pixel),.frame_tick(blank_start),.frame_ready_toggle(ready_toggle),
+ .ready_buf_idx(ready_slot),.ready_slide_right(ready_right),.ready_immediate(ready_immediate),.effect_select(high_color ? 3'd6:effect_select),.active_buf_idx(active_slot),.slide_new_buf_idx(new_slot),
  .frame_commit_toggle(frame_commit),.display_valid(display_valid),.transition_active(transition_active),
  .transition_mode(transition_mode),.slide_offset(slide_offset),.slide_right(slide_right),.transition_level(darkness));
 wire [3:0] presses;
@@ -74,7 +90,7 @@ saixian_hmi_uart #(.CLK_FREQ_HZ(75000000)) screen_rx(.clk(pixel_clk),.rst(rst_pi
  .project_valid(hmi_project_valid),.project_value(hmi_project_value),
  .start_pulse(hmi_start),.pause_pulse(hmi_pause),.pause_set_pulse(hmi_pause_set),.resume_pulse(hmi_resume),.finish_pulse(hmi_finish),
  .music_next_pulse(hmi_music_next),.prev_pulse(hmi_prev),.next_pulse(hmi_next),.setting_valid(setting_valid),.setting_id(setting_id),.setting_value(setting_value),
- .effect_valid(effect_valid),.effect_value(effect_value),.auto_valid(auto_valid),.auto_value(auto_value),.audio_view_valid(audio_view_valid),.audio_view_value(audio_view_value),
+ .effect_valid(effect_valid),.effect_value(effect_value),.auto_valid(auto_valid),.auto_value(auto_value),.audio_view_valid(audio_view_valid),.audio_view_value(audio_view_value),.color_mode_valid(color_mode_valid),.color_mode_value(color_mode_value),
  .reset_defaults_pulse(reset_defaults),.page_id(page_id),.page_notify_pulse(page_notify));
 wire settings_mode;wire [3:0] setting_item;wire [3:0] brightness,contrast,saturation,volume;wire [1:0] sharpness,enhancement;wire invert,vintage;
 // Match the single-board photo pipeline: enhancement owns the spatial
@@ -82,9 +98,9 @@ wire settings_mode;wire [3:0] setting_item;wire [3:0] brightness,contrast,satura
 photo_unified_settings_controller #(.CLK_FREQ_HZ(75000000),.IMAGE_MENU(0)) settings(.clk(pixel_clk),.rst(rst_pixel),.carousel_mode(carousel_mode),
  .key_next_item(presses[0]),.key_decrease(presses[1]),.key_enter_exit(presses[2]),.key_increase(presses[3]),
  .hmi_setting_valid(setting_valid),.hmi_setting_id(setting_id),.hmi_setting_value(setting_value),.hmi_reset_defaults(reset_defaults),
- .effect_valid(effect_valid),.effect_value(effect_value),.auto_valid(auto_valid),.auto_value(auto_value),.audio_view_valid(audio_view_valid),.audio_view_value(audio_view_value),
+ .effect_valid(effect_valid),.effect_value(effect_value),.auto_valid(auto_valid),.auto_value(auto_value),.audio_view_valid(audio_view_valid),.audio_view_value(audio_view_value),.color_mode_valid(color_mode_valid),.color_mode_value(color_mode_value),
  .effect_select(effect_select),.auto_enable(auto_enable),
- .waveform_mode(waveform_mode),.settings_mode(settings_mode),.setting_item(setting_item),.volume_setting(volume),.brightness_setting(brightness),.contrast_setting(contrast),
+ .high_color_requested(high_color_requested),.waveform_mode(waveform_mode),.settings_mode(settings_mode),.setting_item(setting_item),.volume_setting(volume),.brightness_setting(brightness),.contrast_setting(contrast),
  .saturation_setting(saturation),.sharpness_setting(sharpness),.invert_setting(invert),.vintage_setting(vintage),.enhancement_setting(enhancement));
 saixian_event_controller #(.CLK_FREQ_HZ(75000000)) event_controller(.clk(pixel_clk),.rst(rst_pixel),.frame_start(blank_start),
  .key_start(!settings_mode && (hmi_start || key4_long || (!carousel_mode && presses[0]))),
@@ -112,9 +128,9 @@ photo_event_sync sd(.clk(pixel_clk),.rst(rst_pixel),.toggle(done_toggle),.pulse(
 reg done_pixel_registered;
 always @(posedge pixel_clk or posedge rst_pixel)
  if(rst_pixel)done_pixel_registered<=0;else done_pixel_registered<=done_pixel;
-wire [17:0] image_settings={brightness,contrast,saturation,sharpness,enhancement,invert,vintage};
+wire [18:0] image_settings={high_color_requested,brightness,contrast,saturation,sharpness,enhancement,invert,vintage};
 wire settings_updating;
-photo_cached_control_a #(.CHECK_FRAME_CRC(0),.SETTINGS_LINK(1)) ctrl(.settings_mode(photo_focus),.settings_state(image_settings),.settings_updating(settings_updating),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
+photo_cached_control_a #(.CHECK_FRAME_CRC(0),.SETTINGS_LINK(1)) ctrl(.high_color(high_color),.format_changed(format_changed),.settings_mode(photo_focus),.settings_state(image_settings),.settings_updating(settings_updating),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
  .previous(1'b0),.next(carousel_mode && !settings_mode && (presses[0] || key4_short || hmi_next || auto_next)),
  .active_slot(active_slot),.new_slot(new_slot),.transition_active(transition_active),.commit_toggle(frame_commit),
  .receive_slot(receive_slot),.arm_toggle(arm_toggle),.abort_toggle(abort_toggle),.rx_armed(armed_sync),.rx_done(done_pixel_registered),
@@ -197,7 +213,7 @@ photo_resolution_overlay #(.VIDEO_DELAY(21)) resolution_overlay(.clk(pixel_clk),
  .source_width(current_source_width),.source_height(current_source_height),.rgb_in(range_rgb),.rgb_out(resolution_rgb));
 photo_settings_overlay #(.VIDEO_DELAY(21)) menu_overlay(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),
  .x(x),.y(y),.de(de),.settings_mode(settings_mode),.setting_item(setting_item),.updating(settings_updating),
- .volume(volume),.waveform_mode(waveform_mode),.brightness(brightness),.contrast(contrast),.saturation(saturation),.sharpness(sharpness),.enhancement(enhancement),
+ .high_color(high_color_requested),.volume(volume),.waveform_mode(waveform_mode),.brightness(brightness),.contrast(contrast),.saturation(saturation),.sharpness(sharpness),.enhancement(enhancement),
  .invert(invert),.vintage(vintage),.effect(effect_select),.auto_enable(auto_enable),
  .rgb_in(resolution_rgb),.rgb_out(final_rgb));
 wire [7:0] audio_level;wire spectrum_active;wire [4:0] spectrum_bin;

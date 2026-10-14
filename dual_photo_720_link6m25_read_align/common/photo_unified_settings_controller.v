@@ -19,6 +19,8 @@ module photo_unified_settings_controller #(
     input  wire       auto_valid,
     input  wire       auto_value,
     input wire audio_view_valid,audio_view_value,
+    input wire color_mode_valid,color_mode_value,
+    output reg high_color_requested,
     output reg waveform_mode,
     output reg        settings_mode,
     output reg [3:0]  setting_item,
@@ -56,7 +58,7 @@ always @(posedge clk or posedge rst) begin
         settings_mode      <= 1'b0;
         setting_item       <= 4'd0;
         effect_select      <= 3'd0;
-        auto_enable        <= 1'b0;waveform_mode<=0;
+        auto_enable        <= 1'b0;waveform_mode<=0;high_color_requested<=0;
         volume_setting     <= 4'd5;
         brightness_setting <= 4'd4;
         contrast_setting   <= 4'd4;
@@ -68,7 +70,7 @@ always @(posedge clk or posedge rst) begin
         idle_timer         <= 33'd0;
     end else if (hmi_reset_defaults) begin
         effect_select      <= 3'd0;
-        auto_enable        <= 1'b0;waveform_mode<=0;
+        auto_enable        <= 1'b0;waveform_mode<=0;high_color_requested<=0;
         volume_setting     <= 4'd5;
         brightness_setting <= 4'd4;
         contrast_setting   <= 4'd4;
@@ -84,6 +86,8 @@ always @(posedge clk or posedge rst) begin
     end else if (auto_valid) begin
         auto_enable <= auto_value;
         idle_timer <= 33'd0;
+    end else if(color_mode_valid)begin
+        high_color_requested<=color_mode_value;idle_timer<=0;
     end else if(audio_view_valid)begin
         waveform_mode<=audio_view_value;idle_timer<=0;
     end else if (hmi_setting_valid) begin
@@ -120,7 +124,7 @@ always @(posedge clk or posedge rst) begin
         if (key_enter_exit)
             settings_mode <= 1'b0;
         else if (key_next_item)
-            setting_item <= (setting_item == 4'd10) ? (IMAGE_MENU ? 4'd1:4'd0) : setting_item + 1'b1;
+            setting_item <= (setting_item == 4'd11) ? (IMAGE_MENU ? 4'd1:4'd0) : setting_item + 1'b1;
         else if (key_decrease) begin
             case (setting_item)
                 2'd0: if (volume_setting     != 0) volume_setting     <= volume_setting - 1'b1;
@@ -134,6 +138,7 @@ always @(posedge clk or posedge rst) begin
                 4'd8: if(effect_select!=0) effect_select<=effect_select-1'b1;
                 4'd9: auto_enable<=1'b0;
                 4'd10: waveform_mode<=0;
+                4'd11: high_color_requested<=0;
             endcase
         end else if (key_increase) begin
             case (setting_item)
@@ -148,6 +153,7 @@ always @(posedge clk or posedge rst) begin
                 4'd8: if(effect_select<6) effect_select<=effect_select+1'b1;
                 4'd9: auto_enable<=1'b1;
                 4'd10: waveform_mode<=1;
+                4'd11: high_color_requested<=1;
             endcase
         end
     end

@@ -47,7 +47,7 @@ for role,top in [('board_a','top_photo_a'),('board_b','top_photo_b')]:
     replacements={p.name for p in (ROOT/'common/photo_sd').glob('*.v')}
     for e in list(verilog):verilog.remove(e)
     paths=[p for p in paths if Path(p).name not in excluded | replacements]
-    shared=['photo_uart.v','photo_link.v','photo_control.v','photo_status.v',top+'.v']
+    shared=['photo_color_format.v','photo_uart.v','photo_link.v','photo_control.v','photo_status.v',top+'.v']
     if role=='board_a':shared+=['photo_audio_link.v','photo_audio_features.v','audio_ui/photo_audio_cue_samples.v','audio_ui/saixian_event_controller.v','audio_ui/saixian_osd_overlay.v','audio_ui/saixian_font_rom.v','audio_vendor/audio_arc_calculate.v','audio_vendor/hdmi_1_4b_transmitter_core_wrapper.enc.v','photo_resolution_overlay.v','photo_settings_overlay.v','photo_unified_settings_controller.v','photo_menu_font.v','photo_cached_control_a.v','saixian_transition.v','photo_processing.v','saixian_hmi_uart.v','saixian_key_debounce.v','photo_auto_advance.v']
     else:shared+=['photo_audio_link.v','photo_audio_features.v','audio_ui/photo_audio_cue_samples.v','photo_sd_audio_stream.v','photo_sd_cache.v','photo_processing.v','photo_b_processing.v']
     paths+=['../../../../common/'+p for p in shared]
@@ -117,4 +117,8 @@ set_false_path -from [get_ports {control_rx}]
             text+='set_output_delay -clock {sd_card_clk} -max 2.000 [get_ports {audio_miso}]\n'
             text+='set_output_delay -clock {sd_card_clk} -min 0.500 [get_ports {audio_miso}]\n'
         write(p,text)
+    if '*color_meta*' not in text:
+        text+='set_false_path -to [get_regs -nowarn {*color_meta* *color_link_meta*}]\n'
+        write(p,text)
+    write(p,text)
 print('Configured independent A/B TD projects.')

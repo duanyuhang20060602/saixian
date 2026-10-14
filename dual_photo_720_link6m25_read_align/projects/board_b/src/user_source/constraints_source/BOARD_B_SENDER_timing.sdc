@@ -23,3 +23,4 @@ set_false_path -to [get_regs -nowarn {*settings_meta* *gain_meta* *processing/ac
 set_false_path -to [get_regs -nowarn {*spi_sclk_meta* *spi_cs_meta* *spi_mosi_meta*}]
 set_output_delay -clock {sd_card_clk} -max 2.000 [get_ports {audio_miso}]
 set_output_delay -clock {sd_card_clk} -min 0.500 [get_ports {audio_miso}]
+set_false_path -to [get_regs -nowarn {*color_meta* *color_link_meta*}]

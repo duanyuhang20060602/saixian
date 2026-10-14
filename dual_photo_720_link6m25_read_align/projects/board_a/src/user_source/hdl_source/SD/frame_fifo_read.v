@@ -8,6 +8,7 @@ module frame_fifo_read
     parameter BURST_SIZE     = 128,
     parameter FRAME_WIDTH    = 640
 )(
+    input high_color,
     input                            rst,
     input                            mem_clk,
     input                            Sdr_init_done,
@@ -45,7 +46,7 @@ localparam S_CHECK_FIFO     = 4'd2;
 localparam S_READ_BURST     = 4'd3;
 localparam S_READ_BURST_END = 4'd4;
 localparam S_END            = 4'd5;
-localparam [11:0] FRAME_WIDTH_U = FRAME_WIDTH;
+wire [11:0] FRAME_WIDTH_U = high_color ? 12'd960:FRAME_WIDTH;
 
 reg read_req_d0, read_req_d1, read_req_d2;
 reg [ADDR_BITS-1:0] read_len_d0, read_len_d1, read_len_latch;
@@ -112,7 +113,7 @@ endfunction
 // One mapper serves request acknowledgement and every issued pixel. Select
 // operands before arithmetic rather than duplicating a mapper at each call.
 wire first_address = state == S_ACK;
-wire end_of_row = issue_x == FRAME_WIDTH - 1;
+wire end_of_row = issue_x == (high_color ? 11'd959:FRAME_WIDTH-1);
 wire [10:0] map_x = first_address ? 11'd0 : end_of_row ? 11'd0 : issue_x + 1'b1;
 wire [9:0] map_y = first_address ? 10'd0 : issue_y + end_of_row;
 wire [ADDR_BITS-1:0] map_old_base = first_address ?
@@ -199,7 +200,7 @@ always @(posedge mem_clk or posedge rst) begin
             new_row_base <= select_base(slide_new_d1);
             App_rd_addr_r <= next_address;
         end else if (App_rd_en) begin
-            if (issue_x == FRAME_WIDTH - 1) begin
+            if (issue_x == (high_color ? 11'd959:FRAME_WIDTH-1)) begin
                 issue_x <= 0;
                 issue_y <= issue_y + 1'b1;
                 row_phase <= (row_phase == 2'd2) ? 2'd0 : row_phase + 1'b1;

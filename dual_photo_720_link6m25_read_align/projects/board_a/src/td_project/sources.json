@@ -40,5 +40,6 @@
   "../../../../common/audio_ui/saixian_osd_overlay.v",
   "../../../../common/audio_ui/saixian_font_rom.v",
   "../../../../common/audio_ui/photo_audio_cue_samples.v",
-  "../../../../common/photo_unified_settings_controller.v"
+  "../../../../common/photo_unified_settings_controller.v",
+  "../../../../common/photo_color_format.v"
 ]

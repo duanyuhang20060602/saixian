@@ -1,3 +1,9 @@
+> **2026-10-14 用户实板反馈：RGB888 偏蓝已解决；切图会突然黑一下后恢复，目前保留此已知现象。高精度固定渐暗，黑场具体原因尚未确认。** 详见 [读取对齐与已知现象](RGB888_READ_ALIGNMENT.md)。
+
+> 当前为 RGB888 BREADALIGN1 读取对齐校准候选：B 的 RGB888 路径增加一拍捕获，RGB565 保留直通；A bit 不变。用户已确认偏蓝消失，切图黑一下仍待分析，见 [RGB888_READ_ALIGNMENT.md](RGB888_READ_ALIGNMENT.md)。
+
+> 新增普通 RGB565 四图缓存／高精度 RGB888 两图缓存，可在统一设置的「色彩精度」中选择。详见 [HIGH_COLOR_MODE.md](HIGH_COLOR_MODE.md)。
+
 > 当前新增统一设置菜单，包含切换方式、自动轮播及波形／频谱选择。详见 [AUDIO_STAGE2.md](AUDIO_STAGE2.md)。
 
 > 正常 BGSCAN 基线已上传 GitHub，提交 2b2a97b。本工作目录新增 AUDIO2 单板音频移植，实板验收待完成。新增功能及按键说明见 [AUDIO_STAGE2.md](AUDIO_STAGE2.md)。
@@ -14,9 +20,9 @@
 
 ## 烧录文件
 
-- [A 板 bit](delivery/PHOTO_BOARD_A_720P_AUDIO2_UNIFIED_MENU_WAVE_SPECTRUM_LINK50M.bit)
-- [B 板 bit](delivery/PHOTO_BOARD_B_720P_AUDIO2_UNIFIED_MENU_WAVE_SPECTRUM_LINK50M.bit)
-- [源码与匹配 bit 打包下载](delivery/DUAL_720P_AUDIO2_UNIFIED_MENU_WAVE_SPECTRUM_SOURCE_AND_BITS.zip)
+- [A 板 bit](delivery/PHOTO_BOARD_A_720P_RGB888_RGB565_AUDIO2_LINK50M.bit)
+- [B 板 bit](delivery/PHOTO_BOARD_B_720P_RGB888_RGB565_AUDIO2_BREADALIGN1_LINK50M.bit)
+- [源码与匹配 bit 打包下载](delivery/DUAL_720P_RGB888_RGB565_AUDIO2_BREADALIGN1_SOURCE_AND_BITS.zip)
 
 **两板必须同时使用本套新 bit，不能与此前 6.25 MHz 或 1366×768 版本混用。**
 

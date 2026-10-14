@@ -7,10 +7,10 @@ for path in sorted((ROOT/'tests/results').glob('*results.json'),key=lambda p:p.s
  for v in json.loads(path.read_text(encoding='utf-8')):results[v['test']]=v
 boards=[json.loads((ROOT/'delivery'/f'{role}_manifest.json').read_text(encoding='utf-8')) for role in ['board_a','board_b']]
 if all(b.get('audio_stage')==2 for b in boards):
- text='# AUDIO2 统一设置与波形／频谱构建记录\n\nB 读取 PCM、合成提示音、混合并缩放音量；A 控制比赛和音频、生成轻量柱状频谱、输出 HDMI。保留 BGSCAN 先播放后继续扫描。A 将音量、图像参数、切换方式、自动轮播和音频显示合并为 11 项设置；菜单通过五拍 RGB 旁路输出，保持视频总延迟 26 拍。波形使用双缓冲 PCM 快照，每帧更新；B 沿用 AUDIO2 构建。未运行功能仿真，尚未实板确认；提交 2b2a97b 的 BGSCAN 确认不能作为 AUDIO2 验收。\n\n| 板 | SWNS/ns | HWNS/ns | STNS/HTNS | LUT | REG | BRAM9K | BRAM32K | DSP |\n|---|---:|---:|---|---:|---:|---:|---:|---:|\n'
+ text='# RGB888 BREADALIGN1 读取对齐校准构建记录\n\nB 读取 PCM、合成提示音、混合并缩放音量；A 控制比赛和音频、生成轻量柱状频谱、输出 HDMI。保留 BGSCAN 先播放后继续扫描。A 将音量、图像参数、切换方式、自动轮播和音频显示合并为 12 项设置，新增色彩精度选择；菜单通过五拍 RGB 旁路输出，保持视频总延迟 26 拍。波形使用双缓冲 PCM 快照，每帧更新；A/B 同时新增 RGB888 打包、动态帧长度、两槽缓存和模式切换握手；B 缩放行缓存保留 24 位颜色并使用 32K BRAM。本候选仅在 B 的 RGB888 SDRAM 读入 FIFO 前增加一拍捕获，valid 保持原时序；RGB565 直通，A 沿用此前 RGB888 bit。用户已上板确认偏蓝消失；切图突然黑一下仍存在，渐暗与显示欠载尚未区分。未运行功能仿真，实板仅确认偏蓝消失且切图黑一下仍存在；提交 2b2a97b 的 BGSCAN 确认不能作为 AUDIO2 验收。\n\n| 板 | SWNS/ns | HWNS/ns | STNS/HTNS | LUT | REG | BRAM9K | BRAM32K | DSP |\n|---|---:|---:|---|---:|---:|---:|---:|---:|\n'
  for b in boards:
   t=b['timing_ns'];r=b['resources'];text+=f"| {b['role']} | {t['SWNS']} | {t['HWNS']} | {t['STNS']}/{t['HTNS']} | {r['lut']} | {r['reg']} | {r['bram9k']} | {r['bram32k']} | {r['dsp']} |\n"
- text+='\n待确认：图片与音乐仍正常、统一设置 11 项、切换方式名称、自动轮播、波形／频谱切换、音量和静音、恢复默认、长按 KEY4 比赛流程、倒计时提示音、暂停/继续/结束、背景音乐恢复及 HMI 计时回传。频谱基于零交叉估计，不是 FFT。AUDIO2 音频控制会清理旧队列，可能造成短暂静音及小段音乐跳过。\n'
+ text+='\n待确认：图片与音乐仍正常、统一设置 12 项、RGB565/RGB888 切换、黑一下的原因与持续时间、原生和缩放图片颜色、帧边界与持续播放、切换方式名称、自动轮播、波形／频谱切换、音量和静音、恢复默认、长按 KEY4 比赛流程、倒计时提示音、暂停/继续/结束、背景音乐恢复及 HMI 计时回传。频谱基于零交叉估计，不是 FFT。AUDIO2 音频控制会清理旧队列，可能造成短暂静音及小段音乐跳过。\n'
  (ROOT/'VALIDATION.md').write_text(text,encoding='utf-8')
  print('AUDIO2 build evidence collected; simulation and hardware pending.')
  raise SystemExit(0)
