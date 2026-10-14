@@ -34,5 +34,11 @@
   "../../../../common/photo_menu_font.v",
   "../../../../common/photo_audio_link.v",
   "../../../../common/audio_vendor/audio_arc_calculate.v",
-  "../../../../common/audio_vendor/hdmi_1_4b_transmitter_core_wrapper.enc.v"
+  "../../../../common/audio_vendor/hdmi_1_4b_transmitter_core_wrapper.enc.v",
+  "../../../../common/photo_audio_features.v",
+  "../../../../common/audio_ui/saixian_event_controller.v",
+  "../../../../common/audio_ui/saixian_osd_overlay.v",
+  "../../../../common/audio_ui/saixian_font_rom.v",
+  "../../../../common/audio_ui/photo_audio_cue_samples.v",
+  "../../../../common/photo_unified_settings_controller.v"
 ]

@@ -95,7 +95,9 @@ always @(posedge clk or posedge rst)begin
    pending_epoch<=requested_audio_epoch;pending_track<=requested_audio_track<audio_count ? requested_audio_track:3'd0;change_pending<=1;
   end else if(change_pending && read_owner!=2 && !read_settle && !audio_packet_active)begin
    // Finish any old audio sector before flushing; never reset the TF card.
-   active_audio_track<=pending_track;active_audio_epoch<=pending_epoch;flush_count<=4;change_pending<=0;
+   active_audio_track<=pending_track;active_audio_epoch<=pending_epoch;
+   if(pending_track!=active_audio_track)flush_count<=4;
+   change_pending<=0;
   end
  end
 end
@@ -164,8 +166,7 @@ always @(posedge clk or posedge rst)begin
     scan_complete<=scan_exhausted || (image_count==6 && audio_count==5);
     if(image_count==0 && !found)error<=1;
    end
-   if(scanned && (request || demand || release_slot || prefetch_pause ||
-      !current_hit || (image_count>1 && (!next_hit || !prev_hit))))scan_yield<=1;
+   if(scanned && (request || demand || release_slot || prefetch_pause || found))scan_yield<=1;
    // Watchdog measures absence of SD progress, not absence of new headers.
    // Search the configured sector range even after six photos are found.
    if(timer>=CLK_HZ*20)begin scanning<=0;scanned<=1;scan_complete<=1;abort_op<=1;if(image_count==0)error<=1;end

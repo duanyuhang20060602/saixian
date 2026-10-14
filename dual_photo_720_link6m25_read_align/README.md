@@ -1,4 +1,8 @@
-# 双板 720p AUDIO1_DIAG_BGSCAN：先播放，后台扫描
+> 当前新增统一设置菜单，包含切换方式、自动轮播及波形／频谱选择。详见 [AUDIO_STAGE2.md](AUDIO_STAGE2.md)。
+
+> 正常 BGSCAN 基线已上传 GitHub，提交 2b2a97b。本工作目录新增 AUDIO2 单板音频移植，实板验收待完成。新增功能及按键说明见 [AUDIO_STAGE2.md](AUDIO_STAGE2.md)。
+
+# 双板 720p AUDIO2：B音频处理、A频谱及比赛界面
 
 基于已发布分支 `codex/dual-photo-720p-high-speed-switch` 的图像处理移植和双模式调度版本。本版未运行功能仿真；2026-10-14 用户确认 BGSCAN 图片与音乐播放正常，作为下一阶段移植前的可回退基线。
 
@@ -10,9 +14,9 @@
 
 ## 烧录文件
 
-- [A 板 bit](delivery/PHOTO_BOARD_A_1280X720_J2_NOCRC_BIMAGEPROC_AKEY_MENU_MODEFAST_AUDIO1_DIAG_BGSCAN_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM.bit)
-- [B 板 bit](delivery/PHOTO_BOARD_B_1280X720_J2_NOCRC_BIMAGEPROC_AKEY_MENU_MODEFAST_AUDIO1_DIAG_BGSCAN_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM.bit)
-- [源码与匹配 bit 打包下载](delivery/DUAL_PHOTO_1280X720_J2_NOCRC_BIMAGEPROC_AKEY_MENU_MODEFAST_AUDIO1_DIAG_BGSCAN_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM_SOURCE_AND_BITS.zip)
+- [A 板 bit](delivery/PHOTO_BOARD_A_720P_AUDIO2_UNIFIED_MENU_WAVE_SPECTRUM_LINK50M.bit)
+- [B 板 bit](delivery/PHOTO_BOARD_B_720P_AUDIO2_UNIFIED_MENU_WAVE_SPECTRUM_LINK50M.bit)
+- [源码与匹配 bit 打包下载](delivery/DUAL_720P_AUDIO2_UNIFIED_MENU_WAVE_SPECTRUM_SOURCE_AND_BITS.zip)
 
 **两板必须同时使用本套新 bit，不能与此前 6.25 MHz 或 1366×768 版本混用。**
 
@@ -91,3 +95,7 @@ B以A的实际显示图片作为缓存中心并保护原图，打开设置暂停
 ## 音频无声定位
 
 本次 bit 名称包含 AUDIO1_DIAG_BGSCAN。找到第一张图片后先开放图片目录，找到第一首音频后即可播放。剩余素材在图片缓存空闲时继续扫描，切图或缓存补图时在扇区边界暂停，并保留搜索游标。图片数量增加时通知 A，不清空已显示的图片。A 板数码管显示 8SNTBH，B 板显示 7SNTBR，含义和判断表见 [音频诊断说明](AUDIO_STAGE1.md)。
+
+## MENUFIX：音量页切到图像页黑屏修复
+
+音量设置页由单板 OSD 绘制，图像设置项 1~9 使用原双板菜单。原 OSD 的 DE 为低会输出黑色，不能作为透明隐藏。新 A bit 增加五拍 RGB 旁路，设置项 1~9 直接显示原菜单，RGB 和 HDMI DE/SOF/EOL 仍统一 26 拍。B 逻辑未修改，可沿用已烧录 AUDIO2 B bit；匹配包也包含同一 B 位流。需实板确认 KEY1 循环 0~9、返回音量页、KEY3 退出及正常播放。

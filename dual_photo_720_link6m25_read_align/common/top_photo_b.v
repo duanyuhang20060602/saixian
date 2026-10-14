@@ -10,14 +10,19 @@ builtin_link_pll u_link_pll(.refclk(clk),.reset(1'b0),.clk0_out(link_clk),.locke
 dual_still_reset_sync rs(.clk(sd_clk),.arst(!sys_lock || !link_lock),.rst(rst_sd));
 dual_still_reset_sync rm(.clk(mem_clk),.arst(!sys_lock),.rst(rst_mem));
 dual_still_reset_sync rl(.clk(link_clk),.arst(!link_lock || !sys_lock),.rst(rst_link));
-wire [3:0] audio_scan_state;reg audio_request_seen;
+wire [3:0] audio_scan_state;wire audio_sample_prepare,audio_bg_enabled,audio_request_bg;
+wire [3:0] audio_request_volume,audio_request_cue;wire [31:0] processed_audio;reg audio_request_seen;
 always @(posedge sd_clk or posedge rst_sd)
  if(rst_sd)audio_request_seen<=0;else if(audio_request_valid)audio_request_seen<=1;
 wire audio_packet_active,audio_request_valid,audio_switching,audio_fifo_read;wire [7:0] requested_audio_epoch,active_audio_epoch;
 wire [2:0] requested_audio_track,active_audio_track,audio_count;wire [13:0] audio_fifo_used;wire [31:0] audio_fifo_data;
 photo_audio_spi_b audio_link(.clk(sd_clk),.rst(rst_sd),.spi_sclk(audio_sclk),.spi_cs(audio_cs),.spi_mosi(audio_mosi),.spi_miso(audio_miso),.packet_active(audio_packet_active),
  .active_epoch(active_audio_epoch),.active_track(active_audio_track),.track_count(audio_count),.switching(audio_switching),
- .fifo_used(audio_fifo_used),.fifo_data(audio_fifo_data),.fifo_read(audio_fifo_read),.request_valid(audio_request_valid),.request_epoch(requested_audio_epoch),.request_track(requested_audio_track));
+ .fifo_used(audio_fifo_used),.processed_pcm(processed_audio),.bg_enabled(audio_bg_enabled),.sample_prepare(audio_sample_prepare),.fifo_read(audio_fifo_read),.request_valid(audio_request_valid),.request_epoch(requested_audio_epoch),.request_track(requested_audio_track),.request_bg(audio_request_bg),.request_volume(audio_request_volume),.request_cue(audio_request_cue));
+photo_audio_processing_b audio_processing(.clk(sd_clk),.rst(rst_sd),.prepare(audio_sample_prepare),
+ .request_valid(audio_request_valid),.request_epoch(requested_audio_epoch),.request_bg(audio_request_bg),
+ .request_volume(audio_request_volume),.request_cue(audio_request_cue),.raw_pcm(audio_fifo_data),
+ .processed_pcm(processed_audio),.bg_enabled(audio_bg_enabled));
 wire req,ack,we,full,finish,read_req,read_ack,read_en,empty,read_finish,mem_init;
 wire [31:0] packed_data,read_data,processed_data;wire processed_empty,source_read;
 wire [17:0] settings_state;wire [1:0] media_gain;

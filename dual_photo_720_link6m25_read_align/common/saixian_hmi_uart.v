@@ -9,6 +9,7 @@ module saixian_hmi_uart #(
     input  wire       clk,
     input  wire       rst,
     input  wire       uart_rx,
+    output reg project_valid,output reg [1:0] project_value,
     output reg        start_pulse,
     output reg        pause_set_pulse, resume_pulse,
     output reg [2:0]  page_id,
@@ -29,6 +30,7 @@ module saixian_hmi_uart #(
     output reg [2:0]  effect_value,
     output reg        auto_valid,
     output reg        auto_value,
+    output reg audio_view_valid,audio_view_value,
     output reg        reset_defaults_pulse,
     output reg        frame_error_pulse
 );
@@ -130,6 +132,7 @@ task decode_frame;
             8'h06: if (frame_value == 0) pause_set_pulse <= 1'b1; else frame_error_pulse <= 1'b1;
             8'h08: if (frame_value == 0) music_next_pulse <= 1'b1; else frame_error_pulse <= 1'b1;
             8'h07: if (frame_value == 0) resume_pulse <= 1'b1; else frame_error_pulse <= 1'b1;
+            8'h24: if(frame_value<=2)begin project_valid<=1;project_value<=frame_value[1:0];end else frame_error_pulse<=1;
             8'h30: if (frame_value <= 4) begin page_id <= frame_value[2:0]; page_notify_pulse <= 1'b1; end else frame_error_pulse <= 1'b1;
             8'h10: begin setting_valid <= 1'b1; setting_id <= 3'd0; setting_value <= frame_value; end
             8'h11: begin setting_valid <= 1'b1; setting_id <= 3'd1; setting_value <= frame_value; end
@@ -153,6 +156,7 @@ task decode_frame;
                 if (frame_value <= 6) begin effect_valid<=1'b1; effect_value<=frame_value[2:0]; end
                 else frame_error_pulse<=1'b1;
             end
+            8'h1a: if(frame_value<=1)begin audio_view_valid<=1;audio_view_value<=frame_value[0];end else frame_error_pulse<=1;
             8'h19: begin
                 if (frame_value <= 1) begin auto_valid<=1'b1; auto_value<=frame_value[0]; end
                 else frame_error_pulse<=1'b1;
@@ -177,12 +181,12 @@ endtask
 
 always @(posedge clk or posedge rst) begin
     if (rst) begin
-        frame_index          <= 3'd0;
+        project_value<=0;frame_index          <= 3'd0;
         page_id <= 3'd0;
         frame_idle           <= 0;
         frame_command        <= 8'd0;
         frame_value          <= 8'd0;
-        start_pulse          <= 1'b0;
+        project_valid<=0;start_pulse          <= 1'b0;
         pause_set_pulse <= 1'b0; resume_pulse <= 1'b0; page_notify_pulse <= 1'b0;
         pause_pulse          <= 1'b0;
         finish_pulse         <= 1'b0;
@@ -198,12 +202,12 @@ always @(posedge clk or posedge rst) begin
         setting_value        <= 8'd0;
         effect_valid         <= 1'b0;
         effect_value         <= 3'd0;
-        auto_valid           <= 1'b0;
-        auto_value           <= 1'b0;
+        auto_valid           <= 1'b0;audio_view_valid<=0;
+        auto_value           <= 1'b0;audio_view_value<=0;
         reset_defaults_pulse <= 1'b0;
         frame_error_pulse    <= 1'b0;
     end else begin
-        start_pulse          <= 1'b0;
+        project_valid<=0;start_pulse          <= 1'b0;
         pause_set_pulse <= 1'b0; resume_pulse <= 1'b0; page_notify_pulse <= 1'b0;
         pause_pulse          <= 1'b0;
         finish_pulse         <= 1'b0;
@@ -216,7 +220,7 @@ always @(posedge clk or posedge rst) begin
         result_stop_pulse    <= 1'b0;
         setting_valid        <= 1'b0;
         effect_valid         <= 1'b0;
-        auto_valid           <= 1'b0;
+        auto_valid           <= 1'b0;audio_view_valid<=0;
         reset_defaults_pulse <= 1'b0;
         frame_error_pulse    <= 1'b0;
 

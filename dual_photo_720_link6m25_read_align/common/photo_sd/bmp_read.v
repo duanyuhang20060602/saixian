@@ -176,7 +176,22 @@ wire payload_started = !less_bytes(bmp_len_cnt,pixel_offset);
 wire before_file_end = less_bytes(bmp_len_cnt,file_len);
 assign bmp_data_valid = sd_sec_read_data_valid && payload_started && before_file_end;
 assign file_sector_count = (file_len == 32'd0) ? 32'd1 : ((file_len + 32'd511) >> 9);
-assign next_scan_sector_if_miss  = scan_sector + 32'd1;
+reg [31:0] scan_plus_one,audio_sector_count,audio_next,bmp_next;
+reg audio_limit,bmp_limit,miss_limit;
+// Header fields settle hundreds of clocks before ST_CHECK. Pipeline the
+// skip arithmetic so neither a 32-bit add nor its limit test feeds state decode.
+always @(posedge clk or posedge rst)begin
+ if(rst)begin scan_plus_one<=0;audio_sector_count<=0;audio_next<=0;bmp_next<=0;
+  audio_limit<=0;bmp_limit<=0;miss_limit<=0;end
+ else begin
+  scan_plus_one<=scan_sector+32'd1;
+  audio_sector_count<=(audio_data_len+32'd511)>>9;
+  audio_next<=scan_plus_one+audio_sector_count;
+  bmp_next<=scan_sector+file_sector_count;
+  audio_limit<=audio_next>scan_max_sector;bmp_limit<=bmp_next>scan_max_sector;miss_limit<=scan_sector>=scan_max_sector;
+ end
+end
+assign next_scan_sector_if_miss=scan_plus_one;
 // BGM.AUD begins with one aligned metadata sector. Byte zero is kept in the
 // low byte of audio_magic, so this constant spells "SXAUD001" in file order.
 assign audio_header_ok = (audio_magic       == 64'h3130304455415853) &&
@@ -458,14 +473,14 @@ always @(posedge clk or posedge rst) begin
                         // Skip the aligned metadata sector and the complete
                         // PCM payload instead of scanning 96k audio sectors.
                         if (((scan_found_total >= scan_target_count) && (audio_found_count >= 3'd4)) ||
-                            ((scan_sector + 32'd1 + ((audio_data_len_latched + 32'd511) >> 9)) > scan_max_sector)) begin
+                            audio_limit) begin
                             scan_done        <= 1'b1;scan_exhausted<=1'b1;
                             state            <= ST_IDLE;
-                            sd_sec_read_addr <= scan_sector + 32'd1 + ((audio_data_len_latched + 32'd511) >> 9);
-                            scan_sector      <= scan_sector + 32'd1 + ((audio_data_len_latched + 32'd511) >> 9);
+                            sd_sec_read_addr <= audio_next;
+                            scan_sector      <= audio_next;
                         end else begin
-                            sd_sec_read_addr <= scan_sector + 32'd1 + ((audio_data_len_latched + 32'd511) >> 9);
-                            scan_sector      <= scan_sector + 32'd1 + ((audio_data_len_latched + 32'd511) >> 9);
+                            sd_sec_read_addr <= audio_next;
+                            scan_sector      <= audio_next;
                             state            <= ST_SCAN;
                         end
                     end else if (header_basic_ok_latched && header_geometry_ok_latched) begin
@@ -477,18 +492,18 @@ always @(posedge clk or posedge rst) begin
                         scan_found_sprint <= sprint_tag_latched;
 
                         if (((scan_found_total + 3'd1 >= scan_target_count) && (audio_found_count >= 3'd5)) ||
-                            ((scan_sector + file_sector_count_latched) > scan_max_sector)) begin
+                            bmp_limit) begin
                             scan_done        <= 1'b1;scan_exhausted<=1'b1;
                             state            <= ST_IDLE;
-                            sd_sec_read_addr <= scan_sector + file_sector_count_latched;
-                            scan_sector      <= scan_sector + file_sector_count_latched;
+                            sd_sec_read_addr <= bmp_next;
+                            scan_sector      <= bmp_next;
                         end else begin
-                            sd_sec_read_addr <= scan_sector + file_sector_count_latched;
-                            scan_sector      <= scan_sector + file_sector_count_latched;
+                            sd_sec_read_addr <= bmp_next;
+                            scan_sector      <= bmp_next;
                             state            <= ST_SCAN;
                         end
                     end else begin
-                        if (scan_sector >= scan_max_sector) begin
+                        if (miss_limit) begin
                             scan_done <= 1'b1;scan_exhausted<=1'b1;
                             state     <= ST_IDLE;
                         end else begin

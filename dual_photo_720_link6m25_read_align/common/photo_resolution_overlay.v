@@ -4,10 +4,11 @@
 module photo_resolution_overlay #(parameter VIDEO_DELAY=21)(
  input clk,rst,de,display_valid,input [11:0] x,input [10:0] y,
  input [15:0] source_width,source_height,input [23:0] rgb_in,
- output [23:0] rgb_out
+ output [15:0] width_bcd,height_bcd,output [23:0] rgb_out
 );
 reg [15:0] seen_width,seen_height,width_bits,height_bits;
 reg [15:0] width_work,height_work,width_digits,height_digits;
+assign width_bcd=width_digits;assign height_bcd=height_digits;
 reg [4:0] steps;reg converting,digits_valid;
 function [15:0] adjust;
  input [15:0] value;integer i;reg [15:0] result;

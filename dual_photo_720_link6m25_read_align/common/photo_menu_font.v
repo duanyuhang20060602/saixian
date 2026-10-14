@@ -1,12 +1,12 @@
 // 128 glyphs x 16 rows x 16 bits, stored in one EG4 32K block RAM.
 module photo_menu_font(
     input  wire        clk,
-    input  wire [5:0]  glyph,
+    input  wire [6:0]  glyph,
     input  wire [3:0]  row,
     output wire [15:0] bits
 );
 
-wire [10:0] font_addr = {1'b0,glyph,row};
+wire [10:0] font_addr = {glyph,row};
 
 EG_LOGIC_BRAM #(
     .DATA_WIDTH_A(16),
