@@ -1,10 +1,11 @@
-module saixian_transition(
+module saixian_transition #(parameter ALLOW_IMMEDIATE=0)(
     input  wire       clk,
     input  wire       rst,
     input  wire       frame_tick,
     input  wire       frame_ready_toggle,
     input  wire [1:0] ready_buf_idx,
     input  wire       ready_slide_right,
+    input wire ready_immediate,
     input  wire [2:0] effect_select, // 0=random, 1..6=the named effects below
     output reg  [1:0] active_buf_idx,
     output reg  [1:0] slide_new_buf_idx,
@@ -138,7 +139,7 @@ always @(posedge clk or posedge rst) begin
                 ready_seen        <= ready_sync1;
                 slide_new_buf_idx <= ready_buf_sync1;
 
-                if (!display_valid) begin
+                if (!display_valid || (ALLOW_IMMEDIATE && ready_immediate)) begin
                     active_buf_idx      <= ready_buf_sync1;
                     frame_commit_toggle <= ~frame_commit_toggle;
                     display_valid       <= 1'b1;

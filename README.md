@@ -1,3 +1,15 @@
+## MODEFAST：双板720p图像处理与播放/设置双模式（2026-10-14）
+
+分支：`codex/dual-photo-720p-high-speed-switch`。
+
+- B板执行增强、细节、亮度/对比度/饱和度、复古与反色；A板按键控制HDMI中文设置界面，保留原HMI命令。
+- 正常播放沿传图窗口预读，设置期间保护当前原图并优先刷新；退出设置先补下一张，再补后两张。
+- 保留50MHz板间链路、25MHz TF连续读取、A四图缓存、转场与自动轮播；连续图像调节合并50ms内的变化。
+- [工程与匹配A/B bit](dual_photo_720_link6m25_read_align/README.md) · [操作及调度说明](dual_photo_720_link6m25_read_align/HDMI_SETTINGS_MENU.md) · [构建记录](dual_photo_720_link6m25_read_align/VALIDATION.md)。
+- 此版针对PINFAST切图变慢的反馈修改调度，未运行功能仿真；实板切图及调参效果待确认，首次进入设置缓存未命中仍需读卡。
+
+---
+
 ## 高速切换版本：双板 720p（2026-10-13）
 
 分支：`codex/dual-photo-720p-high-speed-switch`。

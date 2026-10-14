@@ -1,6 +1,7 @@
 module saixian_settings_controller #(
     parameter integer CLK_FREQ_HZ = 25_000_000,
-    parameter integer TIMEOUT_SECONDS = 60
+    parameter integer TIMEOUT_SECONDS = 60,
+    parameter integer IMAGE_MENU = 0
 )(
     input  wire       clk,
     input  wire       rst,
@@ -101,7 +102,7 @@ always @(posedge clk or posedge rst) begin
         idle_timer <= 33'd0;
         if (key_enter_exit) begin
             settings_mode <= 1'b1;
-            setting_item  <= 4'd0;
+            setting_item  <= IMAGE_MENU ? 4'd1:4'd0;
         end
     end else begin
         if (key_next_item || key_decrease || key_enter_exit || key_increase)
@@ -115,7 +116,7 @@ always @(posedge clk or posedge rst) begin
         if (key_enter_exit)
             settings_mode <= 1'b0;
         else if (key_next_item)
-            setting_item <= (setting_item == 4'd9) ? 4'd0 : setting_item + 1'b1;
+            setting_item <= (setting_item == 4'd9) ? (IMAGE_MENU ? 4'd1:4'd0) : setting_item + 1'b1;
         else if (key_decrease) begin
             case (setting_item)
                 2'd0: if (volume_setting     != 0) volume_setting     <= volume_setting - 1'b1;
@@ -148,11 +149,11 @@ end
 endmodule
 
 module saixian_adaptive_enhance #(
-    parameter integer WIDTH=1280, SPLIT_X=640, PHOTO_SMOOTH=0
+    parameter integer WIDTH=1280, SPLIT_X=640, PHOTO_SMOOTH=0, EXTERNAL_GAIN=0
 )(
     input wire clk,rst,de,vs,frame_tick,statistics_enable,
     input wire [10:0] x,input wire [9:0] y,
-    input wire [23:0] rgb_in,input wire [1:0] mode,strength,
+    input wire [23:0] rgb_in,input wire [1:0] mode,strength,external_gain,
     output reg [23:0] rgb_out,
     output wire de_out,vs_out,
     output wire [10:0] x_out,output wire [9:0] y_out,
@@ -211,22 +212,24 @@ wire [9:0] pair0={1'b0,p0_q}+p1_q,pair1={1'b0,p2_q}+p3_q;
 wire signed [9:0] residual=$signed({1'b0,y1})-$signed({1'b0,neighborhood[11:4]});
 reg signed [9:0] detail_term;
 reg signed [7:0] tone_term;
+// Clamp outside the useful range before the narrow arithmetic. This keeps
+// the exact signed rounding and +/-12 bound without a wide add/negate/clamp.
+wire signed [5:0] small_detail=detail[5:0];
+wire signed [5:0] smooth_positive=-((small_detail+6'sd1)>>>1);
+wire signed [5:0] smooth_negative=((-small_detail+6'sd1)>>>1);
+wire signed [4:0] sharp_pair=$signed(detail[4:0])+($signed(detail[4:0])>>>1);
 always @* begin
-    // Preserve low-contrast lettering/texture rather than replacing it with
-    // the causal neighborhood average. Keep the existing edge sharpening.
     if(PHOTO_SMOOTH && strength==1) begin
-        // Range-gated neighbours have already rejected strong edges.
-        // Blend halfway toward the centre-weighted mean. Symmetric rounding
-        // avoids the negative-value bias of an arithmetic right shift.
-        if(detail>0) detail_term=-((detail+1)>>>1);
-        else detail_term=((-detail+1)>>>1);
+        if(detail>=23) detail_term=-10'sd12;
+        else if(detail<=-23) detail_term=10'sd12;
+        else detail_term=detail>0 ? smooth_positive : smooth_negative;
     end else if(detail>=-3 && detail<=3) detail_term=0;
     else case(strength)
-        0:detail_term=0;1:detail_term=detail>>>1;
-        2:detail_term=detail;default:detail_term=detail+(detail>>>1);
+        0:detail_term=0;
+        1:detail_term=detail>=24 ? 10'sd12 : (detail<=-23 ? -10'sd12 : (small_detail>>>1));
+        2:detail_term=detail>=12 ? 10'sd12 : (detail<=-12 ? -10'sd12 : detail);
+        default:detail_term=detail>=8 ? 10'sd12 : (detail<=-8 ? -10'sd12 : sharp_pair);
     endcase
-    if(detail_term>12) detail_term=12;
-    if(detail_term< -12) detail_term=-12;
     case(gain)
         0:tone_term=0;
         // Half the previous lift: retain more mid-tone contrast/headroom.
@@ -274,7 +277,8 @@ always @(posedge clk or posedge rst) begin
                                clamp_enhanced($signed({1'b0,rgb4[15:8]})+correction),
                                clamp_enhanced($signed({1'b0,rgb4[7:0]})+correction)} : 24'd0;
         // 1/256 spatial sampling; no per-pixel divider or histogram storage.
-        if(frame_tick) begin
+        if(EXTERNAL_GAIN) gain<=external_gain;
+        else if(frame_tick) begin
             if(stat_count>32) begin
                 if(stat_sum<(stat_count_ext<<6)) gain<=3;
                 else if(stat_sum<((stat_count_ext<<6)+(stat_count_ext<<5))) gain<=2;
@@ -635,7 +639,8 @@ endmodule
 
 module saixian_hmi_status_tx #(
     parameter integer CLK_FREQ_HZ = 75_000_000,
-    parameter integer BAUD_RATE = 115_200
+    parameter integer BAUD_RATE = 115_200,
+    parameter integer ENHANCEMENT_FEEDBACK = 0
 )(
     input wire clk, rst,
     input wire [2:0] image_count,
@@ -647,6 +652,7 @@ module saixian_hmi_status_tx #(
     input wire [1:0] sharpness,
     input wire [3:0] brightness, contrast, saturation, volume,
     input wire invert, vintage,
+    input wire [1:0] enhancement,
     input wire [3:0] event_state,
     input wire [6:0] minutes,
     input wire [5:0] seconds,
@@ -675,8 +681,9 @@ reg [5:0] seconds_snapshot;
 reg [3:0] state_snapshot;
 reg [4:0] field_count;
 reg refresh_pending;
-reg [19:0] settings_seen;
-wire [19:0] settings_live={sharpness,brightness,contrast,saturation,volume,invert,vintage};
+reg [21:0] settings_seen;
+wire [1:0] feedback_enhancement=ENHANCEMENT_FEEDBACK ? enhancement:2'd0;
+wire [21:0] settings_live={feedback_enhancement,sharpness,brightness,contrast,saturation,volume,invert,vintage};
 reg [7:0] value;
 integer prefix_len;
 
@@ -1045,6 +1052,52 @@ initial begin
     command_rom[555]=8'h74;
     command_rom[556]=8'h3d;
     command_rom[557]=8'h22;
+    command_rom[576]=8'h73;
+    command_rom[577]=8'h65;
+    command_rom[578]=8'h74;
+    command_rom[579]=8'h74;
+    command_rom[580]=8'h69;
+    command_rom[581]=8'h6e;
+    command_rom[582]=8'h67;
+    command_rom[583]=8'h73;
+    command_rom[584]=8'h2e;
+    command_rom[585]=8'h68;
+    command_rom[586]=8'h5f;
+    command_rom[587]=8'h65;
+    command_rom[588]=8'h6e;
+    command_rom[589]=8'h68;
+    command_rom[590]=8'h61;
+    command_rom[591]=8'h6e;
+    command_rom[592]=8'h63;
+    command_rom[593]=8'h65;
+    command_rom[594]=8'h2e;
+    command_rom[595]=8'h76;
+    command_rom[596]=8'h61;
+    command_rom[597]=8'h6c;
+    command_rom[598]=8'h3d;
+    command_rom[608]=8'h73;
+    command_rom[609]=8'h65;
+    command_rom[610]=8'h74;
+    command_rom[611]=8'h74;
+    command_rom[612]=8'h69;
+    command_rom[613]=8'h6e;
+    command_rom[614]=8'h67;
+    command_rom[615]=8'h73;
+    command_rom[616]=8'h2e;
+    command_rom[617]=8'h6e;
+    command_rom[618]=8'h5f;
+    command_rom[619]=8'h65;
+    command_rom[620]=8'h6e;
+    command_rom[621]=8'h68;
+    command_rom[622]=8'h61;
+    command_rom[623]=8'h6e;
+    command_rom[624]=8'h63;
+    command_rom[625]=8'h65;
+    command_rom[626]=8'h2e;
+    command_rom[627]=8'h76;
+    command_rom[628]=8'h61;
+    command_rom[629]=8'h6c;
+    command_rom[630]=8'h3d;
 end
 always @(posedge clk) prefix_byte<=command_rom[{message_id,next_byte_index}];
 
@@ -1067,7 +1120,7 @@ always @* begin
     field_count=3;
     case(active_page)
         3'd1: begin
-            field_count=12;
+            field_count=ENHANCEMENT_FEEDBACK ? 14:12;
             case(next_field)
                 0:begin prepared_id=5'd0;prefix_len=21;value={6'd0,sharpness};end
                 1:begin prepared_id=5'd1;prefix_len=21;value={6'd0,sharpness};end
@@ -1080,7 +1133,9 @@ always @* begin
                 8:begin prepared_id=5'd8;prefix_len=22;value=percent(volume);end
                 9:begin prepared_id=5'd9;prefix_len=22;value=percent(volume);end
                 10:begin prepared_id=5'd10;prefix_len=23;value={7'd0,invert};end
-                default:begin prepared_id=5'd11;prefix_len=24;value={7'd0,vintage};end
+                11:begin prepared_id=5'd11;prefix_len=24;value={7'd0,vintage};end
+                12:begin prepared_id=5'd18;prefix_len=23;value={6'd0,enhancement};end
+                default:begin prepared_id=5'd19;prefix_len=23;value={6'd0,enhancement};end
             endcase
         end
         3'd2: begin

@@ -48,8 +48,8 @@ for role,top in [('board_a','top_photo_a'),('board_b','top_photo_b')]:
     for e in list(verilog):verilog.remove(e)
     paths=[p for p in paths if Path(p).name not in excluded | replacements]
     shared=['photo_uart.v','photo_link.v','photo_control.v','photo_status.v',top+'.v']
-    if role=='board_a':shared+=['photo_resolution_overlay.v','photo_cached_control_a.v','saixian_transition.v','photo_processing.v','saixian_hmi_uart.v','saixian_key_debounce.v','photo_auto_advance.v']
-    else:shared+=['photo_sd_cache.v']
+    if role=='board_a':shared+=['photo_resolution_overlay.v','photo_settings_overlay.v','photo_menu_font.v','photo_cached_control_a.v','saixian_transition.v','photo_processing.v','saixian_hmi_uart.v','saixian_key_debounce.v','photo_auto_advance.v']
+    else:shared+=['photo_sd_cache.v','photo_processing.v','photo_b_processing.v']
     paths+=['../../../../common/'+p for p in shared]
     if role=='board_b':paths+=['../../../../common/photo_sd/'+p.name for p in (ROOT/'common/photo_sd').glob('*.v')]
     # Imported B al may already list saixian_media_header under SD.
@@ -91,5 +91,8 @@ set_false_path -to [get_regs -nowarn {*event_meta* *rx_meta* *fault_meta* *armed
 set_false_path -from [get_ports {control_rx}]
 '''
         if role=='board_a':text+='set_false_path -from [get_ports {hmi_uart_rx key[*]}]\n'
+        write(p,text)
+    if role=='board_b' and '*settings_meta*' not in text:
+        text+='set_false_path -to [get_regs -nowarn {*settings_meta* *gain_meta* *processing/ack_meta*}]\n'
         write(p,text)
 print('Configured independent A/B TD projects.')

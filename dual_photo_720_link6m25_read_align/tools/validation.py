@@ -7,10 +7,10 @@ for path in sorted((ROOT/'tests/results').glob('*results.json'),key=lambda p:p.s
  for v in json.loads(path.read_text(encoding='utf-8')):results[v['test']]=v
 boards=[json.loads((ROOT/'delivery'/f'{role}_manifest.json').read_text(encoding='utf-8')) for role in ['board_a','board_b']]
 if all(b.get('a_cache_frames')==4 for b in boards):
- text='# 720p 50 MHz 链路与 TF 连续读取构建记录\n\n本次 50 MHz 链路与 TF 连续读取版本未运行仿真，实板验证待完成。已有 tests/results 下的 PASS 日志属于此前控制器，不能作为本版本通过依据。\n\n## 时序及资源\n\n| 板 | SWNS/ns | HWNS/ns | LUT | REG | BRAM9K | DSP |\n|---|---:|---:|---:|---:|---:|---:|\n'
+ text='# 720p 50 MHz B板处理、A板按键、HDMI菜单及MODEFAST双模式调度构建记录\n\n本次将图像处理移至B板，由A板按键/HMI控制，并新增HDMI中文设置界面。本次改为播放优先/设置保护双模式：正常播放解锁当前原图，设置期间才保护，保留50ms参数合并。未运行功能仿真，实板验证待完成。已有 tests/results 下的 PASS 日志属于此前控制器，不能作为本版本通过依据。\n\n## 时序及资源\n\n| 板 | SWNS/ns | HWNS/ns | LUT | REG | BRAM9K | DSP |\n|---|---:|---:|---:|---:|---:|---:|\n'
  for b in boards:
   t=b['timing_ns'];r=b['resources'];text+=f"| {b['role']} | {t['SWNS']} | {t['HWNS']} | {r['lut']} | {r['reg']} | {r['bram9k']} | {r['dsp']} |\n"
- text+='\n编译、布局布线及时序报告已生成；帧 CRC 保持关闭，真实线缆与 SDRAM 的连续切换效果待确认。\n'
+ text+='\n编译、布局布线及时序报告已生成；帧 CRC 保持关闭，B板增强/锐化、参数确认及缓存刷新、中文菜单、真实线缆与SDRAM连续切换效果待确认。\n'
  (ROOT/'VALIDATION.md').write_text(text,encoding='utf-8')
  print('Four-frame build evidence collected; simulation and hardware pending.')
  raise SystemExit(0)

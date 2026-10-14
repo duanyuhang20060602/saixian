@@ -110,13 +110,14 @@ always @(posedge clk or posedge rst)begin
 end
 endmodule
 
-module photo_control_b #(parameter CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SEND_SOURCE_SIZE=0)(
+module photo_control_b #(parameter CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SEND_SOURCE_SIZE=0,SETTINGS_LINK=0)(
  input clk,rst,uart_rx,output uart_tx,input [2:0] image_count,input media_ready,
  input [1:0] media_slot,input [3:0] media_error,
  input [15:0] media_source_width,media_source_height,
  output reg media_request,output reg [2:0] media_target,output reg media_release,media_cancel,
  output reg [1:0] transmit_slot,output reg start_toggle,abort_toggle,
- input tx_done,input [31:0] tx_crc,output busy,output reg [3:0] error,output [3:0] debug_state
+ output reg display_valid,prefetch_pause,output reg [2:0] display_image,
+ output reg [17:0] settings_state,input tx_done,input [31:0] tx_crc,output busy,output reg [3:0] error,output [3:0] debug_state
 );
 localparam TIME_HZ=CLK_HZ/TIMER_SCALE;
 function [159:0] packet;
@@ -128,6 +129,7 @@ localparam DISCOVER=0,HELLO_ACK=1,IDLE=2,LOAD=3,BEGIN_SEND=4,WAIT_READY=5,
  SENDING=6,END_SEND=7,WAIT_ACCEPT=8,WAIT_COMMIT=9,ERROR_SEND=10;
 reg [3:0] state;reg [31:0] session,timer;reg [15:0] request_seq;
 assign debug_state=state;
+reg settings_reply,context_reply,cancel_reply;
 reg direction;reg [1:0] retries;reg send;reg [159:0] message;reg [31:0] completed_crc;
 reg [15:0] source_width,source_height;
 wire tx_busy,got,bad;wire [159:0] incoming;
@@ -137,7 +139,7 @@ wire [7:0] kind=incoming[159:152];
 wire matching=incoming[151:120]==session && incoming[119:104]==request_seq && incoming[103:96]=={5'd0,media_target};
 assign busy=state!=IDLE && state!=DISCOVER;
 always @(posedge clk or posedge rst)begin
- if(rst)begin state<=DISCOVER;session<=0;request_seq<=0;timer<=0;direction<=1;retries<=0;send<=0;message<=0;
+ if(rst)begin display_valid<=0;display_image<=0;prefetch_pause<=0;context_reply<=0;cancel_reply<=0;settings_state<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};settings_reply<=0;state<=DISCOVER;session<=0;request_seq<=0;timer<=0;direction<=1;retries<=0;send<=0;message<=0;
   media_request<=0;media_target<=0;media_release<=0;media_cancel<=0;transmit_slot<=0;start_toggle<=0;abort_toggle<=0;error<=0;completed_crc<=0;
   source_width<=0;source_height<=0;end
  else begin
@@ -148,14 +150,28 @@ always @(posedge clk or posedge rst)begin
    abort_toggle<=~abort_toggle;timer<=0;
    if(retries<2)begin retries<=retries+1'b1;state<=BEGIN_SEND;end
    else begin media_cancel<=1;error<=4;state<=ERROR_SEND;end
+  end else if(SETTINGS_LINK && got && kind==12 && incoming[151:120]==session)begin
+   settings_state<=incoming[41:24];settings_reply<=1;
+  end else if(SETTINGS_LINK && got && incoming[151:120]==session && kind==14)begin
+   display_valid<=incoming[89] && incoming[98:96]<image_count;display_image<=incoming[98:96];
+   prefetch_pause<=incoming[88];context_reply<=1;
+  end else if(SETTINGS_LINK && got && incoming[151:120]==session && kind==16)begin
+   // Cancel only the link transaction; preserve raw SDRAM caches and SD init.
+   abort_toggle<=~abort_toggle;media_cancel<=1;state<=IDLE;cancel_reply<=1;timer<=0;
   end else case(state)
-   DISCOVER:if(timer>=TIME_HZ && !tx_busy)begin
+   DISCOVER:if(timer>=TIME_HZ && !tx_busy && !send)begin
     message<=packet(10,0,0,0,0,FRAME_BYTES,0,0);send<=1;timer<=0;
    end
-   HELLO_ACK:if(!tx_busy)begin
+   HELLO_ACK:if(!tx_busy && !send)begin
     message<=packet(2,session,0,0,0,FRAME_BYTES,0,{5'd0,image_count});send<=1;state<=IDLE;timer<=0;
    end
-   IDLE:if(got && kind==3 && incoming[151:120]==session && incoming[103:96]<image_count && incoming[87:56]==FRAME_BYTES)begin
+   IDLE:if(SETTINGS_LINK && cancel_reply && !tx_busy && !send)begin
+    message<=packet(17,session,0,0,0,0,0,0);send<=1;cancel_reply<=0;
+   end else if(SETTINGS_LINK && context_reply && !tx_busy && !send)begin
+    message<=packet(15,session,0,{5'd0,display_image},{6'd0,display_valid,prefetch_pause},0,0,0);send<=1;context_reply<=0;
+   end else if(SETTINGS_LINK && settings_reply && !tx_busy && !send)begin
+    message<=packet(13,session,0,0,0,0,{14'd0,settings_state},0);send<=1;settings_reply<=0;
+   end else if(got && kind==3 && incoming[151:120]==session && incoming[103:96]<image_count && incoming[87:56]==FRAME_BYTES)begin
     request_seq<=incoming[119:104];media_target<=incoming[98:96];direction<=incoming[88];retries<=0;
     media_request<=1;state<=LOAD;timer<=0;error<=0;
    end
@@ -167,7 +183,7 @@ always @(posedge clk or posedge rst)begin
     else if(media_error!=0)begin error<=media_error;state<=ERROR_SEND;end
     else if(timer>=64'd35*TIME_HZ)begin error<=1;state<=ERROR_SEND;end
    end
-   BEGIN_SEND:if(!tx_busy)begin
+   BEGIN_SEND:if(!tx_busy && !send)begin
     // BEGIN does not carry a frame CRC. Flag 7 selects source-size metadata
     // in that field; END/ACCEPT/COMMIT retain their existing CRC semantics.
     message<=packet(4,session,request_seq,{5'd0,media_target},{SEND_SOURCE_SIZE!=0,6'd0,direction},FRAME_BYTES,
@@ -178,14 +194,14 @@ always @(posedge clk or posedge rst)begin
               else if(timer>=64'd5*TIME_HZ)begin error<=2;state<=ERROR_SEND;end
    SENDING:if(tx_done)begin completed_crc<=tx_crc;state<=END_SEND;timer<=0;end
            else if(timer>=64'd5*TIME_HZ)begin abort_toggle<=~abort_toggle;error<=5;state<=ERROR_SEND;end
-   END_SEND:if(!tx_busy)begin
+   END_SEND:if(!tx_busy && !send)begin
     message<=packet(6,session,request_seq,{5'd0,media_target},0,FRAME_BYTES,completed_crc,0);send<=1;state<=WAIT_ACCEPT;timer<=0;
    end
    WAIT_ACCEPT:if(got && matching && kind==7 && (!CHECK_FRAME_CRC || incoming[55:24]==completed_crc))begin state<=WAIT_COMMIT;timer<=0;end
                else if(timer>=64'd5*TIME_HZ)begin error<=6;state<=ERROR_SEND;end
    WAIT_COMMIT:if(got && matching && kind==8 && (!CHECK_FRAME_CRC || incoming[55:24]==completed_crc))begin media_release<=1;state<=IDLE;timer<=0;end
                else if(timer>=64'd5*TIME_HZ)begin error<=7;state<=ERROR_SEND;end
-   ERROR_SEND:if(!tx_busy)begin
+   ERROR_SEND:if(!tx_busy && !send)begin
     message<=packet(11,session,request_seq,{5'd0,media_target},0,FRAME_BYTES,0,{4'd0,error});send<=1;
     media_cancel<=1;abort_toggle<=~abort_toggle;state<=DISCOVER;timer<=0;
    end

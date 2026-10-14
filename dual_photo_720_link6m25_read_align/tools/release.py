@@ -8,6 +8,7 @@ def files(role):
     paths=json.loads((td/'sources.json').read_text(encoding='utf-8'))
     found={(td/p).resolve() for p in paths}
     found.update((td.parent/'user_source/constraints_source').glob('*'))
+    if role=='board_a':found.add(ROOT/'common/photo_menu_font.mif')
     found.update((td.parent/'user_source/hdl_source/include').glob('*.v'))
     found.update((td.parent/'user_source/hdl_source/IP').glob('*.tcl'))
     found.update([td/'build_board.tcl',td/f'PHOTO_{role.upper()}.al'])
@@ -31,12 +32,12 @@ def collect(role):
     text=area.read_text(encoding='utf-8',errors='replace')
     for key in ['lut','reg','bram9k','bram32k','dsp']:
         m=re.search(r'^\s*#'+key+r'\s+(\d+)',text,re.M);assert m,key;resources[key]=int(m[1])
-    dest=OUT/(name+'_1280X720_J2_NOCRC_NOENHANCE_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM.bit');shutil.copy2(bit,dest)
+    dest=OUT/(name+'_1280X720_J2_NOCRC_BIMAGEPROC_AKEY_MENU_MODEFAST_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM.bit');shutil.copy2(bit,dest)
     for src in [timing,area,td/'build.log']:shutil.copy2(src,OUT/(role+'_'+src.name))
     result={'role':role,'file':dest.name,'sha256':digest(dest),'bytes':dest.stat().st_size,'timing_ns':values,
-            'link_clock_hz':50000000,'enhancement_enabled':False,'sharpness_enabled':False,'frame_crc_enabled':False,'pixel_link':'c13937b high/low falling-edge launch, combinational ready',
+            'link_clock_hz':50000000,'enhancement_enabled':role=='board_b','sharpness_enabled':role=='board_b','image_processing_location':'board_b','hdmi_settings_menu':True,'control_keys_location':'board_a','b_display_raw_pinned':'settings_only','cache_scheduling':'playback_sender_window/settings_display_pin','settings_pause_prefetch':True,'settings_coalesce_ms':50,'image_processing_reference':'d27ae79126429f1a25a65e42f8fe95571da5c0df:2.0Project','default_enhancement':1,'default_detail_strength':1,'frame_crc_enabled':False,'pixel_link':'c13937b high/low falling-edge launch, combinational ready',
             'sdram_read_data_delay_cycles':1 if role=='board_a' else 0,'resources':resources,'built_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
-            'source_sha256':saved['source_sha256'],'a_cache_frames':4,'source_resolution_overlay':True,'b_cached_hit_during_load':True,'a_cache_window':'current, next, next2, next3','tf_multiblock_read':True,'tf_continuous_bytes':True,'tf_clock_hz':25000000,'simulation_acceptance':'TF streaming simulations not run','hardware_acceptance':'TF streaming awaiting board validation'}
+            'source_sha256':saved['source_sha256'],'a_cache_frames':4,'source_resolution_overlay':True,'b_cached_hit_during_load':True,'a_cache_window':'current, next, next2, next3','tf_multiblock_read':True,'tf_continuous_bytes':True,'tf_clock_hz':25000000,'simulation_acceptance':'Image processing port simulations not run','hardware_acceptance':'Image processing port awaiting board validation'}
     (OUT/f'{role}_manifest.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
     print(role,values,resources)
 def package():
@@ -45,7 +46,7 @@ def package():
     (OUT/'delivery_manifest.json').write_text(json.dumps({'baselines':json.loads((ROOT/'baseline.json').read_text(encoding='utf-8')),'boards':data},indent=2),encoding='utf-8')
     selected=set()
     for role in ['board_a','board_b']:selected.update(files(role))
-    selected.update(ROOT/name for name in ['README.md','A_FOUR_CACHE.md','PLAYBACK_CONTROLS.md','VALIDATION.md','COMPARISON_720.md','SOURCE_COMPARISON.md','FLOW_REVIEW.md','TF_READ_OPTIMIZATION.md']);selected.update(ROOT.glob('*.json'));selected.update(ROOT.glob('*.ps1'));selected.update(ROOT.glob('*.svg'))
+    selected.update(ROOT/name for name in ['README.md','A_FOUR_CACHE.md','PLAYBACK_CONTROLS.md','VALIDATION.md','COMPARISON_720.md','SOURCE_COMPARISON.md','FLOW_REVIEW.md','TF_READ_OPTIMIZATION.md','IMAGE_PROCESSING.md','HDMI_SETTINGS_MENU.md']);selected.update(ROOT.glob('*.json'));selected.update(ROOT.glob('*.ps1'));selected.update(ROOT.glob('*.svg'))
     selected.update((ROOT/'tools').glob('*.py'));selected.update((ROOT/'tests').glob('*.v'));selected.update((ROOT/'tests').glob('*.hex'))
     # The optional pattern test is shipped as a regression dependency only.
     selected.add(ROOT/'common/top_photo_pattern_b.v')
@@ -56,9 +57,9 @@ def package():
         for suffix in ['timing','area','log']:selected.update(OUT.glob(f'{role}_*.{suffix}'))
     selected.update(OUT/value['file'] for value in data)
     for role in ['board_a','board_b']:selected.add(ROOT/'projects'/role/'src/td_project/sources.json')
-    with zipfile.ZipFile(OUT/'DUAL_PHOTO_1280X720_J2_NOCRC_NOENHANCE_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM_SOURCE_AND_BITS.zip','w',zipfile.ZIP_DEFLATED) as archive:
+    with zipfile.ZipFile(OUT/'DUAL_PHOTO_1280X720_J2_NOCRC_BIMAGEPROC_AKEY_MENU_MODEFAST_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM_SOURCE_AND_BITS.zip','w',zipfile.ZIP_DEFLATED) as archive:
         for path in sorted(selected):archive.write(path,path.relative_to(ROOT).as_posix())
-    print('Packaged',OUT/'DUAL_PHOTO_1280X720_J2_NOCRC_NOENHANCE_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM_SOURCE_AND_BITS.zip')
+    print('Packaged',OUT/'DUAL_PHOTO_1280X720_J2_NOCRC_BIMAGEPROC_AKEY_MENU_MODEFAST_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM_SOURCE_AND_BITS.zip')
 if __name__=='__main__':
     if sys.argv[1]=='snapshot':snapshot(sys.argv[2])
     elif sys.argv[1]=='collect':collect(sys.argv[2])

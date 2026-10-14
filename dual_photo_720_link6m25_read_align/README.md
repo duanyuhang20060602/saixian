@@ -1,6 +1,6 @@
-# 高速切换版本：双板 720p，50 MHz 链路与 TF 连续读取
+# 双板 720p 图像处理版：50 MHz 链路与 TF 连续读取
 
-发布分支：`codex/dual-photo-720p-high-speed-switch`；发布日期：2026-10-13。本版未运行仿真，实板兼容性和实际提速待确认。
+基于已发布分支 `codex/dual-photo-720p-high-speed-switch` 的图像处理移植和双模式调度版本。本版未运行仿真，实板兼容性和实际提速待确认。
 
 > 2026-10-12 的实板确认属于此前 6.25 MHz 版本。本次 50 MHz 链路、单向四图缓存仍需重新上板确认。
 >
@@ -10,9 +10,9 @@
 
 ## 烧录文件
 
-- [A 板 bit](delivery/PHOTO_BOARD_A_1280X720_J2_NOCRC_NOENHANCE_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM.bit)
-- [B 板 bit](delivery/PHOTO_BOARD_B_1280X720_J2_NOCRC_NOENHANCE_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM.bit)
-- [源码与匹配 bit 打包下载](delivery/DUAL_PHOTO_1280X720_J2_NOCRC_NOENHANCE_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM_SOURCE_AND_BITS.zip)
+- [A 板 bit](delivery/PHOTO_BOARD_A_1280X720_J2_NOCRC_BIMAGEPROC_AKEY_MENU_MODEFAST_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM.bit)
+- [B 板 bit](delivery/PHOTO_BOARD_B_1280X720_J2_NOCRC_BIMAGEPROC_AKEY_MENU_MODEFAST_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM.bit)
+- [源码与匹配 bit 打包下载](delivery/DUAL_PHOTO_1280X720_J2_NOCRC_BIMAGEPROC_AKEY_MENU_MODEFAST_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM_SOURCE_AND_BITS.zip)
 
 **两板必须同时使用本套新 bit，不能与此前 6.25 MHz 或 1366×768 版本混用。**
 
@@ -24,7 +24,7 @@
 - SD 读取加入连续字节与 CMD18 多块读取优化，BMP 解析和原缩放算法沿用 photo release，输出改回原 1280×720；640×480 清晰缩放特例保留。原 SD 卡六张图可以继续使用。
 - A 四槽邻图缓存、B 三槽 SD 缓存、板间控制与显示包装仍是双板实现；本工程不是整个单板 2.0 的逐文件副本。
 - 板间为 16 位、50 MHz、原 HIGH/LOW 时序，图片 CRC32 关闭；UART 包 CRC16 保留。没有 QUADWRITE 动态掩码或填充写入。
-- 增强和锐化在 A 顶层固定为 0；保持原 21 拍显示延迟，亮度、对比度、饱和度及转场保留。KEY1/KEY4 均为下一张、KEY3 设置。
+- B 板执行单板增强与细节处理，A 板 HDMI 中文设置界面控制参数，支持亮度、对比度、饱和度、反色及复古；保持原 21 拍显示延迟。KEY1/KEY4 均为下一张、KEY3 设置。
 - A 板可选随机或指定转场，自动轮播默认关闭；开启后每次切换完成约 5 秒再请求下一张。具体操作见 [播放控制说明](PLAYBACK_CONTROLS.md)。
 
 ## A 板四图缓存
@@ -64,10 +64,26 @@ HDMI 左上角显示原始 BMP 分辨率，例如 `SRC 1920x1080`，实际 HDMI 
 
 ## A板读数据对齐迁移记录
 此前读数据对齐版恢复真实SD卡、六图缓存、板间传输、按键/HMI切图和转场。A板SDRAM读数据延迟一拍，valid不延迟；B板尚无地址编码实板证据证明需要同样修正。
-两板烧录本套文件；SD接B、HDMI接A、沿用原J2接线。增强/锐化和帧CRC继续关闭。支持原SD素材；优先用原生1280x720_纹波测试.bmp比较，避免缩放混叠影响判断。
+两板烧录本套文件；SD接B、HDMI接A、沿用原J2接线。增强和细节处理可调，帧CRC继续关闭。支持原SD素材；优先用原生1280x720_纹波测试.bmp比较，避免缩放混叠影响判断。
 地址编码对齐诊断在A板实板显示500011，为本次迁移依据；该结果不等同本双板图片版验收。此次720p先验证，1366x768还有683字行跨度/四字组对齐问题，尚未迁回。
 请检查静态纹波及六图首尾循环、连续下一张、首尾循环，并连续手动切换100次。此前 6.25 MHz 版的实板反馈已更正：720p 纹波问题已修复，此前混淆了768p与720p测试图片。
 
 ## TF 读取优化
 
 B 板连续扇区采用 CMD18，地址跳转或空闲时用 CMD12 结束；数据字节连续传输，TF 时钟保持 25 MHz。CMD18 命令被拒绝时退回 CMD17。详见 [TF 读取说明](TF_READ_OPTIMIZATION.md)。该路径尚待仿真和实板确认。
+
+## 图像处理移植
+
+全部图像处理在 B 板发送流水线完成；参考单板 2.0Project 的照片模式，后级额外锐化关闭以避免双重加强。默认增强1、细节1（保边平滑），增强0关闭该模块，增强2左右对比。完整操作、HMI事件和算法说明见 [图像处理说明](IMAGE_PROCESSING.md)。音频及动图未移植。
+
+## HDMI 中文设置界面
+
+使用 A 板 KEY3 打开或关闭；KEY1 选项、KEY2 减、KEY4 加。界面显示九项参数、选中行、进度条及更新状态。参数修改会刷新 A 缓存，B 已缓存原图无需重读 TF；当前画面完整到齐后再替换。操作、协议和上板说明见 [HDMI 设置界面](HDMI_SETTINGS_MENU.md)。原 HMI 命令保留。
+
+## 设置响应优化（PINFAST，历史调度）
+
+B以A的实际显示图片作为缓存中心并保护原图，打开设置暂停两板后台预取。A等待后台读图时可取消该请求；连续图像调节合并50ms内的变化，优先刷新当前图。原HMI命令、A板按键、中文菜单及50MHz链路保留。已开始TF读图会正常收尾，首次未命中仍需读取。详见HDMI_SETTINGS_MENU.md；本版未运行功能仿真或实板测时。
+
+## MODEFAST：恢复播放优先的双模式调度
+
+正常播放时B解除固定当前图占槽，预读跟随已完成发送的图片推进；A继续按下一张、后第二张、后第三张补齐四图窗口。设置期间才保护当前原图、暂停背景任务，保留50ms参数合并。退出设置且当前刷新提交后恢复预读。普通切图不再等待逐张显示状态确认。上板请使用名称含MODEFAST的匹配A/B bit；此版本实板效果待确认，首次进入设置缓存未命中时仍需要加载一次原图。见HDMI_SETTINGS_MENU.md。

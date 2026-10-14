@@ -28,7 +28,7 @@ photo_link_receiver #(.ENABLE_CRC(0),.LEGACY_TIMING(1)) rx(.clk(link_clk),.rst(r
  .finish_toggle(finish_toggle),.done(rx_done),.fault(rx_fault),.frame_crc(rx_crc));
 assign image_ack=done_toggle;
 wire read_req,read_en,read_ack,read_finish,read_empty,init_done;
-wire transition_active,slide_right,display_valid,frame_commit,ready_toggle,ready_right;
+wire transition_active,slide_right,display_valid,frame_commit,ready_toggle,ready_right,ready_immediate;
 wire [2:0] transition_mode;wire [10:0] slide_offset;wire [5:0] darkness;
 wire [2:0] effect_select;wire auto_enable;
 frame_store #(.FLIP(0)) store(.write_slot(receive_slot),.read_slot(active_slot),.new_slot(new_slot),
@@ -39,7 +39,7 @@ frame_store #(.FLIP(0)) store(.write_slot(receive_slot),.read_slot(active_slot),
  .read_empty(read_empty),.read_data(read_data),.init_done(init_done));
 wire hs,vs,de,fs;wire [11:0] x;wire [10:0] y;wire [9:0] blue,green,red;
 wire blank_start=x==0 && y==720;
-wire [23:0] raw_rgb,final_rgb;
+wire [23:0] raw_rgb,final_rgb,resolution_rgb;
 wire [15:0] current_source_width,current_source_height;
 // The FIFO reader takes two cycles, photo enhancement seven, adjustment
 // eight and style/fade/multiply/range four: 21 clocks in all.
@@ -49,8 +49,8 @@ wire armed,started,underflow;
 frame_pixels pixels(.clk(pixel_clk),.rst(rst_pixel),.de(de),.x(x),.y(y),.image_valid(display_valid),
  .read_ack(read_ack),.empty(read_empty),.data(read_data),.read_req(read_req),.read_en(read_en),.rgb(raw_rgb),
  .armed(armed),.output_started(started),.underflow(underflow));
-saixian_transition transition(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),.frame_ready_toggle(ready_toggle),
- .ready_buf_idx(ready_slot),.ready_slide_right(ready_right),.effect_select(effect_select),.active_buf_idx(active_slot),.slide_new_buf_idx(new_slot),
+saixian_transition #(.ALLOW_IMMEDIATE(1)) transition(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),.frame_ready_toggle(ready_toggle),
+ .ready_buf_idx(ready_slot),.ready_slide_right(ready_right),.ready_immediate(ready_immediate),.effect_select(effect_select),.active_buf_idx(active_slot),.slide_new_buf_idx(new_slot),
  .frame_commit_toggle(frame_commit),.display_valid(display_valid),.transition_active(transition_active),
  .transition_mode(transition_mode),.slide_offset(slide_offset),.slide_right(slide_right),.transition_level(darkness));
 wire [3:0] presses;
@@ -65,15 +65,15 @@ saixian_hmi_uart #(.CLK_FREQ_HZ(75000000)) screen_rx(.clk(pixel_clk),.rst(rst_pi
  .effect_valid(effect_valid),.effect_value(effect_value),.auto_valid(auto_valid),.auto_value(auto_value),
  .reset_defaults_pulse(reset_defaults),.page_id(page_id),.page_notify_pulse(page_notify));
 wire settings_mode;wire [3:0] setting_item;wire [3:0] brightness,contrast,saturation,volume;wire [1:0] sharpness,enhancement;wire invert,vintage;
-// Diagnostic build: HMI/key settings cannot enable enhancement or sharpening.
-assign sharpness=2'd0;assign enhancement=2'd0;
-saixian_settings_controller #(.CLK_FREQ_HZ(75000000)) settings(.clk(pixel_clk),.rst(rst_pixel),.carousel_mode(1'b1),
+// Match the single-board photo pipeline: enhancement owns the spatial
+// smoothing/sharpening control; the later colour stage must not sharpen twice.
+saixian_settings_controller #(.CLK_FREQ_HZ(75000000),.IMAGE_MENU(1)) settings(.clk(pixel_clk),.rst(rst_pixel),.carousel_mode(1'b1),
  .key_next_item(presses[0]),.key_decrease(presses[1]),.key_enter_exit(presses[2]),.key_increase(presses[3]),
  .hmi_setting_valid(setting_valid),.hmi_setting_id(setting_id),.hmi_setting_value(setting_value),.hmi_reset_defaults(reset_defaults),
  .effect_valid(effect_valid),.effect_value(effect_value),.auto_valid(auto_valid),.auto_value(auto_value),
  .effect_select(effect_select),.auto_enable(auto_enable),
  .settings_mode(settings_mode),.setting_item(setting_item),.volume_setting(volume),.brightness_setting(brightness),.contrast_setting(contrast),
- .saturation_setting(saturation),.sharpness_setting(),.invert_setting(invert),.vintage_setting(vintage),.enhancement_setting());
+ .saturation_setting(saturation),.sharpness_setting(sharpness),.invert_setting(invert),.vintage_setting(vintage),.enhancement_setting(enhancement));
 reg armed_meta,armed_sync,fault_meta,fault_sync;
 always @(posedge pixel_clk or posedge rst_pixel)
  if(rst_pixel)begin armed_meta<=0;armed_sync<=0;fault_meta<=0;fault_sync<=0;end
@@ -88,23 +88,25 @@ photo_event_sync sd(.clk(pixel_clk),.rst(rst_pixel),.toggle(done_toggle),.pulse(
 reg done_pixel_registered;
 always @(posedge pixel_clk or posedge rst_pixel)
  if(rst_pixel)done_pixel_registered<=0;else done_pixel_registered<=done_pixel;
-photo_cached_control_a #(.CHECK_FRAME_CRC(0)) ctrl(.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
+wire [17:0] image_settings={brightness,contrast,saturation,sharpness,enhancement,invert,vintage};
+wire settings_updating;
+photo_cached_control_a #(.CHECK_FRAME_CRC(0),.SETTINGS_LINK(1)) ctrl(.settings_mode(settings_mode),.settings_state(image_settings),.settings_updating(settings_updating),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
  .previous(1'b0),.next(!settings_mode && (presses[0] || presses[3] || hmi_next || auto_next)),
  .active_slot(active_slot),.new_slot(new_slot),.transition_active(transition_active),.commit_toggle(frame_commit),
  .receive_slot(receive_slot),.arm_toggle(arm_toggle),.abort_toggle(abort_toggle),.rx_armed(armed_sync),.rx_done(done_pixel_registered),
- .rx_fault(fault_sync),.rx_crc(rx_crc),.ready_toggle(ready_toggle),.ready_slot(ready_slot),.ready_right(ready_right),
+ .ready_immediate(ready_immediate),.rx_fault(fault_sync),.rx_crc(rx_crc),.ready_toggle(ready_toggle),.ready_slot(ready_slot),.ready_right(ready_right),
  .image_count(count),.current_image(current),.busy(busy),.error(error),.debug_state(control_state),
  .current_source_width(current_source_width),.current_source_height(current_source_height));
-saixian_hmi_status_tx #(.CLK_FREQ_HZ(75000000)) screen_tx(.clk(pixel_clk),.rst(rst_pixel),.image_count(count),
+saixian_hmi_status_tx #(.CLK_FREQ_HZ(75000000),.ENHANCEMENT_FEEDBACK(1)) screen_tx(.clk(pixel_clk),.rst(rst_pixel),.image_count(count),
  .audio_count(3'd0),.error_code(error>7 ? 3'd7:error[2:0]),.initializing(count==0),.page_id(page_id),
  .refresh_request(page_notify || setting_valid || reset_defaults),.sharpness(sharpness),.brightness(brightness),.contrast(contrast),
- .saturation(saturation),.volume(volume),.invert(invert),.vintage(vintage),.event_state(4'd0),.minutes(7'd0),.seconds(6'd0),
+ .saturation(saturation),.volume(volume),.invert(invert),.vintage(vintage),.enhancement(enhancement),.event_state(4'd0),.minutes(7'd0),.seconds(6'd0),
  .uart_tx(hmi_uart_tx),.command_sent_pulse());
 // Snapshot settings in blanking. Delay coordinates alongside the FIFO RGB.
 reg [3:0] bf,cf,sf;reg [1:0] shf,ef;reg invf,vinf;
 reg [1:0] de_pipe,vs_pipe;reg [10:0] x0,x1;reg [9:0] y0,y1;
 always @(posedge pixel_clk or posedge rst_pixel)begin
- if(rst_pixel)begin bf<=4;cf<=4;sf<=4;shf<=0;ef<=0;invf<=0;vinf<=0;de_pipe<=0;vs_pipe<=0;x0<=0;x1<=0;y0<=0;y1<=0;end
+ if(rst_pixel)begin bf<=4;cf<=4;sf<=4;shf<=1;ef<=1;invf<=0;vinf<=0;de_pipe<=0;vs_pipe<=0;x0<=0;x1<=0;y0<=0;y1<=0;end
  else begin
   de_pipe<={de_pipe[0],de};vs_pipe<={vs_pipe[0],vs};x0<=x[10:0];x1<=x0;y0<=y[9:0];y1<=y0;
   if(blank_start)begin bf<=brightness;cf<=contrast;sf<=saturation;shf<=sharpness;ef<=enhancement;invf<=invert;vinf<=vintage;end
@@ -113,11 +115,11 @@ end
 wire [23:0] enhanced,adjusted,styled;wire enhanced_de,enhanced_vs;wire [10:0] enhanced_x;wire [9:0] enhanced_y;
 saixian_adaptive_enhance #(.WIDTH(1280),.SPLIT_X(640),.PHOTO_SMOOTH(1)) enhance(
  .clk(pixel_clk),.rst(rst_pixel),.de(de_pipe[1]),.vs(vs_pipe[1]),.frame_tick(blank_start),
- .statistics_enable(display_valid && !transition_active),.x(x1),.y(y1),.rgb_in(raw_rgb),.mode(ef),.strength(shf),
+ .statistics_enable(1'b0),.x(x1),.y(y1),.rgb_in(raw_rgb),.mode(2'd0),.strength(2'd0),.external_gain(2'd0),
  .rgb_out(enhanced),.de_out(enhanced_de),.vs_out(enhanced_vs),.x_out(enhanced_x),.y_out(enhanced_y),.gain_out());
 saixian_picture_adjust_pipe adjust(.clk(pixel_clk),.rst(rst_pixel),.de(enhanced_de),.x(enhanced_x),.rgb_in(enhanced),
- .brightness_setting(bf),.contrast_setting(cf),.saturation_setting(sf),.sharpness_setting(shf),.rgb_out(adjusted));
-saixian_hmi_color_style style(.rgb_in(adjusted),.invert(invf),.vintage(vinf),.rgb_out(styled));
+ .brightness_setting(4'd4),.contrast_setting(4'd4),.saturation_setting(4'd4),.sharpness_setting(2'd0),.rgb_out(adjusted));
+saixian_hmi_color_style style(.rgb_in(adjusted),.invert(1'b0),.vintage(1'b0),.rgb_out(styled));
 function [7:0] fade_channel;
  input [7:0] value;input [5:0] level;reg [15:0] p;reg [7:0] faded;
  begin faded=value>({2'd0,level}<<2) ? value-({2'd0,level}<<2):0;
@@ -135,7 +137,12 @@ always @(posedge pixel_clk or posedge rst_pixel)begin
 end
 photo_resolution_overlay #(.VIDEO_DELAY(21)) resolution_overlay(.clk(pixel_clk),.rst(rst_pixel),
  .x(x),.y(y),.de(de),.display_valid(display_valid),
- .source_width(current_source_width),.source_height(current_source_height),.rgb_in(range_rgb),.rgb_out(final_rgb));
+ .source_width(current_source_width),.source_height(current_source_height),.rgb_in(range_rgb),.rgb_out(resolution_rgb));
+photo_settings_overlay #(.VIDEO_DELAY(21)) menu_overlay(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),
+ .x(x),.y(y),.de(de),.settings_mode(settings_mode),.setting_item(setting_item),.updating(settings_updating),
+ .brightness(brightness),.contrast(contrast),.saturation(saturation),.sharpness(sharpness),.enhancement(enhancement),
+ .invert(invert),.vintage(vintage),.effect(effect_select),.auto_enable(auto_enable),
+ .rgb_in(resolution_rgb),.rgb_out(final_rgb));
 hdmi_phy_wrapper #(.DEVICE("EG")) u_hdmi_phy(.I_pixel_clk(pixel_clk),.I_serial_clk(serial_clk),.I_rst(rst_serial),
  .I_tmds_channel_0(blue),.I_tmds_channel_1(green),.I_tmds_channel_2(red),.I_tmds_channel_clk(10'b1111100000),
  .O_tmds_ch0_p(HDMI_D0_P),.O_tmds_ch1_p(HDMI_D1_P),.O_tmds_ch2_p(HDMI_D2_P),.O_tmds_clk_p(HDMI_CLK_P));
