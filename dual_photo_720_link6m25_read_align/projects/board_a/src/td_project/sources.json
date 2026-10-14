@@ -31,5 +31,8 @@
   "../../../../common/photo_cached_control_a.v",
   "../../../../common/photo_resolution_overlay.v",
   "../../../../common/photo_settings_overlay.v",
-  "../../../../common/photo_menu_font.v"
+  "../../../../common/photo_menu_font.v",
+  "../../../../common/photo_audio_link.v",
+  "../../../../common/audio_vendor/audio_arc_calculate.v",
+  "../../../../common/audio_vendor/hdmi_1_4b_transmitter_core_wrapper.enc.v"
 ]

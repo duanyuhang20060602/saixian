@@ -24,7 +24,6 @@ set_min_delay -from [get_regs {u_clock_check/pixel_gray*}] -to [get_regs {u_cloc
 set_false_path -from [get_ports {hdmi_hpd}]
 set_output_delay -clock {link_clk} -max 2.000 [get_ports {link_ready}]
 set_output_delay -clock {link_clk} -min 0.500 [get_ports {link_ready}]
-set_false_path -to [get_ports {image_ack}]
 
 # photo CDC: cut only first-stage synchronizers; bundled metadata remains
 # stable for the complete transaction. Gray FIFO paths retain IP constraints.
@@ -33,3 +32,7 @@ set_false_path -from [get_ports {control_rx}]
 set_false_path -from [get_ports {hmi_uart_rx key[*]}]
 
 # Frozen CRC/page display bundle: first-stage CDC only.
+# AUDIO1: SPI oversampling, cut only async first stages.
+set_false_path -to [get_regs -nowarn {*spi_miso_meta* *hpd_audio_meta* *audio_diag_meta*}]
+set_output_delay -clock {board_pixel_clk} -max 2.000 [get_ports {audio_sclk audio_cs audio_mosi}]
+set_output_delay -clock {board_pixel_clk} -min 0.500 [get_ports {audio_sclk audio_cs audio_mosi}]

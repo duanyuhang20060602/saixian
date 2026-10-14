@@ -18,7 +18,7 @@ module photo_cached_control_a #(
 localparam TIME_HZ=CLK_HZ/TIMER_SCALE;
 localparam HELLO_SEND=0,HELLO_WAIT=1,IDLE=2,GET=3,WAIT_BEGIN=4,ARM=5,
  READY=6,RECEIVE=7,ACCEPT=8,STORE=9,COMMIT=10,NACK=11,FAILED=12,WAIT_SETTINGS=13,WAIT_CONTEXT=14,WAIT_CANCEL=15;
-reg refresh_display,background_transaction;
+reg refresh_display,background_transaction;reg count_reply;
 reg [4:0] applied_context,sent_context;
 wire settings_focus=settings_mode || settings_dirty || refresh_pending || refresh_display || (display_pending && ready_immediate);
 // Playback needs no per-image context handshake. Send the HDMI id only
@@ -140,7 +140,7 @@ always @(posedge clk or posedge rst)begin
 end
 always @(posedge clk or posedge rst)begin
  if(rst)begin
-  applied_settings<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};sent_settings<=0;refresh_pending<=0;
+  count_reply<=0;applied_settings<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};sent_settings<=0;refresh_pending<=0;
   applied_context<=31;sent_context<=0;background_transaction<=0;refresh_display<=0;ready_immediate<=0;state<=HELLO_SEND;send<=0;message<=0;session<=1;uptime<=1;timer<=0;request_seq<=0;
   target<=0;direction<=1;done_seen<=0;end_seen<=0;expected_crc<=0;received_crc<=0;retries<=0;
   receive_slot<=1;arm_toggle<=0;abort_toggle<=0;ready_toggle<=0;ready_slot<=0;ready_right<=1;
@@ -151,6 +151,9 @@ always @(posedge clk or posedge rst)begin
   for(reset_index=0;reset_index<4;reset_index=reset_index+1)cache_id[reset_index]<=0;
  end else begin
   uptime<=uptime+1'b1;timer<=timer+1'b1;send<=0;
+  if(got && kind==18 && incoming[151:120]==session && incoming[23:16]>=image_count && incoming[23:16]>0 && incoming[23:16]<=6)begin
+   image_count<=incoming[18:16];count_reply<=1;
+  end
   if(display_pending && commit_toggle!=commit_seen)begin
    current_image<=display_target;have_current<=1;display_pending<=0;
    current_source_width<=display_width;current_source_height<=display_height;
@@ -161,6 +164,7 @@ always @(posedge clk or posedge rst)begin
    display_width<=cache_width[nav_hit[1:0]];display_height<=cache_height[nav_hit[1:0]];
   end
   if(got && kind==10)begin
+   count_reply<=0;
    abort_toggle<=~abort_toggle;state<=HELLO_SEND;session<=uptime;timer<=0;error<=0;
    cache_valid<=0;have_current<=0;nav_pending<=0;
    if(SETTINGS_LINK)begin applied_settings<=~settings_state;applied_context<=~live_context;end refresh_pending<=0;
@@ -175,7 +179,9 @@ always @(posedge clk or posedge rst)begin
      state<=IDLE;timer<=0;error<=0;
     end else if(timer>=TIME_HZ)begin state<=HELLO_SEND;timer<=0;end
    end
-   IDLE:if(context_dirty)begin
+   IDLE:if(count_reply && !tx_busy && !send)begin
+    message<=packet(19,session,0,0,0,FRAME_BYTES,0,{5'd0,image_count});send<=1;count_reply<=0;
+   end else if(context_dirty)begin
     if(!tx_busy && !send)begin
      sent_context<=live_context;
      message<=packet(14,session,0,{5'd0,live_context[3:1]},{6'd0,live_context[4],live_context[0]},0,0,0);

@@ -129,7 +129,7 @@ localparam DISCOVER=0,HELLO_ACK=1,IDLE=2,LOAD=3,BEGIN_SEND=4,WAIT_READY=5,
  SENDING=6,END_SEND=7,WAIT_ACCEPT=8,WAIT_COMMIT=9,ERROR_SEND=10;
 reg [3:0] state;reg [31:0] session,timer;reg [15:0] request_seq;
 assign debug_state=state;
-reg settings_reply,context_reply,cancel_reply;
+reg settings_reply,context_reply,cancel_reply;reg [2:0] announced_count;
 reg direction;reg [1:0] retries;reg send;reg [159:0] message;reg [31:0] completed_crc;
 reg [15:0] source_width,source_height;
 wire tx_busy,got,bad;wire [159:0] incoming;
@@ -139,11 +139,12 @@ wire [7:0] kind=incoming[159:152];
 wire matching=incoming[151:120]==session && incoming[119:104]==request_seq && incoming[103:96]=={5'd0,media_target};
 assign busy=state!=IDLE && state!=DISCOVER;
 always @(posedge clk or posedge rst)begin
- if(rst)begin display_valid<=0;display_image<=0;prefetch_pause<=0;context_reply<=0;cancel_reply<=0;settings_state<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};settings_reply<=0;state<=DISCOVER;session<=0;request_seq<=0;timer<=0;direction<=1;retries<=0;send<=0;message<=0;
+ if(rst)begin announced_count<=0;display_valid<=0;display_image<=0;prefetch_pause<=0;context_reply<=0;cancel_reply<=0;settings_state<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};settings_reply<=0;state<=DISCOVER;session<=0;request_seq<=0;timer<=0;direction<=1;retries<=0;send<=0;message<=0;
   media_request<=0;media_target<=0;media_release<=0;media_cancel<=0;transmit_slot<=0;start_toggle<=0;abort_toggle<=0;error<=0;completed_crc<=0;
   source_width<=0;source_height<=0;end
  else begin
-  timer<=timer+1'b1;send<=0;media_request<=0;media_release<=0;media_cancel<=0;
+  timer<=timer+1'b1;send<=0;media_request<=0;
+  if(got && kind==19 && incoming[151:120]==session && incoming[23:16]>0 && incoming[23:16]<=image_count)announced_count<=incoming[18:16];media_release<=0;media_cancel<=0;
   if(got && kind==1 && incoming[87:56]==FRAME_BYTES && image_count>0)begin
    session<=incoming[151:120];abort_toggle<=~abort_toggle;media_cancel<=1;state<=HELLO_ACK;timer<=0;error<=0;
   end else if(got && matching && kind==9 && (state==WAIT_READY || state==SENDING || state==WAIT_ACCEPT || state==WAIT_COMMIT))begin
@@ -163,7 +164,7 @@ always @(posedge clk or posedge rst)begin
     message<=packet(10,0,0,0,0,FRAME_BYTES,0,0);send<=1;timer<=0;
    end
    HELLO_ACK:if(!tx_busy && !send)begin
-    message<=packet(2,session,0,0,0,FRAME_BYTES,0,{5'd0,image_count});send<=1;state<=IDLE;timer<=0;
+    message<=packet(2,session,0,0,0,FRAME_BYTES,0,{5'd0,image_count});send<=1;announced_count<=image_count;state<=IDLE;timer<=0;
    end
    IDLE:if(SETTINGS_LINK && cancel_reply && !tx_busy && !send)begin
     message<=packet(17,session,0,0,0,0,0,0);send<=1;cancel_reply<=0;
@@ -174,6 +175,9 @@ always @(posedge clk or posedge rst)begin
    end else if(got && kind==3 && incoming[151:120]==session && incoming[103:96]<image_count && incoming[87:56]==FRAME_BYTES)begin
     request_seq<=incoming[119:104];media_target<=incoming[98:96];direction<=incoming[88];retries<=0;
     media_request<=1;state<=LOAD;timer<=0;error<=0;
+   end else if(image_count!=announced_count && image_count>0 && timer>=TIME_HZ/10 && !tx_busy && !send)begin
+    // Reliable count growth notification; acknowledgement never resets caches.
+    message<=packet(18,session,0,0,0,FRAME_BYTES,0,{5'd0,image_count});send<=1;timer<=0;
    end
    LOAD:begin
     if(media_ready)begin

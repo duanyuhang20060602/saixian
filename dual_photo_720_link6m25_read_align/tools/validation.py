@@ -6,6 +6,14 @@ results={}
 for path in sorted((ROOT/'tests/results').glob('*results.json'),key=lambda p:p.stat().st_mtime):
  for v in json.loads(path.read_text(encoding='utf-8')):results[v['test']]=v
 boards=[json.loads((ROOT/'delivery'/f'{role}_manifest.json').read_text(encoding='utf-8')) for role in ['board_a','board_b']]
+if all(b.get('audio_stage')==1 for b in boards):
+ text='# AUDIO1_DIAG_BGSCAN 图片先显示与后台扫描构建记录\n\nB 从 TF 读取 SXAUD001，A 通过 HDMI 播放 48 kHz 双声道音频，KEY2 正常显示时切歌。新增音频通道全部使用 J2，SPI 3.75 MHz，音频不使用 CRC16。找到第一张图片后先显示，空闲时间保留游标继续扫描；目录数量增长用消息18/19通知及确认。20 秒超时只检测 TF 无读取进展。A 数码管显示 8SNTBH，B 显示 7SNTBR。编译和布局布线已完成；本次未运行功能仿真或实板验证。历史 tests/results 不能作为本版通过依据。\n\n| 板 | SWNS/ns | HWNS/ns | STNS/HTNS | LUT | REG | BRAM9K | BRAM32K | DSP |\n|---|---:|---:|---|---:|---:|---:|---:|---:|\n'
+ for b in boards:
+  t=b['timing_ns'];r=b['resources'];text+=f"| {b['role']} | {t['SWNS']} | {t['HWNS']} | {t['STNS']}/{t['HTNS']} | {r['lut']} | {r['reg']} | {r['bram9k']} | {r['bram32k']} | {r['dsp']} |\n"
+ text+='\n尚待上板确认：HDMI 图像与声音、声道与音调、KEY2 首尾切歌、TF 暂停及恢复扫描、目录数量增长、同时切图、持续播放及音频欠载情况。频谱、音量调节和提示音混合未加入。\n'
+ (ROOT/'VALIDATION.md').write_text(text,encoding='utf-8')
+ print('AUDIO1 build evidence collected; simulation and hardware pending.')
+ raise SystemExit(0)
 if all(b.get('a_cache_frames')==4 for b in boards):
  text='# 720p 50 MHz B板处理、A板按键、HDMI菜单及MODEFAST双模式调度构建记录\n\n本次将图像处理移至B板，由A板按键/HMI控制，并新增HDMI中文设置界面。本次改为播放优先/设置保护双模式：正常播放解锁当前原图，设置期间才保护，保留50ms参数合并。未运行功能仿真，实板验证待完成。已有 tests/results 下的 PASS 日志属于此前控制器，不能作为本版本通过依据。\n\n## 时序及资源\n\n| 板 | SWNS/ns | HWNS/ns | LUT | REG | BRAM9K | DSP |\n|---|---:|---:|---:|---:|---:|---:|\n'
  for b in boards:

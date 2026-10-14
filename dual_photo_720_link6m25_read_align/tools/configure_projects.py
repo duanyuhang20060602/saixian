@@ -48,8 +48,8 @@ for role,top in [('board_a','top_photo_a'),('board_b','top_photo_b')]:
     for e in list(verilog):verilog.remove(e)
     paths=[p for p in paths if Path(p).name not in excluded | replacements]
     shared=['photo_uart.v','photo_link.v','photo_control.v','photo_status.v',top+'.v']
-    if role=='board_a':shared+=['photo_resolution_overlay.v','photo_settings_overlay.v','photo_menu_font.v','photo_cached_control_a.v','saixian_transition.v','photo_processing.v','saixian_hmi_uart.v','saixian_key_debounce.v','photo_auto_advance.v']
-    else:shared+=['photo_sd_cache.v','photo_processing.v','photo_b_processing.v']
+    if role=='board_a':shared+=['photo_audio_link.v','audio_vendor/audio_arc_calculate.v','audio_vendor/hdmi_1_4b_transmitter_core_wrapper.enc.v','photo_resolution_overlay.v','photo_settings_overlay.v','photo_menu_font.v','photo_cached_control_a.v','saixian_transition.v','photo_processing.v','saixian_hmi_uart.v','saixian_key_debounce.v','photo_auto_advance.v']
+    else:shared+=['photo_audio_link.v','photo_sd_audio_stream.v','photo_sd_cache.v','photo_processing.v','photo_b_processing.v']
     paths+=['../../../../common/'+p for p in shared]
     if role=='board_b':paths+=['../../../../common/photo_sd/'+p.name for p in (ROOT/'common/photo_sd').glob('*.v')]
     # Imported B al may already list saixian_media_header under SD.
@@ -80,8 +80,18 @@ for role,top in [('board_a','top_photo_a'),('board_b','top_photo_b')]:
     for signal,pin in [('control_rx','F3' if role=='board_a' else 'H5'),('control_tx','H5' if role=='board_a' else 'F3')]:
         text=re.sub(r'(set_pin_assignment \{ '+signal+r' \} \{ LOCATION = )\w+',r'\g<1>'+pin,text)
     write(pins,text)
+    # AUDIO1 uses J2 only. J2-24's obsolete image_ack wire becomes MOSI;
+    # current image acceptance/commit is already acknowledged over UART.
+    text=re.sub(r'^.*set_pin_assignment.*\{ image_ack \}.*\n','',text,flags=re.M)
+    for signal,pin in [('audio_mosi','H3'),('audio_sclk','E2'),('audio_cs','J11'),('audio_miso','J12')]:
+        if '{ '+signal+' }' not in text:
+            is_output=(role=='board_a' and signal!='audio_miso') or (role=='board_b' and signal=='audio_miso')
+            attrs='DRIVESTRENGTH = 8;' if is_output else 'PULLTYPE = PULLUP;'
+            text+=f'set_pin_assignment {{ {signal} }} {{ LOCATION = {pin}; IOSTANDARD = LVCMOS33; {attrs} }}\n'
+    write(pins,text)
     p=next(constraints.glob('*timing.sdc'));text=p.read_text(encoding='utf-8')
     text='\n'.join(line for line in text.splitlines() if '*diagnostic_meta*' not in line and 'get_regs -nowarn {rx/crc*}' not in line and 'get_regs -nowarn {tx/crc*}' not in line)+'\n'
+    text='\n'.join(line for line in text.splitlines() if 'get_ports {image_ack}' not in line)+'\n'
     write(p,text)
     if 'photo CDC' not in text:
         text+='''
@@ -94,5 +104,17 @@ set_false_path -from [get_ports {control_rx}]
         write(p,text)
     if role=='board_b' and '*settings_meta*' not in text:
         text+='set_false_path -to [get_regs -nowarn {*settings_meta* *gain_meta* *processing/ack_meta*}]\n'
+        write(p,text)
+    text=p.read_text(encoding='utf-8')
+    if '# AUDIO1' not in text:
+        text+='# AUDIO1: SPI oversampling, cut only async first stages.\n'
+        if role=='board_a':
+            text+='set_false_path -to [get_regs -nowarn {*spi_miso_meta* *hpd_audio_meta* *audio_diag_meta*}]\n'
+            text+='set_output_delay -clock {board_pixel_clk} -max 2.000 [get_ports {audio_sclk audio_cs audio_mosi}]\n'
+            text+='set_output_delay -clock {board_pixel_clk} -min 0.500 [get_ports {audio_sclk audio_cs audio_mosi}]\n'
+        else:
+            text+='set_false_path -to [get_regs -nowarn {*spi_sclk_meta* *spi_cs_meta* *spi_mosi_meta*}]\n'
+            text+='set_output_delay -clock {sd_card_clk} -max 2.000 [get_ports {audio_miso}]\n'
+            text+='set_output_delay -clock {sd_card_clk} -min 0.500 [get_ports {audio_miso}]\n'
         write(p,text)
 print('Configured independent A/B TD projects.')

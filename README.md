@@ -1,3 +1,13 @@
+## BGSCAN：双板720p图片与音频播放（2026-10-14）
+
+用户已确认本版正常。B 从 TF 读取图片和 SXAUD001 音频，A 输出 HDMI 图像与声音；KEY2 正常显示时切歌。找到素材后先播放，剩余素材在图片缓存空闲时继续扫描，支持目录数量动态更新。
+
+音频连接为 J2-24 MOSI、J2-27 SCLK、J2-28 CS、J2-31 MISO，共地；J2-29 是 3.3V 电源。新增音频通道不使用 CRC16。
+
+[匹配A/B bit与源码](dual_photo_720_link6m25_read_align/README.md) · [音频接线与诊断](dual_photo_720_link6m25_read_align/AUDIO_STAGE1.md)。本次保存用户确认的 BGSCAN 基线，后续移植单板频谱、比赛及音频功能。
+
+---
+
 ## MODEFAST：双板720p图像处理与播放/设置双模式（2026-10-14）
 
 分支：`codex/dual-photo-720p-high-speed-switch`。

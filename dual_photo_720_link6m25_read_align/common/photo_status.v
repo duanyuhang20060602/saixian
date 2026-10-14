@@ -22,6 +22,8 @@ always @(posedge clk or posedge rst)begin
    case(diagnostic_page)
     // User reads digit indices 0..5: page, four hex digits (MSB first), C.
     1,2,3,4:digits<={4'hc,diagnostic_crc[3:0],diagnostic_crc[7:4],diagnostic_crc[11:8],diagnostic_crc[15:12],1'b0,diagnostic_page};
+    5:digits<={status,diagnostic_crc[3:0],diagnostic_crc[7:4],diagnostic_crc[11:8],diagnostic_crc[15:12],4'd8};
+    6:digits<={status,diagnostic_crc[3:0],diagnostic_crc[7:4],diagnostic_crc[11:8],diagnostic_crc[15:12],4'd7};
     default:digits<={1'b0,count,1'b0,image,error,(state>=10 ? 4'd1:4'd0),(state>=10 ? state-4'd10:state),status};
    endcase
   end

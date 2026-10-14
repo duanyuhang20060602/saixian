@@ -2,7 +2,7 @@
 module top_photo_b(
  input clk,sd_miso,control_rx,output control_tx,sd_ncs,sd_dclk,sd_mosi,
  output link_clk,output [15:0] link_data,output link_valid,link_sof,link_eof,
- input link_ready,image_ack,output transfer_done,transfer_error,
+ input link_ready,audio_sclk,audio_cs,audio_mosi,output audio_miso,output transfer_done,transfer_error,
  output [5:0] seg_sel,output [7:0] seg_data);
 wire sd_clk,mem_clk,mem_clk_sft,sys_lock,link_lock,rst_sd,rst_mem,rst_link;
 sys_pll u_sys_pll(.refclk(clk),.reset(1'b0),.clk0_out(sd_clk),.clk1_out(mem_clk),.clk2_out(mem_clk_sft),.locked(sys_lock));
@@ -10,6 +10,14 @@ builtin_link_pll u_link_pll(.refclk(clk),.reset(1'b0),.clk0_out(link_clk),.locke
 dual_still_reset_sync rs(.clk(sd_clk),.arst(!sys_lock || !link_lock),.rst(rst_sd));
 dual_still_reset_sync rm(.clk(mem_clk),.arst(!sys_lock),.rst(rst_mem));
 dual_still_reset_sync rl(.clk(link_clk),.arst(!link_lock || !sys_lock),.rst(rst_link));
+wire [3:0] audio_scan_state;reg audio_request_seen;
+always @(posedge sd_clk or posedge rst_sd)
+ if(rst_sd)audio_request_seen<=0;else if(audio_request_valid)audio_request_seen<=1;
+wire audio_packet_active,audio_request_valid,audio_switching,audio_fifo_read;wire [7:0] requested_audio_epoch,active_audio_epoch;
+wire [2:0] requested_audio_track,active_audio_track,audio_count;wire [13:0] audio_fifo_used;wire [31:0] audio_fifo_data;
+photo_audio_spi_b audio_link(.clk(sd_clk),.rst(rst_sd),.spi_sclk(audio_sclk),.spi_cs(audio_cs),.spi_mosi(audio_mosi),.spi_miso(audio_miso),.packet_active(audio_packet_active),
+ .active_epoch(active_audio_epoch),.active_track(active_audio_track),.track_count(audio_count),.switching(audio_switching),
+ .fifo_used(audio_fifo_used),.fifo_data(audio_fifo_data),.fifo_read(audio_fifo_read),.request_valid(audio_request_valid),.request_epoch(requested_audio_epoch),.request_track(requested_audio_track));
 wire req,ack,we,full,finish,read_req,read_ack,read_en,empty,read_finish,mem_init;
 wire [31:0] packed_data,read_data,processed_data;wire processed_empty,source_read;
 wire [17:0] settings_state;wire [1:0] media_gain;
@@ -21,7 +29,9 @@ wire [15:0] media_source_width,media_source_height;
 reg finish_toggle;
 always @(posedge mem_clk or posedge rst_mem)
  if(rst_mem)finish_toggle<=0;else if(finish)finish_toggle<=~finish_toggle;
-photo_sd_cache #(.FORWARD_ONLY(1),.DISPLAY_PIN(1)) media(.display_valid(display_pin_valid),.display_image(display_pin_image),.prefetch_pause(prefetch_pause),.clk(sd_clk),.rst(rst_sd),.request(request),.target(target),.release_slot(release_slot),.cancel(cancel),
+photo_sd_cache #(.FORWARD_ONLY(1),.DISPLAY_PIN(1)) media(.audio_packet_active(audio_packet_active),.audio_request_valid(audio_request_valid),.requested_audio_epoch(requested_audio_epoch),.requested_audio_track(requested_audio_track),
+ .active_audio_epoch(active_audio_epoch),.active_audio_track(active_audio_track),.audio_count(audio_count),.audio_switching(audio_switching),
+ .audio_scan_state(audio_scan_state),.audio_fifo_used(audio_fifo_used),.audio_fifo_data(audio_fifo_data),.audio_fifo_read(audio_fifo_read),.display_valid(display_pin_valid),.display_image(display_pin_image),.prefetch_pause(prefetch_pause),.clk(sd_clk),.rst(rst_sd),.request(request),.target(target),.release_slot(release_slot),.cancel(cancel),
  .ready_gain(media_gain),.ready(media_ready),.ready_slot(ready_slot),.image_count(count),.error(media_error),.directory_ready(directory_ready),
  .ready_source_width(media_source_width),.ready_source_height(media_source_height),
  .write_slot(write_slot),.write_req(req),.write_ack(ack),.full(full),.write_en(we),.write_data(packed_data),.finish_toggle(finish_toggle),
@@ -58,9 +68,9 @@ photo_control_b #(.CHECK_FRAME_CRC(0),.SEND_SOURCE_SIZE(1),.SETTINGS_LINK(1)) ct
  .transmit_slot(transmit_slot),.start_toggle(start_toggle),.abort_toggle(abort_toggle),.tx_done(sent_sd),.tx_crc(tx_crc),
  .busy(control_busy),.error(control_error),.debug_state(control_state));
 wire [3:0] digit=(media_error!=0 || control_error!=0) ? 4'd9:control_busy ? 4'd3:directory_ready ? 4'd5:4'd1;
-photo_status #(.CLK_HZ(100000000)) status(.clk(sd_clk),.rst(rst_sd),.status(digit),
+photo_status #(.CLK_HZ(100000000)) status(.clk(sd_clk),.rst(rst_sd),.status({3'd0,audio_request_seen}),
  .error(media_error!=0 ? media_error:control_error),.state(control_state),.image(directory_ready ? target+3'd1:3'd0),
- .count(count),.diagnostic_page(3'd0),.diagnostic_crc(16'd0),.seg_sel(seg_sel),.seg_data(seg_data));
+ .count(count),.diagnostic_page(3'd6),.diagnostic_crc({audio_scan_state,{1'b0,audio_count},(audio_count!=0 ? {1'b0,active_audio_track}+4'd1:4'd0),(audio_fifo_used[13] ? 4'd8:{1'b0,audio_fifo_used[12:10]})}),.seg_sel(seg_sel),.seg_data(seg_data));
 assign transfer_done=directory_ready && !control_busy;
 assign transfer_error=media_error!=0 || control_error!=0;
 endmodule

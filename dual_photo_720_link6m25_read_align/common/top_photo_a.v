@@ -2,7 +2,8 @@
 module top_photo_a(
  input clk,hdmi_hpd,link_clk,input [15:0] link_data,input link_valid,link_sof,link_eof,
  input [3:0] key,input control_rx,hmi_uart_rx,output control_tx,hmi_uart_tx,
- output link_ready,image_ack,output [5:0] seg_sel,output [7:0] seg_data,
+ input audio_miso,output audio_sclk,audio_cs,audio_mosi,
+ output link_ready,output [5:0] seg_sel,output [7:0] seg_data,
  output HDMI_CLK_P,HDMI_D2_P,HDMI_D1_P,HDMI_D0_P,HDMI_DDC_SCL,inout HDMI_DDC_SDA);
 wire unused_sd,mem_clk,mem_clk_sft,sys_lock,pixel_clk,serial_clk,video_lock;
 wire rst_mem,rst_pixel,rst_serial,rst_link,rst_ref;
@@ -26,7 +27,7 @@ photo_event_sync sb(.clk(link_clk),.rst(rst_link),.toggle(abort_toggle),.pulse(a
 photo_link_receiver #(.ENABLE_CRC(0),.LEGACY_TIMING(1)) rx(.clk(link_clk),.rst(rst_link),.arm(arm),.abort(abort),.data(link_data),.valid(link_valid),.sof(link_sof),.eof(link_eof),
  .ready(link_ready),.armed(rx_armed),.busy(),.write_req(req),.write_ack(ack),.full(full),.write_en(we),.write_data(packed_data),
  .finish_toggle(finish_toggle),.done(rx_done),.fault(rx_fault),.frame_crc(rx_crc));
-assign image_ack=done_toggle;
+
 wire read_req,read_en,read_ack,read_finish,read_empty,init_done;
 wire transition_active,slide_right,display_valid,frame_commit,ready_toggle,ready_right,ready_immediate;
 wire [2:0] transition_mode;wire [10:0] slide_offset;wire [5:0] darkness;
@@ -44,7 +45,7 @@ wire [15:0] current_source_width,current_source_height;
 // The FIFO reader takes two cycles, photo enhancement seven, adjustment
 // eight and style/fade/multiply/range four: 21 clocks in all.
 hdmi_minimal_tx #(.EXTERNAL_VIDEO(1),.VIDEO_DELAY(21)) u_tx(.clk(pixel_clk),.rst(rst_pixel),.rgb_in(final_rgb),
- .blue(blue),.green(green),.red(red),.hs(hs),.vs(vs),.de(de),.frame_start(fs),.x(x),.y(y));
+ .blue(),.green(),.red(),.hs(hs),.vs(vs),.de(de),.frame_start(fs),.x(x),.y(y));
 wire armed,started,underflow;
 frame_pixels pixels(.clk(pixel_clk),.rst(rst_pixel),.de(de),.x(x),.y(y),.image_valid(display_valid),
  .read_ack(read_ack),.empty(read_empty),.data(read_data),.read_req(read_req),.read_en(read_en),.rgb(raw_rgb),
@@ -58,10 +59,11 @@ genvar k;
 generate for(k=0;k<4;k=k+1)begin:keys
  saixian_key_debounce #(.CLK_FREQ_HZ(75000000)) button(.clk(pixel_clk),.rst(rst_pixel),.key_n(key[k]),.press_pulse(presses[k]));
 end endgenerate
+wire hmi_music_next;
 wire hmi_prev,hmi_next,setting_valid,reset_defaults,page_notify;wire [2:0] setting_id,page_id;wire [7:0] setting_value;
 wire effect_valid,auto_valid,auto_value;wire [2:0] effect_value;
 saixian_hmi_uart #(.CLK_FREQ_HZ(75000000)) screen_rx(.clk(pixel_clk),.rst(rst_pixel),.uart_rx(hmi_uart_rx),
- .prev_pulse(hmi_prev),.next_pulse(hmi_next),.setting_valid(setting_valid),.setting_id(setting_id),.setting_value(setting_value),
+ .music_next_pulse(hmi_music_next),.prev_pulse(hmi_prev),.next_pulse(hmi_next),.setting_valid(setting_valid),.setting_id(setting_id),.setting_value(setting_value),
  .effect_valid(effect_valid),.effect_value(effect_value),.auto_valid(auto_valid),.auto_value(auto_value),
  .reset_defaults_pulse(reset_defaults),.page_id(page_id),.page_notify_pulse(page_notify));
 wire settings_mode;wire [3:0] setting_item;wire [3:0] brightness,contrast,saturation,volume;wire [1:0] sharpness,enhancement;wire invert,vintage;
@@ -97,8 +99,39 @@ photo_cached_control_a #(.CHECK_FRAME_CRC(0),.SETTINGS_LINK(1)) ctrl(.settings_m
  .ready_immediate(ready_immediate),.rx_fault(fault_sync),.rx_crc(rx_crc),.ready_toggle(ready_toggle),.ready_slot(ready_slot),.ready_right(ready_right),
  .image_count(count),.current_image(current),.busy(busy),.error(error),.debug_state(control_state),
  .current_source_width(current_source_width),.current_source_height(current_source_height));
+wire [2:0] music_count,music_index;wire [7:0] music_epoch;
+wire [3:0] audio_diag_stage,audio_buffer_level;wire audio_header_seen,audio_pcm_seen,audio_nonzero_seen;
+wire audio_sample_valid;wire [23:0] audio_left,audio_right;wire [15:0] audio_packet_errors,audio_underflows;
+photo_audio_spi_a audio_link(.clk(pixel_clk),.rst(rst_pixel),.next_track((!settings_mode && presses[1]) || hmi_music_next),
+ .spi_miso(audio_miso),.spi_sclk(audio_sclk),.spi_cs(audio_cs),.spi_mosi(audio_mosi),
+ .track_count(music_count),.track_index(music_index),.desired_epoch(music_epoch),
+ .diagnostic_stage(audio_diag_stage),.buffer_level(audio_buffer_level),.header_seen(audio_header_seen),.pcm_seen(audio_pcm_seen),.nonzero_seen(audio_nonzero_seen),
+ .sample_valid(audio_sample_valid),.audio_left(audio_left),.audio_right(audio_right),.packet_errors(audio_packet_errors),.underflows(audio_underflows));
+// Keep the known 21-cycle RGB path; send aligned AXI pixels to the single-board
+// HDMI core, including an exact last-pixel marker and first-frame marker.
+reg [20:0] audio_video_de,audio_video_sof,audio_video_last;
+always @(posedge pixel_clk or posedge rst_pixel)begin
+ if(rst_pixel)begin audio_video_de<=0;audio_video_sof<=0;audio_video_last<=0;end
+ else begin audio_video_de<={audio_video_de[19:0],de};
+  audio_video_sof<={audio_video_sof[19:0],de && x==0 && y==0};
+  audio_video_last<={audio_video_last[19:0],de && x==1279};end
+end
+wire acr_valid;wire [19:0] acr_cts,acr_n;
+audio_arc_calculate #(.ACR_N(6144)) acr(.I_clk(pixel_clk),.I_rst(rst_pixel),.I_audio_valid(audio_sample_valid),.O_acr_valid(acr_valid),.O_acr_cts(acr_cts),.O_acr_n(acr_n));
+reg hpd_audio_meta,hpd_audio_sync,hpd_audio_previous;
+always @(posedge pixel_clk or posedge rst_pixel)begin
+ if(rst_pixel)begin hpd_audio_meta<=0;hpd_audio_sync<=0;hpd_audio_previous<=0;end
+ else begin hpd_audio_meta<=hdmi_hpd;hpd_audio_sync<=hpd_audio_meta;hpd_audio_previous<=hpd_audio_sync;end
+end
+wire [9:0] hdmi_clock_data;wire axis_ready,hdmi_video_locked;
+hdmi_1_4b_transmitter_core_wrapper #(.DEVICE("EG"),.HTOTAL(1650),.HSA(40),.HFP(110),.HBP(220),.HACTIVE(1280),
+ .VTOTAL(750),.VSA(5),.VFP(5),.VBP(20),.VACTIVE(720),.VIDEO_VIC(4),.VIDEO_TPG("Disable"),.VIDEO_FORMAT("RGB"),.AUDIO_SAMPLE_RATE("48K"),.IIC_SCL_DIV(375)) audio_hdmi(
+ .I_pixel_clk(pixel_clk),.I_rst(rst_pixel),.I_edid_read_trig(hpd_audio_sync && !hpd_audio_previous),.O_edid_read_valid(),.O_edid_read_data(),
+ .I_axis_s_user(audio_video_sof[20]),.I_axis_s_valid(audio_video_de[20]),.I_axis_s_last(audio_video_last[20]),.I_axis_s_data(final_rgb),.O_axis_s_ready(axis_ready),
+ .I_audio_valid(audio_sample_valid),.I_audio_left_data(audio_left),.I_audio_right_data(audio_right),.I_acr_valid(acr_valid),.I_acr_cts(acr_cts),.I_acr_n(acr_n),.O_video_locked(hdmi_video_locked),
+ .O_ddc_scl(HDMI_DDC_SCL),.IO_ddc_sda(HDMI_DDC_SDA),.O_ch0_tmds_data(blue),.O_ch1_tmds_data(green),.O_ch2_tmds_data(red),.O_clk_tmds_data(hdmi_clock_data));
 saixian_hmi_status_tx #(.CLK_FREQ_HZ(75000000),.ENHANCEMENT_FEEDBACK(1)) screen_tx(.clk(pixel_clk),.rst(rst_pixel),.image_count(count),
- .audio_count(3'd0),.error_code(error>7 ? 3'd7:error[2:0]),.initializing(count==0),.page_id(page_id),
+ .audio_count(music_count),.error_code(error>7 ? 3'd7:error[2:0]),.initializing(count==0),.page_id(page_id),
  .refresh_request(page_notify || setting_valid || reset_defaults),.sharpness(sharpness),.brightness(brightness),.contrast(contrast),
  .saturation(saturation),.volume(volume),.invert(invert),.vintage(vintage),.enhancement(enhancement),.event_state(4'd0),.minutes(7'd0),.seconds(6'd0),
  .uart_tx(hmi_uart_tx),.command_sent_pulse());
@@ -144,7 +177,7 @@ photo_settings_overlay #(.VIDEO_DELAY(21)) menu_overlay(.clk(pixel_clk),.rst(rst
  .invert(invert),.vintage(vintage),.effect(effect_select),.auto_enable(auto_enable),
  .rgb_in(resolution_rgb),.rgb_out(final_rgb));
 hdmi_phy_wrapper #(.DEVICE("EG")) u_hdmi_phy(.I_pixel_clk(pixel_clk),.I_serial_clk(serial_clk),.I_rst(rst_serial),
- .I_tmds_channel_0(blue),.I_tmds_channel_1(green),.I_tmds_channel_2(red),.I_tmds_channel_clk(10'b1111100000),
+ .I_tmds_channel_0(blue),.I_tmds_channel_1(green),.I_tmds_channel_2(red),.I_tmds_channel_clk(hdmi_clock_data),
  .O_tmds_ch0_p(HDMI_D0_P),.O_tmds_ch1_p(HDMI_D1_P),.O_tmds_ch2_p(HDMI_D2_P),.O_tmds_clk_p(HDMI_CLK_P));
 wire scan_valid,scan_fault,clock_valid,clock_fault;
 hdmi_scan_monitor #(.HT(1650),.VT(750),.HA(1280),.VA(720),.HS(40),.VS(5)) u_scan(
@@ -152,20 +185,24 @@ hdmi_scan_monitor #(.HT(1650),.VT(750),.HA(1280),.VA(720),.HS(40),.VS(5)) u_scan
 hdmi_pixel_clock_monitor #(.EXPECTED_PIXELS(7500000),.TOLERANCE_PIXELS(75000)) u_clock_check(
  .ref_clk(clk),.pixel_clk(pixel_clk),.arst(!video_lock),.valid(clock_valid),.fault(clock_fault));
 reg hpd_meta,hpd_sync;reg [17:0] status_meta,status_sync;
+reg [19:0] audio_diag_meta,audio_diag_sync;
 reg menu_meta,menu_sync;reg [15:0] menu_digits_meta,menu_digits_sync;
 // photo_status shifts nibble 0 out first, so encode the displayed order in reverse.
 wire [15:0] menu_digits={4'd0,{3'b000,auto_enable},{1'b0,effect_select},setting_item};
 always @(posedge clk or posedge rst_ref)
  if(rst_ref)begin hpd_meta<=0;hpd_sync<=0;status_meta<=0;status_sync<=0;
-  menu_meta<=0;menu_sync<=0;menu_digits_meta<=0;menu_digits_sync<=0;end
+  audio_diag_meta<=0;audio_diag_sync<=0;menu_meta<=0;menu_sync<=0;menu_digits_meta<=0;menu_digits_sync<=0;end
  else begin hpd_meta<=hdmi_hpd;hpd_sync<=hpd_meta;
+  audio_diag_meta<={audio_diag_stage,{1'b0,music_count},(music_count!=0 ? {1'b0,music_index}+4'd1:4'd0),audio_buffer_level,
+   {1'b0,audio_nonzero_seen,hdmi_video_locked,hpd_audio_sync}};
+  audio_diag_sync<=audio_diag_meta;
   menu_meta<=settings_mode;menu_sync<=menu_meta;
   menu_digits_meta<=menu_digits;menu_digits_sync<=menu_digits_meta;
   status_meta<={count,(display_valid ? current+3'd1:3'd0),control_state,error,
    (error!=0 || underflow || scan_fault || clock_fault ? 4'd9:busy ? 4'd3:display_valid ? 4'd5:4'd2)};
   status_sync<=status_meta;end
-photo_status #(.CLK_HZ(50000000)) status(.clk(clk),.rst(rst_ref),.status(hpd_sync ? status_sync[3:0]:4'd0),
+photo_status #(.CLK_HZ(50000000)) status(.clk(clk),.rst(rst_ref),.status(menu_sync ? (hpd_sync ? status_sync[3:0]:4'd0):audio_diag_sync[3:0]),
  .error(status_sync[7:4]),.state(status_sync[11:8]),.image(status_sync[14:12]),.count(status_sync[17:15]),
- .diagnostic_page(menu_sync ? 3'd1:3'd0),.diagnostic_crc(menu_digits_sync),.seg_sel(seg_sel),.seg_data(seg_data));
-assign HDMI_DDC_SCL=1'b1;assign HDMI_DDC_SDA=1'bz;
+ .diagnostic_page(menu_sync ? 3'd1:3'd5),.diagnostic_crc(menu_sync ? menu_digits_sync:audio_diag_sync[19:4]),.seg_sel(seg_sel),.seg_data(seg_data));
+
 endmodule

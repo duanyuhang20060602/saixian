@@ -21,6 +21,8 @@
   "../../../../common/photo_sd_cache.v",
   "../../../../common/photo_processing.v",
   "../../../../common/photo_b_processing.v",
+  "../../../../common/photo_audio_link.v",
+  "../../../../common/photo_sd_audio_stream.v",
   "../../../../common/photo_sd/bmp_read.v",
   "../../../../common/photo_sd/saixian_media_header.v",
   "../../../../common/photo_sd/sd_card_cmd.v",

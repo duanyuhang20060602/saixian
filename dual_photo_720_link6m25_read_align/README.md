@@ -1,6 +1,6 @@
-# 双板 720p 图像处理版：50 MHz 链路与 TF 连续读取
+# 双板 720p AUDIO1_DIAG_BGSCAN：先播放，后台扫描
 
-基于已发布分支 `codex/dual-photo-720p-high-speed-switch` 的图像处理移植和双模式调度版本。本版未运行仿真，实板兼容性和实际提速待确认。
+基于已发布分支 `codex/dual-photo-720p-high-speed-switch` 的图像处理移植和双模式调度版本。本版未运行功能仿真；2026-10-14 用户确认 BGSCAN 图片与音乐播放正常，作为下一阶段移植前的可回退基线。
 
 > 2026-10-12 的实板确认属于此前 6.25 MHz 版本。本次 50 MHz 链路、单向四图缓存仍需重新上板确认。
 >
@@ -10,9 +10,9 @@
 
 ## 烧录文件
 
-- [A 板 bit](delivery/PHOTO_BOARD_A_1280X720_J2_NOCRC_BIMAGEPROC_AKEY_MENU_MODEFAST_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM.bit)
-- [B 板 bit](delivery/PHOTO_BOARD_B_1280X720_J2_NOCRC_BIMAGEPROC_AKEY_MENU_MODEFAST_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM.bit)
-- [源码与匹配 bit 打包下载](delivery/DUAL_PHOTO_1280X720_J2_NOCRC_BIMAGEPROC_AKEY_MENU_MODEFAST_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM_SOURCE_AND_BITS.zip)
+- [A 板 bit](delivery/PHOTO_BOARD_A_1280X720_J2_NOCRC_BIMAGEPROC_AKEY_MENU_MODEFAST_AUDIO1_DIAG_BGSCAN_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM.bit)
+- [B 板 bit](delivery/PHOTO_BOARD_B_1280X720_J2_NOCRC_BIMAGEPROC_AKEY_MENU_MODEFAST_AUDIO1_DIAG_BGSCAN_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM.bit)
+- [源码与匹配 bit 打包下载](delivery/DUAL_PHOTO_1280X720_J2_NOCRC_BIMAGEPROC_AKEY_MENU_MODEFAST_AUDIO1_DIAG_BGSCAN_LINK50M_AUTO_FX_FORWARD4_HITPAR_RES_TFSTREAM_SOURCE_AND_BITS.zip)
 
 **两板必须同时使用本套新 bit，不能与此前 6.25 MHz 或 1366×768 版本混用。**
 
@@ -37,7 +37,7 @@ HDMI 左上角显示原始 BMP 分辨率，例如 `SRC 1920x1080`，实际 HDMI 
 
 ## 接线
 
-继续使用当前 J2，同号脚连接：数据 1—10/13—18，时钟 19、valid20、SOF21、EOF22、ready23、image_ack24；控制 UART 25/26，共地 12 或 30。A J2-25 为 TX、J2-26 为 RX，B 角色相反。串口屏仍接 A J1-1/D14、J1-2/G11；HDMI 接 A，SD 卡接 B。没有新增线。
+继续使用当前 J2，同号脚连接：数据 1—10/13—18，时钟 19、valid20、SOF21、EOF22、ready23；控制 UART 25/26，共地 12 或 30。A J2-25 为 TX、J2-26 为 RX，B 角色相反。串口屏仍接 A J1-1/D14、J1-2/G11；HDMI 接 A，SD 卡接 B。音频新增 J2-27（SCLK）、28（CS）、31（MISO），J2-24 复用为 MOSI；详见 [音频接线说明](AUDIO_STAGE1.md)。正常显示时 A KEY2 切下一首，设置中仍为减参数。
 
 ## 实板比较步骤
 
@@ -74,7 +74,7 @@ B 板连续扇区采用 CMD18，地址跳转或空闲时用 CMD12 结束；数�
 
 ## 图像处理移植
 
-全部图像处理在 B 板发送流水线完成；参考单板 2.0Project 的照片模式，后级额外锐化关闭以避免双重加强。默认增强1、细节1（保边平滑），增强0关闭该模块，增强2左右对比。完整操作、HMI事件和算法说明见 [图像处理说明](IMAGE_PROCESSING.md)。音频及动图未移植。
+全部图像处理在 B 板发送流水线完成；参考单板 2.0Project 的照片模式，后级额外锐化关闭以避免双重加强。默认增强1、细节1（保边平滑），增强0关闭该模块，增强2左右对比。完整操作、HMI事件和算法说明见 [图像处理说明](IMAGE_PROCESSING.md)。本次加入 B 读音频、A HDMI 播放和切歌，见 [音频说明](AUDIO_STAGE1.md)。频谱、音量和提示音混合待后续移植，动图未移植。
 
 ## HDMI 中文设置界面
 
@@ -87,3 +87,7 @@ B以A的实际显示图片作为缓存中心并保护原图，打开设置暂停
 ## MODEFAST：恢复播放优先的双模式调度
 
 正常播放时B解除固定当前图占槽，预读跟随已完成发送的图片推进；A继续按下一张、后第二张、后第三张补齐四图窗口。设置期间才保护当前原图、暂停背景任务，保留50ms参数合并。退出设置且当前刷新提交后恢复预读。普通切图不再等待逐张显示状态确认。上板请使用名称含MODEFAST的匹配A/B bit；此版本实板效果待确认，首次进入设置缓存未命中时仍需要加载一次原图。见HDMI_SETTINGS_MENU.md。
+
+## 音频无声定位
+
+本次 bit 名称包含 AUDIO1_DIAG_BGSCAN。找到第一张图片后先开放图片目录，找到第一首音频后即可播放。剩余素材在图片缓存空闲时继续扫描，切图或缓存补图时在扇区边界暂停，并保留搜索游标。图片数量增加时通知 A，不清空已显示的图片。A 板数码管显示 8SNTBH，B 板显示 7SNTBR，含义和判断表见 [音频诊断说明](AUDIO_STAGE1.md)。

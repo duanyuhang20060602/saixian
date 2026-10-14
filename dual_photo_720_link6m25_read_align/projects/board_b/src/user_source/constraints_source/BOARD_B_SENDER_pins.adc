@@ -27,7 +27,6 @@ set_pin_assignment { link_valid } { LOCATION = G3; IOSTANDARD = LVCMOS33; }
 set_pin_assignment { link_sof } { LOCATION = L4; IOSTANDARD = LVCMOS33; }
 set_pin_assignment { link_eof } { LOCATION = L5; IOSTANDARD = LVCMOS33; }
 set_pin_assignment { link_ready } { LOCATION = K6; IOSTANDARD = LVCMOS33; }
-set_pin_assignment { image_ack } { LOCATION = H3; IOSTANDARD = LVCMOS33; }
 
 set_pin_assignment { seg_data[0] } { LOCATION = C15; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; PULLTYPE = NONE; }
 set_pin_assignment { seg_data[1] } { LOCATION = C16; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; PULLTYPE = NONE; }
@@ -46,3 +45,7 @@ set_pin_assignment { seg_sel[5] } { LOCATION = D11; IOSTANDARD = LVCMOS33; DRIVE
 
 set_pin_assignment { control_rx } { LOCATION = H5; IOSTANDARD = LVCMOS33; PULLTYPE = PULLUP; }
 set_pin_assignment { control_tx } { LOCATION = F3; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; }
+set_pin_assignment { audio_mosi } { LOCATION = H3; IOSTANDARD = LVCMOS33; PULLTYPE = PULLUP; }
+set_pin_assignment { audio_sclk } { LOCATION = E2; IOSTANDARD = LVCMOS33; PULLTYPE = PULLUP; }
+set_pin_assignment { audio_cs } { LOCATION = J11; IOSTANDARD = LVCMOS33; PULLTYPE = PULLUP; }
+set_pin_assignment { audio_miso } { LOCATION = J12; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; }

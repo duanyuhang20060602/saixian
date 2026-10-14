@@ -3,6 +3,9 @@
 // load destination. Neighbour prefetch runs while the link consumes its slot.
 module photo_sd_cache #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=1048575,FRAME_WORDS=460800,FORWARD_ONLY=0,DISPLAY_PIN=0)(
  input display_valid,input [2:0] display_image,input prefetch_pause,
+ input audio_packet_active,input audio_request_valid,input [7:0] requested_audio_epoch,input [2:0] requested_audio_track,
+ output reg [7:0] active_audio_epoch,output reg [2:0] active_audio_track,audio_count,
+ output [3:0] audio_scan_state,output audio_switching,output [13:0] audio_fifo_used,output [31:0] audio_fifo_data,input audio_fifo_read,
  input clk,rst,request,input [2:0] target,input release_slot,cancel,
  output reg [1:0] ready_gain,output reg ready,output reg [1:0] ready_slot,output reg [2:0] image_count,
  output reg [3:0] error,output directory_ready,
@@ -11,11 +14,11 @@ module photo_sd_cache #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=1048575,FRAME
  output reg write_en,output reg [31:0] write_data,input finish_toggle,
  output sd_ncs,sd_dclk,sd_mosi,input sd_miso
 );
-wire initialized,bmp_ready,scan_done,found,scaler_pixel;
+wire initialized,bmp_ready,scan_done,scan_exhausted,found,scaler_pixel;
 wire [31:0] sector;wire [15:0] width,height;wire [23:0] pixel;
 wire [3:0] bmp_state;wire [31:0] bmp_read_addr;wire bmp_read_req;
 wire sector_end,byte_valid,scaler_fault;wire [7:0] byte_data;
-reg scan_start,load_start,abort_op;reg [31:0] load_sector;
+reg scan_start,scan_resume,scan_complete,scan_yield;reg load_start,abort_op;reg [31:0] load_sector;
 reg [31:0] directory[0:5];reg [2:0] cache_id[0:2];reg [2:0] cache_valid;
 reg [15:0] directory_width[0:5],directory_height[0:5];
 reg [1:0] load_slot;reg [2:0] load_image,current_image,wanted,playback_image;
@@ -29,7 +32,7 @@ wire [1:0] loaded_gain=stat_sum<(count_ext<<6) ? 2'd3:
  stat_sum<((count_ext<<6)+(count_ext<<5)) ? 2'd2:
  stat_sum<((count_ext<<7)+(count_ext<<4)) ? 2'd1:2'd0;
 reg half;reg [15:0] first;reg [20:0] words;
-reg read_owner,read_settle;reg [31:0] read_address;
+reg [1:0] read_owner;reg read_settle;reg [31:0] read_address;
 assign write_slot=load_slot;
 assign directory_ready=scanned && image_count!=0;
 function [15:0] rgb565;
@@ -45,13 +48,14 @@ wire [2:0] second_prefetch=FORWARD_ONLY ? next_id(next_id(current_image,image_co
 // Pin only while adjusting settings. Playback retains all three slots for
 // the last transmitted image and its two forward neighbours.
 wire pin_active=DISPLAY_PIN && display_valid && prefetch_pause;
-reg pin_hit;
+reg pin_hit,current_hit;
 reg hit,next_hit,prev_hit;reg [1:0] hit_slot,victim;
 reg victim_ok;integer i;
 always @*begin
- pin_hit=0;hit=0;hit_slot=0;next_hit=0;prev_hit=0;victim=0;victim_ok=0;
+ current_hit=0;pin_hit=0;hit=0;hit_slot=0;next_hit=0;prev_hit=0;victim=0;victim_ok=0;
  for(i=0;i<3;i=i+1)begin
   if(cache_valid[i] && cache_id[i]==display_image)pin_hit=1;
+  if(cache_valid[i] && cache_id[i]==current_image)current_hit=1;
   if(cache_valid[i] && (!loading || load_slot!=i) && cache_id[i]==wanted)begin hit=1;hit_slot=i;end
   if(cache_valid[i] && cache_id[i]==next_id(current_image,image_count))next_hit=1;
   if(cache_valid[i] && cache_id[i]==second_prefetch)prev_hit=1;
@@ -66,29 +70,61 @@ always @*begin
  for(i=2;i>=0;i=i-1)
   if(!cache_valid[i] && (!ready || ready_slot!=i) && (!loading || load_slot!=i))begin victim=i;victim_ok=1;end
 end
+wire audio_sd_req,audio_pcm_we,audio_found;
+wire [31:0] audio_sd_addr,audio_pcm_word,audio_found_sector,audio_found_bytes;
+reg [31:0] audio_sectors[0:4],audio_lengths[0:4];
+reg change_pending;reg [7:0] pending_epoch;reg [2:0] pending_track,flush_count;
+wire audio_empty,audio_full;
+assign audio_switching=change_pending || flush_count!=0;
+assign audio_scan_state=!initialized ? 4'd1:scanning ? 4'd2:!scan_complete ? 4'd6:audio_count==0 ? 4'd3:audio_fifo_used<128 ? 4'd4:4'd5;
+wire audio_reset=rst || abort_op || flush_count!=0 || scan_start;
+wire audio_enable=initialized && audio_count!=0 && active_audio_track<audio_count && !audio_switching;
+photo_audio_fifo audio_fifo(.clk(clk),.rst(audio_reset),.write_en(audio_pcm_we && !audio_switching),.write_data(audio_pcm_word),
+ .read_en(audio_fifo_read && !audio_switching),.data(audio_fifo_data),.used(audio_fifo_used),.empty(audio_empty),.full(audio_full));
+photo_sd_audio_stream audio_stream(.clk(clk),.rst(audio_reset),.enable(audio_enable),
+ .start_sector(audio_sectors[active_audio_track]),.data_bytes(audio_lengths[active_audio_track]),.fifo_wrusedw(audio_fifo_used),
+ .sd_sec_read(audio_sd_req),.sd_sec_read_addr(audio_sd_addr),.sd_sec_read_data(byte_data),
+ .sd_sec_read_data_valid(byte_valid && read_owner==2),.sd_sec_read_end(sector_end && read_owner==2),.pcm_we(audio_pcm_we),.pcm_word(audio_pcm_word));
+always @(posedge clk or posedge rst)begin
+ if(rst)begin audio_count<=0;active_audio_track<=0;active_audio_epoch<=0;change_pending<=0;pending_epoch<=0;pending_track<=0;flush_count<=0;end
+ else begin
+  if(scan_start)audio_count<=0;
+  else if(audio_found && audio_count<5)begin audio_sectors[audio_count]<=audio_found_sector;audio_lengths[audio_count]<=audio_found_bytes;audio_count<=audio_count+1'b1;end
+  if(flush_count!=0)flush_count<=flush_count-1'b1;
+  if(audio_request_valid && (requested_audio_epoch!=active_audio_epoch || requested_audio_track!=active_audio_track))begin
+   pending_epoch<=requested_audio_epoch;pending_track<=requested_audio_track<audio_count ? requested_audio_track:3'd0;change_pending<=1;
+  end else if(change_pending && read_owner!=2 && !read_settle && !audio_packet_active)begin
+   // Finish any old audio sector before flushing; never reset the TF card.
+   active_audio_track<=pending_track;active_audio_epoch<=pending_epoch;flush_count<=4;change_pending<=0;
+  end
+ end
+end
 always @(posedge clk or posedge rst)begin
  if(rst)begin read_owner<=0;read_settle<=0;read_address<=0;end
  else if(abort_op)begin read_owner<=0;read_settle<=0;end
- // Allow BMP request/address registers to settle after sector completion.
- // In particular, do not enqueue a stale request at the end of a file.
  else if(sector_end)begin read_owner<=0;read_settle<=1;end
  else if(read_settle)read_settle<=0;
- else if(!read_owner && bmp_read_req)begin read_owner<=1;read_address<=bmp_read_addr;end
+ else if(read_owner==0)begin
+  // Sector-granular arbitration: refill music before the next picture sector.
+  if(audio_sd_req && !audio_switching)begin read_owner<=2;read_address<=audio_sd_addr;end
+  else if(bmp_read_req)begin read_owner<=1;read_address<=bmp_read_addr;end
+ end
 end
 sd_card_top #(.SPI_LOW_SPEED_DIV(248),.SPI_HIGH_SPEED_DIV(2),.READ_MULTIBLOCK(1),.FAST_READ_STREAM(1)) sd(
  .clk(clk),.rst(rst || abort_op),.SD_nCS(sd_ncs),.SD_DCLK(sd_dclk),.SD_MOSI(sd_mosi),.SD_MISO(sd_miso),
- .sd_init_done(initialized),.init_stage(),.sd_sec_read(read_owner),.sd_sec_read_addr(read_address),
+ .sd_init_done(initialized),.init_stage(),.sd_sec_read(read_owner!=0),.sd_sec_read_addr(read_address),
  .sd_sec_read_data(byte_data),.sd_sec_read_data_valid(byte_valid),.sd_sec_read_end(sector_end),
  .sd_sec_write(1'b0),.sd_sec_write_addr(32'd0),.sd_sec_write_data(8'd0),.sd_sec_write_data_req(),.sd_sec_write_end());
 bmp_read bmp(.clk(clk),.rst(rst),.op_abort(abort_op),.ready(bmp_ready),
- .scan_start(scan_start),.scan_stop(image_count==6),.scan_start_sector(32'd0),.scan_max_sector(SCAN_MAX_SECTOR),
+ .scan_start(scan_start),.scan_resume(scan_resume),.scan_exhausted(scan_exhausted),
+ .scan_stop(image_count!=0 && (!scanned || scan_yield || (image_count==6 && audio_count==5))),.scan_start_sector(32'd0),.scan_max_sector(SCAN_MAX_SECTOR),
  .scan_target_count(3'd6),.scan_done(scan_done),.scan_found_valid(found),.scan_found_sector(sector),
  .scan_found_total(),.scan_found_width(width),.scan_found_height(height),.scan_found_sprint(),
- .audio_found_valid(),.audio_found_index(),.audio_found_sector(),.audio_found_bytes(),
+ .audio_found_valid(audio_found),.audio_found_index(),.audio_found_sector(audio_found_sector),.audio_found_bytes(audio_found_bytes),
  .load_start(load_start),.load_sector(load_sector),.sd_init_done(initialized),.state_code(bmp_state),
  .bmp_width(16'd1280),.bmp_height(16'd720),.write_req(write_req),.write_req_ack(write_ack),
  .sd_sec_read(bmp_read_req),.sd_sec_read_addr(bmp_read_addr),.sd_sec_read_data(byte_data),
- .sd_sec_read_data_valid(byte_valid && read_owner),.sd_sec_read_end(sector_end && read_owner),
+ .sd_sec_read_data_valid(byte_valid && read_owner==1),.sd_sec_read_end(sector_end && read_owner==1),
  .bmp_data_wr_en(scaler_pixel),.bmp_data(pixel),.scaler_fault_o(scaler_fault));
 always @(posedge clk or posedge rst)begin
  if(rst)begin fin_meta<=0;fin_sync<=0;end
@@ -107,10 +143,10 @@ always @(posedge clk or posedge rst)begin
   ready<=0;ready_slot<=0;image_count<=0;error<=0;cache_valid<=0;load_slot<=0;load_image<=0;
   ready_source_width<=0;ready_source_height<=0;
   current_image<=0;playback_image<=0;wanted<=0;demand<=0;scanned<=0;scanning<=0;loading<=0;load_started<=0;
-  scan_start<=0;load_start<=0;abort_op<=0;load_sector<=0;timer<=0;init_timer<=0;fin_seen<=0;
+  scan_start<=0;scan_resume<=0;scan_complete<=0;scan_yield<=0;load_start<=0;abort_op<=0;load_sector<=0;timer<=0;init_timer<=0;fin_seen<=0;
   half<=0;first<=0;write_en<=0;write_data<=0;
  end else begin
-  scan_start<=0;load_start<=0;abort_op<=0;write_en<=0;
+  scan_start<=0;scan_resume<=0;load_start<=0;abort_op<=0;write_en<=0;
   if(!initialized)begin
    if(init_timer>=CLK_HZ*8)begin abort_op<=1;init_timer<=0;scanning<=0;end
    else init_timer<=init_timer+1'b1;
@@ -118,13 +154,21 @@ always @(posedge clk or posedge rst)begin
   if(initialized && !scanned && !scanning && bmp_ready)begin scan_start<=1;scanning<=1;image_count<=0;timer<=0;end
   if(scanning)begin
    timer<=timer+1'b1;
+   if(audio_found || sector_end)timer<=0;
    if(found && image_count<6)begin
     directory[image_count]<=sector;directory_width[image_count]<=width;directory_height[image_count]<=height;
     image_count<=image_count+1'b1;timer<=0;
    end
-   if(scan_done || image_count==6)begin scanning<=0;scanned<=1;if(image_count==0 && !found)error<=1;end
-   // Stop after a finite idle period on cards with fewer than six images.
-   if(timer>=CLK_HZ*20)begin scanning<=0;scanned<=1;abort_op<=1;if(image_count==0)error<=1;end
+   if(scan_done && !scan_start && !scan_resume)begin
+    scanning<=0;scanned<=1;scan_yield<=0;
+    scan_complete<=scan_exhausted || (image_count==6 && audio_count==5);
+    if(image_count==0 && !found)error<=1;
+   end
+   if(scanned && (request || demand || release_slot || prefetch_pause ||
+      !current_hit || (image_count>1 && (!next_hit || !prev_hit))))scan_yield<=1;
+   // Watchdog measures absence of SD progress, not absence of new headers.
+   // Search the configured sector range even after six photos are found.
+   if(timer>=CLK_HZ*20)begin scanning<=0;scanned<=1;scan_complete<=1;abort_op<=1;if(image_count==0)error<=1;end
   end
   if(request && scanned && target<image_count)begin wanted<=target;demand<=1;ready<=0;error<=0;end
   if(release_slot)begin ready<=0;playback_image<=cache_id[ready_slot];
@@ -142,7 +186,7 @@ always @(posedge clk or posedge rst)begin
     ready<=1;ready_slot<=hit_slot;ready_gain<=cache_gain[hit_slot];demand<=0;
     ready_source_width<=directory_width[wanted];ready_source_height<=directory_height[wanted];
    end
-   else if(!loading && bmp_ready && (!DISPLAY_PIN || current_image==(pin_active ? display_image:playback_image)))begin
+   else if(!loading && !scanning && bmp_ready && (!DISPLAY_PIN || current_image==(pin_active ? display_image:playback_image)))begin
    if(demand && !hit && victim_ok)begin
     load_slot<=victim;load_image<=wanted;load_sector<=directory[wanted];load_start<=1;loading<=1;
     cache_valid[victim]<=0;load_started<=0;half<=0;fin_seen<=fin_sync;timer<=0;
@@ -158,6 +202,10 @@ always @(posedge clk or posedge rst)begin
     load_slot<=victim;load_image<=second_prefetch;
     load_sector<=directory[second_prefetch];load_start<=1;loading<=1;
     cache_valid[victim]<=0;load_started<=0;half<=0;fin_seen<=fin_sync;timer<=0;
+   end else if(!scan_complete && !demand && !ready && !prefetch_pause && current_hit &&
+               (image_count<=1 || (next_hit && prev_hit)))begin
+    // The raw window is ready: use only idle TF time for directory discovery.
+    scan_resume<=1;scanning<=1;scan_yield<=0;timer<=0;
    end
    end
   end

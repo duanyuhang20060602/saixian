@@ -7,6 +7,8 @@ module bmp_read(
     // 上电扫描：从 scan_start_sector 开始，顺序寻找前 scan_target_count 张 BMP
     input                       scan_start,
     input                       scan_stop,
+    input                       scan_resume,
+    output reg                  scan_exhausted,
     input  [31:0]               scan_start_sector,
     input  [31:0]               scan_max_sector,
     input  [2:0]                scan_target_count,
@@ -329,6 +331,7 @@ always @(posedge clk or posedge rst) begin
         sd_sec_read_addr  <= 32'd0;
         write_req         <= 1'b0;
         scan_done         <= 1'b0;
+        scan_exhausted    <= 1'b0;
         scan_found_valid  <= 1'b0;
         scan_found_sector <= 32'd0;
         scan_found_total  <= 3'd0;
@@ -356,6 +359,7 @@ always @(posedge clk or posedge rst) begin
         sd_sec_read_addr  <= 32'd0;
         write_req         <= 1'b0;
         scan_done         <= 1'b0;
+        scan_exhausted    <= 1'b0;
         scan_found_valid  <= 1'b0;
         scan_found_sector <= 32'd0;
         scan_found_total  <= 3'd0;
@@ -388,12 +392,17 @@ always @(posedge clk or posedge rst) begin
                 write_req   <= 1'b0;
 
                 if (scan_start) begin
-                    scan_done        <= 1'b0;
+                    scan_done        <= 1'b0;scan_exhausted<=1'b0;
                     scan_found_total <= 3'd0;
                     audio_found_count <= 3'd0;
                     scan_sector      <= scan_start_sector;
                     sd_sec_read_addr <= scan_start_sector;
                     state            <= ST_SCAN;
+                end else if (scan_resume) begin
+                    // Resume at the unprocessed sector after a cooperative yield.
+                    scan_done <= 1'b0;
+                    sd_sec_read_addr <= scan_sector;
+                    state <= ST_SCAN;
                 end else if (load_start) begin
                     load_sector_latched <= load_sector;
                     sd_sec_read_addr    <= load_sector;
@@ -433,7 +442,7 @@ always @(posedge clk or posedge rst) begin
                     // controller transaction intact and lets the caller use
                     // every valid image already found instead of aborting and
                     // reinitializing the card.
-                    scan_done   <= 1'b1;
+                    scan_done   <= 1'b1;scan_exhausted<=1'b0;
                     state       <= ST_IDLE;
                     sd_sec_read <= 1'b0;
                 end else begin
@@ -450,7 +459,7 @@ always @(posedge clk or posedge rst) begin
                         // PCM payload instead of scanning 96k audio sectors.
                         if (((scan_found_total >= scan_target_count) && (audio_found_count >= 3'd4)) ||
                             ((scan_sector + 32'd1 + ((audio_data_len_latched + 32'd511) >> 9)) > scan_max_sector)) begin
-                            scan_done        <= 1'b1;
+                            scan_done        <= 1'b1;scan_exhausted<=1'b1;
                             state            <= ST_IDLE;
                             sd_sec_read_addr <= scan_sector + 32'd1 + ((audio_data_len_latched + 32'd511) >> 9);
                             scan_sector      <= scan_sector + 32'd1 + ((audio_data_len_latched + 32'd511) >> 9);
@@ -460,16 +469,16 @@ always @(posedge clk or posedge rst) begin
                             state            <= ST_SCAN;
                         end
                     end else if (header_basic_ok_latched && header_geometry_ok_latched) begin
-                        scan_found_valid  <= 1'b1;
+                        scan_found_valid  <= scan_found_total<scan_target_count;
                         scan_found_sector <= scan_sector;
-                        scan_found_total  <= scan_found_total + 3'd1;
+                        if(scan_found_total<scan_target_count)scan_found_total<=scan_found_total+3'd1;
                         scan_found_width  <= width[15:0];
                         scan_found_height <= height[15:0];
                         scan_found_sprint <= sprint_tag_latched;
 
                         if (((scan_found_total + 3'd1 >= scan_target_count) && (audio_found_count >= 3'd5)) ||
                             ((scan_sector + file_sector_count_latched) > scan_max_sector)) begin
-                            scan_done        <= 1'b1;
+                            scan_done        <= 1'b1;scan_exhausted<=1'b1;
                             state            <= ST_IDLE;
                             sd_sec_read_addr <= scan_sector + file_sector_count_latched;
                             scan_sector      <= scan_sector + file_sector_count_latched;
@@ -480,7 +489,7 @@ always @(posedge clk or posedge rst) begin
                         end
                     end else begin
                         if (scan_sector >= scan_max_sector) begin
-                            scan_done <= 1'b1;
+                            scan_done <= 1'b1;scan_exhausted<=1'b1;
                             state     <= ST_IDLE;
                         end else begin
                             sd_sec_read_addr <= next_scan_sector_if_miss;
