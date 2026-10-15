@@ -1,0 +1,2 @@
+RGB888 concurrent prefetch: misses=184149 pops=507051 producer_words=253903
+PASS baseline reproduces display starvation

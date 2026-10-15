@@ -1,0 +1,14 @@
+__pycache__/
+*.vvp
+*.db
+*.dmp
+*.bit
+*.zip
+*.log
+*.logw
+*.area
+*.timing
+*.ts
+*_Runs/
+tests/results/*.hex
+tests/results/*.ppm

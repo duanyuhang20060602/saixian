@@ -1,0 +1,2 @@
+RGB888 concurrent prefetch: misses=0 pops=691200 producer_words=63111
+PASS RGB888 display has zero underflow while prefetch makes progress

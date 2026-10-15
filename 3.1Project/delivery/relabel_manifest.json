@@ -1,0 +1,348 @@
+{
+  "version": "V3.1",
+  "publication_only": true,
+  "bitstreams": [
+    {
+      "role": "board_a",
+      "file": "PHOTO_BOARD_A_720P_AWARD_DLT_V3_1_NOCRC_AUDIO2_LINK50M.bit",
+      "sha256": "3372bb8dfcba80d8728a9d0d93a387efa4d66e4ca9f84440bd5a175fbc74841f",
+      "bytes": 644764,
+      "timing_ns": {
+        "SWNS": 0.103,
+        "STNS": 0.0,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      }
+    },
+    {
+      "role": "board_b",
+      "file": "PHOTO_BOARD_B_720P_AWARD_DLT_V3_1_NOCRC_AUDIO2_LINK50M.bit",
+      "sha256": "0ca7fc6a7ad1d12165d46a183bbeed6451721e1e19e7205c1a7c2a95bf93c9a5",
+      "bytes": 634288,
+      "timing_ns": {
+        "SWNS": 0.12,
+        "STNS": 0.0,
+        "HWNS": 0.027,
+        "HTNS": 0.0
+      }
+    }
+  ],
+  "unchanged_production_sources": [
+    {
+      "path": "common/audio_ui/photo_audio_cue_samples.v",
+      "sha256": "1b1bf98878e1d27d6687c76a35913715d119b307f5a2453b8926c596fec95a60"
+    },
+    {
+      "path": "common/audio_ui/saixian_event_controller.v",
+      "sha256": "c27a9a51687b5ad7b45e9fa7a17a20b259cfe84cbd950efaf3a4a5e0dd6bb5c2"
+    },
+    {
+      "path": "common/audio_ui/saixian_font_rom.mif",
+      "sha256": "ca162d9ef72efee747c5b83cb09a145e15bc03bb19766655790aa78227717f7a"
+    },
+    {
+      "path": "common/audio_ui/saixian_font_rom.v",
+      "sha256": "eceaa5ddb65042aff7a507b8ca410d901f70b17f2d081689da2bea831b7aed8b"
+    },
+    {
+      "path": "common/audio_ui/saixian_osd_overlay.v",
+      "sha256": "eaa7baed9a947da79a4bf459cb6aea9dadb4063f548e730abddb0293e7c06f45"
+    },
+    {
+      "path": "common/audio_vendor/audio_arc_calculate.v",
+      "sha256": "b3b55c90ad7ba679b0f4cb550cdf656230d15a3facab00ce7f561f32bd63eb0d"
+    },
+    {
+      "path": "common/audio_vendor/hdmi_1_4b_transmitter_core_wrapper.enc.v",
+      "sha256": "25a28679c51d779a1c811772cf83e3092a3106b25e2e21f1560ba624ebd72bd0"
+    },
+    {
+      "path": "common/award_fx.v",
+      "sha256": "14c02e4ffd9b4d746d51c097bfea3f76d9354eccf48dff487ad640a1f93c65f4"
+    },
+    {
+      "path": "common/award_sprite_rom.v",
+      "sha256": "78b9a5941893a9cb50aad9c8e00d49e932cd552fa3176c39aa99f1b0ba3a382a"
+    },
+    {
+      "path": "common/photo_audio_features.v",
+      "sha256": "4965847bc34abf2d0d1f356ddbaa959c6669aa838a794e052f63cc34ecdda0e7"
+    },
+    {
+      "path": "common/photo_audio_link.v",
+      "sha256": "4482068ff2bb3769999d74cb6ea3279925ca8d341c23c629ad8b41c85b7915e7"
+    },
+    {
+      "path": "common/photo_auto_advance.v",
+      "sha256": "8c46b77dd59c49245d353c47056196f5fe2e63a5907ffdbb924cb670b9ed865c"
+    },
+    {
+      "path": "common/photo_award_render.v",
+      "sha256": "e25acf28bb7334804ea7b895a300fe5513115c0a158531fd437dc6bdfc68e880"
+    },
+    {
+      "path": "common/photo_b_processing.v",
+      "sha256": "c8ffb494e398e901c62e9022524cec7a81cd137ac91438ea4cff3b04f3385d25"
+    },
+    {
+      "path": "common/photo_boot_screen.v",
+      "sha256": "4372472dae27f79635f637eb3789c289634eeee93f536ccb6d3ca39af42eb026"
+    },
+    {
+      "path": "common/photo_cached_control_a.v",
+      "sha256": "c06fb353f3701ed8b6686d468b281b22c0b9f54ab503aace1daa5eba593fbdd8"
+    },
+    {
+      "path": "common/photo_color_format.v",
+      "sha256": "f4dbd9d53bdea9303cdcf7f9f9a3c6af2614e1b001a23695f0347e1adaa31be0"
+    },
+    {
+      "path": "common/photo_control.v",
+      "sha256": "a6e998049e2dbf0edee85de0fb87294db4fdea73e47572380be41ec78f5d8cba"
+    },
+    {
+      "path": "common/photo_link.v",
+      "sha256": "f0571991620e668b505fd8d568b3bfe93a1cc81fb2e3036c512545523beeb3a1"
+    },
+    {
+      "path": "common/photo_menu_font.mif",
+      "sha256": "d4cd9547808658e301e12db83b71d9c06bdee9696fb4fb237baec9e5294f311f"
+    },
+    {
+      "path": "common/photo_menu_font.v",
+      "sha256": "1016a06667d94531745b5d80b0eecb17285f41d8bd17900ed75ec6c190f228db"
+    },
+    {
+      "path": "common/photo_processing.v",
+      "sha256": "fa835d951d02eedce197444ef59bcad4a578ad1b7ca1739f77b41a2af171ea38"
+    },
+    {
+      "path": "common/photo_resolution_overlay.v",
+      "sha256": "3cae41e28047b023a0405830db1374056f46bfceb6e80e45e9cf6cfa26430a2e"
+    },
+    {
+      "path": "common/photo_sd/bmp_read.v",
+      "sha256": "d217a57c43592b3ac4f40d1dc705944c650b698ec8532a4a62211f92ef452d4b"
+    },
+    {
+      "path": "common/photo_sd/photo_dlt_header.v",
+      "sha256": "9863edf7c08430409eb725055abb66f66da987dc7bbd4e79ac6571f4d0595f6c"
+    },
+    {
+      "path": "common/photo_sd/photo_dlt_reader.v",
+      "sha256": "d2e185ec2b9102791123c23f2f6dd5ca4e5d6a27937c7f9b3ec77c52b1ec17d7"
+    },
+    {
+      "path": "common/photo_sd/saixian_media_header.v",
+      "sha256": "f8092e34232ab7d5a379903b7f8602168ca3b89d5397d8a222c55ba45332271e"
+    },
+    {
+      "path": "common/photo_sd/sd_card_cmd.v",
+      "sha256": "ee93ef4fce483306a204c8d0232f35418e4e4a6b94df7f11e912048f7d8aa46c"
+    },
+    {
+      "path": "common/photo_sd/sd_card_sec_read_write.v",
+      "sha256": "2c51c66e347595d20ddd5d6b3a5cad9252fb308a754aa59140f739636b3d7dd6"
+    },
+    {
+      "path": "common/photo_sd/sd_card_top.v",
+      "sha256": "96a83af8c155514f4fe8a802d207caea1577702d97bf362b0955bdc2f243214f"
+    },
+    {
+      "path": "common/photo_sd/spi_master.v",
+      "sha256": "f3f04df5bc162fba03beff74fc506bace4038d2667505e498731a06f6b5a27e9"
+    },
+    {
+      "path": "common/photo_sd_audio_stream.v",
+      "sha256": "5c1c0196bed7661ba9fdf2edab80630f3860223e6a8858935012083738c95a7a"
+    },
+    {
+      "path": "common/photo_sd_cache.v",
+      "sha256": "ab93121b9e13bc569c730fa3875ea9cf28e35d6caa92e043d9af1fbf6430b2e4"
+    },
+    {
+      "path": "common/photo_settings_overlay.v",
+      "sha256": "b72de5f93609346f5d836ba5f55af6d7b0223da41404a290266ac44e22798c59"
+    },
+    {
+      "path": "common/photo_status.v",
+      "sha256": "1bf2e6134aa9daa8c5e14c5f1e28ece7502f31840767e3cf9d5a63ccc5d21cc4"
+    },
+    {
+      "path": "common/photo_uart.v",
+      "sha256": "03f62d8e9381a9ba92c067fabc4ecce12632cd32a4076b62792e2384b6712c50"
+    },
+    {
+      "path": "common/photo_unified_settings_controller.v",
+      "sha256": "2f1e0c4efc860b3b4d208426705e58893a18866e813da720f07a5993bce59e6d"
+    },
+    {
+      "path": "common/saixian_hmi_uart.v",
+      "sha256": "4ed4ce13c0f478367878adc8cae2eb208e56825ad02d20d34478be25bf1e8bb8"
+    },
+    {
+      "path": "common/saixian_key_debounce.v",
+      "sha256": "0ce5ef658b14de16b3d74c81c055ebfadaa7276d9f73aec02417329c80648968"
+    },
+    {
+      "path": "common/saixian_transition.v",
+      "sha256": "f02006b65a028c9f15d653f3afabea4c7c881f1bec30458a13ae0cb2126f7633"
+    },
+    {
+      "path": "common/top_photo_a.v",
+      "sha256": "4a6d09332d7678e19cbb7ef67176565f32279993ec1889e8d451f4b29e90f631"
+    },
+    {
+      "path": "common/top_photo_b.v",
+      "sha256": "995a89647d2acb0d36e28023ef722965933b3376744a20aab997de0d6caefc38"
+    },
+    {
+      "path": "projects/board_a/src/user_source/constraints_source/BOARD_A_RECEIVER_pins.adc",
+      "sha256": "0cb2f3cb2b05a6abed729626068a29466c608dd448406ae70b18833c13e3f921"
+    },
+    {
+      "path": "projects/board_a/src/user_source/constraints_source/BOARD_A_RECEIVER_timing.sdc",
+      "sha256": "f39198b65322a7d10f7304f22eca3317517ca1059403abbef4d2bfbbd24d9cae"
+    },
+    {
+      "path": "projects/board_a/src/user_source/hdl_source/dual_still_reset_sync.v",
+      "sha256": "86a363f9bf457e59e19470eadc14b89eef30a3d9142874ab0c20ced49b8cecac"
+    },
+    {
+      "path": "projects/board_a/src/user_source/hdl_source/frame_pixels.v",
+      "sha256": "6c0d416f8a4b52f49b384d70c4c20cebb5b5fa277f248bbe579ea23000e52392"
+    },
+    {
+      "path": "projects/board_a/src/user_source/hdl_source/frame_store.v",
+      "sha256": "1422c7f59ade19ae6dd45bc692857678a6b6c57b17f246d0bfac8fde055d86bd"
+    },
+    {
+      "path": "projects/board_a/src/user_source/hdl_source/hdmi_minimal_tx.v",
+      "sha256": "6abdf0ae79fa61b790ff12ca785cb306308414b61bda280af714b44ea89f7944"
+    },
+    {
+      "path": "projects/board_a/src/user_source/hdl_source/hdmi_output_diagnostics.v",
+      "sha256": "d9d76f42d177f8b42f1527c9f5f56f054bf32a810bdb030c612cb544d0866df5"
+    },
+    {
+      "path": "projects/board_a/src/user_source/hdl_source/hdmi_phy_warpper.v",
+      "sha256": "7665996d6504860ef2554fb8fc70df0746b54dcb2fe078883c2f72c898366ffb"
+    },
+    {
+      "path": "projects/board_a/src/user_source/hdl_source/include/global_def.v",
+      "sha256": "fbb044615f7541b00fc649a7d278f9e540dbb74cac94faa02298daff1f594692"
+    },
+    {
+      "path": "projects/board_a/src/user_source/hdl_source/include/sdr_as_ram.enc.v",
+      "sha256": "ebecfaf30303a1353ac3bd48d5785836b9622e480ebd6a95bc4a663e43688936"
+    },
+    {
+      "path": "projects/board_a/src/user_source/hdl_source/include/sdr_init_ref.enc.v",
+      "sha256": "6ae30d9e850daecdda6375b5389a82b8553b2d63eb9588e5c7ddc4ef3f0ae58e"
+    },
+    {
+      "path": "projects/board_a/src/user_source/hdl_source/include/sdr_wrrd.enc.v",
+      "sha256": "8ad6e44a16e5c1ad895a9461ed2a20b0449920f5139e3a0d091a2dcae400c1aa"
+    },
+    {
+      "path": "projects/board_a/src/user_source/hdl_source/IP/afifo_16_32_256.v",
+      "sha256": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8"
+    },
+    {
+      "path": "projects/board_a/src/user_source/hdl_source/IP/afifo_32_16_256.v",
+      "sha256": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd"
+    },
+    {
+      "path": "projects/board_a/src/user_source/hdl_source/IP/sys_pll.v",
+      "sha256": "e3098f9e8601ddbe5556effa03c12947a281ad4c44d47acca7ac3ac1dd2cbcac"
+    },
+    {
+      "path": "projects/board_a/src/user_source/hdl_source/lane_lvds_10_1.v",
+      "sha256": "fd61b139c3803a16d1a3ed33bbd9babd88af4c73702a98b406d7ea6b7771269b"
+    },
+    {
+      "path": "projects/board_a/src/user_source/hdl_source/SD/frame_fifo_read.v",
+      "sha256": "f9510d12cd92a9e71b971b2c659167a3d19c288f00637aa79cecbdbb66f2b3b6"
+    },
+    {
+      "path": "projects/board_a/src/user_source/hdl_source/SD/frame_fifo_write.v",
+      "sha256": "db4c73d85fbb1067034154e9b43659c730c8e36b63f64d5c078bff6c5158cfc6"
+    },
+    {
+      "path": "projects/board_a/src/user_source/hdl_source/SD/frame_read_write.v",
+      "sha256": "0e7fcd6b47114cabc102c3960329f8eedb3d28d6879908bdc95a69d03be61ee0"
+    },
+    {
+      "path": "projects/board_a/src/user_source/hdl_source/SD/sdram.v",
+      "sha256": "beb0a3e8497f8e30a7c0fc6ba6981316f571443460455f4f3b4d5c843d3830fb"
+    },
+    {
+      "path": "projects/board_a/src/user_source/hdl_source/video_pll.v",
+      "sha256": "30e49bd3ccdccfcf7f7a874448be75a84a4790e89e82526ddd660fc2af891faf"
+    },
+    {
+      "path": "projects/board_b/src/user_source/constraints_source/BOARD_B_SENDER_pins.adc",
+      "sha256": "86de0c6d997c5765d1e82a369c4dfcf46a727871d2488de1232e8a008b9780bc"
+    },
+    {
+      "path": "projects/board_b/src/user_source/constraints_source/BOARD_B_SENDER_timing.sdc",
+      "sha256": "812a2bc770369af58f4ceed1bc4985b5ef32e2157983528e1b34222f1ce4d118"
+    },
+    {
+      "path": "projects/board_b/src/user_source/hdl_source/builtin_link_pll.v",
+      "sha256": "4c21c32da6ef179e89a237925ce08ae36646d27dba9f58391472387b455c55d1"
+    },
+    {
+      "path": "projects/board_b/src/user_source/hdl_source/dual_still_reset_sync.v",
+      "sha256": "86a363f9bf457e59e19470eadc14b89eef30a3d9142874ab0c20ced49b8cecac"
+    },
+    {
+      "path": "projects/board_b/src/user_source/hdl_source/frame_store.v",
+      "sha256": "2855386389e6afa526585f3aa14cb5842a0f83af2251da17ff0722a98f76ad10"
+    },
+    {
+      "path": "projects/board_b/src/user_source/hdl_source/include/global_def.v",
+      "sha256": "fbb044615f7541b00fc649a7d278f9e540dbb74cac94faa02298daff1f594692"
+    },
+    {
+      "path": "projects/board_b/src/user_source/hdl_source/include/sdr_as_ram.enc.v",
+      "sha256": "ebecfaf30303a1353ac3bd48d5785836b9622e480ebd6a95bc4a663e43688936"
+    },
+    {
+      "path": "projects/board_b/src/user_source/hdl_source/include/sdr_init_ref.enc.v",
+      "sha256": "6ae30d9e850daecdda6375b5389a82b8553b2d63eb9588e5c7ddc4ef3f0ae58e"
+    },
+    {
+      "path": "projects/board_b/src/user_source/hdl_source/include/sdr_wrrd.enc.v",
+      "sha256": "8ad6e44a16e5c1ad895a9461ed2a20b0449920f5139e3a0d091a2dcae400c1aa"
+    },
+    {
+      "path": "projects/board_b/src/user_source/hdl_source/IP/afifo_16_32_256.v",
+      "sha256": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8"
+    },
+    {
+      "path": "projects/board_b/src/user_source/hdl_source/IP/afifo_32_16_256.v",
+      "sha256": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd"
+    },
+    {
+      "path": "projects/board_b/src/user_source/hdl_source/IP/sys_pll.v",
+      "sha256": "e3098f9e8601ddbe5556effa03c12947a281ad4c44d47acca7ac3ac1dd2cbcac"
+    },
+    {
+      "path": "projects/board_b/src/user_source/hdl_source/SD/frame_fifo_read.v",
+      "sha256": "f9510d12cd92a9e71b971b2c659167a3d19c288f00637aa79cecbdbb66f2b3b6"
+    },
+    {
+      "path": "projects/board_b/src/user_source/hdl_source/SD/frame_fifo_write.v",
+      "sha256": "972105cbf9b08dc5f43af27d0a5826d8333ddd1d7c66394f57e08c90f7cab311"
+    },
+    {
+      "path": "projects/board_b/src/user_source/hdl_source/SD/frame_read_write.v",
+      "sha256": "c05d2a32ffcddbf66515d964e010fd3df33bd043822012e186b17d9e9cf727c6"
+    },
+    {
+      "path": "projects/board_b/src/user_source/hdl_source/SD/sdram.v",
+      "sha256": "beb0a3e8497f8e30a7c0fc6ba6981316f571443460455f4f3b4d5c843d3830fb"
+    }
+  ]
+}

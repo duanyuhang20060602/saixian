@@ -1,0 +1,43 @@
+[
+  {
+    "test": "tb_audio_repair_settings",
+    "passed": true,
+    "seconds": 0.66
+  },
+  {
+    "test": "tb_audio_visual_real",
+    "passed": true,
+    "seconds": 49.58
+  },
+  {
+    "test": "tb_audio_visual_primitive",
+    "passed": true,
+    "evidence": "tb_audio_visual_primitive.log"
+  },
+  {
+    "test": "tb_audio_repair_effect",
+    "passed": true,
+    "seconds": 50.36,
+    "measurements": {
+      "bit_exact_original_samples": 8192,
+      "gain_1k_db": 0.11,
+      "gain_8k_db": -60.08,
+      "isolated_click_output_peak": 27,
+      "dc_tail_absolute": 1466.6
+    }
+  },
+  {
+    "test": "tb_audio_transport_repair",
+    "passed": true,
+    "seconds": 42.72
+  },
+  {
+    "test": "tb_audio_osd_port",
+    "passed": true,
+    "seconds": 0.16,
+    "source_sha256": {
+      "tests/tb_audio_osd_port.v": "ee2eb2b71239d95e58ee43b30d4403117804c90f958a23fc7f9b83fcfccde6a1",
+      "common/audio_ui/saixian_osd_overlay.v": "5a8bee9919bbd554bf46b7906ed8d9e3a0bc794174bdc1fe6657689006cbc193"
+    }
+  }
+]

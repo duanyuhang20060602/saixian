@@ -1,0 +1,13 @@
+{
+  "reference": "dual_rgb888_switch_fix: user reported photo display and KEY1 switching before LINK_FIX startup regression",
+  "receiver": "photo_link_receiver LEGACY_TIMING=1",
+  "restored_source_sha256": {
+    "common/photo_link.v": "f0571991620e668b505fd8d568b3bfe93a1cc81fb2e3036c512545523beeb3a1",
+    "projects/board_a/src/user_source/hdl_source/SD/frame_fifo_read.v": "cff78fc58bd884e8c796d55c3c5279fafeb306bc3c5fabe963d163e81352dc09",
+    "projects/board_a/src/user_source/hdl_source/SD/frame_fifo_write.v": "30ccf24859f0c27e35bbe2f9d9b032a10ef7aa5b50a9c3a50a94d9218be1bb08",
+    "projects/board_a/src/user_source/hdl_source/SD/frame_read_write.v": "d17e880c9ded8c691bfa0f3046333accd2bf2610863186f73ebc973a57e709ba",
+    "projects/board_a/src/user_source/hdl_source/frame_store.v": "1422c7f59ade19ae6dd45bc692857678a6b6c57b17f246d0bfac8fde055d86bd"
+  },
+  "board_b_unchanged": true,
+  "hardware_acceptance": "pending physical board verification; prior high-color switching white bars unresolved"
+}

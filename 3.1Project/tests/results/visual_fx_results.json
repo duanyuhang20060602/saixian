@@ -1,0 +1,49 @@
+[
+  {
+    "test": "tb_neutral_cleanup",
+    "passed": true,
+    "seconds": 1.53,
+    "source_sha256": {
+      "tests/tb_neutral_cleanup.v": "6785d3ddf9bd2788cb56bbcf493f65a8c25e930aa6fced612dc92f54e307cc54",
+      "common/photo_display_pipe.v": "a9997a0928bbfd31afd311bcab84b05ef2940c77bbcfd9fcca80fff1087cdca0",
+      "common/photo_processing.v": "fa835d951d02eedce197444ef59bcad4a578ad1b7ca1739f77b41a2af171ea38"
+    }
+  },
+  {
+    "test": "tb_rgb888_transitions",
+    "passed": true,
+    "seconds": 75.94,
+    "source_sha256": {
+      "tests/tb_rgb888_transitions.v": "5379ea7a75960e8321627a9c2ad4bb71d8e054d22f0f3efb5ea5c8d1fc3a3993",
+      "projects/board_a/src/user_source/hdl_source/SD/frame_fifo_read.v": "cff78fc58bd884e8c796d55c3c5279fafeb306bc3c5fabe963d163e81352dc09"
+    }
+  },
+  {
+    "test": "tb_mapper",
+    "passed": true,
+    "seconds": 82.83,
+    "source_sha256": {
+      "tests/tb_mapper.v": "1b2ee80ccf80fed6ba50278a4edd5e476036919a3d0b49e5a1b61568dce58a4c",
+      "projects/board_a/src/user_source/hdl_source/SD/frame_fifo_read.v": "cff78fc58bd884e8c796d55c3c5279fafeb306bc3c5fabe963d163e81352dc09"
+    }
+  },
+  {
+    "test": "tb_fade_no_flash",
+    "passed": true,
+    "seconds": 0.16,
+    "source_sha256": {
+      "tests/tb_fade_no_flash.v": "8723fa1386e60df078088963b218322f7f617aaf148a13b924294d75eadfb80e",
+      "common/photo_display_pipe.v": "a9997a0928bbfd31afd311bcab84b05ef2940c77bbcfd9fcca80fff1087cdca0",
+      "common/saixian_transition.v": "b54b9681f96759b96edd40b6475911e96b7e65f7c96b44f455209679a3b5ed19"
+    }
+  },
+  {
+    "test": "tb_audio_osd_port",
+    "passed": true,
+    "seconds": 0.16,
+    "source_sha256": {
+      "tests/tb_audio_osd_port.v": "ee2eb2b71239d95e58ee43b30d4403117804c90f958a23fc7f9b83fcfccde6a1",
+      "common/audio_ui/saixian_osd_overlay.v": "5a8bee9919bbd554bf46b7906ed8d9e3a0bc794174bdc1fe6657689006cbc193"
+    }
+  }
+]
