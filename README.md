@@ -1,3 +1,7 @@
+## 双板 V3.1
+
+[双板 V3.1 项目与操作说明](3.1Project/README.md) · [下载 A/B 位流与素材](https://github.com/duanyuhang20060602/saixian/releases/tag/dual-board-v3.1)
+
 # saixian
 
 ## 3.0：720P 奖杯画面与实时光效

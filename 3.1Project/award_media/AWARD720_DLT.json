@@ -1,0 +1,17 @@
+{
+  "format": "Original single-board SXDLT003; unchanged bytes",
+  "bytes": 1453568,
+  "sha256": "4adf1b6696401faa8e4c7f6d165b3a2d67ffdc49d4d933ac2781056f1b0e5c5b",
+  "payload_crc32": "C165A3F0",
+  "bootstrap_stream_crc32": "3827712C",
+  "decoded_frame_crc32": "CECD91A6",
+  "tagged_plate_sha256": "75f796c4889a4edcef9fa818dd128167055f37124247413e71a46ede44a7153d",
+  "exact_single_board_plate": true,
+  "resolution": [
+    1280,
+    720
+  ],
+  "descriptors": 2,
+  "decoded_descriptor": 0,
+  "animation": "A-board procedural award_fx; not arbitrary multi-frame GIF playback"
+}

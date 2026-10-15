@@ -1,0 +1,115 @@
+{
+  "revision": "3.1",
+  "built_utc": "2026-10-15T06:56:58.585791+00:00",
+  "boards": [
+    {
+      "role": "board_a",
+      "file": "PHOTO_BOARD_A_720P_AWARD_DLT_V3_1_NOCRC_AUDIO2_LINK50M.bit",
+      "sha256": "3372bb8dfcba80d8728a9d0d93a387efa4d66e4ca9f84440bd5a175fbc74841f",
+      "timing_ns": {
+        "SWNS": 0.103,
+        "STNS": 0.0,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      },
+      "resources": {
+        "lut": 8892,
+        "reg": 8313,
+        "bram9k": 55,
+        "bram32k": 2,
+        "dsp": 16
+      }
+    },
+    {
+      "role": "board_b",
+      "file": "PHOTO_BOARD_B_720P_AWARD_DLT_V3_1_NOCRC_AUDIO2_LINK50M.bit",
+      "sha256": "0ca7fc6a7ad1d12165d46a183bbeed6451721e1e19e7205c1a7c2a95bf93c9a5",
+      "timing_ns": {
+        "SWNS": 0.12,
+        "STNS": 0.0,
+        "HWNS": 0.027,
+        "HTNS": 0.0
+      },
+      "resources": {
+        "lut": 9037,
+        "reg": 6810,
+        "bram9k": 39,
+        "bram32k": 12,
+        "dsp": 8
+      }
+    }
+  ],
+  "tests_run_for_v3_1": [
+    {
+      "test": "tb_award_notice_v3",
+      "passed": true,
+      "seconds": 1.08,
+      "log_sha256": "a09bf3a8f54cacae587bfcf90bfaf5b1dab0d04b456315081562ff23b57202a8"
+    },
+    {
+      "test": "tb_boot_v3_1",
+      "passed": true,
+      "seconds": 55.77,
+      "log_sha256": "a2312a24a5d5995e25ff4f79f448321a63aa7e277f147b75a673108d0d130794"
+    },
+    {
+      "test": "tb_award_entry_v3_1",
+      "passed": true,
+      "seconds": 0.56,
+      "log_sha256": "4fda90bea931cf89ee026871fb3d07bbab6f0a365e2af9569544fc60fe0bc130"
+    },
+    {
+      "test": "tb_award_headers",
+      "passed": true,
+      "seconds": 0.31,
+      "log_sha256": "f03c132bbf113d5e60cb8e4b645c1daa8c7bf4c5da8b9ac3d12789e49a958100"
+    },
+    {
+      "test": "tb_award_catalog_v3",
+      "passed": true,
+      "seconds": 0.5,
+      "log_sha256": "8416950604bcbdd3d183fd6f86e79bd8f3907d420ef19b814932b4c9b4d662c7"
+    },
+    {
+      "test": "tb_award_mode_v3_1",
+      "passed": true,
+      "seconds": 153.42,
+      "log_sha256": "ef256f4ed775203c39361450760afa641084f68eb77560170c1ce680b1963481"
+    },
+    {
+      "test": "tb_dlt_cache",
+      "passed": true,
+      "seconds": 424.36,
+      "log_sha256": "8a890c3ab1f070225da8416f9d089471e3c53e13b4527b2b33261a8344b33222"
+    },
+    {
+      "test": "tb_award_render",
+      "passed": true,
+      "seconds": 10.0,
+      "log_sha256": "2d716d4e614c34999281825de14151b4aac8843a7d4e2398d8bf794642baf817"
+    },
+    {
+      "test": "tb_award_fx",
+      "passed": true,
+      "seconds": 55.22,
+      "log_sha256": "419d1870688927ce9edb369b501e2385993f531fb6c8065a7b5b02c17b348979"
+    },
+    {
+      "test": "tb_award_pixels",
+      "passed": true,
+      "seconds": 0.62,
+      "log_sha256": "7d881721900b156ec5e3d5d6a6820fa394674be35b329bd358c99a5d99489220"
+    }
+  ],
+  "inherited_v3_evidence": "tests/baseline_v3: unchanged NOCRC decoder full-asset and fault checks",
+  "dlt_crc_enabled": false,
+  "dlt_full_payload_prepass": false,
+  "dlt_sha256": "4adf1b6696401faa8e4c7f6d165b3a2d67ffdc49d4d933ac2781056f1b0e5c5b",
+  "hardware_validation": "User confirmed current version works well and authorized upload as V3.1 on 2026-10-15",
+  "limitations": [
+    "Raw contiguous sectors, not FAT fragmented-file traversal",
+    "Search first 512 MiB",
+    "Sector and memory endpoints modeled in simulation"
+  ],
+  "version": "V3.1"
+}
