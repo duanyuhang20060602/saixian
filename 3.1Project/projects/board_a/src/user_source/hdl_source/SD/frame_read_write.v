@@ -84,7 +84,10 @@ module frame_read_write
 	output                           write_fifo_full             // write-side overflow diagnostic
 
 );
-wire[BURST_BITS - 1:0]                           wrusedw;                    // write used words
+localparam READ_FIFO_BITS=10;
+wire [READ_FIFO_BITS-1:0] wrusedw;
+wire read_urgent;
+// Display reserve uses a separate width from write burst counters.
 wire[BURST_BITS - 1:0]                           rdusedw;                    // read used words
 
 wire 								 App_rd_busy;
@@ -136,6 +139,7 @@ frame_fifo_write_m0
 	.Sdr_init_ref_vld			(Sdr_init_ref_vld),
     .Sdr_busy					(Sdr_busy),
 	.App_rd_busy				(App_rd_busy),
+    .read_urgent(read_urgent),
     .O_wr_busy					(O_wr_busy),
 	
 	.App_wr_en					(App_wr_en),
@@ -155,7 +159,7 @@ frame_fifo_write_m0
 );
 
 //instantiate an asynchronous FIFO 
-rfifo_32_32_512 read_buf
+rfifo_32_32_512 #(.ADDR_WIDTH_W(READ_FIFO_BITS),.ADDR_WIDTH_R(READ_FIFO_BITS),.AL_FULL_NUM(1021)) read_buf
 	(
 	.clkr                     	(read_clk                   ),          // Read side clock
 	.clkw                     	(mem_clk                    ),          // Write side clock
@@ -175,8 +179,9 @@ frame_fifo_read
 (
 	.MEM_DATA_BITS              (MEM_DATA_BITS            ),
 	.ADDR_BITS                  (ADDR_BITS                ),
-	.BURST_BITS                 (BURST_BITS               ),
+	.BURST_BITS                 (READ_FIFO_BITS           ),
 	.BURST_SIZE                 (BURST_SIZE               ),
+    .FIFO_DEPTH(1024),
     .FRAME_WIDTH                (FRAME_WIDTH              )
 )
 frame_fifo_read_m0
@@ -190,6 +195,7 @@ frame_fifo_read_m0
     .Sdr_rd_en					(Sdr_rd_en),
 	.App_wr_busy				(App_wr_busy),
     .O_rd_busy					(O_rd_busy),
+    .read_urgent(read_urgent),
 	
     .App_rd_en					(App_rd_en),
     .App_rd_addr				(App_rd_addr),

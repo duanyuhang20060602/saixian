@@ -24,7 +24,7 @@ endmodule
 
 // Coordinates and RGB arrive together at the existing 21-cycle menu tap.
 // The small combinational banner adds no video latency or font RAM.
-module photo_award_notice(input [1:0] notice,input [11:0] x,input [10:0] y,
+module photo_award_notice(input [2:0] notice,input [11:0] x,input [10:0] y,
  input [23:0] rgb_in,output [23:0] rgb_out);
 wire box=notice!=0 && x>=16 && x<280 && y>=16 && y<48;
 wire letters=x>=24 && x<264 && y>=22 && y<36;
@@ -35,10 +35,13 @@ always @*begin
   1:message="AWARD LOADING  ";
   2:message="AWARD NOT FOUND";
   3:message="AWARD ERROR    ";
+  4:message="PHOTO ERROR    ";
   default:message=0;
  endcase
  ch=(message >> ((14-dx[7:4])*8));
  case(ch)
+  "P":glyph=35'b11110_10001_10001_11110_10000_10000_10000;
+  "H":glyph=35'b10001_10001_10001_11111_10001_10001_10001;
   "A":glyph=35'b01110_10001_10001_11111_10001_10001_10001;
   "W":glyph=35'b10001_10001_10001_10101_10101_11011_10001;
   "R":glyph=35'b11110_10001_10001_11110_10100_10010_10001;

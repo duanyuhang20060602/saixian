@@ -1,15 +1,127 @@
 {
-  "revision": 4,
+  "version": "V3.1 restore board-tested boot image path",
+  "visual_tests": [
+    {
+      "test": "tb_neutral_cleanup",
+      "passed": true,
+      "seconds": 1.53,
+      "source_sha256": {
+        "tests/tb_neutral_cleanup.v": "6785d3ddf9bd2788cb56bbcf493f65a8c25e930aa6fced612dc92f54e307cc54",
+        "common/photo_display_pipe.v": "a9997a0928bbfd31afd311bcab84b05ef2940c77bbcfd9fcca80fff1087cdca0",
+        "common/photo_processing.v": "fa835d951d02eedce197444ef59bcad4a578ad1b7ca1739f77b41a2af171ea38"
+      }
+    },
+    {
+      "test": "tb_rgb888_transitions",
+      "passed": true,
+      "seconds": 75.94,
+      "source_sha256": {
+        "tests/tb_rgb888_transitions.v": "5379ea7a75960e8321627a9c2ad4bb71d8e054d22f0f3efb5ea5c8d1fc3a3993",
+        "projects/board_a/src/user_source/hdl_source/SD/frame_fifo_read.v": "cff78fc58bd884e8c796d55c3c5279fafeb306bc3c5fabe963d163e81352dc09"
+      }
+    },
+    {
+      "test": "tb_mapper",
+      "passed": true,
+      "seconds": 82.83,
+      "source_sha256": {
+        "tests/tb_mapper.v": "1b2ee80ccf80fed6ba50278a4edd5e476036919a3d0b49e5a1b61568dce58a4c",
+        "projects/board_a/src/user_source/hdl_source/SD/frame_fifo_read.v": "cff78fc58bd884e8c796d55c3c5279fafeb306bc3c5fabe963d163e81352dc09"
+      }
+    },
+    {
+      "test": "tb_fade_no_flash",
+      "passed": true,
+      "seconds": 0.16,
+      "source_sha256": {
+        "tests/tb_fade_no_flash.v": "8723fa1386e60df078088963b218322f7f617aaf148a13b924294d75eadfb80e",
+        "common/photo_display_pipe.v": "a9997a0928bbfd31afd311bcab84b05ef2940c77bbcfd9fcca80fff1087cdca0",
+        "common/saixian_transition.v": "b54b9681f96759b96edd40b6475911e96b7e65f7c96b44f455209679a3b5ed19"
+      }
+    },
+    {
+      "test": "tb_audio_osd_port",
+      "passed": true,
+      "seconds": 0.16,
+      "source_sha256": {
+        "tests/tb_audio_osd_port.v": "ee2eb2b71239d95e58ee43b30d4403117804c90f958a23fc7f9b83fcfccde6a1",
+        "common/audio_ui/saixian_osd_overlay.v": "5a8bee9919bbd554bf46b7906ed8d9e3a0bc794174bdc1fe6657689006cbc193"
+      }
+    }
+  ],
+  "bandwidth_tests": [
+    {
+      "test": "rgb888_bandwidth_before",
+      "passed": true,
+      "execution": "Icarus full-frame simulation; direct command output captured in log",
+      "display_words_requested": 691200,
+      "empty_read_opportunities": 184149,
+      "words_popped": 507051,
+      "prefetch_produced_words": 253903,
+      "source_sha256": {
+        "tests/tb_rgb888_bandwidth.v": "569c656e4c3bda955a87abe445cc3752ab791393fb414d4f548fead435259511",
+        "projects/board_a/src/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "projects/board_a/src/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+        "tests/reference/rgb888_switch_before/frame_read_write.v": "0e7fcd6b47114cabc102c3960329f8eedb3d28d6879908bdc95a69d03be61ee0",
+        "tests/reference/rgb888_switch_before/frame_fifo_read.v": "377de93b5115a32f0785e4c84841013132665ece2e724730d75005c4e5886f2b",
+        "tests/reference/rgb888_switch_before/frame_fifo_write.v": "db4c73d85fbb1067034154e9b43659c730c8e36b63f64d5c078bff6c5158cfc6"
+      }
+    },
+    {
+      "test": "rgb888_bandwidth_after",
+      "passed": true,
+      "execution": "Icarus full-frame simulation; direct command output captured in log",
+      "display_words_requested": 691200,
+      "empty_read_opportunities": 0,
+      "words_popped": 691200,
+      "prefetch_produced_words": 63111,
+      "source_sha256": {
+        "tests/tb_rgb888_bandwidth.v": "569c656e4c3bda955a87abe445cc3752ab791393fb414d4f548fead435259511",
+        "projects/board_a/src/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "projects/board_a/src/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+        "projects/board_a/src/user_source/hdl_source/SD/frame_read_write.v": "d17e880c9ded8c691bfa0f3046333accd2bf2610863186f73ebc973a57e709ba",
+        "projects/board_a/src/user_source/hdl_source/SD/frame_fifo_read.v": "cff78fc58bd884e8c796d55c3c5279fafeb306bc3c5fabe963d163e81352dc09",
+        "projects/board_a/src/user_source/hdl_source/SD/frame_fifo_write.v": "30ccf24859f0c27e35bbe2f9d9b032a10ef7aa5b50a9c3a50a94d9218be1bb08"
+      }
+    }
+  ],
+  "recovery_test": {
+    "test": "tb_photo_receive_recovery",
+    "passed": true,
+    "seconds": 11.17,
+    "source_sha256": {
+      "tests/tb_photo_receive_recovery.v": "90c9fe6ef2984e06c3da5cacbdfd65be3aa68b41fa650266b82bf543fc0254cc",
+      "common/photo_cached_control_a.v": "c538bccffd81383c899a05b101cb067b289644dd39630eb879535c45ede881ea",
+      "common/photo_control.v": "a6e998049e2dbf0edee85de0fb87294db4fdea73e47572380be41ec78f5d8cba",
+      "common/photo_uart.v": "03f62d8e9381a9ba92c067fabc4ecce12632cd32a4076b62792e2384b6712c50",
+      "common/photo_link.v": "f0571991620e668b505fd8d568b3bfe93a1cc81fb2e3036c512545523beeb3a1",
+      "common/saixian_transition.v": "b54b9681f96759b96edd40b6475911e96b7e65f7c96b44f455209679a3b5ed19"
+    }
+  },
+  "board_b_policy": "reuse byte-identical confirmed BOOT_AV_SYNC bit",
+  "startup_test": {
+    "test": "tb_boot_audio_sync",
+    "passed": true,
+    "seconds": 93.64,
+    "source_sha256": {
+      "tests/tb_boot_audio_sync.v": "1bcac0451d9b86d1f16d95d34a92180e782a6c07f107633ba17ab615f4217c3d",
+      "common/photo_boot_screen.v": "4372472dae27f79635f637eb3789c289634eeee93f536ccb6d3ca39af42eb026",
+      "common/photo_audio_link.v": "53d5c7e9e9bf9264f682f155022c9c87f8de0eaf652429b82a410db9b28d8801",
+      "common/photo_audio_features.v": "b846eda9d761e64805ebb7659cc98ca04190d2fcf8e35987b0a6bc9319602cdb",
+      "common/audio_ui/saixian_audio_repair.v": "8a6b03dbc3a368179d1d318c86d286a86424a8c31066977eb05d8c2a3695af51",
+      "common/audio_ui/photo_audio_cue_samples.v": "1b1bf98878e1d27d6687c76a35913715d119b307f5a2453b8926c596fec95a60"
+    }
+  },
   "boards": [
     {
       "role": "board_a",
-      "file": "PHOTO_BOARD_A_720P_AWARD_DLT_V3_1_NOCRC_AUDIO2_LINK50M.bit",
-      "sha256": "3372bb8dfcba80d8728a9d0d93a387efa4d66e4ca9f84440bd5a175fbc74841f",
-      "bytes": 644764,
+      "file": "PHOTO_BOARD_A_720P_V3_1_BOOT_RECOVERY_LINK50M.bit",
+      "sha256": "cbf2f8ee633d101c6a149e6a13b2589852aa96bc4cd8aebd9e3a8201c253df40",
+      "bytes": 647092,
       "timing_ns": {
-        "SWNS": 0.103,
+        "SWNS": 0.109,
         "STNS": 0.0,
-        "HWNS": 0.022,
+        "HWNS": 0.027,
         "HTNS": 0.0
       },
       "link_clock_hz": 50000000,
@@ -23,7 +135,7 @@
         "RGB888 two slots per board"
       ],
       "rgb888_packing": "four pixels / three MSB-first 32-bit words",
-      "rgb888_transition": "fade",
+      "rgb888_transition": "all six selected effects",
       "default_color_mode": "RGB565",
       "audio_visual_modes": [
         "spectrum",
@@ -55,52 +167,58 @@
       "sdram_read_data_delay_cycles": 1,
       "sdram_read_data_delay_cycles_rgb888": 1,
       "rgb888_b_read_alignment": "existing one-clock capture",
-      "rgb888_alignment_hardware_status": "baseline user-reported blue tint fixed; brief photo-switch black field unresolved",
+      "rgb888_alignment_hardware_status": "baseline color alignment confirmed; FIFO starvation reproduced and eliminated in modeled concurrent-prefetch simulation",
       "resources": {
-        "lut": 8892,
-        "reg": 8313,
-        "bram9k": 55,
-        "bram32k": 2,
-        "dsp": 16
+        "lut": 10292,
+        "reg": 9121,
+        "bram9k": 59,
+        "bram32k": 12,
+        "dsp": 11
       },
-      "built_utc": "2026-10-15T06:56:45.391187+00:00",
+      "built_utc": "2026-10-15T13:12:24.864729+00:00",
       "source_sha256": {
         "common/audio_ui/photo_audio_cue_samples.v": "1b1bf98878e1d27d6687c76a35913715d119b307f5a2453b8926c596fec95a60",
+        "common/audio_ui/saixian_audio_visualizer.v": "bb63277e7694ba9f12a233e7de486a4293a99b30e35364d5538a3d25448b4a84",
+        "common/audio_ui/saixian_av_hann_half.hex": "fc9247268b83a9aca0d5f6022efa586c98c9102fa304ffec024f4cd562375081",
+        "common/audio_ui/saixian_av_hann_half.hex_0_0.mif": "cc3a6188d466e04e600e9c960ca6cb6861f5489619b26a16135d6d1155376c72",
+        "common/audio_ui/saixian_av_twiddle_serial.hex": "dc321b9f2e3779a52b27467170a829039be71b054742e259beb53ffa3c5782f0",
+        "common/audio_ui/saixian_av_twiddle_serial.hex_0_0.mif": "3a8f16aa903cdec0694a435544827c1303f7f60f97c92a37900e3166f4a1c8cf",
         "common/audio_ui/saixian_event_controller.v": "c27a9a51687b5ad7b45e9fa7a17a20b259cfe84cbd950efaf3a4a5e0dd6bb5c2",
         "common/audio_ui/saixian_font_rom.mif": "ca162d9ef72efee747c5b83cb09a145e15bc03bb19766655790aa78227717f7a",
         "common/audio_ui/saixian_font_rom.v": "eceaa5ddb65042aff7a507b8ca410d901f70b17f2d081689da2bea831b7aed8b",
-        "common/audio_ui/saixian_osd_overlay.v": "eaa7baed9a947da79a4bf459cb6aea9dadb4063f548e730abddb0293e7c06f45",
+        "common/audio_ui/saixian_osd_overlay.v": "5a8bee9919bbd554bf46b7906ed8d9e3a0bc794174bdc1fe6657689006cbc193",
         "common/audio_vendor/audio_arc_calculate.v": "b3b55c90ad7ba679b0f4cb550cdf656230d15a3facab00ce7f561f32bd63eb0d",
         "common/audio_vendor/hdmi_1_4b_transmitter_core_wrapper.enc.v": "25a28679c51d779a1c811772cf83e3092a3106b25e2e21f1560ba624ebd72bd0",
         "common/award_fx.v": "14c02e4ffd9b4d746d51c097bfea3f76d9354eccf48dff487ad640a1f93c65f4",
         "common/award_sprite_rom.v": "78b9a5941893a9cb50aad9c8e00d49e932cd552fa3176c39aa99f1b0ba3a382a",
-        "common/photo_audio_features.v": "4965847bc34abf2d0d1f356ddbaa959c6669aa838a794e052f63cc34ecdda0e7",
-        "common/photo_audio_link.v": "4482068ff2bb3769999d74cb6ea3279925ca8d341c23c629ad8b41c85b7915e7",
+        "common/photo_audio_features.v": "b846eda9d761e64805ebb7659cc98ca04190d2fcf8e35987b0a6bc9319602cdb",
+        "common/photo_audio_link.v": "53d5c7e9e9bf9264f682f155022c9c87f8de0eaf652429b82a410db9b28d8801",
         "common/photo_auto_advance.v": "8c46b77dd59c49245d353c47056196f5fe2e63a5907ffdbb924cb670b9ed865c",
-        "common/photo_award_render.v": "e25acf28bb7334804ea7b895a300fe5513115c0a158531fd437dc6bdfc68e880",
+        "common/photo_award_render.v": "5c93e8545f28283a9a88fb133f36cd3f045da7d9f1269e8e64086b1a42c33b16",
         "common/photo_boot_screen.v": "4372472dae27f79635f637eb3789c289634eeee93f536ccb6d3ca39af42eb026",
-        "common/photo_cached_control_a.v": "c06fb353f3701ed8b6686d468b281b22c0b9f54ab503aace1daa5eba593fbdd8",
+        "common/photo_cached_control_a.v": "c538bccffd81383c899a05b101cb067b289644dd39630eb879535c45ede881ea",
         "common/photo_color_format.v": "f4dbd9d53bdea9303cdcf7f9f9a3c6af2614e1b001a23695f0347e1adaa31be0",
         "common/photo_control.v": "a6e998049e2dbf0edee85de0fb87294db4fdea73e47572380be41ec78f5d8cba",
+        "common/photo_display_pipe.v": "a9997a0928bbfd31afd311bcab84b05ef2940c77bbcfd9fcca80fff1087cdca0",
         "common/photo_link.v": "f0571991620e668b505fd8d568b3bfe93a1cc81fb2e3036c512545523beeb3a1",
-        "common/photo_menu_font.mif": "d4cd9547808658e301e12db83b71d9c06bdee9696fb4fb237baec9e5294f311f",
+        "common/photo_menu_font.mif": "00e5ed2f20d946b9f72ceaeacc1b5dc957698cf3972f1d69d03ee5ac347914c4",
         "common/photo_menu_font.v": "1016a06667d94531745b5d80b0eecb17285f41d8bd17900ed75ec6c190f228db",
         "common/photo_processing.v": "fa835d951d02eedce197444ef59bcad4a578ad1b7ca1739f77b41a2af171ea38",
         "common/photo_resolution_overlay.v": "3cae41e28047b023a0405830db1374056f46bfceb6e80e45e9cf6cfa26430a2e",
-        "common/photo_settings_overlay.v": "b72de5f93609346f5d836ba5f55af6d7b0223da41404a290266ac44e22798c59",
+        "common/photo_settings_overlay.v": "7a789ce8a0929390a0c7927d99361f6deb2c93e6fe16cac33692971acfbfb31e",
         "common/photo_status.v": "1bf2e6134aa9daa8c5e14c5f1e28ece7502f31840767e3cf9d5a63ccc5d21cc4",
         "common/photo_uart.v": "03f62d8e9381a9ba92c067fabc4ecce12632cd32a4076b62792e2384b6712c50",
-        "common/photo_unified_settings_controller.v": "2f1e0c4efc860b3b4d208426705e58893a18866e813da720f07a5993bce59e6d",
+        "common/photo_unified_settings_controller.v": "886ff61d4cbf99f49ea26f28238e9a651a8daa6ccaa8889d6eaf2bbe8427a7dd",
         "common/saixian_hmi_uart.v": "4ed4ce13c0f478367878adc8cae2eb208e56825ad02d20d34478be25bf1e8bb8",
         "common/saixian_key_debounce.v": "0ce5ef658b14de16b3d74c81c055ebfadaa7276d9f73aec02417329c80648968",
-        "common/saixian_transition.v": "f02006b65a028c9f15d653f3afabea4c7c881f1bec30458a13ae0cb2126f7633",
-        "common/top_photo_a.v": "4a6d09332d7678e19cbb7ef67176565f32279993ec1889e8d451f4b29e90f631",
-        "projects/board_a/src/td_project/build_board.tcl": "046ab2afec90da9ec301f2232a7077a19a951bc1dc5f5a0f0a4934b1e790c46d",
-        "projects/board_a/src/td_project/PHOTO_BOARD_A.al": "471ab5b3ffe04c743d971d82d9604f6828faca324e39b29a50a4a394feaec077",
+        "common/saixian_transition.v": "b54b9681f96759b96edd40b6475911e96b7e65f7c96b44f455209679a3b5ed19",
+        "common/top_photo_a.v": "432b64ea90c4d42dbea74062388b4bd38e0fc1cc7fcaefeb13f776f0cc4d4161",
+        "projects/board_a/src/td_project/build_board.tcl": "7bb1c3f48a628e4a64fa0c4555b2e6631e35987657d0cffcdd20352e978a1cc4",
+        "projects/board_a/src/td_project/PHOTO_BOARD_A.al": "cdb33bdc56aea0ce458d7180a355930ee1ed5b5d6a36bdad8c2eb4dffce15d39",
         "projects/board_a/src/user_source/constraints_source/BOARD_A_RECEIVER_pins.adc": "0cb2f3cb2b05a6abed729626068a29466c608dd448406ae70b18833c13e3f921",
         "projects/board_a/src/user_source/constraints_source/BOARD_A_RECEIVER_timing.sdc": "f39198b65322a7d10f7304f22eca3317517ca1059403abbef4d2bfbbd24d9cae",
         "projects/board_a/src/user_source/hdl_source/dual_still_reset_sync.v": "86a363f9bf457e59e19470eadc14b89eef30a3d9142874ab0c20ced49b8cecac",
-        "projects/board_a/src/user_source/hdl_source/frame_pixels.v": "6c0d416f8a4b52f49b384d70c4c20cebb5b5fa277f248bbe579ea23000e52392",
+        "projects/board_a/src/user_source/hdl_source/frame_pixels.v": "5563971ac0fc20c038a89c0615546dd9fb883ae769a14f4d45cb27cd804cb10d",
         "projects/board_a/src/user_source/hdl_source/frame_store.v": "1422c7f59ade19ae6dd45bc692857678a6b6c57b17f246d0bfac8fde055d86bd",
         "projects/board_a/src/user_source/hdl_source/hdmi_minimal_tx.v": "6abdf0ae79fa61b790ff12ca785cb306308414b61bda280af714b44ea89f7944",
         "projects/board_a/src/user_source/hdl_source/hdmi_output_diagnostics.v": "d9d76f42d177f8b42f1527c9f5f56f054bf32a810bdb030c612cb544d0866df5",
@@ -115,9 +233,9 @@
         "projects/board_a/src/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
         "projects/board_a/src/user_source/hdl_source/IP/sys_pll.v": "e3098f9e8601ddbe5556effa03c12947a281ad4c44d47acca7ac3ac1dd2cbcac",
         "projects/board_a/src/user_source/hdl_source/lane_lvds_10_1.v": "fd61b139c3803a16d1a3ed33bbd9babd88af4c73702a98b406d7ea6b7771269b",
-        "projects/board_a/src/user_source/hdl_source/SD/frame_fifo_read.v": "f9510d12cd92a9e71b971b2c659167a3d19c288f00637aa79cecbdbb66f2b3b6",
-        "projects/board_a/src/user_source/hdl_source/SD/frame_fifo_write.v": "db4c73d85fbb1067034154e9b43659c730c8e36b63f64d5c078bff6c5158cfc6",
-        "projects/board_a/src/user_source/hdl_source/SD/frame_read_write.v": "0e7fcd6b47114cabc102c3960329f8eedb3d28d6879908bdc95a69d03be61ee0",
+        "projects/board_a/src/user_source/hdl_source/SD/frame_fifo_read.v": "cff78fc58bd884e8c796d55c3c5279fafeb306bc3c5fabe963d163e81352dc09",
+        "projects/board_a/src/user_source/hdl_source/SD/frame_fifo_write.v": "30ccf24859f0c27e35bbe2f9d9b032a10ef7aa5b50a9c3a50a94d9218be1bb08",
+        "projects/board_a/src/user_source/hdl_source/SD/frame_read_write.v": "d17e880c9ded8c691bfa0f3046333accd2bf2610863186f73ebc973a57e709ba",
         "projects/board_a/src/user_source/hdl_source/SD/sdram.v": "beb0a3e8497f8e30a7c0fc6ba6981316f571443460455f4f3b4d5c843d3830fb",
         "projects/board_a/src/user_source/hdl_source/video_pll.v": "30e49bd3ccdccfcf7f7a874448be75a84a4790e89e82526ddd660fc2af891faf"
       },
@@ -131,10 +249,10 @@
       "tf_multiblock_read": true,
       "tf_continuous_bytes": true,
       "tf_clock_hz": 25000000,
-      "simulation_acceptance": "See award_v3_1_validation.json; native sector/memory endpoints modeled",
-      "hardware_acceptance": "V3_1 pending physical A/B board validation; entry hold removed",
+      "simulation_acceptance": "tests/results/boot_audio_sync_results.json, audio_port_results.json and award_v4_results.json",
+      "hardware_acceptance": "User confirmed startup blockage resolved; RGB888 high-precision switching white bars/black flashes remain known unresolved issues",
       "award_mode": true,
-      "award_revision": 4,
+      "award_revision": "V3.1 accepted baseline",
       "award_asset": "AWARD720.DLT",
       "award_direct_dlt": true,
       "award_crc_checks": [],
@@ -145,25 +263,40 @@
       "award_pause_key": "A KEY2 outside settings; music next remains on HMI",
       "award_auto_advance": false,
       "award_hdmi_latency_cycles": 26,
-      "award_entry_key": "A KEY4 short toggle; KEY1 photos only",
-      "award_crc_enabled": false,
-      "boot_animation": "A black background spinner and stage progress; frame-ready one-shot exit",
-      "award_bmp_compatibility": false,
-      "award_initial_hold_frames": 0,
-      "photo_directory_capacity": 6,
-      "award_directory_id": 6,
-      "award_independent_of_photo_count": true,
-      "failed_award_load": "keep visible frame, show banner and diagnostic error; KEY4 retry"
+      "version": "V3.1 boot recovery; startup confirmed; RGB888 switching known issues",
+      "plot_background": "75% photograph",
+      "rgb888_transition_modes": "all six; four-pixel packed groups",
+      "fade_midpoint": "three true-black frames; one fade stage",
+      "neutral_pipeline": "15-clock replacement verified against original",
+      "startup_audio_policy": "first track buffered, no full-catalog wait",
+      "startup_audio_buffer_samples": 512,
+      "startup_release": "first visible frame after loading",
+      "startup_animation": "existing black loading UI",
+      "audio_visual_algorithm": "single-board 1024-point stereo FFT / Hann / 32 bands",
+      "audio_waveform": "1024 samples; 256 groups of stereo min/max; double-buffered",
+      "audio_repair": true,
+      "audio_repair_default": false,
+      "audio_repair_location": "board_b before cue mix and volume",
+      "audio_repair_latency_samples": 32,
+      "audio_repair_crossfade_samples": 256,
+      "audio_spi_prepare_bit": 16,
+      "audio_repair_control_bit": 0,
+      "display_fifo_words": 1024,
+      "receiver_handshake": "restored board-tested combinational ready",
+      "read_completion": "restored fixed turnaround gap",
+      "startup_fault_diagnostic": "first image error latched; A shows 480SEC while boot waits (S=control state, E=first error)",
+      "prefetch_display_reserve_words": 512,
+      "rgb888_prefetch_policy": "yield new write bursts below display reserve"
     },
     {
       "role": "board_b",
-      "file": "PHOTO_BOARD_B_720P_AWARD_DLT_V3_1_NOCRC_AUDIO2_LINK50M.bit",
-      "sha256": "0ca7fc6a7ad1d12165d46a183bbeed6451721e1e19e7205c1a7c2a95bf93c9a5",
+      "file": "PHOTO_BOARD_B_720P_V3_1_BOOT_AV_SYNC_LINK50M.bit",
+      "sha256": "c6b4234a2fc8092d7250298e50532d363efe12e69425491db5ae82849e82d82c",
       "bytes": 634288,
       "timing_ns": {
-        "SWNS": 0.12,
+        "SWNS": 0.102,
         "STNS": 0.0,
-        "HWNS": 0.027,
+        "HWNS": 0.021,
         "HTNS": 0.0
       },
       "link_clock_hz": 50000000,
@@ -211,17 +344,18 @@
       "rgb888_b_read_alignment": "one-clock capture, valid unchanged",
       "rgb888_alignment_hardware_status": "baseline user-reported blue tint fixed; brief photo-switch black field unresolved",
       "resources": {
-        "lut": 9037,
-        "reg": 6810,
-        "bram9k": 39,
+        "lut": 10650,
+        "reg": 7621,
+        "bram9k": 43,
         "bram32k": 12,
-        "dsp": 8
+        "dsp": 9
       },
-      "built_utc": "2026-10-15T06:38:55.031325+00:00",
+      "built_utc": "2026-10-15T11:36:58.037459+00:00",
       "source_sha256": {
         "common/audio_ui/photo_audio_cue_samples.v": "1b1bf98878e1d27d6687c76a35913715d119b307f5a2453b8926c596fec95a60",
-        "common/photo_audio_features.v": "4965847bc34abf2d0d1f356ddbaa959c6669aa838a794e052f63cc34ecdda0e7",
-        "common/photo_audio_link.v": "4482068ff2bb3769999d74cb6ea3279925ca8d341c23c629ad8b41c85b7915e7",
+        "common/audio_ui/saixian_audio_repair.v": "8a6b03dbc3a368179d1d318c86d286a86424a8c31066977eb05d8c2a3695af51",
+        "common/photo_audio_features.v": "b846eda9d761e64805ebb7659cc98ca04190d2fcf8e35987b0a6bc9319602cdb",
+        "common/photo_audio_link.v": "53d5c7e9e9bf9264f682f155022c9c87f8de0eaf652429b82a410db9b28d8801",
         "common/photo_b_processing.v": "c8ffb494e398e901c62e9022524cec7a81cd137ac91438ea4cff3b04f3385d25",
         "common/photo_color_format.v": "f4dbd9d53bdea9303cdcf7f9f9a3c6af2614e1b001a23695f0347e1adaa31be0",
         "common/photo_control.v": "a6e998049e2dbf0edee85de0fb87294db4fdea73e47572380be41ec78f5d8cba",
@@ -239,9 +373,9 @@
         "common/photo_sd_cache.v": "ab93121b9e13bc569c730fa3875ea9cf28e35d6caa92e043d9af1fbf6430b2e4",
         "common/photo_status.v": "1bf2e6134aa9daa8c5e14c5f1e28ece7502f31840767e3cf9d5a63ccc5d21cc4",
         "common/photo_uart.v": "03f62d8e9381a9ba92c067fabc4ecce12632cd32a4076b62792e2384b6712c50",
-        "common/top_photo_b.v": "995a89647d2acb0d36e28023ef722965933b3376744a20aab997de0d6caefc38",
-        "projects/board_b/src/td_project/build_board.tcl": "7d8ae5386f4776464622d7829db386ab68f1ec22ad58a9142002aff76dccc8e9",
-        "projects/board_b/src/td_project/PHOTO_BOARD_B.al": "49f8f8115f52ab1521069e1e0290587fbcca51403842dbb3994c54ee2426de9f",
+        "common/top_photo_b.v": "2fab4dd076d7afc17eeaa0b21b8fe64d5a76eed4392d0bca97733752f95d98e3",
+        "projects/board_b/src/td_project/build_board.tcl": "e7f1c14f21a5957a126ceefbc9bc766666e285dc24fba3dbef91d5fca4982b09",
+        "projects/board_b/src/td_project/PHOTO_BOARD_B.al": "c83219aec11365b4bcebd777309cd41921411bfb3f6e2d5ef3b7ecf85d14eedb",
         "projects/board_b/src/user_source/constraints_source/BOARD_B_SENDER_pins.adc": "86de0c6d997c5765d1e82a369c4dfcf46a727871d2488de1232e8a008b9780bc",
         "projects/board_b/src/user_source/constraints_source/BOARD_B_SENDER_timing.sdc": "812a2bc770369af58f4ceed1bc4985b5ef32e2157983528e1b34222f1ce4d118",
         "projects/board_b/src/user_source/hdl_source/builtin_link_pll.v": "4c21c32da6ef179e89a237925ce08ae36646d27dba9f58391472387b455c55d1",
@@ -271,10 +405,10 @@
       "tf_multiblock_read": true,
       "tf_continuous_bytes": true,
       "tf_clock_hz": 25000000,
-      "simulation_acceptance": "See award_v3_1_validation.json; native sector/memory endpoints modeled",
-      "hardware_acceptance": "V3_1 pending physical A/B board validation; entry hold removed",
+      "simulation_acceptance": "tests/results/boot_audio_sync_results.json, audio_port_results.json and award_v4_results.json",
+      "hardware_acceptance": "This synchronized-startup candidate awaits physical A/B board validation",
       "award_mode": true,
-      "award_revision": 4,
+      "award_revision": "V3.1 accepted baseline",
       "award_asset": "AWARD720.DLT",
       "award_direct_dlt": true,
       "award_crc_checks": [],
@@ -285,15 +419,86 @@
       "award_pause_key": "A KEY2 outside settings; music next remains on HMI",
       "award_auto_advance": false,
       "award_hdmi_latency_cycles": 26,
-      "award_entry_key": "A KEY4 short toggle; KEY1 photos only",
-      "award_crc_enabled": false,
-      "boot_animation": "A black background spinner and stage progress; frame-ready one-shot exit",
-      "award_bmp_compatibility": false,
-      "award_initial_hold_frames": 0,
-      "photo_directory_capacity": 6,
-      "award_directory_id": 6,
-      "award_independent_of_photo_count": true,
-      "failed_award_load": "keep visible frame, show banner and diagnostic error; KEY4 retry"
+      "version": "V3.1 synchronized startup candidate",
+      "startup_audio_policy": "first track buffered, no full-catalog wait",
+      "startup_audio_buffer_samples": 512,
+      "startup_release": "first visible frame after loading",
+      "startup_animation": "existing black loading UI",
+      "audio_visual_algorithm": "single-board 1024-point stereo FFT / Hann / 32 bands",
+      "audio_waveform": "1024 samples; 256 groups of stereo min/max; double-buffered",
+      "audio_repair": true,
+      "audio_repair_default": false,
+      "audio_repair_location": "board_b before cue mix and volume",
+      "audio_repair_latency_samples": 32,
+      "audio_repair_crossfade_samples": 256,
+      "audio_spi_prepare_bit": 16,
+      "audio_repair_control_bit": 0
     }
-  ]
+  ],
+  "audio_tests": [
+    {
+      "test": "tb_audio_repair_settings",
+      "passed": true,
+      "seconds": 0.66
+    },
+    {
+      "test": "tb_audio_visual_real",
+      "passed": true,
+      "seconds": 49.58
+    },
+    {
+      "test": "tb_audio_visual_primitive",
+      "passed": true,
+      "evidence": "tb_audio_visual_primitive.log"
+    },
+    {
+      "test": "tb_audio_repair_effect",
+      "passed": true,
+      "seconds": 50.36,
+      "measurements": {
+        "bit_exact_original_samples": 8192,
+        "gain_1k_db": 0.11,
+        "gain_8k_db": -60.08,
+        "isolated_click_output_peak": 27,
+        "dc_tail_absolute": 1466.6
+      }
+    },
+    {
+      "test": "tb_audio_transport_repair",
+      "passed": true,
+      "seconds": 42.72
+    },
+    {
+      "test": "tb_audio_osd_port",
+      "passed": true,
+      "seconds": 0.16,
+      "source_sha256": {
+        "tests/tb_audio_osd_port.v": "ee2eb2b71239d95e58ee43b30d4403117804c90f958a23fc7f9b83fcfccde6a1",
+        "common/audio_ui/saixian_osd_overlay.v": "5a8bee9919bbd554bf46b7906ed8d9e3a0bc794174bdc1fe6657689006cbc193"
+      }
+    }
+  ],
+  "baseline_regressions": [
+    {
+      "test": "tb_boot_v4",
+      "passed": true,
+      "seconds": 64.27
+    },
+    {
+      "test": "tb_award_entry_v4",
+      "passed": true,
+      "seconds": 0.56
+    },
+    {
+      "test": "tb_award_notice_v3",
+      "passed": true,
+      "seconds": 1.11
+    },
+    {
+      "test": "tb_award_mode_v4",
+      "passed": true,
+      "seconds": 35.27
+    }
+  ],
+  "hardware_acceptance": "User confirmed startup fixed; RGB888 switching artifacts remain unresolved"
 }

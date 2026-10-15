@@ -7,11 +7,14 @@ set ADCList {{../user_source/constraints_source/BOARD_A_RECEIVER_pins.adc}}
 set SDCList {{../user_source/constraints_source/BOARD_A_RECEIVER_timing.sdc}}
 set IpSDCList { rfifo_32_32_512 ../user_source/hdl_source/IP/afifo_32_16_256.tcl wfifo_32_32_512 ../user_source/hdl_source/IP/afifo_16_32_256.tcl }
 set start_step read_design
+# Optional physical-only retry of a verified, unchanged mapped design.
+set parent [pwd]
+if {[info exists ::env(SAIXIAN_START_STEP)]} { set start_step $::env(SAIXIAN_START_STEP) }
 set end_step bitgen
 set area_option -packarea
 set arr_filter false
 set drHoldFix on
-set phyWildParams {place seed 15}
+set phyWildParams {place seed 17}
 if {[info exists ::env(SAIXIAN_PLACE_SEED)]} {
     set phyWildParams [list place seed $::env(SAIXIAN_PLACE_SEED)]
 }

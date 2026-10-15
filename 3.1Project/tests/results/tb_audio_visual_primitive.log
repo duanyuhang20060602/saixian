@@ -1,0 +1,4 @@
+FFT scenario 0 band15=55 band24=48 max=55
+FFT scenario 1 band15=58 band24=0 max=58
+FFT scenario 2 band15=0 band24=0 max=0
+PASS real FFT stereo bands, antiphase, DC rejection, 256 stereo extrema

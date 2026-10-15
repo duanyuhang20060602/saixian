@@ -1,59 +1,16 @@
-# 双板 V3.1：A 板开机加载动画、DLT 专用奖杯入口
+# 双板 V3.1：启动恢复版
 
-## 烧录与素材
+> **已知问题：高精度 RGB888 切图仍可能出现横向白条、短暂闪黑，自动轮播也可能异常，尚未解决。建议使用普通精度 RGB565。** 详见 [KNOWN_ISSUES.md](KNOWN_ISSUES.md)。
 
-同时更新发布包内两块板的位流：
+用户已上板确认本版启动卡住问题解决。保留单板频谱/波形移植、透明背景、音频修复开关、首首音乐就绪后的音画同步启动和 DLT 奖杯功能。
 
-- A：`delivery/PHOTO_BOARD_A_720P_AWARD_DLT_V3_1_NOCRC_AUDIO2_LINK50M.bit`
-- B：`delivery/PHOTO_BOARD_B_720P_AWARD_DLT_V3_1_NOCRC_AUDIO2_LINK50M.bit`
-- 奖杯素材：`award_media/AWARD720.DLT`，与单板原始 DLT 内容一致；放在 B 板 TF 卡上。
+## 烧录
 
-照片最多登记 6 张 BMP；DLT 单独登记，不占照片名额。仍使用前 512 MiB 原始扇区扫描，文件需连续存储。接线沿用 V3。原工程和发布包保留，无需删除原卡文件。
+- A：`delivery/PHOTO_BOARD_A_720P_V3_1_BOOT_RECOVERY_LINK50M.bit`
+- B：`delivery/PHOTO_BOARD_B_720P_V3_1_BOOT_AV_SYNC_LINK50M.bit`
 
-## 本版变化
+已使用上述 B 板版本时，只需更新 A 板。新用户请使用发布包内配套的 A/B 位流。素材沿用现有 TF 卡及 `AWARD720.DLT`。
 
-1. 移除旧 `SXAW` 奖杯 BMP 标记识别。所有 BMP 都作为静态照片，包括旧奖杯 BMP；不执行奖杯标签还原或光效处理。旧专用 BMP 中嵌入的标签位仍属于文件像素，本版不会重新生成该文件。
-2. 只有独立 DLT 编号 6 且具备奖杯元数据的素材才能启用奖杯渲染；B 板同样只对该编号旁路照片增强。
-3. A 板自行绘制黑色背景、蓝色旋转加载点、`LOADING` 文本和进度条。进度条反映内存、素材发现和首帧准备阶段，并非 TF 百分比。动画无需 TF 图片或 B 板传图才能绘制。
-4. 开机界面至少保持 90 个视频帧（约 1.5 秒），等待首幅画面完成并稳定后，在垂直消隐边界退出；素材未就绪则继续显示。普通切图、进入奖杯、色彩格式切换不会重新播放开机动画。PLL/上电复位会重新播放。
-5. 移除奖杯每次进入后的 61 帧静止等待，完整底图切入后立即启动运动。原 364 帧运动循环、平均速度、金色精灵和光效逻辑保留。V3_1 与原单板在启动等待策略上有区别。
-6. 奖杯加载和播放期间，通过已有画面上下文固定 B 板缓存，暂停无关照片预取与素材扫描。控制判断寄存一级以满足像素时钟时序。
-7. 沿用用户要求的无 CRC 读取：无整包预读、整包 CRC、压缩流 CRC 或解码帧 CRC，保留文件结构、命令边界及像素数量检查。
+## 版本状态
 
-用户确认卡顿仅在进入奖杯时出现。源码中的固定首帧等待与该现象相符，本版移除该等待。是否消除实板进入时的停顿仍需烧录确认，仿真通过不能替代实板观察。
-
-## 按键
-
-- KEY1 短按：下一张普通照片；奖杯中按下，回到原照片序列并切到下一张。
-- KEY4 短按：进入／退出 DLT 奖杯，加载中可取消。
-- KEY2：奖杯暂停／继续；照片模式切歌。
-- KEY3：设置菜单。菜单中的按键操作保留原功能。
-- KEY4 长按：原比赛界面。
-
-## 错误提示
-
-`AWARD LOADING` 为奖杯加载，`AWARD NOT FOUND` 为扫描结束仍无 DLT，`AWARD ERROR` 为加载失败。失败保留当前画面，可再按 KEY4 重试。
-
-A 板奖杯错误诊断 `4 N A S E C`：N=1 加载、2 未找到、3 错误；A=已发现 DLT；S=扫描结束；E=控制错误。
-
-B 板 `4 A D M E C`：A=已发现 DLT；D=解码错误，M=媒体错误，E=控制错误。末尾固定 C。D=1 文件头、2 扇区字节数、4 描述符、5 命令／像素数量。错误保留至下一次奖杯请求。
-
-## 验证与证据
-
-`tools/test_award_v3_1.py` 验证旧奖杯 BMP 不再标记、独立 DLT 目录、按键与缓存上下文、失败与重试、立即运动、原循环速度和暂停，以及开机黑底／真实阶段进度／首帧门槛／仅开机显示／26 时钟 HDMI 对齐。`--resume` 可继续尚未完成的测试，默认重新执行。
-
-`tools/test_dlt.py --only tb_dlt_cache --report dlt_cache_v3_1_results.json` 验证本版扫描器与 DLT 缓存加载、两种色彩格式和音频扇区仲裁。解码器与 V3 NOCRC 相同，原始 DLT 全像素与异常文件证据保留在 `tests/baseline_v3`。
-
-`tests/results/boot_preview.png` 由实际 RTL 绘图逻辑导出，是加载过程中一帧的仿真预览。`delivery/award_v3_1_validation.json` 记录本次检查、继承证据、最终位流源码哈希、布局布线时序与资源，硬件状态为待验收。
-
-## V3.1 发布
-
-本次按用户要求将已验收的双板版本统一命名为 **V3.1**。仅整理版本名、文件名、说明和发布入口，生产 HDL／ROM／管脚约束字节保持不变，位流 SHA256 与用户已确认的版本一致，没有重新编译或更改当前音视频效果。编译证据中的旧本地目录名仅为构建溯源。
-
-- [下载 V3.1 位流、素材和完整交付包](https://github.com/duanyuhang20060602/saixian/releases/tag/dual-board-v3.1)
-- [查看黑底开机加载画面](tests/results/boot_preview.png)
-- `common/` 为双板公共逻辑，`projects/board_a` 和 `projects/board_b` 为 A/B TD 工程。
-- 更换目录后先运行 `python tools/configure_projects.py`，再分别运行对应 `src/td_project/build_board.tcl`；该步骤仅更新本机工程路径。
-- `.bit`、压缩包和原始编译日志通过 Release 交付；Git 分支只登记源码、素材、说明和验证摘要。
-
-`delivery/relabel_manifest.json` 记录 V3.1 文件名、原始位流 SHA256 和生产 HDL／ROM／约束的逐文件校验。`delivery/award_v3_1_validation.json` 保留本版本功能验证与时序结果。硬件反馈：用户确认当前版本效果良好，2026-10-15 同意以 V3.1 上传。
+启动回归已确认修复；高精度切图问题仍未解决。未交付中间失败的 LINK_FIX 位流。恢复说明与首错诊断见 [BOOT_RECOVERY.md](BOOT_RECOVERY.md)，当前位流与源码校验信息见 `delivery/delivery_manifest.json`。

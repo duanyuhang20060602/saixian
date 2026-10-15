@@ -22,6 +22,7 @@ module photo_unified_settings_controller #(
     input wire color_mode_valid,color_mode_value,
     output reg high_color_requested,
     output reg waveform_mode,
+    output reg audio_repair_enable,
     output reg        settings_mode,
     output reg [3:0]  setting_item,
     output reg [2:0]  effect_select,
@@ -58,7 +59,7 @@ always @(posedge clk or posedge rst) begin
         settings_mode      <= 1'b0;
         setting_item       <= 4'd0;
         effect_select      <= 3'd0;
-        auto_enable        <= 1'b0;waveform_mode<=0;high_color_requested<=0;
+        auto_enable        <= 1'b0;waveform_mode<=0;high_color_requested<=0;audio_repair_enable<=0;
         volume_setting     <= 4'd5;
         brightness_setting <= 4'd4;
         contrast_setting   <= 4'd4;
@@ -70,7 +71,7 @@ always @(posedge clk or posedge rst) begin
         idle_timer         <= 33'd0;
     end else if (hmi_reset_defaults) begin
         effect_select      <= 3'd0;
-        auto_enable        <= 1'b0;waveform_mode<=0;high_color_requested<=0;
+        auto_enable        <= 1'b0;waveform_mode<=0;high_color_requested<=0;audio_repair_enable<=0;
         volume_setting     <= 4'd5;
         brightness_setting <= 4'd4;
         contrast_setting   <= 4'd4;
@@ -124,7 +125,7 @@ always @(posedge clk or posedge rst) begin
         if (key_enter_exit)
             settings_mode <= 1'b0;
         else if (key_next_item)
-            setting_item <= (setting_item == 4'd11) ? (IMAGE_MENU ? 4'd1:4'd0) : setting_item + 1'b1;
+            setting_item <= (setting_item == 4'd12) ? (IMAGE_MENU ? 4'd1:4'd0) : setting_item + 1'b1;
         else if (key_decrease) begin
             case (setting_item)
                 2'd0: if (volume_setting     != 0) volume_setting     <= volume_setting - 1'b1;
@@ -139,6 +140,7 @@ always @(posedge clk or posedge rst) begin
                 4'd9: auto_enable<=1'b0;
                 4'd10: waveform_mode<=0;
                 4'd11: high_color_requested<=0;
+                4'd12: audio_repair_enable<=0;
             endcase
         end else if (key_increase) begin
             case (setting_item)
@@ -154,6 +156,7 @@ always @(posedge clk or posedge rst) begin
                 4'd9: auto_enable<=1'b1;
                 4'd10: waveform_mode<=1;
                 4'd11: high_color_requested<=1;
+                4'd12: audio_repair_enable<=1;
             endcase
         end
     end

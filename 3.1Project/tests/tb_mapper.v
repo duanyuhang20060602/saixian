@@ -2,7 +2,7 @@
 module tb_mapper;
 reg [10:0] x=0,offset=0;reg [9:0] y=0;reg right=0;reg [2:0] effect=0;
 wire [20:0] addr;reg [20:0] old_base,new_base;
-saixian_frame_mapper #(.FRAME_WIDTH(640)) dut(x,y,old_base,new_base,1'b1,right,effect,offset,addr);
+saixian_frame_mapper #(.FRAME_WIDTH(640)) dut(.high_color(1'b0),.word_phase(2'd0),.xpos(x),.ypos(y),.old_base(old_base),.new_base(new_base),.enabled(1'b1),.move_right(right),.effect(effect),.offset(offset),.address(addr));
 integer yy,xx,step,e,d,split,column,expected,checks=0,bl,pattern;reg use_new;
 initial begin
  for(d=0;d<2;d=d+1)for(e=0;e<6;e=e+1)for(step=0;step<=640;step=step+31)

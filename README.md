@@ -1,3 +1,12 @@
+## 双板 V3.1 启动恢复版
+
+**高精度 RGB888 存在已知问题：切图可能出现横向白条、短暂闪黑，自动轮播也可能异常，尚未解决。建议使用普通精度 RGB565。**
+
+本次启动卡住问题已由用户上板确认解决。源码见 [3.1Project](3.1Project)，问题状态见 [KNOWN_ISSUES](3.1Project/KNOWN_ISSUES.md)，[下载配套源码和 A/B 位流](https://github.com/duanyuhang20060602/saixian/releases/tag/dual-board-v3.1-boot-recovery)。
+
+---
+
+
 ## 双板 V3.1
 
 [双板 V3.1 项目与操作说明](3.1Project/README.md) · [下载 A/B 位流与素材](https://github.com/duanyuhang20060602/saixian/releases/tag/dual-board-v3.1)

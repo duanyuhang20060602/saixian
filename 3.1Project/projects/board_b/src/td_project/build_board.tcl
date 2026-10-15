@@ -11,7 +11,7 @@ set end_step bitgen
 set area_option -packarea
 set arr_filter false
 set drHoldFix on
-set phyWildParams {place seed 14}
+set phyWildParams {place seed 15}
 if {[info exists ::env(SAIXIAN_PLACE_SEED)]} {
     set phyWildParams [list place seed $::env(SAIXIAN_PLACE_SEED)]
 }
@@ -23,7 +23,7 @@ lappend phyWildParams route effort high
 lappend phyWildParams gate add_map_lut_struct high
 lappend phyWildParams gate map_mode area_prior
 lappend phyWildParams gate multi_thread_mapping partition
-lappend phyWildParams rtl resource_sharing auto
+lappend phyWildParams rtl resource_sharing off
 lappend phyWildParams rtl shifter_style shifter_reg
 # This high-utilization design needs the explicit route hold-fix stage.  The
 # automatic in-route pass is skipped above 90% slice utilization.  Keep the

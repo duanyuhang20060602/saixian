@@ -64,12 +64,12 @@ endfunction
 function [5:0] fade_darkness;
     input [4:0] step;
     begin
-        if (step <= 5'd8)
-            fade_darkness = {step,2'b00};
-        else if (step < 5'd16)
-            fade_darkness = {(5'd16-step),2'b00};
-        else
-            fade_darkness = 6'd0;
+        // Old/new address selection changes at step 8. Keep steps 7..9
+        // completely black so no partly lit old/new frame leaks through.
+        if(step>=7 && step<=9)fade_darkness=6'd63;
+        else if(step<7)fade_darkness=step<<3;
+        else if(step<16)fade_darkness=(5'd16-step)<<3;
+        else fade_darkness=0;
     end
 endfunction
 

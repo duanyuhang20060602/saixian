@@ -22,12 +22,10 @@ module saixian_osd_overlay(
     input  wire [15:0] source_width_bcd,
     input  wire [15:0] source_height_bcd,
     input  wire [2:0]  error_code,
-    input  wire        transition_active,
-    input  wire [5:0]  transition_level,
-    input  wire [7:0]  audio_level,
+    input wire [6:0] visual_height,visual_peak,
+    input wire [31:0] visual_wave,
+    input wire visual_fft_valid,visual_wave_valid,
     input  wire        waveform_mode,
-    input  wire        spectrum_active,
-    input  wire [4:0]  spectrum_tone_bin,
     input  wire        settings_mode,
     input  wire [2:0]  setting_item,
     input  wire [3:0]  volume_setting,
@@ -38,8 +36,6 @@ module saixian_osd_overlay(
     input  wire        invert_setting,
     input  wire        vintage_setting,
     input  wire [1:0]  enhancement_setting,
-    input  wire        audio_sample_valid,
-    input  wire [7:0]  audio_sample,
     output reg  [23:0] rgb_out
 );
 
@@ -68,8 +64,6 @@ reg [9:0] local_x;
 reg [8:0] local_y;
 reg [23:0] base_rgb;
 reg [9:0] progress_width;
-reg [4:0] fade_rank;
-reg [4:0] spectrum_bin;
 reg [3:0] setting_value;
 reg [9:0] setting_bar_width;
 reg       spinner_pixel;
@@ -83,11 +77,7 @@ reg [23:0] text_color_q;
 reg [23:0] render_rgb_q;
 reg display_valid_q;
 reg [2:0] error_code_q;
-reg [7:0] audio_level_q;
 reg       waveform_mode_q;
-reg       spectrum_active_q;
-reg [4:0] spectrum_tone_bin_q;
-reg [5:0] spectrum_height_q;
 reg [3:0]  font_col_q2;
 reg        text_region_q2;
 reg        text_enable_q2;
@@ -104,16 +94,52 @@ wire [11:0] ticker_width = (ticker_text_length == 0) ? 12'd224 :
 wire [11:0] ticker_local_x = {2'b0, x} + ticker_width - {1'b0, ticker_x};
 reg [9:0] title_scroll_x;
 wire [10:0] title_local_x = {1'b0,x} + 11'd108 - {1'b0,title_scroll_x};
-wire [9:0] wave_x_i = x_i - 10'd64;
-wire [7:0] wave_sample;
-wire wave_valid;
-wire signed [9:0] wave_offset = $signed({{2{wave_sample[7]}},wave_sample}) >>> 3;
-wire signed [9:0] wave_y = ((state == ST_CAROUSEL) ? 10'sd368 : 10'sd442) - wave_offset;
-saixian_pcm_snapshot wave_capture(
-    .clk(clk),.rst(rst),.frame_tick(frame_tick),
-    .sample_valid(audio_sample_valid),.sample(audio_sample),
-    .read_index(wave_x_i[8:3]),.read_sample(wave_sample),.snapshot_valid(wave_valid));
-wire [4:0] spectrum_bin_i = 5'd31 - ((x_i - 10'd64) >> 4);
+// 75% of the underlying photograph; only trace/peak pixels are opaque.
+function [7:0] background_channel;
+ input [7:0] value;begin background_channel=(value>>1)+(value>>2);end
+endfunction
+wire [23:0] plot_background={background_channel(rgb_in[23:16]),background_channel(rgb_in[15:8]),background_channel(rgb_in[7:0])};
+wire [23:0] plot_grid={plot_background[23:16]+8'd8,plot_background[15:8]+8'd14,plot_background[7:0]+8'd19};
+wire [23:0] plot_axis={plot_background[23:16]+8'd17,plot_background[15:8]+8'd24,plot_background[7:0]+8'd30};
+reg [23:0] visual_plot_rgb,visual_plot_rgb_q;
+reg visual_plot_active_q;
+reg [6:0] visual_distance;
+reg signed [6:0] wave_amplitude;
+wire wave_left_pixel=wave_amplitude >= $signed({visual_wave[31],visual_wave[31:26]}) &&
+    wave_amplitude <= $signed({visual_wave[23],visual_wave[23:18]});
+wire wave_right_pixel=wave_amplitude >= $signed({visual_wave[15],visual_wave[15:10]}) &&
+    wave_amplitude <= $signed({visual_wave[7],visual_wave[7:2]});
+always @(posedge clk) begin
+    visual_distance<=9'd391-y_i;
+    wave_amplitude<=9'd356-y_i;
+end
+wire visual_plot_active=de && display_valid_q && error_code_q==0 && !settings_mode &&
+    x>=64 && x<576 && y>=320 && y<392;
+// Compute the RAM-backed plot in parallel with the general OSD renderer.
+// Its merge uses the existing following register stage, so RAM comparisons
+// no longer traverse the entire settings/ticker/background priority cone.
+always @* begin
+    visual_plot_rgb=plot_background;
+    if(y==320 || y==344 || y==368 || y==391 || x[6:0]==64) visual_plot_rgb=plot_grid;
+    if(!waveform_mode_q) begin
+        if(visual_fft_valid && x[3:0]<12) begin
+            if(visual_height!=0 && visual_distance<=visual_height) begin
+                if(y<344) visual_plot_rgb=24'hFFCF66;
+                else if(y<368) visual_plot_rgb=24'h42E5AF;
+                else visual_plot_rgb=24'h37CFFF;
+            end
+            if(visual_peak!=0 && visual_distance==visual_peak) visual_plot_rgb=24'hFFF0C2;
+        end
+    end else begin
+        if(y==356) visual_plot_rgb=plot_axis;
+        if(visual_wave_valid) begin
+            if(wave_left_pixel) visual_plot_rgb=24'h37DFFF;
+            if(wave_right_pixel) visual_plot_rgb=24'hFFB85C;
+            if(wave_left_pixel && wave_right_pixel) visual_plot_rgb=24'hE8F4FF;
+        end
+    end
+end
+
 assign font_addr = {glyph_id_q,font_row_q};
 always @(posedge clk or posedge rst) begin
     if (rst) title_scroll_x <= 0;
@@ -269,29 +295,6 @@ function [6:0] error_glyph;
                 2:error_glyph=7'd64; 3:error_glyph=7'd63;
                 default:error_glyph=7'd0;
             endcase
-        endcase
-    end
-endfunction
-
-// One full-width spectral envelope.  The absolute five-bit distance prevents
-// the former eight-bin repetition, while registering the result one pixel
-// early keeps the tone/distance arithmetic out of the RGB timing path.
-function [5:0] spectrum_one_peak_height;
-    input [4:0] bin;
-    input [4:0] tone_bin;
-    input [7:0] level;
-    reg [4:0] distance;
-    begin
-        distance = (bin >= tone_bin) ? (bin - tone_bin) : (tone_bin - bin);
-        case (distance)
-            5'd0: spectrum_one_peak_height = 6'd8 + {1'b0,level[7:3]};
-            5'd1: spectrum_one_peak_height = 6'd6 + {2'd0,level[7:4]};
-            5'd2: spectrum_one_peak_height = 6'd5 + {2'd0,level[7:4]};
-            5'd3: spectrum_one_peak_height = 6'd4 + {3'd0,level[7:5]};
-            5'd4: spectrum_one_peak_height = 6'd3 + {3'd0,level[7:5]};
-            5'd5: spectrum_one_peak_height = 6'd3 + {4'd0,level[7:6]};
-            5'd6: spectrum_one_peak_height = 6'd2 + {4'd0,level[7:6]};
-            default: spectrum_one_peak_height = 6'd2;
         endcase
     end
 endfunction
@@ -476,8 +479,6 @@ end
 
 always @* begin
     progress_width = seconds * 10'd8;
-    fade_rank = {x[2]^y[0], x[1]^y[2], x[0]^y[1], x[2]^y[2], x[1]^y[0]};
-    spectrum_bin = 5'd0;
     setting_value = 4'd0;
     setting_bar_width = 10'd0;
     spinner_pixel = 1'b0;
@@ -493,13 +494,10 @@ always @* begin
         base_rgb = rgb_in;
 
     rgb_comb = base_rgb;
-    if (de && display_valid_q && (transition_level != 6'd0) &&
-        ({1'b0,fade_rank} < transition_level))
-        rgb_comb = 24'd0;
 
     // Eight-spoke boot spinner. One bright spoke advances at 10 Hz while the
     // remaining spokes stay dim, making SD scan/first-frame progress visible.
-    else if (de && (error_code_q == 0) && !display_valid_q) begin
+    if (de && (error_code_q == 0) && !display_valid_q) begin
         if ((x >= 10'd314) && (x < 10'd326) && (y >= 9'd178) && (y < 9'd204)) begin
             spinner_pixel = 1'b1; spinner_segment = 3'd0;
         end else if ((x >= 10'd342) && (x < 10'd360) && (y >= 9'd194) && (y < 9'd212)) begin
@@ -569,26 +567,6 @@ always @* begin
         if (y < 9'd64)
             rgb_comb = {1'b0,rgb_comb[23:17],1'b0,rgb_comb[15:9],1'b0,rgb_comb[7:1]};
 
-        // Carousel spectrum shares the normal OSD stage instead of adding a
-        // new top-level RGB mux.  Frame-locked controls prevent raster tearing;
-        // a shallow leakage pattern keeps the 32 bars sparse and believable.
-        if (!waveform_mode_q && (state == ST_CAROUSEL) && spectrum_active_q &&
-            (audio_level_q != 8'd0) && (y[8:5] == 4'd11) &&
-            (x >= 10'd64) && (x < 10'd576)) begin
-            spectrum_bin = 5'd31 - ((x - 10'd64) >> 4);
-            if ((x[3:0] < 4'd12) &&
-                (y >= (9'd384 - {3'd0,spectrum_height_q}))) begin
-                if (spectrum_bin >= 5'd22)
-                    rgb_comb = 24'h37DFFF;
-                else if (spectrum_bin >= 5'd11)
-                    rgb_comb = 24'h36E58D;
-                else if (spectrum_bin >= 5'd4)
-                    rgb_comb = 24'hFFD05A;
-                else
-                    rgb_comb = 24'hFF625F;
-            end
-        end
-
         if ((state == ST_RUNNING || state == ST_PAUSED) &&
             ((x < 10'd6) || (x > 10'd633) || (y < 9'd6) || (y > 9'd473))) begin
             if (state == ST_PAUSED || seconds[0])
@@ -607,31 +585,7 @@ always @* begin
                 rgb_comb = rgb_comb | 24'h121A23;
         end
 
-        // Lightweight 32-bin spectrum. The cue generator supplies the known
-        // fundamental, while adjacent leakage and the weak odd harmonics of
-        // its triangle wave keep the result sparse and physically plausible.
-        // High frequencies are on the left and low frequencies on the right.
-        if (!waveform_mode_q && (state != ST_CAROUSEL) &&
-            (y >= 9'd416) && (y < 9'd468) && (x >= 10'd64) && (x < 10'd576)) begin
-            spectrum_bin = 5'd31 - ((x - 10'd64) >> 4);
-            if ((x[3:0] < 4'd12) &&
-                spectrum_active_q && (audio_level_q != 8'd0) &&
-                (y >= (9'd468 - {3'd0,spectrum_height_q}))) begin
-                if (spectrum_bin >= 5'd22)
-                    rgb_comb = 24'h37DFFF;
-                else if (spectrum_bin >= 5'd11)
-                    rgb_comb = 24'h36E58D;
-                else if (spectrum_bin >= 5'd4)
-                    rgb_comb = 24'hFFD05A;
-                else
-                    rgb_comb = 24'hFF625F;
-            end
-        end
-        // Plot a frame-stable snapshot of the actual HDMI PCM samples.
-        // Each captured point occupies eight pixels on the logical canvas.
-        if (waveform_mode_q && wave_valid && (x >= 10'd64) && (x < 10'd576) &&
-            (({1'b0,y} == wave_y) || ({1'b0,y} == wave_y + 10'sd1)))
-            rgb_comb = 24'h37DFFF;
+
     end
 
 end
@@ -652,13 +606,10 @@ always @(posedge clk or posedge rst) begin
         text_enable_q <= 1'b0;
         text_color_q <= 24'd0;
         render_rgb_q <= 24'd0;
+        visual_plot_rgb_q<=0;visual_plot_active_q<=0;
         display_valid_q<=0;
         error_code_q<=0;
-        audio_level_q <= 8'd0;
-        spectrum_active_q <= 1'b0;
         waveform_mode_q <= 1'b0;
-        spectrum_tone_bin_q <= 5'd0;
-        spectrum_height_q <= 6'd0;
         font_col_q2 <= 4'd0;
         text_region_q2 <= 1'b0;
         text_enable_q2 <= 1'b0;
@@ -681,16 +632,12 @@ always @(posedge clk or posedge rst) begin
         text_enable_q <= display_valid_q || (error_code_q != 0);
         text_color_q <= text_color;
         render_rgb_q <= rgb_comb;
-        spectrum_height_q <= spectrum_one_peak_height(
-            spectrum_bin_i, spectrum_tone_bin_q, audio_level_q);
+        visual_plot_rgb_q<=visual_plot_rgb;visual_plot_active_q<=visual_plot_active;
         // Freeze the spectrum controls for the whole video frame.  Updating
         // them at 48 kHz while raster scanning made different lines use
         // different heights/bins, which looked like old-TV sync flicker.
         if (frame_tick) begin
             waveform_mode_q <= waveform_mode;
-            audio_level_q <= audio_level;
-            spectrum_active_q <= spectrum_active;
-            spectrum_tone_bin_q <= spectrum_tone_bin;
         end
         // The font ROM has a registered BRAM output; the column select and
         // colour mux remain in the following stage.
@@ -698,45 +645,10 @@ always @(posedge clk or posedge rst) begin
         text_region_q2 <= text_region_q;
         text_enable_q2 <= text_enable_q;
         text_color_q2 <= text_color_q;
-        render_rgb_q2 <= render_rgb_q;
+        render_rgb_q2 <= visual_plot_active_q ? visual_plot_rgb_q : render_rgb_q;
         rgb_out <= (text_region_q2 && font_pixel_q && text_enable_q2) ?
                    text_color_q2 : render_rgb_q2;
     end
 end
 
-endmodule
-
-module saixian_pcm_snapshot #(
-    parameter integer DECIMATE=16
-)(
-    input wire clk,rst,frame_tick,sample_valid,
-    input wire [7:0] sample,input wire [5:0] read_index,
-    output reg [7:0] read_sample,output reg snapshot_valid
-);
-reg [7:0] samples [0:127]; /* fehdl force_ram=1, ram_style="bram" */
-reg capture_bank,display_bank,pending;
-reg [5:0] write_index;
-reg [7:0] decimation;
-always @(posedge clk) begin
-    read_sample<=samples[{display_bank,read_index}];
-    if(!rst && sample_valid && !pending && decimation==DECIMATE-1)
-        samples[{capture_bank,write_index}]<=sample;
-end
-always @(posedge clk or posedge rst) begin
-    if(rst) begin
-        capture_bank<=1;display_bank<=0;pending<=0;write_index<=0;
-        decimation<=0;snapshot_valid<=0;
-    end else begin
-        if(frame_tick && pending) begin
-            display_bank<=capture_bank;capture_bank<=~capture_bank;
-            pending<=0;write_index<=0;decimation<=0;snapshot_valid<=1;
-        end else if(sample_valid && !pending) begin
-            if(decimation==DECIMATE-1) begin
-                decimation<=0;
-                if(write_index==63) pending<=1;
-                else write_index<=write_index+1'b1;
-            end else decimation<=decimation+1'b1;
-        end
-    end
-end
 endmodule

@@ -7,7 +7,7 @@ module photo_cached_control_a #(
  input settings_mode,input [18:0] settings_state,output settings_updating,
  output reg high_color,output reg format_changed,
  input award_toggle,output reg award_available,award_scan_complete,
- output award_loading,output reg [1:0] award_notice,
+ output award_loading,output reg [2:0] award_notice,output reg [3:0] last_transfer_error,
  input clk,rst,uart_rx,output uart_tx,input previous,next,
  input [1:0] active_slot,new_slot,input transition_active,commit_toggle,
  output reg [1:0] receive_slot,output reg arm_toggle,abort_toggle,
@@ -149,7 +149,7 @@ always @(posedge clk or posedge rst)begin
 end
 always @(posedge clk or posedge rst)begin
  if(rst)begin
-  award_available<=0;award_scan_complete<=0;award_notice<=0;award_selected<=0;award_wait<=0;return_photo<=0;
+  award_available<=0;award_scan_complete<=0;award_notice<=0;last_transfer_error<=0;award_selected<=0;award_wait<=0;return_photo<=0;
   high_color<=0;format_changed<=0;count_reply<=0;applied_settings<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};sent_settings<=0;refresh_pending<=0;
   applied_context<=31;sent_context<=0;background_transaction<=0;refresh_display<=0;ready_immediate<=0;state<=HELLO_SEND;send<=0;message<=0;session<=1;uptime<=1;timer<=0;request_seq<=0;
   target<=0;direction<=1;done_seen<=0;end_seen<=0;expected_crc<=0;received_crc<=0;retries<=0;
@@ -248,7 +248,7 @@ always @(posedge clk or posedge rst)begin
      arm_toggle<=~arm_toggle;state<=ARM;timer<=0;
     end else if(got && matching && kind==11)begin
      error<=incoming[19:16];timer<=0;
-     if(AWARD_CONTROL && have_current)begin state<=IDLE;nav_pending<=0;award_wait<=0;award_selected<=current_image==6;award_notice<=3;end
+     if(AWARD_CONTROL && have_current)begin state<=IDLE;nav_pending<=0;award_wait<=0;award_selected<=current_image==6;award_notice<=target==6 ? 3'd3:3'd4;last_transfer_error<=incoming[19:16];end
      else state<=FAILED;
     end
     else if(timer>=64'd45*TIME_HZ)begin error<=1;state<=FAILED;timer<=0;end
@@ -261,7 +261,8 @@ always @(posedge clk or posedge rst)begin
    RECEIVE:begin
     if(rx_done)begin done_seen<=1;received_crc<=rx_crc;end
     if(got && matching && kind==6)begin expected_crc<=incoming[55:24];end_seen<=1;end
-    if(rx_fault)begin error<=3;state<=NACK;end
+    if(got && matching && kind==11)begin error<=incoming[19:16];state<=FAILED;timer<=0;end
+    else if(rx_fault)begin error<=3;state<=NACK;end
     else if(done_seen && end_seen)begin
      debug_local_crc<=received_crc;debug_remote_crc<=expected_crc;
      if(CHECK_FRAME_CRC && received_crc!=expected_crc)begin error<=4;state<=NACK;end
@@ -284,8 +285,8 @@ always @(posedge clk or posedge rst)begin
     done_seen<=0;end_seen<=0;timer<=0;
     if(retries<2)begin retries<=retries+1'b1;state<=WAIT_BEGIN;end else state<=FAILED;
    end
-   FAILED:if(AWARD_CONTROL && have_current && !transition_active && !display_pending)begin
-    abort_toggle<=~abort_toggle;state<=IDLE;nav_pending<=0;award_wait<=0;award_selected<=current_image==6;award_notice<=3;timer<=0;
+   FAILED:if(AWARD_CONTROL && have_current && !transition_active && !display_pending && !tx_busy && !send)begin
+    abort_toggle<=~abort_toggle;message<=packet(16,session,0,0,0,0,0,0);send<=1;state<=WAIT_CANCEL;nav_pending<=0;award_wait<=0;award_selected<=current_image==6;award_notice<=target==6 ? 3'd3:3'd4;last_transfer_error<=error;timer<=0;
    end else if(timer>=TIME_HZ && !transition_active && !display_pending)begin
     abort_toggle<=~abort_toggle;session<=uptime;state<=HELLO_SEND;timer<=0;
     cache_valid<=0;have_current<=0;nav_pending<=0;

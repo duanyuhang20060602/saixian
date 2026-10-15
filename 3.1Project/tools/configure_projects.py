@@ -1,10 +1,11 @@
 from pathlib import Path
 import xml.etree.ElementTree as ET
-import os, re, json
+import os, re, json, sys
 ROOT=Path(__file__).resolve().parents[1]
 def write(path,text):
     path.write_text(text,encoding='utf-8',newline='\n')
 for role,top in [('board_a','top_photo_a'),('board_b','top_photo_b')]:
+    if '--board-a-only' in sys.argv and role!='board_a':continue
     src=ROOT/'projects'/role/'src'
     hdl=src/'user_source/hdl_source'
     if role=='board_a':
@@ -48,8 +49,10 @@ for role,top in [('board_a','top_photo_a'),('board_b','top_photo_b')]:
     for e in list(verilog):verilog.remove(e)
     paths=[p for p in paths if Path(p).name not in excluded | replacements]
     shared=['photo_color_format.v','photo_uart.v','photo_link.v','photo_control.v','photo_status.v',top+'.v']
-    if role=='board_a':shared+=['photo_audio_link.v','photo_audio_features.v','audio_ui/photo_audio_cue_samples.v','audio_ui/saixian_event_controller.v','audio_ui/saixian_osd_overlay.v','audio_ui/saixian_font_rom.v','audio_vendor/audio_arc_calculate.v','audio_vendor/hdmi_1_4b_transmitter_core_wrapper.enc.v','photo_resolution_overlay.v','photo_settings_overlay.v','photo_unified_settings_controller.v','photo_menu_font.v','photo_cached_control_a.v','saixian_transition.v','photo_processing.v','saixian_hmi_uart.v','saixian_key_debounce.v','photo_auto_advance.v']
+    if role=='board_a':shared+=['photo_audio_link.v','photo_audio_features.v','audio_ui/photo_audio_cue_samples.v','audio_ui/saixian_event_controller.v','audio_ui/saixian_osd_overlay.v','audio_ui/saixian_font_rom.v','audio_vendor/audio_arc_calculate.v','audio_vendor/hdmi_1_4b_transmitter_core_wrapper.enc.v','photo_resolution_overlay.v','photo_settings_overlay.v','photo_unified_settings_controller.v','photo_menu_font.v','photo_cached_control_a.v','saixian_transition.v','photo_processing.v','photo_display_pipe.v','saixian_hmi_uart.v','saixian_key_debounce.v','photo_auto_advance.v']
     else:shared+=['photo_audio_link.v','photo_audio_features.v','audio_ui/photo_audio_cue_samples.v','photo_sd_audio_stream.v','photo_sd_cache.v','photo_processing.v','photo_b_processing.v']
+    if role=='board_a':shared+=['audio_ui/saixian_audio_visualizer.v']
+    else:shared+=['audio_ui/saixian_audio_repair.v']
     if role=='board_a':shared+=['award_fx.v','award_sprite_rom.v','photo_award_render.v','photo_boot_screen.v']
     paths+=['../../../../common/'+p for p in shared]
     if role=='board_b':paths+=['../../../../common/photo_sd/'+p.name for p in (ROOT/'common/photo_sd').glob('*.v')]

@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 labels = {
     0: "综合设置", 8: "切换方式", 9: "自动轮播", 14: "音量", 15: "音频显示",
     16: "频谱", 17: "波形", 18: "关闭", 19: "开启", 20: "随机", 21: "左右滑动",
-    22: "中心展开", 23: "百叶窗", 24: "对角", 25: "溶解", 26: "渐暗", 27: "色彩精度", 28: "普通", 29: "高精度",
+    22: "中心展开", 23: "百叶窗", 24: "对角", 25: "溶解", 26: "渐暗", 27: "色彩精度", 28: "普通", 29: "高精度", 30: "音频修复",
 }
 glyphs = {}
 for label in labels.values():
@@ -54,20 +54,20 @@ module photo_settings_overlay #(parameter VIDEO_DELAY=21)(
  input clk,rst,frame_tick,de,settings_mode,updating,
  input [11:0] x,input [10:0] y,input [3:0] setting_item,
  input [3:0] volume,brightness,contrast,saturation,input [1:0] sharpness,enhancement,
- input invert,vintage,input [2:0] effect,input auto_enable,waveform_mode,high_color,
+ input invert,vintage,input [2:0] effect,input auto_enable,waveform_mode,high_color,audio_repair_enable,
  input [23:0] rgb_in,output [23:0] rgb_out
 );
 reg visible,pending;reg [3:0] selected;
-reg [3:0] values[0:11];
+reg [3:0] values[0:12];
 always @(posedge clk or posedge rst)begin
  if(rst)begin visible<=0;pending<=0;selected<=0;
   values[0]<=5;values[1]<=4;values[2]<=4;values[3]<=1;values[4]<=4;
-  values[5]<=0;values[6]<=0;values[7]<=1;values[8]<=0;values[9]<=0;values[10]<=0;values[11]<=0;
+  values[5]<=0;values[6]<=0;values[7]<=1;values[8]<=0;values[9]<=0;values[10]<=0;values[11]<=0;values[12]<=0;
  end else if(frame_tick)begin
   visible<=settings_mode;pending<=updating;selected<=setting_item;
   values[0]<=volume;values[1]<=brightness;values[2]<=contrast;values[3]<={2'd0,sharpness};values[4]<=saturation;
   values[5]<={3'd0,invert};values[6]<={3'd0,vintage};values[7]<={2'd0,enhancement};
-  values[8]<=high_color ? 4'd6:{1'b0,effect};values[9]<={3'd0,auto_enable};values[10]<={3'd0,waveform_mode};values[11]<={3'd0,high_color};
+  values[8]<={1'b0,effect};values[9]<={3'd0,auto_enable};values[10]<={3'd0,waveform_mode};values[11]<={3'd0,high_color};values[12]<={3'd0,audio_repair_enable};
  end
 end
 '''
@@ -90,7 +90,7 @@ always @*begin
   end else if(y>=96 && y<128 && x>=688 && x<784)begin
    glyph=text_glyph(pending ? 10:11,(x-688)>>5);font_row=label_y[4:1];font_col=(x-688)>>1;text_on=1;
    text_color=pending ? 24'hffd166:24'h7de3ff;
-  end else if(y>=144 && y<528 && row_index<=11)begin
+  end else if(y>=144 && y<560 && row_index<=12)begin
    value=values[row_index];highlight=row_index==selected;
    case(row_index)
     0,1,2,4:bar_width={5'd0,value}*9'd28;
@@ -99,14 +99,14 @@ always @*begin
     default:bar_width=0;
    endcase
    case(row_index)
-    5,6,9:value_label=value==0 ? 18:19;
+    5,6,9,12:value_label=value==0 ? 18:19;
     8:value_label=5'd20+{1'b0,value};
     10:value_label=value==0 ? 16:17;
     11:value_label=value==0 ? 28:29;
     default:value_label=0;
    endcase
    if(x>=96 && x<288)begin
-    glyph=text_glyph(row_index==0 ? 5'd14:row_index==10 ? 5'd15:row_index==11 ? 5'd27:{1'b0,row_index},label_x[8:5]);
+    glyph=text_glyph(row_index==12 ? 5'd30:row_index==0 ? 5'd14:row_index==10 ? 5'd15:row_index==11 ? 5'd27:{1'b0,row_index},label_x[8:5]);
     font_col=label_x[4:1];font_row=row_local[4:1];text_on=1;
    end else if(x>=608 && x<800)begin
     glyph=value_label!=0 ? text_glyph(value_label,value_x[8:5]):value_x[8:5]==0 ? 7'd35+value:7'd0;

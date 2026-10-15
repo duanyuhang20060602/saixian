@@ -10,12 +10,6 @@ reg [15:0] low_pixel;reg active_previous,phase_previous;
 wire need_word=high_color ? x[1:0]!=2'd3:!x[0];
 wire blank_start=x==0 && y==720;
 assign read_en=de && need_word && armed && !empty && !frame_bad;
-function [7:0] limited;
- input [7:0] value;
- // 16 + round(219 * value / 256): full-range RGB565 to AVI limited RGB.
- reg [15:0] product;
- begin product=value*8'd219+16'd128;limited=8'd16+product[15:8];end
-endfunction
 function [23:0] expand;
  input [15:0] pixel;
  begin expand={{pixel[15:11],pixel[15:13]},

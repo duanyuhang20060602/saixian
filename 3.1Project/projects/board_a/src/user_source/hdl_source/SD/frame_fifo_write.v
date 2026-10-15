@@ -12,6 +12,7 @@ module frame_fifo_write
 )               
 (
 	input high_color,
+    input read_urgent,
 	input                            rst,                  
 	input                            mem_clk,                    // external memory controller user interface clock
 	input							 Sdr_init_done,
@@ -92,7 +93,7 @@ assign write_data_ready = ((write_len_latch <= (rdusedw + write_cnt)) ||
 
 assign App_wr_addr = {App_wr_addr_r[ADDR_BITS - 1:0]};
 //assign O_wr_busy = (state != S_IDLE || (S_IDLE && write_req_d2));
-assign O_wr_busy = (state == S_WRITE_BURST || (state == S_CHECK_FIFO && into_burst));//在突发，或者将要突发，则显示busy
+assign O_wr_busy = (state == S_WRITE_BURST || (state == S_CHECK_FIFO && into_burst && !read_urgent));//在突发，或者将要突发，则显示busy
 assign wr_burst_finish = (burst_cnt >= burst_size);
 assign write_finish = (state == S_END) ? 1'b1 : 1'b0;            //write finish at state 'S_END'
 assign App_wr_en = App_wr_en_d0;
@@ -105,9 +106,9 @@ always @(posedge mem_clk or posedge rst)
 begin
 	if(rst)
 		into_burst <= 1'b0;
-	else if(state != S_CHECK_FIFO)
+	else if(state != S_CHECK_FIFO || read_urgent)
 		into_burst <= 1'b0;
-	else if(!into_burst && write_data_ready)
+	else if(!into_burst && write_data_ready && !read_urgent)
 		into_burst <= 1'b1;
 end
 
@@ -266,7 +267,7 @@ begin
 					state <= S_ACK;
 				end
 				//if the FIFO space is a burst write request, goto burst write state
-				else if(into_burst && ~App_rd_busy)
+				else if(into_burst && ~App_rd_busy && !read_urgent)
 				begin
 					state <= S_WRITE_BURST;
 					//wr_burst_len <= BURST_SIZE[BURST_BITS - 1:0];

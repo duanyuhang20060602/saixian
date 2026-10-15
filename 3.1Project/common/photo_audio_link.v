@@ -22,12 +22,12 @@ always @(posedge clk or posedge rst)begin
 end
 endmodule
 
-module photo_audio_spi_b(
+module photo_audio_spi_b #(parameter CATALOG_STATUS=0)(
  input clk,rst,input spi_sclk,spi_cs,spi_mosi,output reg spi_miso,output packet_active,
- input [7:0] active_epoch,input [2:0] active_track,track_count,input switching,
+ input catalog_complete,input [7:0] active_epoch,input [2:0] active_track,track_count,input switching,
  input [13:0] fifo_used,input [31:0] processed_pcm,input bg_enabled,output reg sample_prepare,output reg fifo_read,
  output reg request_valid,output reg [7:0] request_epoch,output reg [2:0] request_track,
- output reg request_bg,output reg [3:0] request_volume,request_cue
+ output reg request_bg,request_repair,output reg [3:0] request_volume,request_cue
 );
 reg spi_sclk_meta,sclk_sync,sclk_previous,spi_cs_meta,cs_sync,cs_previous;
 reg spi_mosi_meta,mosi_sync;
@@ -42,10 +42,10 @@ reg [31:0] tx_shift,rx_shift;reg [5:0] bit_index;reg [8:0] word_index;
 reg word_complete;reg [7:0] packet_epoch;reg [8:0] payload_words;
 wire [31:0] received_word={rx_shift[30:0],mosi_sync};
 wire can_send=!switching && (fifo_used>=128 || !bg_enabled) && packet_epoch==active_epoch && request_epoch==active_epoch;
-wire [31:0] status_word={8'hb6,active_epoch,5'd0,track_count,5'd0,active_track};
+wire [31:0] status_word={8'hb6,active_epoch,(CATALOG_STATUS ? catalog_complete:1'b0),4'd0,track_count,5'd0,active_track};
 always @(posedge clk or posedge rst)begin
  if(rst)begin spi_miso<=0;tx_shift<=0;rx_shift<=0;bit_index<=0;word_index<=0;word_complete<=0;
-  packet_epoch<=0;payload_words<=0;fifo_read<=0;sample_prepare<=0;request_bg<=1;request_volume<=5;request_cue<=0;request_valid<=0;request_epoch<=0;request_track<=0;end
+  packet_epoch<=0;payload_words<=0;fifo_read<=0;sample_prepare<=0;request_bg<=1;request_repair<=0;request_volume<=5;request_cue<=0;request_valid<=0;request_epoch<=0;request_track<=0;end
  else begin
   fifo_read<=0;sample_prepare<=0;request_valid<=0;
   if(cs_previous && !cs_sync)begin
@@ -56,11 +56,11 @@ always @(posedge clk or posedge rst)begin
    if(rise)begin
     rx_shift<=received_word;
     
-    if(bit_index==29 && payload_words==128 && word_index>=1 && word_index<129)begin fifo_read<=bg_enabled;sample_prepare<=1;end
+    if(bit_index==16 && payload_words==128 && word_index>=1 && word_index<129)begin fifo_read<=bg_enabled;sample_prepare<=1;end
     if(bit_index==31)begin
      bit_index<=0;word_index<=word_index+1'b1;word_complete<=1;
      if(word_index==0 && received_word[31:24]==8'ha6)begin
-      request_valid<=1;request_epoch<=received_word[23:16];request_track<=received_word[10:8];request_bg<=received_word[15];request_volume<=received_word[14:11];request_cue<=received_word[7:4];
+      request_valid<=1;request_epoch<=received_word[23:16];request_track<=received_word[10:8];request_bg<=received_word[15];request_repair<=received_word[0];request_volume<=received_word[14:11];request_cue<=received_word[7:4];
      end
     end else bit_index<=bit_index+1'b1;
    end
@@ -79,9 +79,9 @@ always @(posedge clk or posedge rst)begin
 end
 endmodule
 
-module photo_audio_spi_a #(parameter CLK_HZ=75000000,HALF_DIV=10)(
- input clk,rst,next_track,bg_enable,input [3:0] volume,cue_event,input spi_miso,output reg spi_sclk,spi_cs,spi_mosi,
- output reg [2:0] track_count,track_index,output reg [7:0] desired_epoch,
+module photo_audio_spi_a #(parameter CLK_HZ=75000000,HALF_DIV=10,STARTUP_SYNC=0)(
+ input clk,rst,next_track,bg_enable,repair_enable,playback_hold,input [3:0] volume,cue_event,input spi_miso,output reg spi_sclk,spi_cs,spi_mosi,
+ output buffer_ready,output reg catalog_complete,output reg [2:0] track_count,track_index,output reg [7:0] desired_epoch,
  output reg sample_valid,output reg [23:0] audio_left,audio_right,
  output reg [15:0] packet_errors,underflows,
  output [3:0] diagnostic_stage,buffer_level,output reg header_seen,pcm_seen,nonzero_seen
@@ -103,6 +103,8 @@ wire fifo_read=!sample_ready && !read_pending && !fifo_empty;
 photo_audio_fifo fifo(.clk(clk),.rst(fifo_rst),.write_en(fifo_write && !change_audio),.write_data(fifo_input),
  .read_en(fifo_read && !change_audio),.data(fifo_data),.empty(fifo_empty),.full(fifo_full),.used(fifo_used));
 reg [26:0] sample_phase;reg playing;
+wire held=STARTUP_SYNC && playback_hold;
+assign buffer_ready=sample_ready && fifo_used>=511;
 wire sample_tick=sample_phase>=CLK_HZ-48000;
 assign buffer_level=fifo_used[13] ? 4'd8:{1'b0,fifo_used[12:10]};
 assign diagnostic_stage=!header_seen ? 4'd1:track_count==0 ? 4'd2:!pcm_seen ? 4'd3:
@@ -117,10 +119,10 @@ always @(posedge clk or posedge rst)begin
   else begin
    read_pending<=fifo_read;
    if(read_pending)begin sample_word<=fifo_data;sample_ready<=1;end
-   if(!playing && fifo_used>=512)playing<=1;
+   if(!playing && (fifo_used>=512 || (STARTUP_SYNC && buffer_ready)))playing<=1;
    if(sample_tick)begin
-    if(playing && sample_ready)begin audio_left<={sample_word[15:0],8'd0};audio_right<={sample_word[31:16],8'd0};sample_ready<=0;end
-    else begin audio_left<=0;audio_right<=0;if(playing && underflows!=16'hffff)underflows<=underflows+1'b1;end
+    if(!held && playing && sample_ready)begin audio_left<={sample_word[15:0],8'd0};audio_right<={sample_word[31:16],8'd0};sample_ready<=0;end
+    else begin audio_left<=0;audio_right<=0;if(!held && playing && underflows!=16'hffff)underflows<=underflows+1'b1;end
    end
   end
  end
@@ -134,7 +136,7 @@ always @(posedge clk or posedge rst)begin
  if(rst)begin state<=IDLE;spi_cs<=1;spi_sclk<=0;spi_mosi<=0;divider<=0;idle_wait<=0;
   tx_shift<=0;rx_shift<=0;bit_index<=0;word_index<=0;payload_words<=0;
   finishing<=0;header_magic<=0;header_match<=0;
-  sent_bg<=1;sent_volume<=5;sent_cue<=0;header_seen<=0;pcm_seen<=0;nonzero_seen<=0;track_count<=0;track_index<=0;desired_epoch<=0;packet_errors<=0;fifo_write<=0;fifo_input<=0;end
+  catalog_complete<=0;sent_bg<=1;sent_volume<=5;sent_cue<=0;header_seen<=0;pcm_seen<=0;nonzero_seen<=0;track_count<=0;track_index<=0;desired_epoch<=0;packet_errors<=0;fifo_write<=0;fifo_input<=0;end
  else if(change_audio)begin
   sent_bg<=bg_enable;sent_volume<=volume;sent_cue<=cue_event;
   if(change_track)track_index<=track_index==track_count-1 ? 0:track_index+1'b1;desired_epoch<=desired_epoch+1'b1;
@@ -147,7 +149,7 @@ always @(posedge clk or posedge rst)begin
     if(idle_wait!=0)idle_wait<=idle_wait-1'b1;
     else if(fifo_used<=4096)begin
      spi_cs<=0;spi_sclk<=0;spi_mosi<=1;divider<=0;
-     tx_shift<={8'ha6,desired_epoch,sent_bg,sent_volume,track_index,sent_cue,4'd0};rx_shift<=0;
+     tx_shift<={8'ha6,desired_epoch,sent_bg,sent_volume,track_index,sent_cue,3'd0,repair_enable};rx_shift<=0;
      bit_index<=0;word_index<=0;payload_words<=0;finishing<=0;header_magic<=0;header_match<=0;state<=TRANSFER;
     end
    end
@@ -159,9 +161,9 @@ always @(posedge clk or posedge rst)begin
      if(bit_index==31)begin
       bit_index<=0;word_index<=word_index+1'b1;
       if(word_index==0)begin
-       header_magic<=received_word[31:24]==8'hb6 && received_word[15:8]<=5;
+       header_magic<=received_word[31:24]==8'hb6 && received_word[14:11]==0 && received_word[10:8]<=5;
        header_match<=received_word[23:16]==desired_epoch && received_word[7:0]=={5'd0,track_index};
-       if(received_word[31:24]==8'hb6 && received_word[15:8]<=5)begin track_count<=received_word[10:8];header_seen<=1;end
+       if(received_word[31:24]==8'hb6 && received_word[14:11]==0 && received_word[10:8]<=5)begin catalog_complete<=received_word[15];track_count<=received_word[10:8];header_seen<=1;end
       end else if(word_index==1)begin
        if(received_word==128)payload_words<=128;
        else begin finishing<=1;

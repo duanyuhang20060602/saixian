@@ -26,6 +26,7 @@
   "../../../../common/photo_audio_features.v",
   "../../../../common/audio_ui/photo_audio_cue_samples.v",
   "../../../../common/photo_color_format.v",
+  "../../../../common/audio_ui/saixian_audio_repair.v",
   "../../../../common/photo_sd/bmp_read.v",
   "../../../../common/photo_sd/photo_dlt_header.v",
   "../../../../common/photo_sd/photo_dlt_reader.v",

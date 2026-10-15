@@ -17,6 +17,7 @@ module frame_fifo_read
     input                            Sdr_rd_en,
     input                            App_wr_busy,
     output                           O_rd_busy,
+    output                           read_urgent,
     output                           App_rd_en,
     output [ADDR_BITS-1:0]           App_rd_addr,
     input                            read_req,
@@ -69,6 +70,7 @@ reg slide_active_latch, slide_right_latch;
 reg [2:0] transition_mode_latch;
 reg [10:0] slide_offset_latch;
 reg [10:0] issue_x;
+reg [8:0] rgb_group;reg [1:0] rgb_word_phase;
 reg [9:0] issue_y;
 reg [1:0] row_phase;
 reg old_vga_latch, new_vga_latch;
@@ -95,6 +97,10 @@ wire rd_vld = (state == S_READ_BURST && burst_cnt >= BURST_SIZE);
 wire rd_burst_finish = rd_vld && (rd_delay == 4'd10);
 assign read_finish = (state == S_END);
 assign O_rd_busy = (state == S_READ_BURST);
+// A 128-word write turn can consume about 150 display words including
+// turn-around and CDC latency. Retain 512 words before admitting prefetch.
+// Do not reserve memory before the first display read or after frame end.
+assign read_urgent = high_color && state!=S_IDLE && state!=S_END && wrusedw < FIFO_DEPTH/2;
 assign App_rd_en = App_rd_en_d0;
 assign App_rd_addr = App_rd_addr_r;
 
@@ -114,7 +120,13 @@ endfunction
 // operands before arithmetic rather than duplicating a mapper at each call.
 wire first_address = state == S_ACK;
 wire end_of_row = issue_x == (high_color ? 11'd959:FRAME_WIDTH-1);
-wire [10:0] map_x = first_address ? 11'd0 : end_of_row ? 11'd0 : issue_x + 1'b1;
+// RGB888 keeps all three packed words of a four-pixel group on the
+// same source frame and source group. A two-pixel word mapper cannot do this.
+wire [1:0] map_rgb_phase=(first_address || end_of_row || rgb_word_phase==2) ? 2'd0:rgb_word_phase+1'b1;
+wire [8:0] map_group=(first_address || end_of_row) ? 9'd0:rgb_word_phase==2 ? rgb_group+1'b1:rgb_group;
+wire [10:0] map_x = high_color ? {1'b0,map_group,1'b0}:first_address ? 11'd0 : end_of_row ? 11'd0 : issue_x + 1'b1;
+wire [10:0] raw_offset=first_address ? slide_offset_d1:slide_offset_latch;
+wire [10:0] map_offset=high_color ? {raw_offset[10:1],1'b0}:raw_offset;
 wire [9:0] map_y = first_address ? 10'd0 : issue_y + end_of_row;
 wire [ADDR_BITS-1:0] map_old_base = first_address ?
     select_base(slide_active_d1 ? slide_old_d1 : read_addr_index_d1) :
@@ -123,11 +135,11 @@ wire [ADDR_BITS-1:0] map_new_base = first_address ? select_base(slide_new_d1) :
     new_row_base + (end_of_row ? new_row_step : {ADDR_BITS{1'b0}});
 wire [ADDR_BITS-1:0] next_address;
 saixian_frame_mapper #(.ADDR_BITS(ADDR_BITS), .FRAME_WIDTH(FRAME_WIDTH)) u_mapper(
-    .xpos(map_x), .ypos(map_y), .old_base(map_old_base), .new_base(map_new_base),
+    .high_color(high_color),.word_phase(map_rgb_phase),.xpos(map_x), .ypos(map_y), .old_base(map_old_base), .new_base(map_new_base),
     .enabled(first_address ? slide_active_d1 : slide_active_latch),
     .move_right(first_address ? slide_right_d1 : slide_right_latch),
     .effect(first_address ? transition_mode_d1 : transition_mode_latch),
-    .offset(first_address ? slide_offset_d1 : slide_offset_latch),
+    .offset(map_offset),
     .address(next_address));
 
 always @(posedge mem_clk or posedge rst) begin
@@ -170,7 +182,7 @@ always @(posedge mem_clk or posedge rst) begin
         burst_cnt <= 0;
         App_rd_addr_r <= 0;
         App_rd_en_d0 <= 0;
-        issue_x <= 0;
+        issue_x <= 0;rgb_group<=0;rgb_word_phase<=0;
         issue_y <= 0;
         row_phase <= 0;
         old_vga_latch <= 0; new_vga_latch <= 0;
@@ -191,7 +203,7 @@ always @(posedge mem_clk or posedge rst) begin
             slide_right_latch <= slide_right_d1;
             transition_mode_latch <= transition_mode_d1;
             slide_offset_latch <= slide_offset_d1;
-            issue_x <= 0;
+            issue_x <= 0;rgb_group<=0;rgb_word_phase<=0;
             issue_y <= 0;
             row_phase <= 0;
             old_vga_latch <= select_vga(slide_active_d1 ? slide_old_d1 : read_addr_index_d1);
@@ -200,8 +212,11 @@ always @(posedge mem_clk or posedge rst) begin
             new_row_base <= select_base(slide_new_d1);
             App_rd_addr_r <= next_address;
         end else if (App_rd_en) begin
+            if(high_color)begin
+                rgb_word_phase<=map_rgb_phase;rgb_group<=map_group;
+            end
             if (issue_x == (high_color ? 11'd959:FRAME_WIDTH-1)) begin
-                issue_x <= 0;
+                issue_x <= 0;rgb_group<=0;rgb_word_phase<=0;
                 issue_y <= issue_y + 1'b1;
                 row_phase <= (row_phase == 2'd2) ? 2'd0 : row_phase + 1'b1;
                 old_row_base <= old_row_base + old_row_step;
@@ -283,6 +298,7 @@ endmodule
 module saixian_frame_mapper #(
     parameter ADDR_BITS=21, FRAME_WIDTH=640
 )(
+    input high_color,input [1:0] word_phase,
     input [10:0] xpos, input [9:0] ypos,
     input [ADDR_BITS-1:0] old_base, new_base,
     input enabled, move_right, input [2:0] effect, input [10:0] offset,
@@ -297,7 +313,8 @@ reg use_new, subtract_delta;
 reg [11:0] delta;
 reg [ADDR_BITS-1:0] selected_base;
 reg signed [13:0] local_column;
-wire signed [ADDR_BITS-1:0] extended_column=local_column;
+reg signed [14:0] word_column;
+wire signed [ADDR_BITS-1:0] extended_column=word_column;
 assign address=selected_base+extended_column;
 always @* begin
     split=WIDTH_U-{1'b0,offset};
@@ -337,5 +354,7 @@ always @* begin
     end
     selected_base=use_new ? new_base : old_base;
     local_column={3'b0,xpos}+({2'b0,delta}^{14{subtract_delta}})+subtract_delta;
+    word_column=local_column;
+    if(high_color)word_column=(local_column>>>1)+((local_column>>>1)<<<1)+$signed({1'b0,word_phase});
 end
 endmodule

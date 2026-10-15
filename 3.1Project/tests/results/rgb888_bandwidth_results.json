@@ -1,0 +1,36 @@
+[
+  {
+    "test": "rgb888_bandwidth_before",
+    "passed": true,
+    "execution": "Icarus full-frame simulation; direct command output captured in log",
+    "display_words_requested": 691200,
+    "empty_read_opportunities": 184149,
+    "words_popped": 507051,
+    "prefetch_produced_words": 253903,
+    "source_sha256": {
+      "tests/tb_rgb888_bandwidth.v": "569c656e4c3bda955a87abe445cc3752ab791393fb414d4f548fead435259511",
+      "projects/board_a/src/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+      "projects/board_a/src/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+      "tests/reference/rgb888_switch_before/frame_read_write.v": "0e7fcd6b47114cabc102c3960329f8eedb3d28d6879908bdc95a69d03be61ee0",
+      "tests/reference/rgb888_switch_before/frame_fifo_read.v": "377de93b5115a32f0785e4c84841013132665ece2e724730d75005c4e5886f2b",
+      "tests/reference/rgb888_switch_before/frame_fifo_write.v": "db4c73d85fbb1067034154e9b43659c730c8e36b63f64d5c078bff6c5158cfc6"
+    }
+  },
+  {
+    "test": "rgb888_bandwidth_after",
+    "passed": true,
+    "execution": "Icarus full-frame simulation; direct command output captured in log",
+    "display_words_requested": 691200,
+    "empty_read_opportunities": 0,
+    "words_popped": 691200,
+    "prefetch_produced_words": 63111,
+    "source_sha256": {
+      "tests/tb_rgb888_bandwidth.v": "569c656e4c3bda955a87abe445cc3752ab791393fb414d4f548fead435259511",
+      "projects/board_a/src/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+      "projects/board_a/src/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+      "projects/board_a/src/user_source/hdl_source/SD/frame_read_write.v": "d17e880c9ded8c691bfa0f3046333accd2bf2610863186f73ebc973a57e709ba",
+      "projects/board_a/src/user_source/hdl_source/SD/frame_fifo_read.v": "cff78fc58bd884e8c796d55c3c5279fafeb306bc3c5fabe963d163e81352dc09",
+      "projects/board_a/src/user_source/hdl_source/SD/frame_fifo_write.v": "30ccf24859f0c27e35bbe2f9d9b032a10ef7aa5b50a9c3a50a94d9218be1bb08"
+    }
+  }
+]
