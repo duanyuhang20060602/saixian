@@ -1,0 +1,5 @@
+# Preserve the exact bytes recorded in the board-accepted release hashes.
+** -text whitespace=cr-at-eol
+*.bit binary
+*.AUD binary
+*.bmp binary

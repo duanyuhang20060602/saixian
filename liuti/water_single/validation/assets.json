@@ -1,0 +1,61 @@
+[
+  {
+    "source": "C:\\Users\\39742\\Desktop\\01.bmp",
+    "source_size": [
+      1280,
+      720
+    ],
+    "source_sha256": "30b452c067d9f9b46ab6241dec66472cb21ef72552bf7873054738995aa16858",
+    "output": "01.bmp",
+    "sha256": "30b452c067d9f9b46ab6241dec66472cb21ef72552bf7873054738995aa16858"
+  },
+  {
+    "source": "C:\\Users\\39742\\Desktop\\02.bmp",
+    "source_size": [
+      1920,
+      1080
+    ],
+    "source_sha256": "8eeba84538d90820bf0593ac6bef68099f940bc1ebb6b98d535f42f8fd5500cd",
+    "output": "02.bmp",
+    "sha256": "77690adb0c2f412bf99eb2f9d270c71beb8aec243c544999487eb813efb9a022"
+  },
+  {
+    "source": "C:\\Users\\39742\\Desktop\\03.bmp",
+    "source_size": [
+      1280,
+      720
+    ],
+    "source_sha256": "f66a664db11dc1f317d7829c92491d3e56bc0cef6692ccc8746f077f11efcf7f",
+    "output": "03.bmp",
+    "sha256": "f66a664db11dc1f317d7829c92491d3e56bc0cef6692ccc8746f077f11efcf7f"
+  },
+  {
+    "source": "C:\\Users\\39742\\Desktop\\04.bmp",
+    "source_size": [
+      1280,
+      720
+    ],
+    "source_sha256": "d08aa21b0f2b00737f0ed19d4b0eb25b9041f02c739d41a426c693bf83cbd65e",
+    "output": "04.bmp",
+    "sha256": "d08aa21b0f2b00737f0ed19d4b0eb25b9041f02c739d41a426c693bf83cbd65e"
+  },
+  {
+    "source": "C:\\Users\\39742\\Desktop\\05.bmp",
+    "source_size": [
+      640,
+      480
+    ],
+    "source_sha256": "ef49e6699ebcc569cc9200ae4332dca744495fe3d282e2b00e192225cfc4f29a",
+    "output": "05.bmp",
+    "sha256": "c326992cf9726c14811507a696ca3aa0713c0ca54d05ea66c78db30b3f5097cd"
+  },
+  {
+    "source": "E:\\Codex\\Downloads\\qiansai\\liuti\\TIMEBRK.AUD",
+    "output": "TIMEBRK.AUD",
+    "sha256": "6061dc1184e25efde5e6edde0b62be7312e24629cf163f6776c2c984302771d8",
+    "sample_rate": 48000,
+    "bits": 16,
+    "channels": 2,
+    "duration_seconds": 183.49166666666667
+  }
+]
