@@ -9,13 +9,13 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'delivery'
 parser = argparse.ArgumentParser()
-parser.add_argument('--variant', choices=['link25_crc', 'mem67_staged', 'group4_staged', 'av_b_winners', 'fluid_drop', 'fluid_select', 'fluid_priority', 'fluid_smooth'], default='link25_crc')
+parser.add_argument('--variant', choices=['link25_crc', 'mem67_staged', 'group4_staged', 'av_b_winners', 'fluid_drop', 'fluid_select', 'fluid_priority', 'fluid_smooth', 'fluid_second', 'fluid_second6', 'av_refresh6'], default='link25_crc')
 args = parser.parse_args()
-TAG = args.variant if args.variant in ['av_b_winners', 'fluid_drop', 'fluid_select', 'fluid_priority', 'fluid_smooth'] else 'whitebar_' + args.variant
+TAG = args.variant if args.variant in ['av_b_winners', 'fluid_drop', 'fluid_select', 'fluid_priority', 'fluid_smooth', 'fluid_second', 'fluid_second6', 'av_refresh6'] else 'whitebar_' + args.variant
 UPPER = TAG.upper()
 sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
 files = [OUT / (UPPER + '_README.md')]
-if args.variant in ['fluid_select', 'fluid_priority', 'fluid_smooth']:
+if args.variant in ['fluid_select', 'fluid_priority', 'fluid_smooth', 'fluid_second', 'fluid_second6', 'av_refresh6']:
     files += [ROOT / 'FLUID_PORTABILITY_20261018.md', OUT / (TAG + '_resource_comparison.json')]
 boards = {}
 for board in ['a', 'b']:

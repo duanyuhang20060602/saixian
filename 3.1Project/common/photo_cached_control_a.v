@@ -43,7 +43,11 @@ end
 reg [18:0] applied_settings,sent_settings;reg refresh_pending;
 assign receive_fluid=FLUID && !high_color && target!=6;
 wire [31:0] frame_bytes=high_color || receive_fluid ? 32'd2764800:FRAME_BYTES;
-wire settings_dirty=SETTINGS_LINK && settings_state!=applied_settings;
+// Break settings comparison -> context decode -> UART packet enable.
+reg settings_dirty;
+always @(posedge clk or posedge rst)
+ if(rst)settings_dirty<=SETTINGS_LINK;
+ else settings_dirty<=SETTINGS_LINK && settings_state!=applied_settings;
 assign settings_updating=settings_dirty || refresh_pending || (SETTINGS_LINK && (nav_pending || display_pending));
 reg [3:0] state;reg send;reg [159:0] message;
 wire tx_busy,got,bad;wire [159:0] incoming;

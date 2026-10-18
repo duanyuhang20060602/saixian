@@ -7,7 +7,7 @@ module saixian_transition #(parameter ALLOW_IMMEDIATE=0)(
     input  wire [1:0] ready_buf_idx,
     input  wire       ready_slide_right,
     input wire ready_immediate,
-    input  wire [4:0] effect_select, // 0=random, 1..6=legacy effects, 7=water, 8=metal, 9=curl, 10=columns
+    input  wire [4:0] effect_select, // 0=random, 1..6=legacy effects, 7=water, 8=metal, 9=curl, 10=columns, 11=card, 12=accordion, 13=ribbons
     output reg  [1:0] active_buf_idx,
     output reg  [1:0] slide_new_buf_idx,
     output reg        frame_commit_toggle,
@@ -171,14 +171,14 @@ function [4:0] choose_effect;
     reg [4:0] candidate;
     begin
         case (random_value[3:0])
-            6,7,8,9:candidate=water_allowed ? {1'b0,random_value[3:0]}:FX_CENTER;
-            10,11:candidate=FX_DISSOLVE;
-            12,13:candidate=FX_BLINDS;
-            14,15:candidate=FX_DIAGONAL;
+            6,7,8,9,10,11,12:candidate=water_allowed ? {1'b0,random_value[3:0]}:FX_CENTER;
+            13:candidate=FX_DISSOLVE;
+            14:candidate=FX_BLINDS;
+            15:candidate=FX_DIAGONAL;
             default:candidate={1'b0,random_value[3:0]};
         endcase
         if (candidate == previous_effect)
-            choose_effect = (candidate == (water_allowed ? 5'd9:FX_FADE)) ? FX_SLIDE : candidate + 3'd1;
+            choose_effect = (candidate == (water_allowed ? 5'd12:FX_FADE)) ? FX_SLIDE : candidate + 3'd1;
         else
             choose_effect = candidate;
     end
@@ -192,7 +192,7 @@ function [4:0] selected_effect;
     begin
         case (selection)
             3'd1,3'd2,3'd3,3'd4,3'd5,3'd6: selected_effect=selection-3'd1;
-            7,8,9,10:selected_effect=water_allowed ? selection-1'b1:FX_SLIDE;
+            7,8,9,10,11,12,13:selected_effect=water_allowed ? selection-1'b1:FX_SLIDE;
             default: selected_effect=choose_effect(random_value,previous_effect,water_allowed);
         endcase
     end

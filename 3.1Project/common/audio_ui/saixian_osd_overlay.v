@@ -115,29 +115,22 @@ always @(posedge clk) begin
 end
 wire visual_plot_active=de && display_valid_q && error_code_q==0 && !settings_mode &&
     x>=64 && x<576 && y>=320 && y<392;
-// Compute the RAM-backed plot in parallel with the general OSD renderer.
-// Its merge uses the existing following register stage, so RAM comparisons
-// no longer traverse the entire settings/ticker/background priority cone.
+// First stage compares RAM data; the existing next stage applies palette.
+// Background and all masks stay aligned, without adding video latency.
+reg body_q,peak_q,left_q,right_q;reg [23:0] body_color_q;
 always @* begin
-    visual_plot_rgb=plot_background;
-    if(y==320 || y==344 || y==368 || y==391 || x[6:0]==64) visual_plot_rgb=plot_grid;
-    if(!waveform_mode_q) begin
-        if(visual_fft_valid && x[3:0]<12) begin
-            if(visual_height!=0 && visual_distance<=visual_height) begin
-                if(y<344) visual_plot_rgb=24'hFFCF66;
-                else if(y<368) visual_plot_rgb=24'h42E5AF;
-                else visual_plot_rgb=24'h37CFFF;
-            end
-            if(visual_peak!=0 && visual_distance==visual_peak) visual_plot_rgb=24'hFFF0C2;
-        end
-    end else begin
-        if(y==356) visual_plot_rgb=plot_axis;
-        if(visual_wave_valid) begin
-            if(wave_left_pixel) visual_plot_rgb=24'h37DFFF;
-            if(wave_right_pixel) visual_plot_rgb=24'hFFB85C;
-            if(wave_left_pixel && wave_right_pixel) visual_plot_rgb=24'hE8F4FF;
-        end
-    end
+ visual_plot_rgb=plot_background;
+ if(y==320 || y==344 || y==368 || y==391 || x[6:0]==64)visual_plot_rgb=plot_grid;
+ if(waveform_mode_q && y==356)visual_plot_rgb=plot_axis;
+end
+reg[23:0] visual_selected;
+always @*begin
+ visual_selected=visual_plot_rgb_q;
+ if(body_q)visual_selected=body_color_q;
+ if(peak_q)visual_selected=24'hFFF0C2;
+ if(left_q)visual_selected=24'h37DFFF;
+ if(right_q)visual_selected=24'hFFB85C;
+ if(left_q && right_q)visual_selected=24'hE8F4FF;
 end
 
 assign font_addr = {glyph_id_q,font_row_q};
@@ -606,7 +599,7 @@ always @(posedge clk or posedge rst) begin
         text_enable_q <= 1'b0;
         text_color_q <= 24'd0;
         render_rgb_q <= 24'd0;
-        visual_plot_rgb_q<=0;visual_plot_active_q<=0;
+        visual_plot_rgb_q<=0;visual_plot_active_q<=0;body_q<=0;peak_q<=0;left_q<=0;right_q<=0;body_color_q<=0;
         display_valid_q<=0;
         error_code_q<=0;
         waveform_mode_q <= 1'b0;
@@ -633,6 +626,11 @@ always @(posedge clk or posedge rst) begin
         text_color_q <= text_color;
         render_rgb_q <= rgb_comb;
         visual_plot_rgb_q<=visual_plot_rgb;visual_plot_active_q<=visual_plot_active;
+        body_q<=!waveform_mode_q && visual_fft_valid && x[3:0]<12 && visual_height!=0 && visual_distance<=visual_height;
+        peak_q<=!waveform_mode_q && visual_fft_valid && x[3:0]<12 && visual_peak!=0 && visual_distance==visual_peak;
+        left_q<=waveform_mode_q && visual_wave_valid && wave_left_pixel;
+        right_q<=waveform_mode_q && visual_wave_valid && wave_right_pixel;
+        body_color_q<=y<344 ? 24'hFFCF66:y<368 ? 24'h42E5AF:24'h37CFFF;
         // Freeze the spectrum controls for the whole video frame.  Updating
         // them at 48 kHz while raster scanning made different lines use
         // different heights/bins, which looked like old-TV sync flicker.
@@ -645,7 +643,7 @@ always @(posedge clk or posedge rst) begin
         text_region_q2 <= text_region_q;
         text_enable_q2 <= text_enable_q;
         text_color_q2 <= text_color_q;
-        render_rgb_q2 <= visual_plot_active_q ? visual_plot_rgb_q : render_rgb_q;
+        render_rgb_q2 <= visual_plot_active_q ? visual_selected : render_rgb_q;
         rgb_out <= (text_region_q2 && font_pixel_q && text_enable_q2) ?
                    text_color_q2 : render_rgb_q2;
     end

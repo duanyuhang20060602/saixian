@@ -1,0 +1,43 @@
+{
+  "archive": "AV_REFRESH6_AB_20261018.zip",
+  "size_bytes": 849425,
+  "sha256": "7a3b421bddeeec80bcbc3e0285f5ae5ee4265fe04c1be1de1dd53b1b01cb2dcd",
+  "boards": {
+    "A": {
+      "artifact": "PHOTO_BOARD_A_720P_V3_1_AV_REFRESH6.bit",
+      "sha256": "905288fd9d8c5457b973bb58a1b9f058628eb935583184df2645ea461c443804",
+      "timing_ns": {
+        "SWNS": 0.131,
+        "STNS": 0.0,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      },
+      "resources": {
+        "lut": 15206,
+        "reg": 12031,
+        "bram": 58,
+        "bram32k": 14,
+        "dsp": 14
+      },
+      "board_validation": "pending"
+    },
+    "B": {
+      "artifact": "PHOTO_BOARD_B_720P_V3_1_AV_REFRESH6.bit",
+      "sha256": "a116f8df5b55e8949efecde88d4730a275cbf8d426371abded1c18e8103d4adc",
+      "timing_ns": {
+        "SWNS": 0.059,
+        "STNS": 0.0,
+        "HWNS": 0.021,
+        "HTNS": 0.0
+      },
+      "resources": {
+        "lut": 12774,
+        "reg": 8934,
+        "bram": 60,
+        "bram32k": 12,
+        "dsp": 10
+      },
+      "board_validation": "pending"
+    }
+  }
+}

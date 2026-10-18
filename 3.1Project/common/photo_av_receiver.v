@@ -3,7 +3,7 @@
 // audio. Incomplete/bad-CRC requests never become visible. Oldest eligible
 // snapshots retire at vertical blanking, independent of metadata reception.
 module photo_av_metadata_a(
- input clk,rst,frame_tick,input [31:0] play_position,
+ input clk,rst,frame_tick,input [31:0] play_position,received_position,
  input begin_packet,word_valid,commit_packet,finish_packet,
  input [8:0] word_index,input [31:0] word_data,
  output available,input [4:0] read_band,input [7:0] read_index,
@@ -79,10 +79,13 @@ always @(posedge clk or posedge rst)begin
    for(i=0;i<4;i=i+1)
     if(occupied[i] && $signed(bank_generation[selected_bank]-bank_generation[i])>=0)occupied[i]<=0;
   end
-  if(begin_packet && available)begin write_bank<=free_bank;receiving<=1;packet_flags<=0;packet_position<=0;end
+  if(begin_packet && available)begin write_bank<=free_bank;receiving<=1;packet_flags<=0;packet_position<=received_position;end
   if(word_valid && receiving)begin
    if(word_index==0)packet_flags<=word_data[31:8]==24'h415631 ? word_data[1:0]:2'd0;
-   if(word_index==1)packet_position<=word_data;
+   // The B snapshot request follows all preceding PCM words. Timestamp it
+   // using locally accepted PCM, in the same epoch as play_position. Remote
+   // sent counts can include rejected/aborted packets and must not block banks.
+   // Word 1 remains in the wire protocol and CRC for compatibility.
   end
   if(finish_packet)begin
    receiving<=0;

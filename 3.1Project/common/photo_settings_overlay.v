@@ -253,6 +253,24 @@ function [6:0] text_glyph;
     3:text_glyph=7'd113;
     default:text_glyph=0;
    endcase
+   36:case(index)
+    0:text_glyph=7'd114;
+    1:text_glyph=7'd115;
+    2:text_glyph=7'd109;
+    3:text_glyph=7'd110;
+    default:text_glyph=0;
+   endcase
+   37:case(index)
+    0:text_glyph=7'd116;
+    1:text_glyph=7'd117;
+    2:text_glyph=7'd118;
+    default:text_glyph=0;
+   endcase
+   38:case(index)
+    0:text_glyph=7'd119;
+    1:text_glyph=7'd120;
+    default:text_glyph=0;
+   endcase
    default:text_glyph=0;
  endcase end
 endfunction
@@ -286,7 +304,7 @@ always @*begin
    endcase
    case(row_index)
     5,6,9,12,13:value_label=value==0 ? 18:19;
-    8:value_label=value>=7 ? 6'd24+value:6'd20+value;
+    8:value_label=value>=11 ? 6'd25+value:value>=7 ? 6'd24+value:6'd20+value;
     10:value_label=value==0 ? 16:17;
     11:value_label=value==0 ? 28:29;
     default:value_label=0;

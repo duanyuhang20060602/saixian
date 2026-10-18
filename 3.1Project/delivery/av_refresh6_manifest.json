@@ -1,0 +1,59 @@
+{
+  "boards": {
+    "A": {
+      "artifact": "PHOTO_BOARD_A_720P_V3_1_AV_REFRESH6.bit",
+      "sha256": "905288fd9d8c5457b973bb58a1b9f058628eb935583184df2645ea461c443804",
+      "timing_ns": {
+        "SWNS": 0.131,
+        "STNS": 0.0,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      },
+      "resources": {
+        "lut": 15206,
+        "reg": 12031,
+        "bram": 58,
+        "bram32k": 14,
+        "dsp": 14
+      },
+      "board_validation": "pending"
+    },
+    "B": {
+      "artifact": "PHOTO_BOARD_B_720P_V3_1_AV_REFRESH6.bit",
+      "sha256": "a116f8df5b55e8949efecde88d4730a275cbf8d426371abded1c18e8103d4adc",
+      "timing_ns": {
+        "SWNS": 0.059,
+        "STNS": 0.0,
+        "HWNS": 0.021,
+        "HTNS": 0.0
+      },
+      "resources": {
+        "lut": 12774,
+        "reg": 8934,
+        "bram": 60,
+        "bram32k": 12,
+        "dsp": 10
+      },
+      "board_validation": "pending"
+    }
+  },
+  "files_sha256": {
+    "AV_REFRESH6_README.md": "216dbd9d58c1afa7f5a03542426385ce26f7242b38141383970f4804badf4d24",
+    "FLUID_PORTABILITY_20261018.md": "71e4ece7d3874f2db169f8e2886b465d4046101278f0963d2b82df38859c3fbe",
+    "av_refresh6_resource_comparison.json": "37cf8df72235e737828fd5cd689f407e527cd06cc5e1effe21fb35ae09ddd933",
+    "PHOTO_BOARD_A_720P_V3_1_AV_REFRESH6.bit": "905288fd9d8c5457b973bb58a1b9f058628eb935583184df2645ea461c443804",
+    "board_a_v31_av_refresh6.json": "eed99205ab7cbc4c505d00ad44ec124f074474cea11fbcc1d2a7201b06ea6991",
+    "board_a_av_refresh6_exceptions.txt": "a622690936e68a0e03f1e67282ef6516b87c71735bc1ed9a64ec8db22113f94d",
+    "board_a_av_refresh6_source_snapshot.json": "1b127fb94df1223f081d29c14027bfbd9f5125f6c2c4bb77e31476bf02559390",
+    "board_a_av_refresh6_build.log": "d11eba28a33c7cdb69e19bc5b70b1b8929cdd0bd9e936c2b4ee0c046d43a4350",
+    "board_a_av_refresh6_timing.txt": "27ec21b46eb5c0a1681ac77fce1a895c2347e526c232a51e72684912c25a2b2e",
+    "board_a_av_refresh6_area.txt": "c7a4abf46b343e325d06368b2eee4a584d40de122b048e1a759a05028c708199",
+    "PHOTO_BOARD_B_720P_V3_1_AV_REFRESH6.bit": "a116f8df5b55e8949efecde88d4730a275cbf8d426371abded1c18e8103d4adc",
+    "board_b_v31_av_refresh6.json": "c852a0266902bc23d09dafce5b2afbc27a176ea2edb42c4ee47612eab98a49a5",
+    "board_b_av_refresh6_exceptions.txt": "adfe1483e0655acd94cfb26b184b7d15d355dc17fa762f1d422d79b66661e494",
+    "board_b_av_refresh6_source_snapshot.json": "ec3accf68d70f48e5c05029a0cdc5f8b541c812af199214a79deb9e9cc2f337b",
+    "board_b_av_refresh6_build.log": "55e6b082d814bb76c11be4db78bbb252812113e61908938a8c80caaabb59c91a",
+    "board_b_av_refresh6_timing.txt": "8ea730b44b3a19863eba2986b5fa632a80393b7c0ec90cc6ec193f28e5ad4277",
+    "board_b_av_refresh6_area.txt": "5e8d1c55a6f18b0c8bf1146bc9dc20ff9038cc276d0b80d3ba34e1e34c1bcac9"
+  }
+}

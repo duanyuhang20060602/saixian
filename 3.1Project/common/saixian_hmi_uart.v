@@ -155,7 +155,7 @@ task decode_frame;
                 else frame_error_pulse<=1'b1;
             end
             8'h18: begin
-                if (frame_value <= 10) begin effect_valid<=1'b1; effect_value<=frame_value[4:0]; end
+                if (frame_value <= 13) begin effect_valid<=1'b1; effect_value<=frame_value[4:0]; end
                 else frame_error_pulse<=1'b1;
             end
             8'h1c: if(frame_value<=1)begin edge_valid<=1;edge_value<=frame_value[0];end else frame_error_pulse<=1;

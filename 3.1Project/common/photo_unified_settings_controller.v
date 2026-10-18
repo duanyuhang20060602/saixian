@@ -83,7 +83,7 @@ always @(posedge clk or posedge rst) begin
         enhancement_setting <= 2'd1;
         idle_timer         <= 33'd0;
     end else if (effect_valid) begin
-        if (effect_value <= 10) effect_select <= effect_value;
+        if (effect_value <= 13) effect_select <= effect_value;
         idle_timer <= 33'd0;
     end else if(edge_valid)begin
         edge_enable<=edge_value;idle_timer<=0;
@@ -156,7 +156,7 @@ always @(posedge clk or posedge rst) begin
                 3'd5: invert_setting <= 1'b1;
                 3'd6: vintage_setting <= 1'b1;
                 3'd7: if(enhancement_setting<2) enhancement_setting<=enhancement_setting+1'b1;
-                4'd8: if(effect_select<10) effect_select<=effect_select+1'b1;
+                4'd8: if(effect_select<13) effect_select<=effect_select+1'b1;
                 4'd9: auto_enable<=1'b1;
                 4'd10: waveform_mode<=1;
                 4'd11: high_color_requested<=1;

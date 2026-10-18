@@ -1,0 +1,62 @@
+{
+  "a": {
+    "before": {
+      "lut": 15166,
+      "reg": 11996,
+      "bram": 58,
+      "bram32k": 14,
+      "dsp": 14
+    },
+    "after": {
+      "lut": 15206,
+      "reg": 12031,
+      "bram": 58,
+      "bram32k": 14,
+      "dsp": 14
+    },
+    "delta": {
+      "lut": 40,
+      "reg": 35,
+      "bram": 0,
+      "bram32k": 0,
+      "dsp": 0
+    },
+    "timing_ns": {
+      "SWNS": 0.131,
+      "STNS": 0.0,
+      "HWNS": 0.022,
+      "HTNS": 0.0
+    },
+    "build_mode": "full synthesis/place/route/bitgen"
+  },
+  "b": {
+    "before": {
+      "lut": 12774,
+      "reg": 8934,
+      "bram": 60,
+      "bram32k": 12,
+      "dsp": 10
+    },
+    "after": {
+      "lut": 12774,
+      "reg": 8934,
+      "bram": 60,
+      "bram32k": 12,
+      "dsp": 10
+    },
+    "delta": {
+      "lut": 0,
+      "reg": 0,
+      "bram": 0,
+      "bram32k": 0,
+      "dsp": 0
+    },
+    "timing_ns": {
+      "SWNS": 0.059,
+      "STNS": 0.0,
+      "HWNS": 0.021,
+      "HTNS": 0.0
+    },
+    "build_mode": "full synthesis/place/route/bitgen"
+  }
+}

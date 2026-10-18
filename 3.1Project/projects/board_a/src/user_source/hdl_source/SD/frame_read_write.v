@@ -119,7 +119,7 @@ water_reader #(.FIFO_DEPTH(1024)) fluid_reader(
  .read_addr_1(read_addr_1),.read_addr_2(read_addr_2),.read_addr_3(read_addr_3),
  .read_addr_index(read_addr_index),.slide_old_index(slide_old_index),.slide_new_index(slide_new_index),
  .read_len(read_len),.slide_active(slide_active),.slide_right(slide_right),
- .transition_mode(transition_mode==7 ? 4'd5:transition_mode==8 ? 4'd0:transition_mode==9 ? 4'd3:4'd6),.slide_offset(slide_offset),.water_cfg(fluid_configuration),
+ .transition_mode(transition_mode==7 ? 4'd5:transition_mode==8 ? 4'd0:transition_mode==9 ? 4'd3:transition_mode==10 ? 4'd1:transition_mode==11 ? 4'd4:transition_mode==12 ? 4'd2:4'd6),.slide_offset(slide_offset),.water_cfg(fluid_configuration),
  .force_effect_plane(1'b0),.fifo_aclr(fluid_clear),.wrusedw({1'b0,wrusedw}),
  .fifo_we(fluid_we),.fifo_data(fluid_data),.read_timeouts(fluid_timeouts));
 localparam READ_FIFO_BITS=10;

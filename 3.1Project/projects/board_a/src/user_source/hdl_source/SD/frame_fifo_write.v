@@ -86,16 +86,19 @@ reg App_wr_en_r;
 reg App_wr_en_d0;
 
 reg  into_burst;
-// APUG011 requires >64 MHz for continuous writes. At this 50 MHz
-// interface, issue exactly one native four-word group and then leave
-// ten idle clocks before any next read/write turn. Row/slot bases and
-// lengths are multiples of four in both RGB565 and RGB888.
+// Four-word groups retain refresh and read/write ownership protection.
+// RGB565 adds six write-settle cycles; RGB888 keeps ten cycles.
+// Latch the limit at request acceptance, never change it in-flight.
 wire [BURST_BITS-1:0] burst_size=4;
-reg [3:0] write_settle;
+reg [3:0] write_settle,write_settle_limit;
+always @(posedge mem_clk or posedge rst)
+ if(rst)write_settle_limit<=4'd10;
+ else if(state==S_ACK && write_req_d2)
+  write_settle_limit<=high_color ? 4'd10:4'd6;
 always @(posedge mem_clk or posedge rst)
  if(rst)write_settle<=0;
  else if(state!=S_WRITE_BURST_END)write_settle<=0;
- else if(write_settle<10)write_settle<=write_settle+1'b1;
+ else if(write_settle<write_settle_limit)write_settle<=write_settle+1'b1;
 wire write_data_ready;
 assign write_data_ready = ((write_len_latch <= (rdusedw + write_cnt)) ||
                            (rdusedw > burst_size));
@@ -303,7 +306,7 @@ begin
 			end
             S_WRITE_BURST_END:
             begin
-                if(write_settle>=10)begin
+                if(write_settle>=write_settle_limit)begin
                     if(write_req_d2)state<=S_ACK;
                     else if(write_cnt<write_len_latch)state<=S_CHECK_FIFO;
                     else state<=S_END;

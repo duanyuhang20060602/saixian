@@ -99,7 +99,7 @@ module photo_audio_spi_a #(parameter CLK_HZ=75000000,HALF_DIV=10,STARTUP_SYNC=0,
  output [3:0] diagnostic_stage,buffer_level,output reg header_seen,pcm_seen,nonzero_seen,
  input av_available,output reg av_begin,av_word_valid,av_commit,av_finish,
  output reg [8:0] av_word_index,output reg [31:0] av_word,
- output reg [31:0] play_position,output stream_reset
+ output reg [31:0] play_position,received_position,output stream_reset
 );
 reg spi_miso_meta,miso_sync;
 always @(posedge clk or posedge rst)begin
@@ -127,12 +127,14 @@ assign diagnostic_stage=!header_seen ? 4'd1:track_count==0 ? 4'd2:!pcm_seen ? 4'
  !playing ? 4'd4:underflows!=0 ? 4'd6:4'd5;
 always @(posedge clk or posedge rst)begin
  if(rst)begin sample_phase<=0;sample_valid<=0;audio_left<=0;audio_right<=0;
-  sample_ready<=0;read_pending<=0;sample_word<=0;playing<=0;underflows<=0;play_position<=0;end
+  sample_ready<=0;read_pending<=0;sample_word<=0;playing<=0;underflows<=0;play_position<=0;received_position<=0;end
  else begin
   sample_valid<=sample_tick;
   sample_phase<=sample_tick ? sample_phase-(CLK_HZ-48000):sample_phase+27'd48000;
-  if(change_audio)begin play_position<=0;sample_ready<=0;read_pending<=0;playing<=0;audio_left<=0;audio_right<=0;underflows<=0;end
+  if(change_audio)begin play_position<=0;received_position<=0;sample_ready<=0;read_pending<=0;playing<=0;audio_left<=0;audio_right<=0;underflows<=0;end
   else begin
+   // Count only PCM words accepted into this playback epoch, not remote sends.
+   if(fifo_write && !fifo_full)received_position<=received_position+1'b1;
    read_pending<=fifo_read;
    if(read_pending)begin sample_word<=fifo_data;sample_ready<=1;end
    if(!playing && (fifo_used>=512 || (STARTUP_SYNC && buffer_ready)))playing<=1;
@@ -172,7 +174,7 @@ always @(posedge clk or posedge rst)begin
     else if(fifo_used<=(1<<(FIFO_AW-1)) || choose_av)begin
      spi_cs<=0;spi_sclk<=0;spi_mosi<=1;divider<=0;
      av_transfer<=choose_av;av_begin<=choose_av;rx_av_crc<=32'hffffffff;
-     if(choose_av)meta_cadence<=0;
+     // Keep a due request pending until its CRC-valid snapshot completes.
      tx_shift<={(choose_av ? 8'ha7:8'ha6),desired_epoch,sent_bg,sent_volume,track_index,sent_cue,3'd0,repair_enable};rx_shift<=0;
      bit_index<=0;word_index<=0;payload_words<=0;finishing<=0;header_magic<=0;header_match<=0;state<=TRANSFER;
     end
@@ -200,6 +202,7 @@ always @(posedge clk or posedge rst)begin
         if(word_index<292 && header_magic && header_match)begin av_word_valid<=1;av_word_index<=word_index-9'd2;av_word<=received_word;end
         if(word_index==292)begin
          av_finish<=1;av_commit<=header_magic && header_match && received_word==~rx_av_crc;
+         if(header_magic && header_match && received_word==~rx_av_crc)meta_cadence<=0;
          if(received_word!=~rx_av_crc && packet_errors!=16'hffff)packet_errors<=packet_errors+1'b1;
         end
        end else if(header_magic && header_match)begin fifo_input<=received_word;fifo_write<=1;pcm_seen<=1;if(received_word!=0)nonzero_seen<=1;end
@@ -213,7 +216,8 @@ always @(posedge clk or posedge rst)begin
      if(finishing)begin
       spi_cs<=1;spi_mosi<=0;
       if(av_transfer && payload_words!=291)av_finish<=1;
-      state<=IDLE;idle_wait<=(payload_words==128 || av_transfer) ? 0:CLK_HZ/1000;
+      state<=IDLE;// Guarantee CS high across both oversampling synchronizers before a new packet.
+      idle_wait<=(payload_words==128 || av_transfer) ? CLK_HZ/1000000:CLK_HZ/1000;
      end
     end
    end else divider<=divider+1'b1;

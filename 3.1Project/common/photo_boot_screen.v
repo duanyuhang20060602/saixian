@@ -11,7 +11,13 @@ wire all_ready=frame_ready && (!STAGED_LOADING || (memory_ready && catalog_ready
 wire [8:0] target=STAGED_LOADING ?
  (!memory_ready || !animation_ready ? 9'd120:!catalog_ready || !frame_ready ? 9'd240:!audio_ready ? 9'd360:9'd480):
  (frame_ready ? 9'd480:catalog_ready ? 9'd400:memory_ready ? 9'd224:9'd80);
-wire [2:0] loading_stage=!memory_ready ? 0:progress<240 ? 1:progress<360 ? 2:progress<480 ? 3:4;
+// Decode the slowly changing loading milestone before the glyph/color path.
+// This one-clock metadata register updates during vertical blanking; the
+// coordinate/RGB pipeline keeps exactly VIDEO_DELAY cycles.
+reg [2:0] loading_stage;
+always @(posedge clk or posedge rst)
+ if(rst)loading_stage<=0;
+ else loading_stage<=!memory_ready ? 0:progress<240 ? 1:progress<360 ? 2:progress<480 ? 3:4;
 always @(posedge clk or posedge rst)begin
  if(rst)begin active<=1;elapsed<=0;phase<=0;progress<=STAGED_LOADING ? 9'd120:9'd0;stable<=0;end
  else if(frame_tick && active)begin

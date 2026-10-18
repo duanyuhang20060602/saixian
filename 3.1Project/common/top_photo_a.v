@@ -180,7 +180,7 @@ wire [3:0] audio_diag_stage,audio_buffer_level;wire audio_header_seen,audio_pcm_
 wire boot_active;wire music_buffer_ready,music_catalog_complete;reg startup_released;
 wire audio_sample_valid;wire [23:0] audio_left,audio_right;wire [15:0] audio_packet_errors,audio_underflows;
 wire av_available,av_begin,av_word_valid,av_commit,av_finish,av_stream_reset;
-wire [8:0] av_word_index;wire [31:0] av_word,av_play_position;
+wire [8:0] av_word_index;wire [31:0] av_word,av_play_position,av_received_position;
 photo_audio_spi_a #(.STARTUP_SYNC(1),.FIFO_AW(12),.EXTENDED_AV(1)) audio_link(.playback_hold(!startup_released),.buffer_ready(music_buffer_ready),.catalog_complete(music_catalog_complete),.clk(pixel_clk),.rst(rst_pixel),.bg_enable(bg_music_enable),.repair_enable(audio_repair_enable),.volume(volume),.cue_event(cue_event),
  .next_track(carousel_mode && !result_busy && ((!settings_mode && !award_active && presses[1]) || hmi_music_next)),
  .spi_miso(audio_miso),.spi_sclk(audio_sclk),.spi_cs(audio_cs),.spi_mosi(audio_mosi),
@@ -188,7 +188,7 @@ photo_audio_spi_a #(.STARTUP_SYNC(1),.FIFO_AW(12),.EXTENDED_AV(1)) audio_link(.p
  .diagnostic_stage(audio_diag_stage),.buffer_level(audio_buffer_level),.header_seen(audio_header_seen),.pcm_seen(audio_pcm_seen),.nonzero_seen(audio_nonzero_seen),
  .sample_valid(audio_sample_valid),.audio_left(audio_left),.audio_right(audio_right),.packet_errors(audio_packet_errors),.underflows(audio_underflows),
  .av_available(av_available),.av_begin(av_begin),.av_word_valid(av_word_valid),.av_commit(av_commit),.av_finish(av_finish),
- .av_word_index(av_word_index),.av_word(av_word),.play_position(av_play_position),.stream_reset(av_stream_reset));
+ .av_word_index(av_word_index),.av_word(av_word),.play_position(av_play_position),.received_position(av_received_position),.stream_reset(av_stream_reset));
 // Keep the known 21-cycle RGB path; send aligned AXI pixels to the single-board
 // HDMI core, including an exact last-pixel marker and first-frame marker.
 reg [25:0] audio_video_de,audio_video_sof,audio_video_last,audio_video_vs,audio_video_frame_tick;
@@ -309,7 +309,7 @@ wire [9:0] visual_x=ui_x-10'd64;
 wire [6:0] visual_height,visual_peak;wire [31:0] visual_wave;
 wire visual_fft_valid,visual_wave_valid;
 photo_av_metadata_a visual_cache(.clk(pixel_clk),.rst(rst_pixel || av_stream_reset),.frame_tick(blank_start),
- .play_position(av_play_position),.begin_packet(av_begin),.word_valid(av_word_valid),.commit_packet(av_commit),.finish_packet(av_finish),
+ .play_position(av_play_position),.received_position(av_received_position),.begin_packet(av_begin),.word_valid(av_word_valid),.commit_packet(av_commit),.finish_packet(av_finish),
  .word_index(av_word_index),.word_data(av_word),.available(av_available),
  .read_band(visual_x[8:4]),.read_index(visual_x[8:1]),.height(visual_height),.peak(visual_peak),.extrema(visual_wave),
  .fft_valid(visual_fft_valid),.wave_valid(visual_wave_valid));
