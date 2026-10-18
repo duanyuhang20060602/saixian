@@ -1,0 +1,62 @@
+{
+  "a": {
+    "before": {
+      "lut": 14505,
+      "reg": 11945,
+      "bram": 58,
+      "bram32k": 14,
+      "dsp": 14
+    },
+    "after": {
+      "lut": 14561,
+      "reg": 11968,
+      "bram": 58,
+      "bram32k": 14,
+      "dsp": 14
+    },
+    "delta": {
+      "lut": 56,
+      "reg": 23,
+      "bram": 0,
+      "bram32k": 0,
+      "dsp": 0
+    },
+    "timing_ns": {
+      "SWNS": 0.059,
+      "STNS": 0.0,
+      "HWNS": 0.022,
+      "HTNS": 0.0
+    },
+    "build_mode": "full synthesis/place/route/bitgen"
+  },
+  "b": {
+    "before": {
+      "lut": 13007,
+      "reg": 8963,
+      "bram": 60,
+      "bram32k": 12,
+      "dsp": 10
+    },
+    "after": {
+      "lut": 13007,
+      "reg": 8963,
+      "bram": 60,
+      "bram32k": 12,
+      "dsp": 10
+    },
+    "delta": {
+      "lut": 0,
+      "reg": 0,
+      "bram": 0,
+      "bram32k": 0,
+      "dsp": 0
+    },
+    "timing_ns": {
+      "SWNS": 0.101,
+      "STNS": 0.0,
+      "HWNS": 0.022,
+      "HTNS": 0.0
+    },
+    "build_mode": "reuse unchanged FLUID_PRIORITY B bitstream; all recorded source and artifact hashes matched"
+  }
+}

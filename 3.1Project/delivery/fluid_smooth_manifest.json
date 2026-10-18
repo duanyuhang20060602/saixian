@@ -1,0 +1,59 @@
+{
+  "boards": {
+    "A": {
+      "artifact": "PHOTO_BOARD_A_720P_V3_1_FLUID_SMOOTH.bit",
+      "sha256": "5f7f5f4764fbd371fc1641a34c8e3af77bfaff8f2b445c408c2d61239af32cb7",
+      "timing_ns": {
+        "SWNS": 0.059,
+        "STNS": 0.0,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      },
+      "resources": {
+        "lut": 14561,
+        "reg": 11968,
+        "bram": 58,
+        "bram32k": 14,
+        "dsp": 14
+      },
+      "board_validation": "pending"
+    },
+    "B": {
+      "artifact": "PHOTO_BOARD_B_720P_V3_1_FLUID_SMOOTH.bit",
+      "sha256": "2c3f791b9cf4d0337b17b1f0227a4a6b22dd4789edb01596eeec8f77fd803131",
+      "timing_ns": {
+        "SWNS": 0.101,
+        "STNS": 0.0,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      },
+      "resources": {
+        "lut": 13007,
+        "reg": 8963,
+        "bram": 60,
+        "bram32k": 12,
+        "dsp": 10
+      },
+      "board_validation": "pending"
+    }
+  },
+  "files_sha256": {
+    "FLUID_SMOOTH_README.md": "afcbfd39d9dac1cd6df14cde95a270889082be7db04ad059ac8f3a56aea35381",
+    "FLUID_PORTABILITY_20261018.md": "fd9a316bf1170f830a33cb6e34fb041c71ca6b3ac4cfc7a91384dd681b08a342",
+    "fluid_smooth_resource_comparison.json": "f03885626d0d178593100a56321d5d3ecc0c47cdbb0dc6d2e54226a06f8d8801",
+    "PHOTO_BOARD_A_720P_V3_1_FLUID_SMOOTH.bit": "5f7f5f4764fbd371fc1641a34c8e3af77bfaff8f2b445c408c2d61239af32cb7",
+    "board_a_v31_fluid_smooth.json": "af617e69e6f361e056b77119eed0b52dcf37122efda6904c4b037fcf4306a7ff",
+    "board_a_fluid_smooth_exceptions.txt": "e3df0ad604b0d2c69812f4da241de05d1fef259b8cabcdc9db5d9de03f1c1e97",
+    "board_a_fluid_smooth_source_snapshot.json": "3b55840944426950e63c8a0e0724d78ddb0c27309dbd8d09fc88e689b54fde81",
+    "board_a_fluid_smooth_build.log": "c074b42d3eb76e625be7496de600cfc2c22dca2e8a4885569ac471fff3364c7c",
+    "board_a_fluid_smooth_timing.txt": "a4ff1c471ce4ab2f6d78e8ca2ab056fb5a3e1a9fc9684474e5f32fa5bdbe91a2",
+    "board_a_fluid_smooth_area.txt": "ac40818dcd79e05e7a3b956b8556ce8663fc232fadb14b596cc02ef9627b4221",
+    "PHOTO_BOARD_B_720P_V3_1_FLUID_SMOOTH.bit": "2c3f791b9cf4d0337b17b1f0227a4a6b22dd4789edb01596eeec8f77fd803131",
+    "board_b_v31_fluid_smooth.json": "d90d1609a7f06bb5e0ad164a4b63ddf79d1ffe297f319faa1680d2e43ff56766",
+    "board_b_fluid_smooth_exceptions.txt": "9b80c74d121a22256e138bf1884eb3dca45fa1b664849122aec902407f8bea93",
+    "board_b_fluid_smooth_source_snapshot.json": "20602b3176c3dca093572af6f5b434975171da8e436718cd582dfa3a6d528fe0",
+    "board_b_fluid_smooth_build.log": "742c5126de16e39e872a4c0eee79f1cf6842f0770d0885a5c36214be6ef058ae",
+    "board_b_fluid_smooth_timing.txt": "0209475381675981359bdfc99ca5c5df4d21676aaa019740d901dee5d40bac33",
+    "board_b_fluid_smooth_area.txt": "43c5a2271d0c2f1824fffdf2509d2ea6731facb16281f31aec18d3ea6990a9e3"
+  }
+}

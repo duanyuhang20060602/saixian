@@ -2,7 +2,7 @@
 // Raw SDRAM remains reusable when controls change. Process each transmitted
 // frame with one immutable settings snapshot, then pack back to RGB565.
 module photo_b_processing #(parameter FRAME_WORDS=460800)(
- input clk,rst,start,abort,read_req,source_ack,source_empty,
+ input clk,rst,start,abort,read_req,effect_plane,source_ack,source_empty,
  input [31:0] source_data,input [18:0] settings_state,input [1:0] image_gain,
  output source_read,input read_en,output empty,output reg [31:0] data
 );
@@ -39,9 +39,14 @@ saixian_picture_adjust_pipe adjust(.clk(clk),.rst(pipeline_reset),.de(enhanced_d
 saixian_hmi_color_style style(.rgb_in(adjusted),.invert(frame_settings[1]),.vintage(frame_settings[0]),.rgb_out(styled));
 reg [7:0] adjusted_valid;
 wire [15:0] processed={styled[23:19],styled[15:10],styled[7:3]};
-wire push;wire [31:0] packed_output;
+wire native_push,aux_push,push;wire [31:0] native_output,aux_output,packed_output;
+assign push=effect_plane ? aux_push:native_push;
+assign packed_output=effect_plane ? aux_output:native_output;
+water_pack auxiliary(.clk(clk),.rst(rst || start || abort),.write_req(1'b0),
+ .pixel_valid(adjusted_valid[7] && !high_color),.pixel(styled),.full(1'b0),
+ .valid(),.data(),.overflow(),.small_valid(aux_push),.small_data(aux_output));
 photo_color_pack packing(.clk(clk),.rst(rst),.clear(start || abort),.high_color(high_color),
- .valid(adjusted_valid[7]),.rgb(styled),.word_valid(push),.word_data(packed_output),.aligned());
+ .valid(adjusted_valid[7]),.rgb(styled),.word_valid(native_push),.word_data(native_output),.aligned());
 always @(posedge clk or posedge rst)begin
  if(rst)begin ack_meta<=0;ack_sync<=0;end
  else begin ack_meta<=source_ack;ack_sync<=ack_meta;end
@@ -79,7 +84,8 @@ always @(posedge clk or posedge rst)begin
   end
   case({source_read,pop})
    2'b10:credits<=credits+1'b1;
-   2'b01:credits<=credits-1'b1;
+   2'b11:if(effect_plane)credits<=credits-1'b1;
+   2'b01:credits<=credits-(effect_plane ? 2'd2:2'd1);
    default:;
   endcase
   if(push)begin queue[wp]<=packed_output;wp<=wp+1'b1;end

@@ -110,7 +110,7 @@ always @(posedge clk or posedge rst)begin
 end
 endmodule
 
-module photo_control_b #(parameter CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SEND_SOURCE_SIZE=0,SETTINGS_LINK=0,AWARD_CONTROL=0)(
+module photo_control_b #(parameter CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SEND_SOURCE_SIZE=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0)(
  input high_color,
  input award_available,award_scan_complete,
  input clk,rst,uart_rx,output uart_tx,input [2:0] image_count,input media_ready,
@@ -121,7 +121,10 @@ module photo_control_b #(parameter CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=18
  output reg display_valid,prefetch_pause,output reg [2:0] display_image,
  output reg [18:0] settings_state,input tx_done,input [31:0] tx_crc,output busy,output reg [3:0] error,output [3:0] debug_state
 );
-wire [31:0] frame_bytes=high_color ? 32'd2764800:FRAME_BYTES;
+wire fluid_frame=FLUID && !high_color && media_target!=6;
+wire [31:0] frame_bytes=high_color || fluid_frame ? 32'd2764800:FRAME_BYTES;
+wire request_fluid=FLUID && !high_color && incoming[98:96]!=6;
+wire [31:0] request_bytes=high_color || request_fluid ? 32'd2764800:FRAME_BYTES;
 localparam TIME_HZ=CLK_HZ/TIMER_SCALE;
 function [159:0] packet;
  input [7:0] kind;input [31:0] session;input [15:0] request_seq;
@@ -177,7 +180,7 @@ always @(posedge clk or posedge rst)begin
     message<=packet(15,session,0,{5'd0,display_image},{6'd0,display_valid,prefetch_pause},0,0,0);send<=1;context_reply<=0;
    end else if(SETTINGS_LINK && settings_reply && high_color==settings_state[18] && !tx_busy && !send)begin
     message<=packet(13,session,0,0,0,0,{13'd0,settings_state},0);send<=1;settings_reply<=0;
-   end else if(got && kind==3 && incoming[151:120]==session && valid_target && incoming[87:56]==frame_bytes && incoming[94]==high_color && high_color==settings_state[18])begin
+   end else if(got && kind==3 && incoming[151:120]==session && valid_target && incoming[87:56]==request_bytes && incoming[93]==request_fluid && incoming[94]==high_color && high_color==settings_state[18])begin
     request_seq<=incoming[119:104];media_target<=incoming[98:96];direction<=incoming[88];retries<=0;
     media_request<=1;state<=LOAD;timer<=0;error<=0;
    end else if(catalog!=announced_count && (image_count>0 || (AWARD_CONTROL && award_available)) && timer>=TIME_HZ/10 && !tx_busy && !send)begin
@@ -195,7 +198,7 @@ always @(posedge clk or posedge rst)begin
    BEGIN_SEND:if(!tx_busy && !send)begin
     // BEGIN does not carry a frame CRC. Flag 7 selects source-size metadata
     // in that field; END/ACCEPT/COMMIT retain their existing CRC semantics.
-    message<=packet(4,session,request_seq,{5'd0,media_target},{SEND_SOURCE_SIZE!=0,high_color,5'd0,direction},frame_bytes,
+    message<=packet(4,session,request_seq,{5'd0,media_target},{SEND_SOURCE_SIZE!=0,high_color,fluid_frame,4'd0,direction},frame_bytes,
       SEND_SOURCE_SIZE ? {source_width,source_height}:32'd0,0);
     send<=1;state<=WAIT_READY;timer<=0;
    end

@@ -5,7 +5,7 @@ rename_clock -name {ext_mem_clk} -source [get_ports {clk}] -master_clock {clk} [
 rename_clock -name {ext_mem_clk_sft} -source [get_ports {clk}] -master_clock {clk} [get_pins {u_sys_pll/pll_inst.clkc[2]}]
 rename_clock -name {board_pixel_clk} -source [get_ports {clk}] -master_clock {clk} [get_pins {u_video_pll/pll_inst.clkc[0]}]
 rename_clock -name {hdmi_5x_clk} -source [get_ports {clk}] -master_clock {clk} [get_pins {u_video_pll/pll_inst.clkc[1]}]
-create_clock -name {link_clk} -period 20.000 -waveform {0.000 10.000} [get_ports {link_clk}]
+create_clock -name {link_clk} -period 40.000 -waveform {0.000 20.000} [get_ports {link_clk}]
 set_input_delay -clock {link_clk} -clock_fall -max 2.000 [get_ports {link_data[*] link_valid link_sof link_eof}]
 set_input_delay -clock {link_clk} -clock_fall -min 0.500 [get_ports {link_data[*] link_valid link_sof link_eof}]
 
@@ -19,8 +19,9 @@ set_false_path -to [get_pins -nowarn {*asy_w_rst*.sr *asy_r_rst*.sr}]
  # physical names belong to a neighboring video register. Match by source
  # and reset pin, not the packed cell name. D paths and Gray checks remain.
 set_false_path -from [get_regs -nowarn {rm/sync_ff* store/rw/frame_fifo_read_m0/fifo_aclr* store/rw/frame_fifo_write_m0/fifo_aclr*}] -to [get_pins -nowarn {*.sr}]
- set_max_delay -datapath_only -from [get_regs {u_clock_check/pixel_gray*}] -to [get_regs {u_clock_check/gray_meta*}] 10.000
-set_min_delay -from [get_regs {u_clock_check/pixel_gray*}] -to [get_regs {u_clock_check/gray_meta*}] 0.000
+# u_clock_check's outputs are unused in this top and synthesis removes the
+# entire monitor (confirmed by the mapped area hierarchy). No monitor Gray
+# bus remains to constrain. The active FIFO Gray buses retain their IP SDC.
 set_false_path -from [get_ports {hdmi_hpd}]
 set_output_delay -clock {link_clk} -max 2.000 [get_ports {link_ready}]
 set_output_delay -clock {link_clk} -min 0.500 [get_ports {link_ready}]
@@ -42,3 +43,9 @@ set_false_path -to [get_regs -nowarn {*color_meta* *color_link_meta*}]
 # local reset flops rcm/rcl. Only asynchronous SR pins are excepted;
 # all register D paths and local reset shift-register paths remain timed.
 set_false_path -from [get_regs -nowarn {image_reset_count* rcm/sync_ff* rcl/sync_ff*}] -to [get_pins -nowarn {*.sr}]
+
+# Additional first-stage samplers for the fluid transaction/frame selectors.
+set_false_path -to [get_regs -nowarn {*fluid_link_meta* *fluid_meta* *fluid_mode_meta* *read_request_pipe[0]* store/rw/fluid_reader/c0*}]
+
+# The fluid reader owns the same asynchronous output-FIFO clear as the legacy reader.
+set_false_path -from [get_regs -nowarn {store/rw/fluid_reader/fifo_aclr*}] -to [get_pins -nowarn {*.sr}]

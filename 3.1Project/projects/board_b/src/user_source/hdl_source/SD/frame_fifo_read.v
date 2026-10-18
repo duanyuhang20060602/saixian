@@ -95,7 +95,9 @@ wire rd_vld = (state == S_READ_BURST && burst_cnt >= BURST_SIZE);
 wire rd_burst_finish = rd_vld && (rd_delay == 4'd10);
 assign read_finish = (state == S_END);
 assign O_rd_busy = (state == S_READ_BURST);
-assign App_rd_en = App_rd_en_d0;
+// A refresh may start after burst admission but before the first command.
+// Pause the accepted command and its address/counter together.
+assign App_rd_en = App_rd_en_d0 && !Sdr_init_ref_vld;
 assign App_rd_addr = App_rd_addr_r;
 
 function [ADDR_BITS-1:0] select_base;
@@ -249,7 +251,7 @@ always @(posedge mem_clk or posedge rst) begin
             S_CHECK_FIFO: begin
                 if (read_req_d2)
                     state <= S_ACK;
-                else if ((wrusedw < FIFO_DEPTH - BURST_SIZE) && !App_wr_busy) begin
+                else if ((wrusedw < FIFO_DEPTH - BURST_SIZE) && !App_wr_busy && !Sdr_init_ref_vld) begin
                     state <= S_READ_BURST;
                     App_rd_en_r <= 1;
                 end

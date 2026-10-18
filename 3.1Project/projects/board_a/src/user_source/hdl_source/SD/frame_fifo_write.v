@@ -86,17 +86,29 @@ reg App_wr_en_r;
 reg App_wr_en_d0;
 
 reg  into_burst;
-wire [BURST_BITS-1:0] burst_size=high_color ? 9'd128:BURST_SIZE;
+// APUG011 requires >64 MHz for continuous writes. At this 50 MHz
+// interface, issue exactly one native four-word group and then leave
+// ten idle clocks before any next read/write turn. Row/slot bases and
+// lengths are multiples of four in both RGB565 and RGB888.
+wire [BURST_BITS-1:0] burst_size=4;
+reg [3:0] write_settle;
+always @(posedge mem_clk or posedge rst)
+ if(rst)write_settle<=0;
+ else if(state!=S_WRITE_BURST_END)write_settle<=0;
+ else if(write_settle<10)write_settle<=write_settle+1'b1;
 wire write_data_ready;
 assign write_data_ready = ((write_len_latch <= (rdusedw + write_cnt)) ||
                            (rdusedw > burst_size));
 
 assign App_wr_addr = {App_wr_addr_r[ADDR_BITS - 1:0]};
 //assign O_wr_busy = (state != S_IDLE || (S_IDLE && write_req_d2));
-assign O_wr_busy = (state == S_WRITE_BURST || (state == S_CHECK_FIFO && into_burst && !read_urgent));//在突发，或者将要突发，则显示busy
+assign O_wr_busy = (state == S_WRITE_BURST || state == S_WRITE_BURST_END || (state == S_CHECK_FIFO && into_burst && !read_urgent));//在突发，或者将要突发，则显示busy
 assign wr_burst_finish = (burst_cnt >= burst_size);
 assign write_finish = (state == S_END) ? 1'b1 : 1'b0;            //write finish at state 'S_END'
-assign App_wr_en = App_wr_en_d0;
+// The write FIFO is popped by this accepted command. If a refresh starts
+// after burst admission, hold both the FIFO word and address until it ends.
+// Gating only the state transition leaves a two-clock launch race.
+assign App_wr_en = App_wr_en_d0 && !Sdr_init_ref_vld;
 
 // Claim the SDRAM write turn before starting a burst.  Keep the claim while a
 // read burst is still active, so the read and write FSMs cannot both start on
@@ -267,7 +279,7 @@ begin
 					state <= S_ACK;
 				end
 				//if the FIFO space is a burst write request, goto burst write state
-				else if(into_burst && ~App_rd_busy && !read_urgent)
+				else if(into_burst && ~App_rd_busy && !read_urgent && !Sdr_init_ref_vld)
 				begin
 					state <= S_WRITE_BURST;
 					//wr_burst_len <= BURST_SIZE[BURST_BITS - 1:0];
@@ -289,24 +301,14 @@ begin
 					//wr_burst_addr <= wr_burst_addr + {{(ADDR_BITS-BURST_BITS){1'b0}},burst_size};
 				end     
 			end
-			S_WRITE_BURST_END:
-			begin
-				//if there is a write request at this time, enter the 'S_ACK' state
-				if(write_req_d2 == 1'b1)
-				begin
-					state <= S_ACK;
-				end
-				//if the write counter value is less than the frame length, continue writing,
-				//otherwise the writing is complete
-				else if(write_cnt < write_len_latch)
-				begin
-					state <= S_CHECK_FIFO;
-				end
-				else
-				begin
-					state <= S_END;
-				end
-			end
+            S_WRITE_BURST_END:
+            begin
+                if(write_settle>=10)begin
+                    if(write_req_d2)state<=S_ACK;
+                    else if(write_cnt<write_len_latch)state<=S_CHECK_FIFO;
+                    else state<=S_END;
+                end
+            end
 			S_END:
 			begin
 				state <= S_IDLE;

@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 labels = {
     0: "综合设置", 8: "切换方式", 9: "自动轮播", 14: "音量", 15: "音频显示",
     16: "频谱", 17: "波形", 18: "关闭", 19: "开启", 20: "随机", 21: "左右滑动",
-    22: "中心展开", 23: "百叶窗", 24: "对角", 25: "溶解", 26: "渐暗", 27: "色彩精度", 28: "普通", 29: "高精度", 30: "音频修复",
+    22: "中心展开", 23: "百叶窗", 24: "对角", 25: "溶解", 26: "渐暗", 27: "色彩精度", 28: "普通", 29: "高精度", 30: "音频修复", 31: "水滴波纹", 32: "液态金属", 33: "卷页", 34: "分列翻转", 35: "音乐边光",
 }
 glyphs = {}
 for label in labels.values():
@@ -41,6 +41,7 @@ tail = text[text.index("reg [5:0] glyph_s1"):] if "reg [5:0] glyph_s1" in text e
 tail = tail.replace("reg [5:0] glyph_s1", "reg [6:0] glyph_s1")
 function = text[text.index("function [5:0] text_glyph") : text.index("wire panel=")] if "function [5:0] text_glyph" in text else text[text.index("function [6:0] text_glyph"):text.index("wire panel=")]
 function = function.replace("function [5:0]", "function [6:0]").replace("6'd", "7'd").replace("input [3:0] text_id", "input [4:0] text_id")
+function = function.replace("input [4:0] text_id", "input [5:0] text_id")
 for ident, label in labels.items():
     body = f"   {ident}:case(index)\n" + "".join(f"    {i}:text_glyph=7'd{glyphs[ch]};\n" for i, ch in enumerate(label)) + "    default:text_glyph=0;\n   endcase\n"
     pattern = rf"   {ident}:case\(index\).*?   endcase\n"
@@ -54,32 +55,32 @@ module photo_settings_overlay #(parameter VIDEO_DELAY=21)(
  input clk,rst,frame_tick,de,settings_mode,updating,
  input [11:0] x,input [10:0] y,input [3:0] setting_item,
  input [3:0] volume,brightness,contrast,saturation,input [1:0] sharpness,enhancement,
- input invert,vintage,input [2:0] effect,input auto_enable,waveform_mode,high_color,audio_repair_enable,
+ input invert,vintage,input [4:0] effect,input edge_enable,auto_enable,waveform_mode,high_color,audio_repair_enable,
  input [23:0] rgb_in,output [23:0] rgb_out
 );
 reg visible,pending;reg [3:0] selected;
-reg [3:0] values[0:12];
+reg [4:0] values[0:13];
 always @(posedge clk or posedge rst)begin
  if(rst)begin visible<=0;pending<=0;selected<=0;
   values[0]<=5;values[1]<=4;values[2]<=4;values[3]<=1;values[4]<=4;
-  values[5]<=0;values[6]<=0;values[7]<=1;values[8]<=0;values[9]<=0;values[10]<=0;values[11]<=0;values[12]<=0;
+  values[5]<=0;values[6]<=0;values[7]<=1;values[8]<=0;values[9]<=0;values[10]<=0;values[11]<=0;values[12]<=0;values[13]<=0;
  end else if(frame_tick)begin
   visible<=settings_mode;pending<=updating;selected<=setting_item;
   values[0]<=volume;values[1]<=brightness;values[2]<=contrast;values[3]<={2'd0,sharpness};values[4]<=saturation;
   values[5]<={3'd0,invert};values[6]<={3'd0,vintage};values[7]<={2'd0,enhancement};
-  values[8]<={1'b0,effect};values[9]<={3'd0,auto_enable};values[10]<={3'd0,waveform_mode};values[11]<={3'd0,high_color};values[12]<={3'd0,audio_repair_enable};
+  values[8]<=effect;values[9]<={3'd0,auto_enable};values[10]<={3'd0,waveform_mode};values[11]<={3'd0,high_color};values[12]<={4'd0,audio_repair_enable};values[13]<={4'd0,edge_enable};
  end
 end
 '''
-layout = '''wire panel=de && visible && x>=64 && x<864 && y>=80 && y<624;
+layout = '''wire panel=de && visible && x>=64 && x<864 && y>=80 && y<688;
 wire [10:0] row_y=y-11'd144;
 wire [3:0] row_index=row_y[8:5];
 wire [4:0] row_local=row_y[4:0];
 wire [11:0] label_x=x-12'd96,value_x=x-12'd608;
-wire [10:0] label_y=y-11'd96,footer_y=y-11'd560;
+wire [10:0] label_y=y-11'd96,footer_y=y-11'd608;
 reg [6:0] glyph;reg [3:0] font_row,font_col;
-reg text_on,highlight,bar,track;reg [3:0] value;reg [8:0] bar_width;
-reg [4:0] value_label;
+reg text_on,highlight,bar,track;reg [4:0] value;reg [8:0] bar_width;
+reg [5:0] value_label;
 reg [23:0] text_color;
 always @*begin
  glyph=0;font_row=0;font_col=0;text_on=0;highlight=0;bar=0;track=0;
@@ -90,7 +91,7 @@ always @*begin
   end else if(y>=96 && y<128 && x>=688 && x<784)begin
    glyph=text_glyph(pending ? 10:11,(x-688)>>5);font_row=label_y[4:1];font_col=(x-688)>>1;text_on=1;
    text_color=pending ? 24'hffd166:24'h7de3ff;
-  end else if(y>=144 && y<560 && row_index<=12)begin
+  end else if(y>=144 && y<592 && row_index<=13)begin
    value=values[row_index];highlight=row_index==selected;
    case(row_index)
     0,1,2,4:bar_width={5'd0,value}*9'd28;
@@ -99,24 +100,24 @@ always @*begin
     default:bar_width=0;
    endcase
    case(row_index)
-    5,6,9,12:value_label=value==0 ? 18:19;
-    8:value_label=5'd20+{1'b0,value};
+    5,6,9,12,13:value_label=value==0 ? 18:19;
+    8:value_label=value>=7 ? 6'd24+value:6'd20+value;
     10:value_label=value==0 ? 16:17;
     11:value_label=value==0 ? 28:29;
     default:value_label=0;
    endcase
    if(x>=96 && x<288)begin
-    glyph=text_glyph(row_index==12 ? 5'd30:row_index==0 ? 5'd14:row_index==10 ? 5'd15:row_index==11 ? 5'd27:{1'b0,row_index},label_x[8:5]);
+    glyph=text_glyph(row_index==13 ? 6'd35:row_index==12 ? 6'd30:row_index==0 ? 5'd14:row_index==10 ? 5'd15:row_index==11 ? 5'd27:{1'b0,row_index},label_x[8:5]);
     font_col=label_x[4:1];font_row=row_local[4:1];text_on=1;
    end else if(x>=608 && x<800)begin
     glyph=value_label!=0 ? text_glyph(value_label,value_x[8:5]):value_x[8:5]==0 ? 7'd35+value:7'd0;
     font_col=value_x[4:1];font_row=row_local[4:1];text_on=1;text_color=24'hffd166;
    end
    if(value_label==0 && row_local>=10 && row_local<22 && x>=320 && x<544)begin track=1;bar=x-320<bar_width;end
-  end else if(y>=560 && y<600 && x>=96 && x<400)begin
-   if((y<576) || (y>=584))begin
-    glyph=text_glyph(y<576 ? 12:13,label_x[8:4]);font_col=label_x[3:0];
-    font_row=y<576 ? footer_y[3:0]:(y-584);text_on=1;text_color=24'h7de3ff;
+  end else if(y>=608 && y<648 && x>=96 && x<400)begin
+   if((y<624) || (y>=632))begin
+    glyph=text_glyph(y<624 ? 12:13,label_x[8:4]);font_col=label_x[3:0];
+    font_row=y<624 ? footer_y[3:0]:(y-632);text_on=1;text_color=24'h7de3ff;
    end
   end
  end

@@ -6,7 +6,7 @@
 // Actual post-volume PCM analysis. Dual-board A has spare RAM32K but
 // limited RAM9K: pack each 32-bit analysis buffer into one RAM32K.
 module saixian_av_ram #(parameter WIDTH=32, ADDR=10,
-    parameter LOW=9, parameter INIT_FILE="")(
+    parameter LOW=9, parameter SMALL_RAM=0, parameter INIT_FILE="")(
     input clk, input we, input [ADDR-1:0] wa,ra,
     input [WIDTH-1:0] wd, output [WIDTH-1:0] rd
 );
@@ -17,14 +17,15 @@ always @(posedge clk)begin q<=mem[ra];if(we)mem[wa]<=wd;end
 assign rd=q;
 `else
 generate if(WIDTH==32)begin: wide_ram
-    wire [9:0] waddr=wa,raddr=ra;
+    localparam PA=SMALL_RAM ? ADDR:10;
+    wire [PA-1:0] waddr=wa,raddr=ra;
     EG_LOGIC_BRAM #(
-        .DATA_WIDTH_A(32),.ADDR_WIDTH_A(10),.DATA_DEPTH_A(1024),
-        .DATA_WIDTH_B(32),.ADDR_WIDTH_B(10),.DATA_DEPTH_B(1024),
+        .DATA_WIDTH_A(32),.ADDR_WIDTH_A(PA),.DATA_DEPTH_A(1<<PA),
+        .DATA_WIDTH_B(32),.ADDR_WIDTH_B(PA),.DATA_DEPTH_B(1<<PA),
         .BYTE_ENABLE(0),.MODE("PDPW"),.REGMODE_A("NOREG"),.REGMODE_B("NOREG"),
         .WRITEMODE_A("NORMAL"),.WRITEMODE_B("NORMAL"),.RESETMODE("SYNC"),
         .DEBUGGABLE("NO"),.PACKABLE("NO"),.FORCE_KEEP("OFF"),
-        .INIT_FILE("NONE"),.FILL_ALL("NONE"),.IMPLEMENT("32K")
+        .INIT_FILE("NONE"),.FILL_ALL("NONE"),.IMPLEMENT(SMALL_RAM ? "9K":"32K")
     ) ram32k(
         .doa(),.dob(rd),.dia(wd),.dib(32'd0),
         .cea(1'b1),.ocea(1'b0),.clka(clk),.wea(we),.rsta(1'b0),
@@ -85,7 +86,7 @@ always @(posedge clk or posedge rst) begin
 end
 endmodule
 
-module saixian_av_wave(
+module saixian_av_wave #(parameter SMALL_RAM=0)(
     input clk,rst,frame_tick,sample_valid,
     input signed [15:0] left,right,
     input [7:0] read_index,output [31:0] read_extrema,
@@ -100,7 +101,7 @@ wire start_capture=!active && (trigger || wait_samples==10'd1023);
 wire signed [7:0] lo_l=(l<lmin)?l:lmin,hi_l=(l>lmax)?l:lmax;
 wire signed [7:0] lo_r=(r<rmin)?r:rmin,hi_r=(r>rmax)?r:rmax;
 wire write_group=sample_valid && active && !pending && sample_count[1:0]==3;
-saixian_av_ram #(.WIDTH(32),.ADDR(9)) wave_ram(
+saixian_av_ram #(.SMALL_RAM(SMALL_RAM),.WIDTH(32),.ADDR(9)) wave_ram(
     .clk(clk),.we(write_group),.wa({capture_bank,sample_count[9:2]}),
     .wd({lo_l,hi_l,lo_r,hi_r}),.ra({display_bank,read_index}),.rd(read_extrema));
 always @(posedge clk or posedge rst) begin
@@ -131,7 +132,7 @@ endmodule
 // Radix-2 DIT, bit-reversed input, natural-order output, /2 per stage.
 // One registered signed multiplier is reused for window, complex rotation,
 // magnitude and band normalization. FFT never backpressures the audio path.
-module saixian_av_fft(
+module saixian_av_fft #(parameter SMALL_RAM=0)(
     input clk,rst,frame_tick,sample_valid,
     input signed [15:0] left,right,
     input [4:0] read_band,
@@ -147,7 +148,7 @@ wire signed [26:0] next_sum_l=$signed(sum_l)+$signed(left);
 wire signed [26:0] next_sum_r=$signed(sum_r)+$signed(right);
 wire [31:0] capture_q;
 reg [9:0] load_index;
-saixian_av_ram #(.WIDTH(32),.ADDR(10)) capture_ram(
+saixian_av_ram #(.SMALL_RAM(SMALL_RAM),.WIDTH(32),.ADDR(10)) capture_ram(
     .clk(clk),.we(sample_valid && !pending),.wa(capture_index),
     .wd({right,left}),.ra(load_index),.rd(capture_q));
 
@@ -194,9 +195,9 @@ assign hann_q=hann_peak ? 16'd32767 : hann_half_q;
 // Symmetry + serialized 16-bit reads fit both in one native 512x16 RAM9K.
 wire twiddle_imag_read=state==GET_A || state==WAIT_B;
 wire twiddle_half=twiddle_imag_read ^ twiddle_index[8];
-saixian_av_ram #(.WIDTH(16),.ADDR(9),.INIT_FILE({`AV_ROM_ROOT,"saixian_av_twiddle_serial.hex"})) twiddle_rom(
+saixian_av_ram #(.SMALL_RAM(SMALL_RAM),.WIDTH(16),.ADDR(9),.INIT_FILE({`AV_ROM_ROOT,"saixian_av_twiddle_serial.hex"})) twiddle_rom(
     .clk(clk),.we(1'b0),.wa(9'd0),.wd(16'd0),.ra({twiddle_index[7:0],twiddle_half}),.rd(twiddle_serial_q));
-saixian_av_ram #(.WIDTH(16),.ADDR(9),.INIT_FILE({`AV_ROM_ROOT,"saixian_av_hann_half.hex"})) hann_rom(
+saixian_av_ram #(.SMALL_RAM(SMALL_RAM),.WIDTH(16),.ADDR(9),.INIT_FILE({`AV_ROM_ROOT,"saixian_av_hann_half.hex"})) hann_rom(
     .clk(clk),.we(1'b0),.wa(9'd0),.wd(16'd0),.ra(hann_addr),.rd(hann_half_q));
 function [9:0] reverse10;
     input [9:0] v;integer b;
@@ -222,13 +223,13 @@ wire signed [17:0] butterfly_r={{2{ar[15]}},ar}+({tr[16],tr}^{18{butterfly_subtr
 wire signed [17:0] butterfly_i={{2{ai[15]}},ai}+({ti[16],ti}^{18{butterfly_subtract}})+butterfly_subtract;
 wire [31:0] fft_wd=state==WIN_WRITE ? {16'd0,product[30:15]} :
     state==WRITE_A ? {butterfly_i[16:1],butterfly_r[16:1]} : {out_bi,out_br};
-saixian_av_ram #(.WIDTH(32),.ADDR(10)) fft_ram(
+saixian_av_ram #(.SMALL_RAM(SMALL_RAM),.WIDTH(32),.ADDR(10)) fft_ram(
     .clk(clk),.we(fft_we),.wa(fft_addr),.wd(fft_wd),.ra(fft_addr),.rd(fft_q));
 reg [8:0] energy_index;
 reg [31:0] bin_energy;
 reg [31:0] lenergy;
 wire [31:0] energy_q;
-saixian_av_ram #(.WIDTH(32),.ADDR(9)) energy_ram(
+saixian_av_ram #(.SMALL_RAM(SMALL_RAM),.WIDTH(32),.ADDR(9)) energy_ram(
     .clk(clk),.we(state==ENERGY_STORE),.wa(energy_index),.wd(bin_energy),
     .ra(energy_index),.rd(energy_q));
 
@@ -337,12 +338,12 @@ wire [4:0] smoothed_hold=next_target>=old_peak ? 5'd18 : old_hold!=0 ? old_hold-
 // The publisher reads them serially; a target write waits at LOG_ENERGY
 // while publication owns the write port. Pixel RAM is still independent.
 wire metadata_target_write=state==LOG_ENERGY && publish_state==0;
-saixian_av_ram #(.WIDTH(32),.ADDR(9)) metadata_ram(
+saixian_av_ram #(.SMALL_RAM(SMALL_RAM),.WIDTH(32),.ADDR(9)) metadata_ram(
     .clk(clk),.we(publish_state==4 || metadata_target_write),
     .wa(metadata_target_write ? {3'd0,1'b1,band} : {4'd0,publish_index}),
     .wd(metadata_target_write ? {25'd0,target_height} : history_write),
     .ra({3'd0,(publish_state==2),publish_index}),.rd(metadata_q));
-saixian_av_ram #(.WIDTH(16),.ADDR(9)) display_ram(
+saixian_av_ram #(.SMALL_RAM(SMALL_RAM),.WIDTH(16),.ADDR(9)) display_ram(
     .clk(clk),.we(publish_state==4),.wa({3'd0,write_display_bank,publish_index}),.wd(display_write),
     .ra({3'd0,display_bank,read_band}),.rd(snapshot_q));
 always @* begin

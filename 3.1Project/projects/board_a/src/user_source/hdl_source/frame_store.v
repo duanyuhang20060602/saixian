@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 // One 1280x720 RGB565 frame, two pixels per SDRAM word.
 module frame_store #(parameter FLIP=0)(
- input high_color,input [1:0] write_slot,read_slot,new_slot, input slide_active,slide_right, input [10:0] slide_offset,input [2:0] transition_mode,
+ input [8:0] fluid_progress,input high_color,write_fluid,input [1:0] write_slot,read_slot,new_slot, input slide_active,slide_right, input [10:0] slide_offset,input [4:0] transition_mode,
  input mem_clk,mem_clk_sft,rst,write_clk,write_req,write_en,
  input [31:0] write_data,output write_ack,write_finish,write_full,
  input read_clk,read_req,read_en,output read_ack,read_finish,read_empty,
@@ -9,18 +9,21 @@ module frame_store #(parameter FLIP=0)(
 );
 wire init_ref,busy,rd,wr,rd_valid;
 (* async_reg="true" *)reg color_meta,color_sync;
+(* async_reg="true" *)reg fluid_meta,fluid_sync;
+always @(posedge mem_clk or posedge rst)
+ if(rst)begin fluid_meta<=0;fluid_sync<=0;end else begin fluid_meta<=write_fluid;fluid_sync<=fluid_meta;end
 always @(posedge mem_clk or posedge rst)
  if(rst)begin color_meta<=0;color_sync<=0;end else begin color_meta<=high_color;color_sync<=color_meta;end
 wire [20:0] frame_words=color_sync ? 21'd691200:21'd460800;
-wire [20:0] slot1=color_sync ? 21'd691200:21'd460800;
-wire [20:0] slot2=color_sync ? 21'd0:21'd921600;
-wire [20:0] slot3=color_sync ? 21'd0:21'd1382400;
+wire [20:0] slot1=21'd691200;
+wire [20:0] slot2=color_sync ? 21'd0:21'd1382400;
+wire [20:0] slot3=21'd0;
 
 wire [20:0] rd_addr,wr_addr;
 wire [31:0] rd_data,wr_data,aligned_rd_data;wire [3:0] dm;
 photo_sdram_read_align align_read(.clk(mem_clk),.rst(rst),.raw_data(rd_data),.aligned_data(aligned_rd_data));
 frame_read_write #(.WRITE_V_FLIP(FLIP),.FRAME_WIDTH(640),.FRAME_HEIGHT(720),.BURST_SIZE(256)) rw(
- .high_color(color_sync),.mem_clk(mem_clk),.rst(rst),.Sdr_init_done(init_done),.Sdr_init_ref_vld(init_ref),.Sdr_busy(busy),
+ .fluid_progress(fluid_progress),.fluid_mode(!high_color && slide_active && transition_mode>=6),.high_color(color_sync),.mem_clk(mem_clk),.rst(rst),.Sdr_init_done(init_done),.Sdr_init_ref_vld(init_ref),.Sdr_busy(busy),
  .App_rd_en(rd),.App_rd_addr(rd_addr),.Sdr_rd_en(rd_valid),.Sdr_rd_dout(aligned_rd_data),
  .read_clk(read_clk),.read_req(read_req),.read_req_ack(read_ack),.read_finish(read_finish),
  .read_addr_0(21'd0),.read_addr_1(slot1),.read_addr_2(slot2),.read_addr_3(slot3),.read_addr_index(read_slot),
@@ -30,7 +33,7 @@ frame_read_write #(.WRITE_V_FLIP(FLIP),.FRAME_WIDTH(640),.FRAME_HEIGHT(720),.BUR
  .App_wr_en(wr),.App_wr_addr(wr_addr),.App_wr_din(wr_data),.App_wr_dm(dm),
  .write_clk(write_clk),.write_req(write_req),.write_req_ack(write_ack),.write_finish(write_finish),
  .write_addr_0(21'd0),.write_addr_1(slot1),.write_addr_2(slot2),.write_addr_3(slot3),.write_addr_index(write_slot),
- .write_len(frame_words),.write_vga(1'b0),.write_en(write_en),.write_data(write_data),.write_fifo_full(write_full));
+ .write_len(color_sync || fluid_sync ? 21'd691200:21'd460800),.write_vga(1'b0),.write_en(write_en),.write_data(write_data),.write_fifo_full(write_full));
 sdram ram(.Clk(mem_clk),.Clk_sft(mem_clk_sft),.Rst(rst),.Sdr_init_done(init_done),
  .Sdr_init_ref_vld(init_ref),.Sdr_busy(busy),.App_wr_en(wr),.App_wr_addr(wr_addr),
  .App_wr_dm(dm),.App_wr_din(wr_data),.App_rd_en(rd),.App_rd_addr(rd_addr),.Sdr_rd_en(rd_valid),.Sdr_rd_dout(rd_data));

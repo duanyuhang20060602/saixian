@@ -10,9 +10,8 @@ set_input_delay -clock {link_clk} -min 0.500 [get_ports {link_ready}]
 
 
 set_false_path -to [get_regs -nowarn {*ack_meta* *finish_meta* *valid_meta* *ready_meta* *init_meta* *error_meta* *load_meta* *hpd_meta* *status_meta* *write_req_d0* *read_req_d0* *wrfin_sync[0]* *commit_sync[0]*}]
- # FIFO reset assertion is asynchronous; deassertion uses the two local reset
- # flops. Cut only their async reset pins, retaining local D-path timing.
-set_false_path -to [get_pins -nowarn {*asy_w_rst*.sr *asy_r_rst*.sr}]
+# B's mapped FIFO has no supported *.sr endpoints with the old reset names.
+# Keep these reset paths timed instead of issuing an ineffective exception.
  
 # photo CDC: cut only first-stage synchronizers; bundled metadata remains
 # stable for the complete transaction. Gray FIFO paths retain IP constraints.
@@ -20,9 +19,15 @@ set_false_path -to [get_regs -nowarn {*event_meta* *rx_meta* *fault_meta* *armed
 set_false_path -from [get_ports {control_rx}]
 set_false_path -to [get_regs -nowarn {*settings_meta* *gain_meta* *processing/ack_meta*}]
 # AUDIO1: SPI oversampling, cut only async first stages.
-set_false_path -to [get_regs -nowarn {*spi_sclk_meta* *spi_cs_meta* *spi_mosi_meta*}]
+# These asynchronous ports feed only the SPI first-stage input registers.
+# Port endpoints remain valid when physical packing renames those registers.
+set_false_path -from [get_ports {audio_sclk audio_cs audio_mosi}]
 set_output_delay -clock {sd_card_clk} -max 2.000 [get_ports {audio_miso}]
 set_output_delay -clock {sd_card_clk} -min 0.500 [get_ports {audio_miso}]
 set_false_path -to [get_regs -nowarn {*color_meta* *color_link_meta*}]
 set_false_path -to [get_regs -nowarn {*award_meta*}]
 set_false_path -to [get_regs -nowarn {*top_down_meta*}]
+
+# AV metadata address/data bundles are held for a full SPI word (~8.5 us).
+# Only first-stage samplers are asynchronous; the consumer waits until bit 24.
+set_false_path -to [get_regs -nowarn {*av_address_meta* *av_data_meta* *av_pcm_meta*}]

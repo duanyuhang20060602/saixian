@@ -47,6 +47,8 @@ localparam S_CHECK_FIFO     = 4'd2;
 localparam S_READ_BURST     = 4'd3;
 localparam S_READ_BURST_END = 4'd4;
 localparam S_END            = 4'd5;
+// Reserve display data before admitting a background write burst.
+localparam [BURST_BITS-1:0] HIGH_COLOR_READ_RESERVE = (FIFO_DEPTH * 3) / 4;
 wire [11:0] FRAME_WIDTH_U = high_color ? 12'd960:FRAME_WIDTH;
 
 reg read_req_d0, read_req_d1, read_req_d2;
@@ -75,10 +77,16 @@ reg [9:0] issue_y;
 reg [1:0] row_phase;
 reg old_vga_latch, new_vga_latch;
 reg [ADDR_BITS-1:0] old_row_base, new_row_base;
-wire [ADDR_BITS-1:0] old_row_step =
-    (old_vga_latch && row_phase == 2'd0) ? {ADDR_BITS{1'b0}} : FRAME_WIDTH_U;
-wire [ADDR_BITS-1:0] new_row_step =
-    (new_vga_latch && row_phase == 2'd0) ? {ADDR_BITS{1'b0}} : FRAME_WIDTH_U;
+wire [ADDR_BITS-1:0] old_row_step_normal =
+    (old_vga_latch && row_phase == 2'd0) ? {ADDR_BITS{1'b0}} : FRAME_WIDTH;
+wire [ADDR_BITS-1:0] new_row_step_normal =
+    (new_vga_latch && row_phase == 2'd0) ? {ADDR_BITS{1'b0}} : FRAME_WIDTH;
+wire [ADDR_BITS-1:0] old_row_step_high_color =
+    (old_vga_latch && row_phase == 2'd0) ? {ADDR_BITS{1'b0}} : 21'd960;
+wire [ADDR_BITS-1:0] new_row_step_high_color =
+    (new_vga_latch && row_phase == 2'd0) ? {ADDR_BITS{1'b0}} : 21'd960;
+wire [ADDR_BITS-1:0] old_row_step=high_color ? old_row_step_high_color:old_row_step_normal;
+wire [ADDR_BITS-1:0] new_row_step=high_color ? new_row_step_high_color:new_row_step_normal;
 
 function select_vga;
     input [1:0] index;
@@ -98,10 +106,14 @@ wire rd_burst_finish = rd_vld && (rd_delay == 4'd10);
 assign read_finish = (state == S_END);
 assign O_rd_busy = (state == S_READ_BURST);
 // A 128-word write turn can consume about 150 display words including
-// turn-around and CDC latency. Retain 512 words before admitting prefetch.
+// turn-around and CDC latency. Retain 768 words before admitting prefetch.
 // Do not reserve memory before the first display read or after frame end.
-assign read_urgent = high_color && state!=S_IDLE && state!=S_END && wrusedw < FIFO_DEPTH/2;
-assign App_rd_en = App_rd_en_d0;
+assign read_urgent = high_color && state!=S_IDLE && state!=S_END &&
+                     wrusedw < HIGH_COLOR_READ_RESERVE;
+// Refresh can begin between FIFO admission and the registered first command.
+// Gate the command itself, so its counters/address advance only for a word
+// the SDRAM accepts. Keep App_rd_en_d0 pending until refresh is released.
+assign App_rd_en = App_rd_en_d0 && !Sdr_init_ref_vld;
 assign App_rd_addr = App_rd_addr_r;
 
 function [ADDR_BITS-1:0] select_base;
@@ -119,28 +131,48 @@ endfunction
 // One mapper serves request acknowledgement and every issued pixel. Select
 // operands before arithmetic rather than duplicating a mapper at each call.
 wire first_address = state == S_ACK;
-wire end_of_row = issue_x == (high_color ? 11'd959:FRAME_WIDTH-1);
+wire end_of_row_normal = issue_x == FRAME_WIDTH-1;
+wire end_of_row_high_color = issue_x == 11'd959;
+wire end_of_row = high_color ? end_of_row_high_color:end_of_row_normal;
 // RGB888 keeps all three packed words of a four-pixel group on the
 // same source frame and source group. A two-pixel word mapper cannot do this.
-wire [1:0] map_rgb_phase=(first_address || end_of_row || rgb_word_phase==2) ? 2'd0:rgb_word_phase+1'b1;
-wire [8:0] map_group=(first_address || end_of_row) ? 9'd0:rgb_word_phase==2 ? rgb_group+1'b1:rgb_group;
-wire [10:0] map_x = high_color ? {1'b0,map_group,1'b0}:first_address ? 11'd0 : end_of_row ? 11'd0 : issue_x + 1'b1;
+wire [1:0] map_rgb_phase=(first_address || end_of_row_high_color || rgb_word_phase==2) ? 2'd0:rgb_word_phase+1'b1;
+wire [8:0] map_group=(first_address || end_of_row_high_color) ? 9'd0:rgb_word_phase==2 ? rgb_group+1'b1:rgb_group;
+wire [10:0] map_x_normal = first_address ? 11'd0 : end_of_row ? 11'd0 : issue_x + 1'b1;
+wire [10:0] map_x_high_color = {1'b0,map_group,1'b0};
 wire [10:0] raw_offset=first_address ? slide_offset_d1:slide_offset_latch;
-wire [10:0] map_offset=high_color ? {raw_offset[10:1],1'b0}:raw_offset;
-wire [9:0] map_y = first_address ? 10'd0 : issue_y + end_of_row;
-wire [ADDR_BITS-1:0] map_old_base = first_address ?
+wire [10:0] map_offset_high_color={raw_offset[10:1],1'b0};
+wire [9:0] map_y_normal = first_address ? 10'd0 : issue_y + end_of_row_normal;
+wire [9:0] map_y_high_color = first_address ? 10'd0 : issue_y + end_of_row_high_color;
+wire [ADDR_BITS-1:0] map_old_base_normal = first_address ?
     select_base(slide_active_d1 ? slide_old_d1 : read_addr_index_d1) :
-    old_row_base + (end_of_row ? old_row_step : {ADDR_BITS{1'b0}});
-wire [ADDR_BITS-1:0] map_new_base = first_address ? select_base(slide_new_d1) :
-    new_row_base + (end_of_row ? new_row_step : {ADDR_BITS{1'b0}});
-wire [ADDR_BITS-1:0] next_address;
-saixian_frame_mapper #(.ADDR_BITS(ADDR_BITS), .FRAME_WIDTH(FRAME_WIDTH)) u_mapper(
-    .high_color(high_color),.word_phase(map_rgb_phase),.xpos(map_x), .ypos(map_y), .old_base(map_old_base), .new_base(map_new_base),
+    old_row_base + (end_of_row_normal ? old_row_step_normal : {ADDR_BITS{1'b0}});
+wire [ADDR_BITS-1:0] map_old_base_high_color = first_address ?
+    select_base(slide_active_d1 ? slide_old_d1 : read_addr_index_d1) :
+    old_row_base + (end_of_row_high_color ? old_row_step_high_color : {ADDR_BITS{1'b0}});
+wire [ADDR_BITS-1:0] map_new_base_normal = first_address ? select_base(slide_new_d1) :
+    new_row_base + (end_of_row_normal ? new_row_step_normal : {ADDR_BITS{1'b0}});
+wire [ADDR_BITS-1:0] map_new_base_high_color = first_address ? select_base(slide_new_d1) :
+    new_row_base + (end_of_row_high_color ? new_row_step_high_color : {ADDR_BITS{1'b0}});
+wire [ADDR_BITS-1:0] next_address_normal,next_address_high_color;
+wire [ADDR_BITS-1:0] next_address=high_color ? next_address_high_color:next_address_normal;
+// Keep the asynchronous color-mode selection off the wide address mapper's
+// arithmetic path. Both mappings are evaluated in parallel; only the final
+// address mux depends on the synchronized mode bit.
+saixian_frame_mapper #(.ADDR_BITS(ADDR_BITS), .FRAME_WIDTH(FRAME_WIDTH)) u_mapper_normal(
+    .high_color(1'b0),.word_phase(2'd0),.xpos(map_x_normal), .ypos(map_y_normal), .old_base(map_old_base_normal), .new_base(map_new_base_normal),
     .enabled(first_address ? slide_active_d1 : slide_active_latch),
     .move_right(first_address ? slide_right_d1 : slide_right_latch),
     .effect(first_address ? transition_mode_d1 : transition_mode_latch),
-    .offset(map_offset),
-    .address(next_address));
+    .offset(raw_offset),
+    .address(next_address_normal));
+saixian_frame_mapper #(.ADDR_BITS(ADDR_BITS), .FRAME_WIDTH(FRAME_WIDTH)) u_mapper_high_color(
+    .high_color(1'b1),.word_phase(map_rgb_phase),.xpos(map_x_high_color), .ypos(map_y_high_color), .old_base(map_old_base_high_color), .new_base(map_new_base_high_color),
+    .enabled(first_address ? slide_active_d1 : slide_active_latch),
+    .move_right(first_address ? slide_right_d1 : slide_right_latch),
+    .effect(first_address ? transition_mode_d1 : transition_mode_latch),
+    .offset(map_offset_high_color),
+    .address(next_address_high_color));
 
 always @(posedge mem_clk or posedge rst) begin
     if (rst) begin
@@ -264,7 +296,7 @@ always @(posedge mem_clk or posedge rst) begin
             S_CHECK_FIFO: begin
                 if (read_req_d2)
                     state <= S_ACK;
-                else if ((wrusedw < FIFO_DEPTH - BURST_SIZE) && !App_wr_busy) begin
+                else if ((wrusedw < FIFO_DEPTH - BURST_SIZE) && !App_wr_busy && !Sdr_init_ref_vld) begin
                     state <= S_READ_BURST;
                     App_rd_en_r <= 1;
                 end

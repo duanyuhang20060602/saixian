@@ -13,7 +13,7 @@ module frame_read_write
 	parameter FRAME_HEIGHT           = 480
 ) 
 (
-	input high_color,
+	input high_color,fluid_mode,input [8:0] fluid_progress,
 	input                            rst,                  
 	input                            mem_clk,                    // external memory controller user interface clock
 	input							 Sdr_init_done,
@@ -51,7 +51,7 @@ module frame_read_write
     input[1:0]                       slide_new_index,
     input[10:0]                      slide_offset,
     input                            slide_right,
-    input[2:0]                       transition_mode,
+    input[4:0]                       transition_mode,
     input                            buffer0_vga,
     input                            buffer1_vga,
 	/*
@@ -84,6 +84,44 @@ module frame_read_write
 	output                           write_fifo_full             // write-side overflow diagnostic
 
 );
+// Synchronize the frame selector before presenting a delayed request to either
+// reader. Selection remains fixed throughout a frame and owns the shared FIFO.
+(* async_reg="true" *)reg fluid_mode_meta,fluid_mode_sync;
+reg [4:0] read_request_pipe;reg fluid_selected;
+always @(posedge mem_clk or posedge rst)
+ if(rst)begin fluid_mode_meta<=0;fluid_mode_sync<=0;read_request_pipe<=0;fluid_selected<=0;end
+ else begin
+  fluid_mode_meta<=fluid_mode;fluid_mode_sync<=fluid_mode_meta;
+  read_request_pipe<={read_request_pipe[3:0],read_req};
+  if(read_request_pipe[3]&&!read_request_pipe[4])fluid_selected<=fluid_mode_sync;
+ end
+wire selected_request=read_request_pipe[4];
+wire legacy_busy,legacy_urgent,legacy_rd,legacy_ack,legacy_finish,legacy_clear;
+wire [ADDR_BITS-1:0] legacy_address,fluid_address;
+wire fluid_busy,fluid_rd,fluid_ack,fluid_finish,fluid_clear,fluid_we;
+wire [31:0] fluid_data;
+// Use the frame-owned phase directly; avoid half-word/offset re-quantization.
+wire [76:0] fluid_configuration={68'd0,fluid_progress};
+wire [31:0] fluid_timeouts;
+assign App_rd_en=fluid_selected ? fluid_rd:legacy_rd;
+assign App_rd_addr=fluid_selected ? fluid_address:legacy_address;
+assign read_req_ack=fluid_selected ? fluid_ack:legacy_ack;
+assign read_finish=fluid_selected ? fluid_finish:legacy_finish;
+assign read_fifo_aclr=fluid_selected ? fluid_clear:legacy_clear;
+assign O_rd_busy=fluid_selected ? fluid_busy:legacy_busy;
+assign read_urgent=fluid_selected ? (wrusedw<768 && !fluid_finish):legacy_urgent;
+water_reader #(.FIFO_DEPTH(1024)) fluid_reader(
+ .rst(rst || !fluid_selected),.mem_clk(mem_clk),.Sdr_init_done(Sdr_init_done),
+ .Sdr_init_ref_vld(Sdr_init_ref_vld),.Sdr_busy(Sdr_busy),.Sdr_rd_en(Sdr_rd_en),
+ .App_wr_busy(App_wr_busy),.Sdr_rd_dout(Sdr_rd_dout),.O_rd_busy(fluid_busy),
+ .App_rd_en(fluid_rd),.App_rd_addr(fluid_address),.read_req(selected_request),
+ .read_req_ack(fluid_ack),.read_finish(fluid_finish),.read_addr_0(read_addr_0),
+ .read_addr_1(read_addr_1),.read_addr_2(read_addr_2),.read_addr_3(read_addr_3),
+ .read_addr_index(read_addr_index),.slide_old_index(slide_old_index),.slide_new_index(slide_new_index),
+ .read_len(read_len),.slide_active(slide_active),.slide_right(slide_right),
+ .transition_mode(transition_mode==7 ? 4'd5:transition_mode==8 ? 4'd0:transition_mode==9 ? 4'd3:4'd6),.slide_offset(slide_offset),.water_cfg(fluid_configuration),
+ .force_effect_plane(1'b0),.fifo_aclr(fluid_clear),.wrusedw({1'b0,wrusedw}),
+ .fifo_we(fluid_we),.fifo_data(fluid_data),.read_timeouts(fluid_timeouts));
 localparam READ_FIFO_BITS=10;
 wire [READ_FIFO_BITS-1:0] wrusedw;
 wire read_urgent;
@@ -164,9 +202,9 @@ rfifo_32_32_512 #(.ADDR_WIDTH_W(READ_FIFO_BITS),.ADDR_WIDTH_R(READ_FIFO_BITS),.A
 	.clkr                     	(read_clk                   ),          // Read side clock
 	.clkw                     	(mem_clk                    ),          // Write side clock
 	.rst                      	(rst | read_fifo_aclr       ),          // Reset also before first request
-	.we                     	(Sdr_rd_en       			),          // Write Request
+	.we                     	(fluid_selected ? fluid_we:Sdr_rd_en),          // Write Request
 	.re                     	(read_en && !read_fifo_empty),          // Never pop an empty FIFO
-	.di                      	(Sdr_rd_dout                ),          // Input Data
+	.di                      	(fluid_selected ? fluid_data:Sdr_rd_dout),          // Input Data
 	.empty_flag					(read_fifo_empty            ),          // Read side Empty flag
 	.full_flag					(                           ),          // Write side Full flag
 	.wrusedw                	(wrusedw         	  	  		 ),          // Read Used Words
@@ -187,21 +225,21 @@ frame_fifo_read
 frame_fifo_read_m0
 (
  .high_color(high_color),
-	.rst                        (rst                      ),
+	.rst                        (rst || fluid_selected    ),
 	.mem_clk                    (mem_clk                  ),
     .Sdr_init_done				(Sdr_init_done),
 	.Sdr_init_ref_vld			(Sdr_init_ref_vld),
     .Sdr_busy					(Sdr_busy),
     .Sdr_rd_en					(Sdr_rd_en),
 	.App_wr_busy				(App_wr_busy),
-    .O_rd_busy					(O_rd_busy),
-    .read_urgent(read_urgent),
+    .O_rd_busy					(legacy_busy),
+    .read_urgent(legacy_urgent),
 	
-    .App_rd_en					(App_rd_en),
-    .App_rd_addr				(App_rd_addr),
-	.read_req                   (read_req                 ),
-	.read_req_ack               (read_req_ack             ),
-	.read_finish                (read_finish              ),
+    .App_rd_en					(legacy_rd),
+    .App_rd_addr				(legacy_address),
+	.read_req                   (selected_request         ),
+	.read_req_ack               (legacy_ack             ),
+	.read_finish                (legacy_finish              ),
 	.read_addr_0                (read_addr_0              ),
 	.read_addr_1                (read_addr_1              ),
 	.read_addr_2                (read_addr_2              ),
@@ -213,10 +251,10 @@ frame_fifo_read_m0
     .slide_new_index            (slide_new_index          ),
     .slide_offset               (slide_offset             ),
     .slide_right                (slide_right              ),
-    .transition_mode            (transition_mode          ),
+    .transition_mode            (transition_mode[2:0]     ),
     .buffer0_vga                (buffer0_vga              ),
     .buffer1_vga                (buffer1_vga              ),
-	.fifo_aclr                  (read_fifo_aclr           ),
+	.fifo_aclr                  (legacy_clear           ),
 	.wrusedw                	(wrusedw                  )
 );
 

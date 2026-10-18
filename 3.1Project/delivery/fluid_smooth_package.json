@@ -1,0 +1,43 @@
+{
+  "archive": "FLUID_SMOOTH_AB_20261018.zip",
+  "size_bytes": 835440,
+  "sha256": "353b076100bb44cb517f2f0976197c3fb3771fc778e24912d27026d82baef911",
+  "boards": {
+    "A": {
+      "artifact": "PHOTO_BOARD_A_720P_V3_1_FLUID_SMOOTH.bit",
+      "sha256": "5f7f5f4764fbd371fc1641a34c8e3af77bfaff8f2b445c408c2d61239af32cb7",
+      "timing_ns": {
+        "SWNS": 0.059,
+        "STNS": 0.0,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      },
+      "resources": {
+        "lut": 14561,
+        "reg": 11968,
+        "bram": 58,
+        "bram32k": 14,
+        "dsp": 14
+      },
+      "board_validation": "pending"
+    },
+    "B": {
+      "artifact": "PHOTO_BOARD_B_720P_V3_1_FLUID_SMOOTH.bit",
+      "sha256": "2c3f791b9cf4d0337b17b1f0227a4a6b22dd4789edb01596eeec8f77fd803131",
+      "timing_ns": {
+        "SWNS": 0.101,
+        "STNS": 0.0,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      },
+      "resources": {
+        "lut": 13007,
+        "reg": 8963,
+        "bram": 60,
+        "bram32k": 12,
+        "dsp": 10
+      },
+      "board_validation": "pending"
+    }
+  }
+}

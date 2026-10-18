@@ -16,11 +16,12 @@
 //	Clock information:
 //		Clock name	| Frequency 	| Phase shift
 //		C0        	| 100.000000MHZ	| 0.0000  DEG  
-//		C1        	| 125.000000MHZ	| 0.0000  DEG  
-//		C2        	| 125.000000MHZ	| 180.0000 DEG  
+//		C1        	| 50.000000MHZ	| 0.0000  DEG  
+//		C2        	| 50.000000MHZ	| 144.0000 DEG  
 ///////////////////////////////////////////////////////////////////////////////
 `timescale 1 ns / 100 fs
 
+// Keep the routed 50 MHz memory interface; writes use isolated four-word groups.
 module sys_pll (
   refclk,
   reset,

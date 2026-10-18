@@ -7,6 +7,27 @@ reg mem_clk=0,pixel_clk=0,rst=1;
 always #10 mem_clk=~mem_clk;
 always #6.666667 pixel_clk=~pixel_clk;
 reg read_req=0,write_req=0,write_en=0;wire ack,wack,finish,wfinish,empty,full,rd,wr;
+`ifdef REFRESH_STRESS
+reg refresh_active=0,refresh_pending=0;
+reg [4:0] refresh_left=0;
+integer refresh_tick=0,refreshes=0;
+always @(posedge mem_clk)begin
+ if(rst)begin refresh_active<=0;refresh_pending<=0;refresh_left<=0;refresh_tick<=0;refreshes<=0;end
+ else begin
+  refresh_tick<=refresh_tick+1;
+  if(refresh_tick%765==0)refresh_pending<=1;
+  if(refresh_active)begin
+   if(refresh_left==0)refresh_active<=0;
+   else refresh_left<=refresh_left-1'b1;
+  end else if(refresh_pending && !rd && !wr)begin
+   refresh_active<=1;refresh_left<=19;refresh_pending<=0;refreshes<=refreshes+1;
+  end
+  if(refresh_active && (rd || wr))$fatal(1,"SDRAM command sent during refresh");
+ end
+end
+`else
+wire refresh_active=1'b0;
+`endif
 wire [20:0] ra,wa;wire [31:0] pixels,wd;wire [3:0] dm;
 reg [11:0] pipe_valid=0;reg [31:0] pipe_data[0:11];integer i;
 always @(posedge mem_clk)begin
@@ -24,7 +45,7 @@ always @(posedge pixel_clk)if(running)begin
  if(need)begin if(empty)misses=misses+1;else pops=pops+1;end
  if(x==1649)begin x=0;if(y==749)begin y=0;frames=frames+1;end else y=y+1;end else x=x+1;
 end
-frame_read_write dut(.high_color(1'b1),.rst(rst),.mem_clk(mem_clk),.Sdr_init_done(1'b1),.Sdr_init_ref_vld(1'b0),.Sdr_busy(1'b0),
+frame_read_write dut(.high_color(1'b1),.rst(rst),.mem_clk(mem_clk),.Sdr_init_done(1'b1),.Sdr_init_ref_vld(refresh_active),.Sdr_busy(1'b0),
  .App_rd_en(rd),.App_rd_addr(ra),.Sdr_rd_en(pipe_valid[11]),.Sdr_rd_dout(pipe_data[11]),
  .read_clk(pixel_clk),.read_req(read_req),.read_req_ack(ack),.read_finish(finish),
  .read_addr_0(21'd0),.read_addr_1(21'd691200),.read_addr_2(21'd0),.read_addr_3(21'd0),.read_addr_index(2'd0),.read_len(21'd691200),
@@ -54,6 +75,10 @@ initial begin
  if(misses!=0 || pops!=691200)$fatal(1,"Display FIFO starved during background prefetch");
  if(writes<10000)$fatal(1,"Prefetch made no progress");
  $display("PASS RGB888 display has zero underflow while prefetch makes progress");
+`ifdef REFRESH_STRESS
+ if(refreshes<100)$fatal(1,"Refresh stress was not exercised");
+ $display("PASS %0d refresh windows with zero commands during refresh",refreshes);
+`endif
 `endif
  $finish;
 end

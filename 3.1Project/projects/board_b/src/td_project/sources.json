@@ -34,5 +34,8 @@
   "../../../../common/photo_sd/sd_card_cmd.v",
   "../../../../common/photo_sd/sd_card_sec_read_write.v",
   "../../../../common/photo_sd/sd_card_top.v",
-  "../../../../common/photo_sd/spi_master.v"
+  "../../../../common/photo_sd/spi_master.v",
+  "../../../../common/audio_ui/saixian_audio_visualizer.v",
+  "../../../../common/photo_av_metadata.v",
+  "../../../../common/fluid/water_pack.v"
 ]

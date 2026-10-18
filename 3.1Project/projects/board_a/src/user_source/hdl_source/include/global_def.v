@@ -8,6 +8,7 @@
 `define   ROW_WIDTH                        11
 `define   BA_WIDTH                        2
 
+// Memory clock remains 50 MHz; four-word write groups have a settling gap.
 `define	  SDR_CLK_PERIOD				(1000000000 / 50000000)
 // EM638325 requires 4096 AUTO REFRESH operations per 64 ms even though
 // each bank has only 2048 addressable rows. ROW_WIDTH is NOT the refresh

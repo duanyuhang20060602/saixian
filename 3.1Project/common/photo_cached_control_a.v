@@ -2,12 +2,14 @@
 // A keeps current, next, next+1 and next+2 in four independent SDRAM slots.
 // Link transactions finish when stored; display commits run independently.
 module photo_cached_control_a #(
- parameter CLK_HZ=75000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SETTINGS_LINK=0,AWARD_CONTROL=0
+ parameter CLK_HZ=75000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0
 )(
+ output receive_fluid,
  input settings_mode,input [18:0] settings_state,output settings_updating,
  output reg high_color,output reg format_changed,
  input award_toggle,output reg award_available,award_scan_complete,
  output award_loading,output reg [2:0] award_notice,output reg [3:0] last_transfer_error,
+ output reg [3:0] first_transfer_origin,first_transfer_error,
  input clk,rst,uart_rx,output uart_tx,input previous,next,
  input [1:0] active_slot,new_slot,input transition_active,commit_toggle,
  output reg [1:0] receive_slot,output reg arm_toggle,abort_toggle,
@@ -39,7 +41,8 @@ always @(posedge clk or posedge rst)begin
  end
 end
 reg [18:0] applied_settings,sent_settings;reg refresh_pending;
-wire [31:0] frame_bytes=high_color ? 32'd2764800:FRAME_BYTES;
+assign receive_fluid=FLUID && !high_color && target!=6;
+wire [31:0] frame_bytes=high_color || receive_fluid ? 32'd2764800:FRAME_BYTES;
 wire settings_dirty=SETTINGS_LINK && settings_state!=applied_settings;
 assign settings_updating=settings_dirty || refresh_pending || (SETTINGS_LINK && (nav_pending || display_pending));
 reg [3:0] state;reg send;reg [159:0] message;
@@ -91,7 +94,7 @@ endfunction
 function [2:0] lookup;
  input [2:0] image;input [3:0] valid_bits;input [11:0] image_ids;input color;integer j;
  begin lookup=0;for(j=3;j>=0;j=j-1)
-  if((!color || j<2) && valid_bits[j] && image_ids[j*3+:3]==image)lookup={1'b1,j[1:0]};end
+  if((color ? j<2 : (!FLUID || j<3)) && valid_bits[j] && image_ids[j*3+:3]==image)lookup={1'b1,j[1:0]};end
 endfunction
 // Explicit function dependencies keep cache fills/invalidation observable in
 // simulation as well as synthesis, even when the requested image is constant.
@@ -106,7 +109,7 @@ reg [2:0] window_center_q,window_next_q,window_next2_q,window_next3_q;
 reg [25:0] window_context;
 wire [2:0] center_hit=lookup(window_center_q,cache_valid,cache_ids,high_color),next_hit=lookup(window_next_q,cache_valid,cache_ids,high_color),
            next2_hit=lookup(window_next2_q,cache_valid,cache_ids,high_color),next3_hit=lookup(window_next3_q,cache_valid,cache_ids,high_color);
-assign cache_window_ready=window_context==fetch_context && have_current && center_hit[2] && next_hit[2] && (high_color || (next2_hit[2] && next3_hit[2]));
+assign cache_window_ready=window_context==fetch_context && have_current && center_hit[2] && next_hit[2] && (high_color || (next2_hit[2] && (FLUID || next3_hit[2])));
 reg fetch_needed,demand_fetch,victim_ok;reg [2:0] fetch_target;
 reg [1:0] victim;integer i,reset_index;
 always @*begin
@@ -116,19 +119,19 @@ always @*begin
   // Prefetch the following three images in order.
   if(!next_hit[2])begin fetch_needed=1;fetch_target=window_next_q;end
   else if(!high_color && !next2_hit[2])begin fetch_needed=1;fetch_target=window_next2_q;end
-  else if(!high_color && !next3_hit[2])begin fetch_needed=1;fetch_target=window_next3_q;end
+  else if(!FLUID && !high_color && !next3_hit[2])begin fetch_needed=1;fetch_target=window_next3_q;end
  end
  for(i=3;i>=0;i=i-1)begin
-  if((!high_color || i<2) && i!=active_slot && (!transition_active || i!=new_slot) &&
+  if((high_color ? i<2 : (!FLUID || i<3)) && i!=active_slot && (!transition_active || i!=new_slot) &&
      (!display_pending || i!=ready_slot) && (!nav_pending || !nav_hit[2] || i!=nav_hit[1:0]) &&
      (demand_fetch || (cache_id[i]!=window_center_q && cache_id[i]!=window_next_q &&
-                       (high_color || (cache_id[i]!=window_next2_q && cache_id[i]!=window_next3_q)))))begin
+                       (high_color || (cache_id[i]!=window_next2_q && (FLUID || cache_id[i]!=window_next3_q))))))begin
    victim_ok=1;victim=i[1:0];
   end
  end
  // Prefer an empty slot, including a slot invalidated by a failed receive.
  for(i=3;i>=0;i=i-1)begin
-  if((!high_color || i<2) && !cache_valid[i] && i!=active_slot && (!transition_active || i!=new_slot) &&
+  if((high_color ? i<2 : (!FLUID || i<3)) && !cache_valid[i] && i!=active_slot && (!transition_active || i!=new_slot) &&
      (!display_pending || i!=ready_slot))begin victim_ok=1;victim=i[1:0];end
  end
 end
@@ -149,7 +152,7 @@ always @(posedge clk or posedge rst)begin
 end
 always @(posedge clk or posedge rst)begin
  if(rst)begin
-  award_available<=0;award_scan_complete<=0;award_notice<=0;last_transfer_error<=0;award_selected<=0;award_wait<=0;return_photo<=0;
+  award_available<=0;award_scan_complete<=0;award_notice<=0;last_transfer_error<=0;first_transfer_origin<=0;first_transfer_error<=0;award_selected<=0;award_wait<=0;return_photo<=0;
   high_color<=0;format_changed<=0;count_reply<=0;applied_settings<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};sent_settings<=0;refresh_pending<=0;
   applied_context<=31;sent_context<=0;background_transaction<=0;refresh_display<=0;ready_immediate<=0;state<=HELLO_SEND;send<=0;message<=0;session<=1;uptime<=1;timer<=0;request_seq<=0;
   target<=0;direction<=1;done_seen<=0;end_seen<=0;expected_crc<=0;received_crc<=0;retries<=0;
@@ -235,39 +238,58 @@ always @(posedge clk or posedge rst)begin
    end
    GET:if(SETTINGS_LINK && background_transaction && (settings_mode || settings_dirty))state<=IDLE;
        else if(!tx_busy && !send)begin
-    message<=packet(3,session,request_seq,{5'd0,target},{1'b0,high_color,4'd0,1'b1,direction},frame_bytes,0,0);
+    message<=packet(3,session,request_seq,{5'd0,target},{1'b0,high_color,receive_fluid,3'd0,1'b1,direction},frame_bytes,0,0);
     send<=1;state<=WAIT_BEGIN;timer<=0;done_seen<=0;end_seen<=0;
    end
    WAIT_BEGIN:begin
     if(SETTINGS_LINK && background_transaction && (settings_mode || settings_dirty) && !tx_busy && !send)begin
      message<=packet(16,session,0,0,0,0,0,0);send<=1;state<=WAIT_CANCEL;timer<=0;
-    end else if(got && matching && kind==4 && incoming[87:56]==frame_bytes && incoming[94]==high_color)begin
+    end else if(got && matching && kind==4 && incoming[87:56]==frame_bytes && incoming[94]==high_color && incoming[93]==receive_fluid)begin
      // Metadata belongs to this transfer, never to a background display.
      target_width<=incoming[95] ? incoming[55:40]:16'd0;
      target_height<=incoming[95] ? incoming[39:24]:16'd0;
      arm_toggle<=~arm_toggle;state<=ARM;timer<=0;
     end else if(got && matching && kind==11)begin
      error<=incoming[19:16];timer<=0;
+     if(first_transfer_origin==0)begin first_transfer_origin<=1;first_transfer_error<=incoming[19:16];end
      if(AWARD_CONTROL && have_current)begin state<=IDLE;nav_pending<=0;award_wait<=0;award_selected<=current_image==6;award_notice<=target==6 ? 3'd3:3'd4;last_transfer_error<=incoming[19:16];end
      else state<=FAILED;
     end
-    else if(timer>=64'd45*TIME_HZ)begin error<=1;state<=FAILED;timer<=0;end
+    else if(timer>=64'd45*TIME_HZ)begin
+     error<=1;state<=FAILED;timer<=0;
+     if(first_transfer_origin==0)begin first_transfer_origin<=4;first_transfer_error<=1;end
+    end
    end
    ARM:if(rx_armed)begin state<=READY;timer<=0;end
-       else if(timer>=TIME_HZ*2)begin state<=NACK;error<=2;end
+       else if(timer>=TIME_HZ*2)begin
+        state<=NACK;error<=2;
+        if(first_transfer_origin==0)begin first_transfer_origin<=5;first_transfer_error<=2;end
+       end
    READY:if(!tx_busy && !send)begin
     message<=packet(5,session,request_seq,{5'd0,target},2,frame_bytes,0,0);send<=1;state<=RECEIVE;timer<=0;
    end
    RECEIVE:begin
     if(rx_done)begin done_seen<=1;received_crc<=rx_crc;end
     if(got && matching && kind==6)begin expected_crc<=incoming[55:24];end_seen<=1;end
-    if(got && matching && kind==11)begin error<=incoming[19:16];state<=FAILED;timer<=0;end
-    else if(rx_fault)begin error<=3;state<=NACK;end
+    if(got && matching && kind==11)begin
+     error<=incoming[19:16];state<=FAILED;timer<=0;
+     if(first_transfer_origin==0)begin first_transfer_origin<=1;first_transfer_error<=incoming[19:16];end
+    end
+    else if(rx_fault)begin
+     error<=3;state<=NACK;
+     if(first_transfer_origin==0)begin first_transfer_origin<=2;first_transfer_error<=3;end
+    end
     else if(done_seen && end_seen)begin
      debug_local_crc<=received_crc;debug_remote_crc<=expected_crc;
-     if(CHECK_FRAME_CRC && received_crc!=expected_crc)begin error<=4;state<=NACK;end
+     if(CHECK_FRAME_CRC && received_crc!=expected_crc)begin
+      error<=4;state<=NACK;
+      if(first_transfer_origin==0)begin first_transfer_origin<=3;first_transfer_error<=4;end
+     end
      else begin state<=STORE;timer<=0;end
-    end else if(timer>=64'd5*TIME_HZ)begin error<=5;state<=NACK;end
+    end else if(timer>=64'd5*TIME_HZ)begin
+     error<=5;state<=NACK;
+     if(first_transfer_origin==0)begin first_transfer_origin<=4;first_transfer_error<=5;end
+    end
    end
    STORE:begin
     cache_id[receive_slot]<=target;cache_width[receive_slot]<=target_width;cache_height[receive_slot]<=target_height;
@@ -316,6 +338,8 @@ always @(posedge clk or posedge rst)begin
    nav_target<=adjacent(AWARD_CONTROL && (center==6 || award_selected) ? return_photo:center,image_count,1'b1);
    nav_right<=1'b1;nav_pending<=1;award_selected<=0;award_wait<=0;award_notice<=0;
   end
+  // Keep the first cause across retries/cancellation and background prefetch.
+  if(next || award_toggle)begin first_transfer_origin<=0;first_transfer_error<=0;end
  end
 end
 endmodule
