@@ -1,0 +1,13 @@
+{
+  "test": "tb_photo_receive_recovery",
+  "passed": true,
+  "seconds": 11.17,
+  "source_sha256": {
+    "tests/tb_photo_receive_recovery.v": "90c9fe6ef2984e06c3da5cacbdfd65be3aa68b41fa650266b82bf543fc0254cc",
+    "common/photo_cached_control_a.v": "c538bccffd81383c899a05b101cb067b289644dd39630eb879535c45ede881ea",
+    "common/photo_control.v": "a6e998049e2dbf0edee85de0fb87294db4fdea73e47572380be41ec78f5d8cba",
+    "common/photo_uart.v": "03f62d8e9381a9ba92c067fabc4ecce12632cd32a4076b62792e2384b6712c50",
+    "common/photo_link.v": "f0571991620e668b505fd8d568b3bfe93a1cc81fb2e3036c512545523beeb3a1",
+    "common/saixian_transition.v": "b54b9681f96759b96edd40b6475911e96b7e65f7c96b44f455209679a3b5ed19"
+  }
+}

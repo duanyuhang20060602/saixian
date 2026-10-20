@@ -1,0 +1,109 @@
+{
+  "revision": 3,
+  "built_utc": "2026-10-15T06:19:40.169609+00:00",
+  "boards": [
+    {
+      "role": "board_a",
+      "file": "PHOTO_BOARD_A_720P_AWARD_DLT_V3_NOCRC_AUDIO2_LINK50M.bit",
+      "sha256": "362acbc4eb2fc1c7385b48d75716e9d6c8e77ae1b14f622cf41830ce37390cff",
+      "timing_ns": {
+        "SWNS": 0.191,
+        "STNS": 0.0,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      },
+      "resources": {
+        "lut": 8676,
+        "reg": 7691,
+        "bram9k": 55,
+        "bram32k": 2,
+        "dsp": 16
+      }
+    },
+    {
+      "role": "board_b",
+      "file": "PHOTO_BOARD_B_720P_AWARD_DLT_V3_NOCRC_AUDIO2_LINK50M.bit",
+      "sha256": "4a9cb5a007e3473f5e762ab8057070c49f40f93833737a62737e58a34191d393",
+      "timing_ns": {
+        "SWNS": 0.1,
+        "STNS": 0.0,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      },
+      "resources": {
+        "lut": 9152,
+        "reg": 6830,
+        "bram9k": 39,
+        "bram32k": 12,
+        "dsp": 8
+      }
+    }
+  ],
+  "tests_run_for_v3": [
+    {
+      "test": "tb_award_notice_v3",
+      "passed": true,
+      "seconds": 0.91,
+      "log_sha256": "a09bf3a8f54cacae587bfcf90bfaf5b1dab0d04b456315081562ff23b57202a8"
+    },
+    {
+      "test": "tb_award_mode_v3",
+      "passed": true,
+      "seconds": 119.72,
+      "log_sha256": "ef256f4ed775203c39361450760afa641084f68eb77560170c1ce680b1963481"
+    },
+    {
+      "test": "tb_award_catalog_v3",
+      "passed": true,
+      "seconds": 0.58,
+      "log_sha256": "8416950604bcbdd3d183fd6f86e79bd8f3907d420ef19b814932b4c9b4d662c7"
+    },
+    {
+      "test": "tb_dlt_reader",
+      "passed": true,
+      "seconds": 158.16,
+      "log_sha256": "9de6f6ef266810335be16cece47e4fd13363ddcfbe102f32c40803f150a2a6d5"
+    },
+    {
+      "test": "tb_dlt_cache",
+      "passed": true,
+      "seconds": 196.7,
+      "log_sha256": "8a890c3ab1f070225da8416f9d089471e3c53e13b4527b2b33261a8344b33222"
+    },
+    {
+      "test": "tb_dlt_faults",
+      "passed": true,
+      "execution": "tb_dlt_faults_nocrc_retry.vvp; corrected bench to allow DONE between accepted CRC-mutated fixtures",
+      "seconds": null,
+      "log_sha256": "d490114c7a7ddbce46d30f35e33533473fdd6d777d8041e49a0e4a02d00eb415"
+    },
+    {
+      "test": "tb_award_headers",
+      "passed": true,
+      "seconds": 0.38,
+      "log_sha256": "d10d5781fcc05667f39ccea74e54124b48060a749be50ba7c2bc7d8e4c51c5a7"
+    },
+    {
+      "test": "tb_bmp",
+      "passed": true,
+      "seconds": 261.45,
+      "log_sha256": "8159bbd9e26e33615f2227caabbdae8ed4ff924a11267d0f6cefc64b56c8901d"
+    },
+    {
+      "test": "tb_award_control",
+      "passed": true,
+      "seconds": 14.8,
+      "log_sha256": "4de8bd5ef34da79b64e0d49e838b033e17a9e204b560eea133f229a9e9945b81"
+    }
+  ],
+  "inherited_v2_evidence": "tests/baseline_v2: prior orientation checks; header unchanged; decoder has fresh V3 real-asset and fault tests",
+  "dlt_crc_enabled": false,
+  "dlt_full_payload_prepass": false,
+  "dlt_sha256": "4adf1b6696401faa8e4c7f6d165b3a2d67ffdc49d4d933ac2781056f1b0e5c5b",
+  "hardware_validation": "pending; V2 DLT blank root cause requires V3 diagnostic observations",
+  "limitations": [
+    "Raw contiguous sectors, not FAT fragmented-file traversal",
+    "Search first 512 MiB",
+    "Sector and memory endpoints modeled in simulation"
+  ]
+}

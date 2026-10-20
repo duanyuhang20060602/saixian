@@ -1,0 +1,18 @@
+[
+  {
+    "test": "tb_dlt_reader",
+    "passed": true,
+    "seconds": 158.16
+  },
+  {
+    "test": "tb_dlt_cache",
+    "passed": true,
+    "seconds": 196.7
+  },
+  {
+    "test": "tb_dlt_faults",
+    "passed": true,
+    "execution": "tb_dlt_faults_nocrc_retry.vvp; corrected bench to allow DONE between accepted CRC-mutated fixtures",
+    "seconds": null
+  }
+]

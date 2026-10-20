@@ -1,0 +1,7 @@
+{
+  "work_project": ".",
+  "inputs_sha256": {
+    "src/board_b/user_source/hdl_source/frame_store.v": "7e68e647fb3f3e1c827975c5533593c84db8046553b77d4bc7f5093081775982"
+  },
+  "source_record_sha256": "9af8d9862e8712737c913be6b3b6192164a88d707f45be4173a93989ff1cfe0a"
+}
