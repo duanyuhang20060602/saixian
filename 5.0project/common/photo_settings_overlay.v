@@ -279,17 +279,18 @@ wire [4:0] row_local=row_y[4:0];
 wire [11:0] label_x=x-12'd96,value_x=x-12'd608;
 wire [10:0] label_y=y-11'd96,footer_y=y-11'd608;
 reg [6:0] glyph;reg [3:0] font_row,font_col;
+reg use_table;reg [5:0] glyph_id;reg [4:0] glyph_index;
 reg text_on,highlight,bar,track;reg [4:0] value;reg [8:0] bar_width;
 reg [5:0] value_label;
 reg [1:0] text_color;
 always @*begin
- glyph=0;font_row=0;font_col=0;text_on=0;highlight=0;bar=0;track=0;
+ glyph=0;use_table=0;glyph_id=0;glyph_index=0;font_row=0;font_col=0;text_on=0;highlight=0;bar=0;track=0;
  value=0;bar_width=0;value_label=0;text_color=2'd0;
  if(panel)begin
   if(y>=96 && y<128 && x>=96 && x<224)begin
-   glyph=text_glyph(0,label_x[8:5]);font_row=label_y[4:1];font_col=label_x[4:1];text_on=1;text_color=2'd1;
+   use_table=1;glyph_id=0;glyph_index=label_x[8:5];font_row=label_y[4:1];font_col=label_x[4:1];text_on=1;text_color=2'd1;
   end else if(y>=96 && y<128 && x>=688 && x<784)begin
-   glyph=text_glyph(pending ? 10:11,(x-688)>>5);font_row=label_y[4:1];font_col=(x-688)>>1;text_on=1;
+   use_table=1;glyph_id=pending ? 10:11;glyph_index=(x-688)>>5;font_row=label_y[4:1];font_col=(x-688)>>1;text_on=1;
    text_color=pending ? 2'd2:2'd1;
   end else if(y>=144 && y<592 && row_index<=13)begin
    value=values[row_index];highlight=row_index==selected;
@@ -308,30 +309,49 @@ always @*begin
     default:value_label=0;
    endcase
    if(x>=96 && x<288)begin
-    glyph=text_glyph(row_index==13 ? 6'd35:row_index==12 ? 6'd30:row_index==0 ? 5'd14:row_index==10 ? 5'd15:row_index==11 ? 5'd27:{1'b0,row_index},label_x[8:5]);
+    use_table=1;glyph_id=row_index==13 ? 6'd35:row_index==12 ? 6'd30:row_index==0 ? 5'd14:row_index==10 ? 5'd15:row_index==11 ? 5'd27:{1'b0,row_index};glyph_index=label_x[8:5];
     font_col=label_x[4:1];font_row=row_local[4:1];text_on=1;
    end else if(x>=608 && x<800)begin
-    glyph=value_label!=0 ? text_glyph(value_label,value_x[8:5]):value_x[8:5]==0 ? 7'd35+value:7'd0;
+    if(value_label!=0)begin use_table=1;glyph_id=value_label;glyph_index=value_x[8:5];end
+    else glyph=value_x[8:5]==0 ? 7'd35+value:7'd0;
     font_col=value_x[4:1];font_row=row_local[4:1];text_on=1;text_color=2'd2;
    end
    if(value_label==0 && row_local>=10 && row_local<22 && x>=320 && x<544)begin track=1;bar=x-320<bar_width;end
   end else if(y>=608 && y<648 && x>=96 && x<400)begin
    if((y<624) || (y>=632))begin
-    glyph=text_glyph(y<624 ? 12:13,label_x[8:4]);font_col=label_x[3:0];
+    use_table=1;glyph_id=y<624 ? 12:13;glyph_index=label_x[8:4];font_col=label_x[3:0];
     font_row=y<624 ? footer_y[3:0]:(y-632);text_on=1;text_color=2'd1;
    end
   end
  end
 end
+// Separate raster/row decoding from the glyph table, retaining total latency.
+// The legacy four-cycle configuration has no spare stage and stays direct.
+localparam EXTRA_STAGE=VIDEO_DELAY>=5 ? 1:0;
+reg table_q;reg [5:0] id_q;reg [4:0] index_q;reg [6:0] numeric_q;
+reg [3:0] row_q,col_q;reg panel_q,text_q;reg [1:0] color_q,bg_q;
+wire [6:0] direct_glyph=use_table ? text_glyph(glyph_id,glyph_index):glyph;
+wire [6:0] staged_glyph=table_q ? text_glyph(id_q,index_q):numeric_q;
 reg [6:0] glyph_s1;reg [3:0] row_s1,col_s1,col_s2;
 reg panel_s1,panel_s2,text_s1,text_s2,ink_s3;
 reg [1:0] bg_s3,color_s3;
 reg [1:0] bg_s1,bg_s2,color_s1,color_s2;
 wire [15:0] font_bits;
-photo_menu_font font(.clk(clk),.glyph(glyph_s1),.row(row_s1),.bits(font_bits));
-reg [VIDEO_DELAY-3:0] panel_pipe;
+wire [6:0] lookup_glyph;
+generate if(EXTRA_STAGE)begin: text_rom_stage
+ wire [7:0] lookup_word;reg table_s1,overflow_s1;reg [6:0] numeric_s1;
+ photo_menu_text_lookup text_lookup(.clk(clk),.address({id_q,index_q[3:0]}),.data(lookup_word));
+ always @(posedge clk or posedge rst)
+  if(rst)begin table_s1<=0;overflow_s1<=0;numeric_s1<=0;end
+  else begin table_s1<=table_q;overflow_s1<=index_q[4];numeric_s1<=numeric_q;end
+ assign lookup_glyph=table_s1 ? (overflow_s1 ? 7'd0:lookup_word[6:0]):numeric_s1;
+end else begin: direct_text
+ assign lookup_glyph=glyph_s1;
+end endgenerate
+photo_menu_font font(.clk(clk),.glyph(lookup_glyph),.row(row_s1),.bits(font_bits));
+reg [VIDEO_DELAY-3-EXTRA_STAGE:0] panel_pipe;
 // Delay palette indices instead of duplicating constant RGB bits at every tap.
-reg [2:0] color_pipe[0:VIDEO_DELAY-4];integer i;
+reg [2:0] color_pipe[0:VIDEO_DELAY-4-EXTRA_STAGE];integer i;
 function [23:0] palette_rgb;input [2:0] index;begin
  case(index)
   0:palette_rgb=24'h142332;
@@ -346,21 +366,44 @@ function [23:0] palette_rgb;input [2:0] index;begin
 end endfunction
 always @(posedge clk or posedge rst)begin
  if(rst)begin
+  table_q<=0;id_q<=0;index_q<=0;numeric_q<=0;row_q<=0;col_q<=0;panel_q<=0;text_q<=0;color_q<=0;bg_q<=0;
   glyph_s1<=0;row_s1<=0;col_s1<=0;col_s2<=0;panel_s1<=0;panel_s2<=0;text_s1<=0;text_s2<=0;
   bg_s1<=0;bg_s2<=0;color_s1<=0;color_s2<=0;bg_s3<=0;color_s3<=0;ink_s3<=0;panel_pipe<=0;
-  for(i=0;i<VIDEO_DELAY-3;i=i+1)color_pipe[i]<=0;
+  for(i=0;i<VIDEO_DELAY-3-EXTRA_STAGE;i=i+1)color_pipe[i]<=0;
  end else begin
-  glyph_s1<=glyph;row_s1<=font_row;col_s1<=font_col;
-  panel_s1<=panel;text_s1<=text_on;color_s1<=text_color;
-  bg_s1<=bar ? 2'd3:track ? 2'd2:highlight ? 2'd1:2'd0;
+  table_q<=use_table;id_q<=glyph_id;index_q<=glyph_index;numeric_q<=glyph;
+  row_q<=font_row;col_q<=font_col;panel_q<=panel;text_q<=text_on;color_q<=text_color;
+  bg_q<=bar ? 2'd3:track ? 2'd2:highlight ? 2'd1:2'd0;
+  glyph_s1<=EXTRA_STAGE ? staged_glyph:direct_glyph;
+  row_s1<=EXTRA_STAGE ? row_q:font_row;col_s1<=EXTRA_STAGE ? col_q:font_col;
+  panel_s1<=EXTRA_STAGE ? panel_q:panel;text_s1<=EXTRA_STAGE ? text_q:text_on;color_s1<=EXTRA_STAGE ? color_q:text_color;
+  bg_s1<=EXTRA_STAGE ? bg_q:(bar ? 2'd3:track ? 2'd2:highlight ? 2'd1:2'd0);
   panel_s2<=panel_s1;text_s2<=text_s1;col_s2<=col_s1;color_s2<=color_s1;bg_s2<=bg_s1;
-  panel_pipe<={panel_pipe[VIDEO_DELAY-4:0],panel_s2};
+  panel_pipe<={panel_pipe[VIDEO_DELAY-4-EXTRA_STAGE:0],panel_s2};
   // Split BRAM bit selection and colour fanout; remove one later delay
   // stage to preserve the established VIDEO_DELAY at the output.
   ink_s3<=text_s2 && font_bits[15-col_s2];bg_s3<=bg_s2;color_s3<=color_s2;
   color_pipe[0]<=ink_s3 ? {1'b1,color_s3}:{1'b0,bg_s3};
-  for(i=1;i<VIDEO_DELAY-3;i=i+1)color_pipe[i]<=color_pipe[i-1];
+  for(i=1;i<VIDEO_DELAY-3-EXTRA_STAGE;i=i+1)color_pipe[i]<=color_pipe[i-1];
  end
 end
-assign rgb_out=panel_pipe[VIDEO_DELAY-3] ? palette_rgb(color_pipe[VIDEO_DELAY-4]):rgb_in;
+assign rgb_out=panel_pipe[VIDEO_DELAY-3-EXTRA_STAGE] ? palette_rgb(color_pipe[VIDEO_DELAY-4-EXTRA_STAGE]):rgb_in;
+endmodule
+
+// Compact text-id/character-position map. Bitmap fonts stay in their original ROMs.
+module photo_menu_text_lookup(input clk,input [9:0] address,output [7:0] data);
+`ifdef TOUCHSCREEN_SIM
+reg [7:0] rom[0:1023];reg [7:0] q;
+initial $readmemh("src/board_a/user_source/hdl_source/photo_menu_text_lookup.hex",rom);
+always @(posedge clk)q<=rom[address];
+assign data=q;
+`else
+EG_LOGIC_BRAM #(.DATA_WIDTH_A(8),.ADDR_WIDTH_A(10),.DATA_DEPTH_A(1024),
+ .DATA_WIDTH_B(8),.ADDR_WIDTH_B(10),.DATA_DEPTH_B(1024),.BYTE_ENABLE(0),.MODE("SP"),
+ .REGMODE_A("NOREG"),.REGMODE_B("NOREG"),.WRITEMODE_A("NORMAL"),.WRITEMODE_B("NORMAL"),
+ .RESETMODE("SYNC"),.DEBUGGABLE("NO"),.PACKABLE("NO"),
+ .FORCE_KEEP("OFF"),.INIT_FILE("../src/board_a/user_source/hdl_source/photo_menu_text_lookup.mif"),.FILL_ALL("NONE"),.IMPLEMENT("9K")) map_rom(
+ .doa(data),.dob(),.dia(8'd0),.dib(8'd0),.cea(1'b1),.ocea(1'b0),.clka(clk),.wea(1'b0),.rsta(1'b0),
+ .ceb(1'b0),.oceb(1'b0),.clkb(1'b0),.web(1'b0),.rstb(1'b0),.bea(1'b0),.beb(1'b0),.addra(address),.addrb(10'd0));
+`endif
 endmodule

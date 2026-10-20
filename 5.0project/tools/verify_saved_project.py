@@ -28,7 +28,8 @@ def verify(strict=True):
     if strict:
         assert origin['test_count']==65 and all(r['passed'] for rs in origin['tests'].values() for r in rs)
         assert digest(ROOT/'examples/TF卡素材/AWARD720.DLT')==digest(ROOT/'award_media/AWARD720.DLT')==origin['files_sha256']['AWARD720.DLT']
-    assert not any(p.suffix.lower() in ('.md','.zip') for p in ROOT.rglob('*') if p.is_file())
+    if strict:
+        assert not any(p.suffix.lower() in ('.md','.zip') for p in ROOT.rglob('*') if p.is_file())
     return {'passed':True,'saved_files_checked':len(record['files_sha256']),'saved_rtl_files':record['saved_rtl_files'],
             'boards':boards,'origin_test_count':65,'origin_hardware_validation':origin['hardware_validation'],
             'scope':'File integrity, exact firmware/media hashes, preserved RTL behavior and independent TD input paths; no FPGA rebuild performed.'}

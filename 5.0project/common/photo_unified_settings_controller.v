@@ -1,11 +1,14 @@
 module photo_unified_settings_controller #(
     parameter integer CLK_FREQ_HZ = 25_000_000,
     parameter integer TIMEOUT_SECONDS = 60,
+    parameter integer POINTER_CONTROL = 0,
     parameter integer IMAGE_MENU = 0
 )(
     input  wire       clk,
     input  wire       rst,
     input  wire       carousel_mode,
+    input wire pointer_valid,pointer_increase,
+    input wire [3:0] pointer_item,
     input  wire       key_next_item,
     input  wire       key_decrease,
     input  wire       key_enter_exit,
@@ -39,6 +42,7 @@ module photo_unified_settings_controller #(
 );
 localparam [32:0] TIMEOUT_CYCLES = 64'd1 * CLK_FREQ_HZ * TIMEOUT_SECONDS;
 reg [32:0] idle_timer;
+wire pointer_event=POINTER_CONTROL && pointer_valid && pointer_item<=13;
 
 function [3:0] quantize_percent;
     input [7:0] value;
@@ -117,7 +121,7 @@ always @(posedge clk or posedge rst) begin
             setting_item  <= IMAGE_MENU ? 4'd1:4'd0;
         end
     end else begin
-        if (key_next_item || key_decrease || key_enter_exit || key_increase)
+        if (key_next_item || key_decrease || key_enter_exit || key_increase || pointer_event)
             idle_timer <= 33'd0;
         else if (idle_timer >= TIMEOUT_CYCLES - 1'b1) begin
             idle_timer    <= 33'd0;
@@ -125,12 +129,13 @@ always @(posedge clk or posedge rst) begin
         end else
             idle_timer <= idle_timer + 1'b1;
 
+        if(pointer_event && pointer_item<=13)setting_item<=pointer_item;
         if (key_enter_exit)
             settings_mode <= 1'b0;
         else if (key_next_item)
             setting_item <= (setting_item == 4'd13) ? (IMAGE_MENU ? 4'd1:4'd0) : setting_item + 1'b1;
-        else if (key_decrease) begin
-            case (setting_item)
+        else if (key_decrease || (pointer_event && !pointer_increase)) begin
+            case (pointer_event ? pointer_item:setting_item)
                 2'd0: if (volume_setting     != 0) volume_setting     <= volume_setting - 1'b1;
                 2'd1: if (brightness_setting != 0) brightness_setting <= brightness_setting - 1'b1;
                 2'd2: if (contrast_setting   != 0) contrast_setting   <= contrast_setting - 1'b1;
@@ -146,8 +151,8 @@ always @(posedge clk or posedge rst) begin
                 4'd12: audio_repair_enable<=0;
                 4'd13: edge_enable<=0;
             endcase
-        end else if (key_increase) begin
-            case (setting_item)
+        end else if (key_increase || (pointer_event && pointer_increase)) begin
+            case (pointer_event ? pointer_item:setting_item)
                 2'd0: if (volume_setting     < 8) volume_setting     <= volume_setting + 1'b1;
                 2'd1: if (brightness_setting < 8) brightness_setting <= brightness_setting + 1'b1;
                 2'd2: if (contrast_setting   < 8) contrast_setting   <= contrast_setting + 1'b1;

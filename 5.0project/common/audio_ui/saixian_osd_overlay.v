@@ -431,9 +431,9 @@ always @* begin
                 default:glyph_id=7'd0;
             endcase
             text_region=1'b1;
-        end else if ((state == ST_CAROUSEL) && (x >= 10'd488) && (x < 10'd632) && (y >= 9'd24) && (y < 9'd40)) begin
+        end else if ((state == ST_CAROUSEL) && (x >= 10'd400) && (x < 10'd544) && (y >= 9'd24) && (y < 9'd40)) begin
             // Source BMP dimensions: four digits, 'x', four digits.
-            local_x = x - 10'd488;
+            local_x = x - 10'd400;
             slot = local_x[7:4];
             font_col = local_x[3:0];
             // In this branch y is 24..39; this is exactly y-24 without an adder.

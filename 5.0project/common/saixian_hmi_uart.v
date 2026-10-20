@@ -9,6 +9,8 @@ module saixian_hmi_uart #(
     input  wire       clk,
     input  wire       rst,
     input  wire       uart_rx,
+    output reg touch_valid,output wire [9:0] touch_x,output wire [8:0] touch_y,
+    output wire touch_down,output reg touch_mode_valid,touch_mode_value,
     output reg project_valid,output reg [1:0] project_value,
     output reg        start_pulse,
     output reg        pause_set_pulse, resume_pulse,
@@ -116,7 +118,13 @@ always @(posedge clk or posedge rst) begin
     end
 end
 
-reg [2:0] frame_index;
+reg [3:0] frame_index;
+reg [9:0] touch_frame_x;reg [8:0] touch_frame_y;
+reg touch_x_high_ok,touch_y_high_ok,touch_state_ok;
+reg touch_frame_state;reg [7:0] touch_sum;
+// Payload is meaningful only with touch_valid; reuse the pending frame storage.
+assign touch_x=touch_frame_x;assign touch_y=touch_frame_y;assign touch_down=touch_frame_state;
+reg touch_check_ok;
 reg [7:0] frame_command;
 reg [7:0] frame_value;
 // Abandon incomplete messages after four character times of silence.
@@ -135,6 +143,7 @@ task decode_frame;
             8'h08: if (frame_value == 0) music_next_pulse <= 1'b1; else frame_error_pulse <= 1'b1;
             8'h07: if (frame_value == 0) resume_pulse <= 1'b1; else frame_error_pulse <= 1'b1;
             8'h24: if(frame_value<=2)begin project_valid<=1;project_value<=frame_value[1:0];end else frame_error_pulse<=1;
+            8'h31: if(frame_value<=1)begin touch_mode_valid<=1;touch_mode_value<=frame_value[0];end else frame_error_pulse<=1;
             8'h30: if (frame_value <= 4) begin page_id <= frame_value[2:0]; page_notify_pulse <= 1'b1; end else frame_error_pulse <= 1'b1;
             8'h10: begin setting_valid <= 1'b1; setting_id <= 3'd0; setting_value <= frame_value; end
             8'h11: begin setting_valid <= 1'b1; setting_id <= 3'd1; setting_value <= frame_value; end
@@ -185,6 +194,9 @@ endtask
 
 always @(posedge clk or posedge rst) begin
     if (rst) begin
+        touch_valid<=0;touch_x_high_ok<=0;touch_y_high_ok<=0;touch_state_ok<=0;
+        touch_mode_valid<=0;touch_mode_value<=0;touch_frame_x<=0;touch_frame_y<=0;
+        touch_frame_state<=0;touch_sum<=0;touch_check_ok<=0;
         project_value<=0;frame_index          <= 3'd0;
         page_id <= 3'd0;
         frame_idle           <= 0;
@@ -211,6 +223,7 @@ always @(posedge clk or posedge rst) begin
         reset_defaults_pulse <= 1'b0;
         frame_error_pulse    <= 1'b0;
     end else begin
+        touch_valid<=0;touch_mode_valid<=0;
         project_valid<=0;start_pulse          <= 1'b0;
         pause_set_pulse <= 1'b0; resume_pulse <= 1'b0; page_notify_pulse <= 1'b0;
         pause_pulse          <= 1'b0;
@@ -239,8 +252,8 @@ always @(posedge clk or posedge rst) begin
         if (rx_byte_valid) begin
             case (frame_index)
                 3'd0: begin
-                    if (rx_byte == 8'h55)
-                        frame_index <= 3'd1;
+                    if (rx_byte == 8'h55) frame_index <= 4'd1;
+                    else if(rx_byte==8'ha6)begin frame_index<=4'd7;touch_sum<=8'ha6;end
                 end
                 3'd1: begin frame_command <= rx_byte; frame_index <= 3'd2; end
                 3'd2: begin frame_value   <= rx_byte; frame_index <= 3'd3; end
@@ -268,6 +281,25 @@ always @(posedge clk or posedge rst) begin
                         frame_index       <= (rx_byte == 8'h55) ? 3'd1 : 3'd0;
                         frame_error_pulse <= 1'b1;
                     end
+                end
+                4'd7:begin touch_frame_x[7:0]<=rx_byte;touch_sum<=touch_sum+rx_byte;frame_index<=8;end
+                4'd8:begin touch_frame_x[9:8]<=rx_byte[1:0];touch_x_high_ok<=rx_byte[7:2]==0;touch_sum<=touch_sum+rx_byte;frame_index<=9;end
+                4'd9:begin touch_frame_y[7:0]<=rx_byte;touch_sum<=touch_sum+rx_byte;frame_index<=10;end
+                4'd10:begin touch_frame_y[8]<=rx_byte[0];touch_y_high_ok<=rx_byte[7:1]==0;touch_sum<=touch_sum+rx_byte;frame_index<=11;end
+                4'd11:begin touch_frame_state<=rx_byte[0];touch_state_ok<=rx_byte<=1;touch_sum<=touch_sum+rx_byte;frame_index<=12;end
+                4'd12:begin
+                    touch_check_ok<=rx_byte==touch_sum && touch_frame_x<800 && touch_frame_y<480 && touch_state_ok && touch_x_high_ok && touch_y_high_ok;
+                    frame_index<=13;
+                end
+                4'd13,4'd14:begin
+                    if(rx_byte==8'hff)frame_index<=frame_index+1'b1;
+                    else begin frame_index<=0;frame_error_pulse<=1;end
+                end
+                4'd15:begin
+                    frame_index<=0;
+                    if(rx_byte==8'hff && touch_check_ok)begin
+                        touch_valid<=1;
+                    end else frame_error_pulse<=1;
                 end
                 default: frame_index <= 3'd0;
             endcase

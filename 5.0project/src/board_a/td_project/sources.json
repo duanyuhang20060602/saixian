@@ -61,5 +61,6 @@
   "../../../common/fluid/water_scene.v",
   "../../../common/photo_spotlight_player.v",
   "../../../common/photo_award_memory.v",
-  "../../../common/photo_raster_delay.v"
+  "../../../common/photo_raster_delay.v",
+  "../../../common/photo_touchpad.v"
 ]

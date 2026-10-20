@@ -521,7 +521,7 @@
                     <Attr Name="CompileOrder" Val="63"/>
                 </FileInfo>
             </File>
-        </Verilog>
+        <File Path="../../../common/photo_touchpad.v"><FileInfo><Attr Name="UsedInSyn" Val="true" /><Attr Name="UsedInP&R" Val="true" /><Attr Name="BelongTo" Val="design_1" /><Attr Name="CompileOrder" Val="64" /></FileInfo></File></Verilog>
     </Source_Files>
     <FileSets>
         <FileSet Name="design_1" Type="DesignFiles">

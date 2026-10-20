@@ -95,7 +95,7 @@ def build(board, work, mapped_from=None):
     if not environment.get('SAIXIAN_PLACE_SEED'):
         environment['SAIXIAN_PLACE_SEED'] = '19' if board == 'b' else '17'
     record['place_seed_override'] = environment.get('SAIXIAN_PLACE_SEED')
-    temp = Path('E:/Codex/Temp/cooperate-v4-port')
+    temp = Path(os.environ.get('SAIXIAN_TEMP_ROOT', 'E:/Codex/Temp/cooperate-v4-port'))
     temp.mkdir(parents=True, exist_ok=True)
     environment.update(TEMP=str(temp), TMP=str(temp), TMPDIR=str(temp))
     td_root = Path(environment.get('SAIXIAN_TD_ROOT', 'C:/Anlogic/TD_6.2.1_Engineer_6.2.168.116'))
