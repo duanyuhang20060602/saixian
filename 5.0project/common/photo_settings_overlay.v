@@ -1,20 +1,20 @@
 `timescale 1ns/1ps
 // One frame-locked menu for image, audio and playback controls.
-module photo_settings_overlay #(parameter VIDEO_DELAY=21)(
+module photo_settings_overlay #(parameter VIDEO_DELAY=21,INTERVAL_CONTROL=0)(
  input clk,rst,frame_tick,de,settings_mode,updating,
  input [11:0] x,input [10:0] y,input [3:0] setting_item,
  input [3:0] volume,brightness,contrast,saturation,input [1:0] sharpness,enhancement,
  input invert,vintage,input [4:0] effect,input edge_enable,auto_enable,waveform_mode,high_color,audio_repair_enable,
- input [23:0] rgb_in,output [23:0] rgb_out
+ input [23:0] rgb_in,output [23:0] rgb_out,input [4:0] auto_interval_seconds
 );
 reg visible,pending;reg [3:0] selected;
-reg [4:0] values[0:13];
+reg [4:0] values[0:14];
 always @(posedge clk or posedge rst)begin
  if(rst)begin visible<=0;pending<=0;selected<=0;
-  values[0]<=5;values[1]<=4;values[2]<=4;values[3]<=1;values[4]<=4;
+  values[14]<=5;values[0]<=5;values[1]<=4;values[2]<=4;values[3]<=1;values[4]<=4;
   values[5]<=0;values[6]<=0;values[7]<=1;values[8]<=0;values[9]<=0;values[10]<=0;values[11]<=0;values[12]<=0;values[13]<=0;
  end else if(frame_tick)begin
-  visible<=settings_mode;pending<=updating;selected<=setting_item;
+  values[14]<=auto_interval_seconds;visible<=settings_mode;pending<=updating;selected<=setting_item;
   values[0]<=volume;values[1]<=brightness;values[2]<=contrast;values[3]<={2'd0,sharpness};values[4]<=saturation;
   values[5]<={3'd0,invert};values[6]<={3'd0,vintage};values[7]<={2'd0,enhancement};
   values[8]<=effect;values[9]<={3'd0,auto_enable};values[10]<={3'd0,waveform_mode};values[11]<={3'd0,high_color};values[12]<={4'd0,audio_repair_enable};values[13]<={4'd0,edge_enable};
@@ -268,6 +268,9 @@ function [6:0] text_glyph;
     3:text_glyph=7'd123;
     default:text_glyph=0;
    endcase
+   37:case(index)
+    0:text_glyph=7'd58;1:text_glyph=7'd59;2:text_glyph=7'd124;3:text_glyph=7'd125;default:text_glyph=0;
+   endcase
    default:text_glyph=0;
  endcase end
 endfunction
@@ -277,7 +280,7 @@ wire [10:0] row_y=y-11'd144;
 wire [3:0] row_index=row_y[8:5];
 wire [4:0] row_local=row_y[4:0];
 wire [11:0] label_x=x-12'd96,value_x=x-12'd608;
-wire [10:0] label_y=y-11'd96,footer_y=y-11'd608;
+wire [10:0] label_y=y-11'd96,footer_y=y-(INTERVAL_CONTROL ? 11'd640:11'd608);
 reg [6:0] glyph;reg [3:0] font_row,font_col;
 reg use_table;reg [5:0] glyph_id;reg [4:0] glyph_index;
 reg text_on,highlight,bar,track;reg [4:0] value;reg [8:0] bar_width;
@@ -292,7 +295,7 @@ always @*begin
   end else if(y>=96 && y<128 && x>=688 && x<784)begin
    use_table=1;glyph_id=pending ? 10:11;glyph_index=(x-688)>>5;font_row=label_y[4:1];font_col=(x-688)>>1;text_on=1;
    text_color=pending ? 2'd2:2'd1;
-  end else if(y>=144 && y<592 && row_index<=13)begin
+  end else if(y>=144 && y<(INTERVAL_CONTROL ? 624:592) && row_index<=(INTERVAL_CONTROL ? 14:13))begin
    value=values[row_index];highlight=row_index==selected;
    case(row_index)
     // Signed-digit constants; nine-bit arithmetic preserves the old wrap.
@@ -309,18 +312,24 @@ always @*begin
     default:value_label=0;
    endcase
    if(x>=96 && x<288)begin
-    use_table=1;glyph_id=row_index==13 ? 6'd35:row_index==12 ? 6'd30:row_index==0 ? 5'd14:row_index==10 ? 5'd15:row_index==11 ? 5'd27:{1'b0,row_index};glyph_index=label_x[8:5];
+    use_table=1;glyph_id=row_index==14 ? 6'd37:row_index==13 ? 6'd35:row_index==12 ? 6'd30:row_index==0 ? 5'd14:row_index==10 ? 5'd15:row_index==11 ? 5'd27:{1'b0,row_index};glyph_index=label_x[8:5];
     font_col=label_x[4:1];font_row=row_local[4:1];text_on=1;
    end else if(x>=608 && x<800)begin
     if(value_label!=0)begin use_table=1;glyph_id=value_label;glyph_index=value_x[8:5];end
-    else glyph=value_x[8:5]==0 ? 7'd35+value:7'd0;
+    else if(INTERVAL_CONTROL && row_index==14)begin
+     case(value_x[8:5])
+      0:glyph=7'd35+(value>=30 ? 3:value>=20 ? 2:value>=10 ? 1:0);
+      1:glyph=7'd35+(value>=30 ? value-30:value>=20 ? value-20:value>=10 ? value-10:value);
+      2:glyph=7'd126;default:glyph=0;
+     endcase
+    end else glyph=value_x[8:5]==0 ? 7'd35+value:7'd0;
     font_col=value_x[4:1];font_row=row_local[4:1];text_on=1;text_color=2'd2;
    end
-   if(value_label==0 && row_local>=10 && row_local<22 && x>=320 && x<544)begin track=1;bar=x-320<bar_width;end
-  end else if(y>=608 && y<648 && x>=96 && x<400)begin
-   if((y<624) || (y>=632))begin
-    use_table=1;glyph_id=y<624 ? 12:13;glyph_index=label_x[8:4];font_col=label_x[3:0];
-    font_row=y<624 ? footer_y[3:0]:(y-632);text_on=1;text_color=2'd1;
+   if(value_label==0 && row_index!=14 && row_local>=10 && row_local<22 && x>=320 && x<544)begin track=1;bar=x-320<bar_width;end
+  end else if(y>=(INTERVAL_CONTROL ? 640:608) && y<(INTERVAL_CONTROL ? 680:648) && x>=96 && x<400)begin
+   if((y<(INTERVAL_CONTROL ? 656:624)) || (y>=(INTERVAL_CONTROL ? 664:632)))begin
+    use_table=1;glyph_id=y<(INTERVAL_CONTROL ? 656:624) ? 12:13;glyph_index=label_x[8:4];font_col=label_x[3:0];
+    font_row=y<(INTERVAL_CONTROL ? 656:624) ? footer_y[3:0]:(y-(INTERVAL_CONTROL ? 664:632));text_on=1;text_color=2'd1;
    end
   end
  end

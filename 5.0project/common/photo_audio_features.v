@@ -1,16 +1,23 @@
 `timescale 1ns/1ps
 // B advances cue synthesis once for each PCM frame prepared for transmission.
 // TF/SPI burst timing does not change the cue pitch or duration at A's 48 kHz.
-module photo_audio_processing_b(
+module photo_audio_processing_b #(parameter PAGE_CUE=0)(
  input clk,rst,prepare,request_valid,input [7:0] request_epoch,
  input request_bg,request_repair,input [3:0] request_volume,request_cue,
- input [31:0] raw_pcm,output reg [31:0] processed_pcm,output reg bg_enabled
+ input [31:0] raw_pcm,output reg [31:0] processed_pcm,output reg bg_enabled,
+ input [2:0] page_cue_count,input background_available
 );
 reg [7:0] seen_epoch;reg [3:0] volume,cue_pulse;reg [3:0] prepare_pipe;
-wire [23:0] cue_left,cue_right;wire cue_active;
+wire [23:0] cue_left,cue_right;wire cue_active,cue_busy;
+reg [7:0] page_pending;
+wire incoming_page=PAGE_CUE && page_cue_count!=0;
+wire epoch_clear=request_valid && request_epoch!=seen_epoch;
+wire start_page=PAGE_CUE && page_pending!=0 && !cue_busy && cue_pulse==0 && !epoch_clear;
+wire [8:0] page_total={1'b0,page_pending}+(incoming_page ? {6'd0,page_cue_count}:9'd0)-(start_page ? 9'd1:9'd0);
+wire use_background=bg_enabled && (!PAGE_CUE || background_available);
 photo_audio_cue_samples cue(.clk(clk),.rst(rst),.cue_event(cue_pulse),.sample_tick(prepare_pipe[0]),
  .audio_valid(),.audio_left(cue_left),.audio_right(cue_right),.audio_level(),
- .cue_busy(),.spectrum_active(cue_active),.spectrum_tone_bin());
+ .cue_busy(cue_busy),.spectrum_active(cue_active),.spectrum_tone_bin());
 function signed [15:0] scale;
  input signed [15:0] value;input [3:0] level;
  begin case(level)
@@ -19,29 +26,32 @@ function signed [15:0] scale;
  7:scale=value-(value>>>3);default:scale=value;
  endcase end
 endfunction
-wire signed [15:0] bg_l=bg_enabled ? $signed(raw_pcm[15:0]):16'sd0;
-wire signed [15:0] bg_r=bg_enabled ? $signed(raw_pcm[31:16]):16'sd0;
+wire signed [15:0] bg_l=use_background ? $signed(raw_pcm[15:0]):16'sd0;
+wire signed [15:0] bg_r=use_background ? $signed(raw_pcm[31:16]):16'sd0;
 wire signed [15:0] tone_l=$signed(cue_left[23:8]),tone_r=$signed(cue_right[23:8]);
 reg signed [15:0] mix_l_q,mix_r_q,raw_l_q,raw_r_q,tone_l_q,tone_r_q;
 reg cue_active_q;
 wire signed [15:0] repaired_l,repaired_r;wire repaired_valid;
-wire signed [15:0] piped_mix_l=cue_active_q ? (bg_enabled ? (repaired_l>>>1)+(tone_l_q>>>1):tone_l_q):repaired_l;
-wire signed [15:0] piped_mix_r=cue_active_q ? (bg_enabled ? (repaired_r>>>1)+(tone_r_q>>>1):tone_r_q):repaired_r;
+wire signed [15:0] piped_mix_l=cue_active_q ? (use_background ? (repaired_l>>>1)+(tone_l_q>>>1):tone_l_q):repaired_l;
+wire signed [15:0] piped_mix_r=cue_active_q ? (use_background ? (repaired_r>>>1)+(tone_r_q>>>1):tone_r_q):repaired_r;
 // SPI preparation begins 15 bits before the next word (~400 B clocks).
 // The original single-board repair takes ~301 clocks. Never clock it from SPI.
-wire epoch_clear=request_valid && request_epoch!=seen_epoch;
 reg repair_enable;
 saixian_audio_repair repair(.clk(clk),.rst(rst),.clear(epoch_clear),
  .sample_valid(prepare_pipe[2]),.enable(repair_enable),
  .left_in(raw_l_q),.right_in(raw_r_q),.left_out(repaired_l),.right_out(repaired_r),.out_valid(repaired_valid));
 reg mix_valid;
 always @(posedge clk or posedge rst)begin
- if(rst)begin repair_enable<=0;mix_valid<=0;seen_epoch<=0;volume<=5;bg_enabled<=1;cue_pulse<=0;prepare_pipe<=0;
+ if(rst)begin page_pending<=0;repair_enable<=0;mix_valid<=0;seen_epoch<=0;volume<=5;bg_enabled<=1;cue_pulse<=0;prepare_pipe<=0;
   mix_l_q<=0;mix_r_q<=0;raw_l_q<=0;raw_r_q<=0;tone_l_q<=0;tone_r_q<=0;cue_active_q<=0;processed_pcm<=0;end
  else begin
   mix_valid<=repaired_valid;
   if(request_valid)repair_enable<=request_repair;
   cue_pulse<=0;prepare_pipe<={prepare_pipe[2:0],prepare};
+  if(PAGE_CUE)begin
+   page_pending<=page_total[8] ? 8'hff:page_total[7:0];
+   if(start_page)cue_pulse<=4'd6;
+  end
   if(request_valid && request_epoch!=seen_epoch)begin
    seen_epoch<=request_epoch;volume<=request_volume>8 ? 4'd8:request_volume;
    bg_enabled<=request_bg;cue_pulse<=request_cue;
@@ -72,6 +82,24 @@ always @(posedge clk or posedge rst)begin
   else if(!fired)begin
    if(hold_count==CLK_HZ-1)begin long_press<=1;fired<=1;end
    else hold_count<=hold_count+1'b1;
+  end
+ end
+end
+endmodule
+
+// Actual committed photo changes, including cached and automatic navigation.
+// Initial display, metadata refresh and the special award slot are silent.
+module photo_page_change_event(input clk,rst,display_valid,
+ input [2:0] image,count,output reg page_event);
+reg have_photo;reg [2:0] last_image;
+always @(posedge clk or posedge rst)begin
+ if(rst)begin have_photo<=0;last_image<=0;page_event<=0;end
+ else begin
+  page_event<=0;
+  if(count==0)have_photo<=0;
+  else if(display_valid && image<count)begin
+   page_event<=have_photo && image!=last_image;
+   last_image<=image;have_photo<=1;
   end
  end
 end

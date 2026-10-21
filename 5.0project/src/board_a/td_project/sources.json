@@ -28,7 +28,6 @@
   "../../../common/saixian_key_debounce.v",
   "../../../common/photo_auto_advance.v",
   "../../../common/photo_cached_control_a.v",
-  "../../../common/photo_resolution_overlay.v",
   "../../../common/photo_settings_overlay.v",
   "../../../common/photo_menu_font.v",
   "../../../common/photo_audio_link.v",

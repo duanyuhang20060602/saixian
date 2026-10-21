@@ -19,14 +19,10 @@ reg [4:0] tx_pos;reg [159:0] tx_payload;reg [15:0] tx_crc;
 reg tx_active;
 assign busy=tx_active;
 assign tx=tx_active ? tx_bits[0] : 1'b1;
-function [7:0] get_byte;
- input [4:0] pos;input [159:0] payload;input [15:0] check;
- begin
-  if(pos==0)get_byte=8'ha5;else if(pos==1)get_byte=8'h5a;
-  else if(pos==22)get_byte=check[15:8];else if(pos==23)get_byte=check[7:0];
-  else get_byte=payload[159-(pos-2)*8 -:8];
- end
-endfunction
+// Serialize the payload once instead of selecting a variable byte through a
+// 160-bit barrel mux twice (TX and CRC). The byte and CRC edge are unchanged.
+wire [7:0] next_byte=tx_pos==0 ? 8'h5a:tx_pos<21 ? tx_payload[159:152]:
+                      tx_pos==21 ? tx_crc[15:8]:tx_crc[7:0];
 always @(posedge clk or posedge rst)begin
  if(rst)begin tx_bits<=10'h3ff;tx_count<=0;tx_bit<=0;tx_pos<=0;tx_payload<=0;tx_crc<=16'hffff;tx_active<=0;end
  else if(!tx_active)begin
@@ -39,9 +35,10 @@ always @(posedge clk or posedge rst)begin
    else begin
     tx_pos<=tx_pos+1'b1;
     if(tx_pos>=1 && tx_pos<21)begin
-     tx_crc<=crc_byte(tx_crc,get_byte(tx_pos+1'b1,tx_payload,tx_crc));
+     tx_crc<=crc_byte(tx_crc,tx_payload[159:152]);
+     tx_payload<={tx_payload[151:0],8'd0};
     end
-    tx_bits<={1'b1,get_byte(tx_pos+1'b1,tx_payload,tx_crc),1'b0};
+    tx_bits<={1'b1,next_byte,1'b0};
    end
   end else begin tx_bit<=tx_bit+1'b1;tx_bits<={1'b1,tx_bits[9:1]};end
  end else tx_count<=tx_count+1'b1;

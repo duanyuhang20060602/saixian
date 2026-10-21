@@ -36,6 +36,13 @@ initial begin
  // Move to left half of the same row.
  touch(200,100,1);touch(50,100,1);touch(50,100,0);
  tap();if(dut.volume!=5)$fatal(1,"left half must decrease");
+ // Adjust the added interval row through the real MOUSE UART path.
+ touch(100,100,1);touch(250,324,1);touch(250,324,0);
+ if(dut.cursor_x!=600 || dut.cursor_y!=608)$fatal(1,"drag to interval row");
+ tap();if(dut.auto_interval_seconds!=6 || dut.setting_item!=14)$fatal(1,"touch interval increase");
+ touch(200,100,1);touch(50,100,1);touch(50,100,0);
+ tap();if(dut.auto_interval_seconds!=5)$fatal(1,"touch interval decrease");
+ touch(100,324,1);touch(100,100,1);touch(100,100,0);
  cmd(0);if(dut.pointer_enabled)$fatal(1,"disable command");
  tap();if(dut.volume!=5)$fatal(1,"disabled touch must not edit");
  cmd(1);result=1;repeat(5)@(negedge clk);tap();if(dut.volume!=5 || dut.pointer_enabled)$fatal(1,"result context must block");

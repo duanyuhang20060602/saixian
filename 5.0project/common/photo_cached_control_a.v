@@ -40,7 +40,8 @@ wire focus_context_dirty=applied_context!={have_current,current_image,1'b1};
 wire idle_context_dirty=|applied_context;
 wire context_dirty=SETTINGS_LINK && (settings_focus ? focus_context_dirty:idle_context_dirty);
 localparam SETTLE_CYCLES=CLK_HZ/20; // 50 ms quiet interval coalesces bursts.
-reg [18:0] observed_settings;reg [31:0] settings_settle;reg settings_quiet;
+localparam SETTLE_BITS=($clog2(SETTLE_CYCLES+1)>0) ? $clog2(SETTLE_CYCLES+1):1;
+reg [18:0] observed_settings;reg [SETTLE_BITS-1:0] settings_settle;reg settings_quiet;
 always @(posedge clk or posedge rst)begin
  if(rst)begin observed_settings<=0;settings_settle<=0;settings_quiet<=0;end
  else if(settings_state!=observed_settings)begin observed_settings<=settings_state;settings_settle<=0;settings_quiet<=0;end
@@ -58,8 +59,10 @@ assign settings_updating=settings_dirty || refresh_pending || (SETTINGS_LINK && 
 // A reverse one-hot case removes binary state decoding from the UART
 // response/timeout control path. Every state assignment writes one bit.
 reg [15:0] state_flags;
-function [3:0] state_number;input [15:0] flags;integer k;begin
- state_number=0;for(k=0;k<16;k=k+1)if(flags[k])state_number=k;
+function [3:0] state_number;input [15:0] flags;begin
+ // One-hot invariant allows four parallel reductions instead of priority muxes.
+ state_number={|(flags & 16'hff00),|(flags & 16'hf0f0),
+               |(flags & 16'hcccc),|(flags & 16'haaaa)};
 end endfunction
 wire [3:0] state=state_number(state_flags);
 reg send;reg [159:0] message;
@@ -89,6 +92,33 @@ assign award_loading=AWARD_CONTROL && (award_wait || (award_selected && current_
 reg [2:0] nav_target,display_target;
 wire matching=incoming[151:120]==session && incoming[119:104]==request_seq &&
               incoming[103:96]=={5'd0,target};
+// Qualify the first diagnostic independently of the state update mux.
+// These events are mutually exclusive in the one-hot FSM. Keep receive
+// success/cancel/error priorities identical while removing the long state
+// priority chain from the sticky diagnostic registers.
+wire response_error=got && matching && kind==11;
+wire begin_cancel=SETTINGS_LINK && background_transaction && (settings_mode || settings_dirty) && !tx_busy && !send;
+wire begin_ok=got && matching && kind==4 && incoming[87:56]==frame_bytes && incoming[94]==high_color && incoming[93]==receive_fluid;
+wire first_remote=(state_flags[WAIT_BEGIN] && !begin_cancel || state_flags[RECEIVE]) && response_error;
+wire first_begin_timeout=state_flags[WAIT_BEGIN] && !begin_cancel && !begin_ok && !response_error && timer>=64'd45*TIME_HZ;
+wire first_arm_timeout=state_flags[ARM] && !rx_armed && timer>=TIME_HZ*2;
+wire first_rx_fault=state_flags[RECEIVE] && !response_error && rx_fault;
+wire first_crc=state_flags[RECEIVE] && !response_error && !rx_fault && done_seen && end_seen && CHECK_FRAME_CRC && received_crc!=expected_crc;
+wire first_rx_timeout=state_flags[RECEIVE] && !response_error && !rx_fault && !(done_seen && end_seen) && timer>=64'd5*TIME_HZ;
+wire first_event=first_remote || first_begin_timeout || first_arm_timeout || first_rx_fault || first_crc || first_rx_timeout;
+wire [3:0] first_origin_value=({4{first_remote}} & 4'd1) |
+ ({4{first_begin_timeout || first_rx_timeout}} & 4'd4) |
+ ({4{first_arm_timeout}} & 4'd5) | ({4{first_rx_fault}} & 4'd2) | ({4{first_crc}} & 4'd3);
+wire [3:0] first_error_value=({4{first_remote}} & incoming[19:16]) |
+ ({4{first_begin_timeout}} & 4'd1) | ({4{first_arm_timeout}} & 4'd2) |
+ ({4{first_rx_fault}} & 4'd3) | ({4{first_crc}} & 4'd4) | ({4{first_rx_timeout}} & 4'd5);
+always @(posedge clk or posedge rst)begin
+ if(rst)begin first_transfer_origin<=0;first_transfer_error<=0;end
+ else if(next || award_toggle)begin first_transfer_origin<=0;first_transfer_error<=0;end
+ else if(!(got && kind==10) && first_transfer_origin==0 && first_event)begin
+  first_transfer_origin<=first_origin_value;first_transfer_error<=first_error_value;
+ end
+end
 assign debug_state=state;
 // Background filling must not restart the auto-play hold timer.
 assign busy=!have_current || nav_pending || display_pending || transition_active;
@@ -180,7 +210,7 @@ always @(posedge clk or posedge rst)begin
 end
 always @(posedge clk or posedge rst)begin
  if(rst)begin
-  award_available<=0;award_scan_complete<=0;award_notice<=0;last_transfer_error<=0;first_transfer_origin<=0;first_transfer_error<=0;award_selected<=0;award_wait<=0;return_photo<=0;
+  award_available<=0;award_scan_complete<=0;award_notice<=0;last_transfer_error<=0;award_selected<=0;award_wait<=0;return_photo<=0;
   high_color<=0;format_changed<=0;count_reply<=0;applied_settings<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};sent_settings<=0;refresh_pending<=0;
   applied_context<=31;sent_context<=0;background_transaction<=0;refresh_display<=0;ready_immediate<=0;state_flags<=(16'd1<<HELLO_SEND);send<=0;message<=0;session<=1;uptime<=1;timer_reset<=1;request_seq<=0;
   target<=0;direction<=1;done_seen<=0;end_seen<=0;expected_crc<=0;received_crc<=0;retries<=0;
@@ -272,26 +302,23 @@ always @(posedge clk or posedge rst)begin
    state_flags[WAIT_BEGIN]:begin
     if(SETTINGS_LINK && background_transaction && (settings_mode || settings_dirty) && !tx_busy && !send)begin
      message<=packet(16,session,0,0,0,0,0,0);send<=1;state_flags<=(16'd1<<WAIT_CANCEL);timer_reset<=1;
-    end else if(got && matching && kind==4 && incoming[87:56]==frame_bytes && incoming[94]==high_color && incoming[93]==receive_fluid)begin
+    end else if(begin_ok)begin
      // Metadata belongs to this transfer, never to a background display.
      target_width<=incoming[95] ? incoming[55:40]:16'd0;
      target_height<=incoming[95] ? incoming[39:24]:16'd0;
      arm_toggle<=~arm_toggle;state_flags<=(16'd1<<ARM);timer_reset<=1;
-    end else if(got && matching && kind==11)begin
+    end else if(response_error)begin
      error<=incoming[19:16];timer_reset<=1;
-     if(first_transfer_origin==0)begin first_transfer_origin<=1;first_transfer_error<=incoming[19:16];end
      if(AWARD_CONTROL && have_current)begin state_flags<=(16'd1<<IDLE);nav_pending<=0;award_wait<=0;award_selected<=current_image==6;award_notice<=target==6 ? 3'd3:3'd4;last_transfer_error<=incoming[19:16];end
      else state_flags<=(16'd1<<FAILED);
     end
     else if(timer>=64'd45*TIME_HZ)begin
      error<=1;state_flags<=(16'd1<<FAILED);timer_reset<=1;
-     if(first_transfer_origin==0)begin first_transfer_origin<=4;first_transfer_error<=1;end
     end
    end
    state_flags[ARM]:if(rx_armed)begin state_flags<=(16'd1<<READY);timer_reset<=1;end
        else if(timer>=TIME_HZ*2)begin
         state_flags<=(16'd1<<NACK);error<=2;
-        if(first_transfer_origin==0)begin first_transfer_origin<=5;first_transfer_error<=2;end
        end
    state_flags[READY]:if(!tx_busy && !send)begin
     message<=packet(5,session,request_seq,{5'd0,target},2,frame_bytes,0,0);send<=1;state_flags<=(16'd1<<RECEIVE);timer_reset<=1;
@@ -299,24 +326,20 @@ always @(posedge clk or posedge rst)begin
    state_flags[RECEIVE]:begin
     if(rx_done)begin done_seen<=1;received_crc<=rx_crc;end
     if(got && matching && kind==6)begin expected_crc<=incoming[55:24];end_seen<=1;end
-    if(got && matching && kind==11)begin
+    if(response_error)begin
      error<=incoming[19:16];state_flags<=(16'd1<<FAILED);timer_reset<=1;
-     if(first_transfer_origin==0)begin first_transfer_origin<=1;first_transfer_error<=incoming[19:16];end
     end
     else if(rx_fault)begin
      error<=3;state_flags<=(16'd1<<NACK);
-     if(first_transfer_origin==0)begin first_transfer_origin<=2;first_transfer_error<=3;end
     end
     else if(done_seen && end_seen)begin
      debug_local_crc<=received_crc;debug_remote_crc<=expected_crc;
      if(CHECK_FRAME_CRC && received_crc!=expected_crc)begin
       error<=4;state_flags<=(16'd1<<NACK);
-      if(first_transfer_origin==0)begin first_transfer_origin<=3;first_transfer_error<=4;end
      end
      else begin state_flags<=(16'd1<<STORE);timer_reset<=1;end
     end else if(timer>=64'd5*TIME_HZ)begin
      error<=5;state_flags<=(16'd1<<NACK);
-     if(first_transfer_origin==0)begin first_transfer_origin<=4;first_transfer_error<=5;end
     end
    end
    state_flags[STORE]:begin
@@ -366,8 +389,6 @@ always @(posedge clk or posedge rst)begin
    nav_target<=adjacent(AWARD_CONTROL && (center==6 || award_selected) ? return_photo:center,image_count,1'b1);
    nav_right<=1'b1;nav_pending<=1;award_selected<=0;award_wait<=0;award_notice<=0;
   end
-  // Keep the first cause across retries/cancellation and background prefetch.
-  if(next || award_toggle)begin first_transfer_origin<=0;first_transfer_error<=0;end
  end
 end
 endmodule

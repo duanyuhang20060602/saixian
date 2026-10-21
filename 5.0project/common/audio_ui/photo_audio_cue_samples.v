@@ -20,6 +20,7 @@ localparam CUE_START  = 4'd2;
 localparam CUE_PAUSE  = 4'd3;
 localparam CUE_RESUME = 4'd4;
 localparam CUE_FINISH = 4'd5;
+localparam CUE_PAGE   = 4'd6;
 
 
 reg [31:0] phase_acc;
@@ -111,6 +112,7 @@ always @(posedge clk or posedge rst) begin
                 CUE_START : start_segment(16'd1320,17'd28800);  // 600 ms
                 CUE_PAUSE : start_segment(16'd440, 17'd7200);   // first low pulse
                 CUE_RESUME: start_segment(16'd660, 17'd7200);   // rising pair
+                CUE_PAGE  : start_segment(16'd1320,17'd1440);   // 30 ms soft page cue
                 CUE_FINISH: start_segment(16'd440, 17'd12000);  // falling pair
                 default   : start_segment(16'd0,   17'd1);
             endcase

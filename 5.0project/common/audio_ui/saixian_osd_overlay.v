@@ -1,4 +1,4 @@
-module saixian_osd_overlay(
+module saixian_osd_overlay #(parameter SHOW_SOURCE_RESOLUTION=1)(
     input  wire        clk,
     input  wire        rst,
     input  wire        frame_tick,
@@ -431,7 +431,7 @@ always @* begin
                 default:glyph_id=7'd0;
             endcase
             text_region=1'b1;
-        end else if ((state == ST_CAROUSEL) && (x >= 10'd400) && (x < 10'd544) && (y >= 9'd24) && (y < 9'd40)) begin
+        end else if (SHOW_SOURCE_RESOLUTION && (state == ST_CAROUSEL) && (x >= 10'd400) && (x < 10'd544) && (y >= 9'd24) && (y < 9'd40)) begin
             // Source BMP dimensions: four digits, 'x', four digits.
             local_x = x - 10'd400;
             slot = local_x[7:4];
