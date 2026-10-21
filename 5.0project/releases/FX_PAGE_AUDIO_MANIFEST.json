@@ -1,0 +1,52 @@
+{
+  "firmware_source_commit": "c8041ec71b557f459c273afce12d3fbb33a3b549",
+  "release_tag": "v5.0-fx-page-audio-20261021",
+  "hardware_validation": "pending",
+  "regressions_passed": 35,
+  "files_sha256": {
+    "releases/PHOTO_BOARD_A_5_0.bit": "fa25334279f37fec0fe4db499fc6366996829605c79fec01a7bc5eeec5d711e1",
+    "src/board_a/td_project/PHOTO_BOARD_A.bit": "fa25334279f37fec0fe4db499fc6366996829605c79fec01a7bc5eeec5d711e1",
+    "releases/PHOTO_BOARD_A_phy.area": "75f1fb80b12d85fa1e67594a8def04292e1add619fa62b8f8cc859d5364a880f",
+    "releases/PHOTO_BOARD_A_pr.timing": "cfb75f471b76f064899a877e54fdcc6afe8c4cb5d36ec21740c950114ecd45fd",
+    "releases/PHOTO_BOARD_B_5_0.bit": "84827e74685b5ab749255f27bc8a2ea759dcab235be0332efe5fb3ea08690ba5",
+    "src/board_b/td_project/PHOTO_BOARD_B.bit": "84827e74685b5ab749255f27bc8a2ea759dcab235be0332efe5fb3ea08690ba5",
+    "releases/PHOTO_BOARD_B_phy.area": "56f1c93b70d81863800d717ab198be41e7e02514b12026ad00332caf27b6f375",
+    "releases/PHOTO_BOARD_B_pr.timing": "0991dd1b40aceac6a7132bfde51055a134722116dcd3f56a9d2100fb17073a81"
+  },
+  "boards": [
+    {
+      "board": "a",
+      "status": "passed",
+      "resources": {
+        "lut": 17287,
+        "reg": 11659,
+        "bram": 56,
+        "bram32k": 16,
+        "dsp": 25
+      },
+      "timing_ns": {
+        "SWNS": 0.012,
+        "STNS": 0.0,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      }
+    },
+    {
+      "board": "b",
+      "status": "passed",
+      "resources": {
+        "lut": 13000,
+        "reg": 9336,
+        "bram": 35,
+        "bram32k": 16,
+        "dsp": 10
+      },
+      "timing_ns": {
+        "SWNS": 0.101,
+        "STNS": 0.0,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      }
+    }
+  ]
+}
