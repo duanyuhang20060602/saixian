@@ -4,6 +4,8 @@ ROOT=Path(__file__).resolve().parents[1]
 IV=Path(os.environ.get('IVERILOG',str(ROOT.parents[1]/'.tools/iverilog/bin/iverilog.exe')))
 OUT=ROOT/'tests/touchscreen_results';OUT.mkdir(exist_ok=True)
 JOBS={
+ 'tb_award_v5_control':['common/photo_cached_control_a.v','common/photo_control.v','common/photo_uart.v','common/photo_link.v'],
+ 'tb_timer_equivalence':['common/photo_cached_control_a.v','tests/touchscreen_timer_reference.v','common/photo_uart.v'],
  'tb_spotlight_product':['common/photo_spotlight_player.v'],
  'tb_resolution_position':['common/audio_ui/saixian_osd_overlay.v'],
  'tb_next_button':['common/photo_touchpad.v'],
@@ -56,7 +58,7 @@ def main():
   old=prior.get(name,{})
   if old.get('passed') and old.get('inputs_sha256')==hashes:
    results.append(old);print('REUSE verified inputs: '+name,flush=True);continue
-  c=subprocess.run([str(IV),'-g2012',*(['-DTOUCHSCREEN_SIM'] if name=='tb_touch_menu' else ['-DWATER_SIM'] if name=='tb_spotlight_product' else []),'-s',name,'-o',str(binary),*files],cwd=ROOT,capture_output=True,text=True)
+  c=subprocess.run([str(IV),'-g2012',*(['-DTOUCHSCREEN_SIM'] if name=='tb_touch_menu' else ['-DWATER_SIM'] if name=='tb_spotlight_product' else []),'-s',('tb' if name=='tb_award_v5_control' else name),'-o',str(binary),*files],cwd=ROOT,capture_output=True,text=True)
   (OUT/(name+'_compile.log')).write_text(c.stdout+c.stderr,encoding='utf-8');c.check_returncode()
   run=subprocess.run([str(IV.with_name('vvp.exe')),str(binary)],cwd=ROOT,capture_output=True,text=True,timeout=600 if name=='tb_touch_menu' else 90)
   output=run.stdout+run.stderr;(OUT/(name+'.log')).write_text(output,encoding='utf-8');print(output,flush=True)

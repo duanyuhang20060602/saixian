@@ -67,7 +67,17 @@ wire tx_busy,got,bad;wire [159:0] incoming;
 photo_uart #(.CLK_HZ(CLK_HZ)) port(.clk(clk),.rst(rst),.rx(uart_rx),.tx(uart_tx),
  .send(send),.message(message),.busy(tx_busy),.received(got),.received_message(incoming),.bad_packet(bad));
 wire [7:0] kind=incoming[159:152];
-reg [31:0] session,uptime,timer;reg [15:0] request_seq;
+reg [31:0] session,uptime;reg [15:0] request_seq;
+// Encode a cleared timer with one registered bit. The control FSM drives
+// only this bit instead of a reset mux on all 32 counter bits. Reading
+// timer still returns zero in the very cycle that a clear is committed.
+reg timer_reset;reg [31:0] timer_count;
+wire [31:0] timer=timer_reset ? 32'd0:timer_count;
+always @(posedge clk or posedge rst)begin
+ if(rst)timer_count<=0;
+ else if(timer_reset)timer_count<=1;
+ else timer_count<=timer_count+1'b1;
+end
 reg direction,done_seen,end_seen;reg [1:0] retries;
 reg [31:0] expected_crc,received_crc;
 reg [3:0] cache_valid;reg [2:0] cache_id[0:3];
@@ -172,7 +182,7 @@ always @(posedge clk or posedge rst)begin
  if(rst)begin
   award_available<=0;award_scan_complete<=0;award_notice<=0;last_transfer_error<=0;first_transfer_origin<=0;first_transfer_error<=0;award_selected<=0;award_wait<=0;return_photo<=0;
   high_color<=0;format_changed<=0;count_reply<=0;applied_settings<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};sent_settings<=0;refresh_pending<=0;
-  applied_context<=31;sent_context<=0;background_transaction<=0;refresh_display<=0;ready_immediate<=0;state_flags<=(16'd1<<HELLO_SEND);send<=0;message<=0;session<=1;uptime<=1;timer<=0;request_seq<=0;
+  applied_context<=31;sent_context<=0;background_transaction<=0;refresh_display<=0;ready_immediate<=0;state_flags<=(16'd1<<HELLO_SEND);send<=0;message<=0;session<=1;uptime<=1;timer_reset<=1;request_seq<=0;
   target<=0;direction<=1;done_seen<=0;end_seen<=0;expected_crc<=0;received_crc<=0;retries<=0;
   receive_slot<=1;arm_toggle<=0;abort_toggle<=0;ready_toggle<=0;ready_slot<=0;ready_right<=1;
   image_count<=0;current_image<=0;error<=0;debug_local_crc<=0;debug_remote_crc<=0;
@@ -181,7 +191,7 @@ always @(posedge clk or posedge rst)begin
   current_source_width<=0;current_source_height<=0;target_width<=0;target_height<=0;display_width<=0;display_height<=0;
   for(reset_index=0;reset_index<4;reset_index=reset_index+1)cache_id[reset_index]<=0;
  end else begin
-  uptime<=uptime+1'b1;timer<=timer+1'b1;send<=0;format_changed<=0;
+  uptime<=uptime+1'b1;timer_reset<=0;send<=0;format_changed<=0;
   if(got && kind==18 && incoming[151:120]==session && incoming[18:16]>=image_count && incoming[18:16]<=6 && (incoming[18:16]>0 || (AWARD_CONTROL && incoming[23])))begin
    image_count<=incoming[18:16];count_reply<=1;
    if(AWARD_CONTROL)begin award_available<=incoming[23];award_scan_complete<=incoming[22];end
@@ -199,20 +209,20 @@ always @(posedge clk or posedge rst)begin
   end
   if(got && kind==10)begin
    count_reply<=0;
-   abort_toggle<=~abort_toggle;state_flags<=(16'd1<<HELLO_SEND);session<=uptime;timer<=0;error<=0;
+   abort_toggle<=~abort_toggle;state_flags<=(16'd1<<HELLO_SEND);session<=uptime;timer_reset<=1;error<=0;
    cache_valid<=0;have_current<=0;nav_pending<=0;
    if(SETTINGS_LINK)begin applied_settings<=~settings_state;applied_context<=~live_context;end refresh_pending<=0;
   end else (* parallel_case *) case(1'b1)
    state_flags[HELLO_SEND]:if(!tx_busy && !send && !transition_active && !display_pending)begin
-    message<=packet(1,session,0,0,0,FRAME_BYTES,0,0);send<=1;state_flags<=(16'd1<<HELLO_WAIT);timer<=0;
+    message<=packet(1,session,0,0,0,FRAME_BYTES,0,0);send<=1;state_flags<=(16'd1<<HELLO_WAIT);timer_reset<=1;
    end
    state_flags[HELLO_WAIT]:begin
     if(got && kind==2 && incoming[151:120]==session && incoming[18:16]<=6 && (incoming[18:16]>0 || (AWARD_CONTROL && incoming[23])))begin
      if(SETTINGS_LINK)begin applied_settings<=~settings_state;applied_context<=~live_context;end
      image_count<=incoming[18:16];nav_target<=incoming[18:16]==0 ? 3'd6:3'd0;nav_right<=1;nav_pending<=1;
      if(AWARD_CONTROL)begin award_available<=incoming[23];award_scan_complete<=incoming[22];award_selected<=incoming[18:16]==0;end
-     state_flags<=(16'd1<<IDLE);timer<=0;error<=0;
-    end else if(timer>=TIME_HZ)begin state_flags<=(16'd1<<HELLO_SEND);timer<=0;end
+     state_flags<=(16'd1<<IDLE);timer_reset<=1;error<=0;
+    end else if(timer>=TIME_HZ)begin state_flags<=(16'd1<<HELLO_SEND);timer_reset<=1;end
    end
    state_flags[IDLE]:if(count_reply && !tx_busy && !send)begin
     message<=packet(19,session,0,0,0,FRAME_BYTES,0,(AWARD_CONTROL ? {award_available,award_scan_complete,3'd0,image_count}:{5'd0,image_count}));send<=1;count_reply<=0;
@@ -220,12 +230,12 @@ always @(posedge clk or posedge rst)begin
     if(!tx_busy && !send)begin
      sent_context<=live_context;
      message<=packet(14,session,0,{5'd0,live_context[3:1]},{6'd0,live_context[4],live_context[0]},0,0,0);
-     send<=1;state_flags<=(16'd1<<WAIT_CONTEXT);timer<=0;
+     send<=1;state_flags<=(16'd1<<WAIT_CONTEXT);timer_reset<=1;
     end
    end else if(settings_dirty)begin
     if(settings_quiet && settings_state==observed_settings && !transition_active && !display_pending && !tx_busy && !send)begin
      sent_settings<=settings_state;
-     message<=packet(12,session,0,0,0,0,{13'd0,settings_state},0);send<=1;state_flags<=(16'd1<<WAIT_SETTINGS);timer<=0;
+     message<=packet(12,session,0,0,0,0,{13'd0,settings_state},0);send<=1;state_flags<=(16'd1<<WAIT_SETTINGS);timer_reset<=1;
     end
    end else if(refresh_pending)begin
     if(!display_pending && !transition_active)begin
@@ -233,64 +243,64 @@ always @(posedge clk or posedge rst)begin
     end
    end else if(plan_needed && plan_ok && plan_context==fetch_context && (nav_pending || !settings_focus))begin
     background_transaction<=!nav_pending;target<=plan_target;direction<=nav_right;receive_slot<=plan_victim;cache_valid[plan_victim]<=0;
-    request_seq<=request_seq+1'b1;retries<=0;error<=0;state_flags<=(16'd1<<GET);timer<=0;
+    request_seq<=request_seq+1'b1;retries<=0;error<=0;state_flags<=(16'd1<<GET);timer_reset<=1;
    end
    state_flags[WAIT_CONTEXT]:begin
     if(got && kind==15 && incoming[151:120]==session && {incoming[89],incoming[98:96],incoming[88]}==sent_context)begin
-     applied_context<=sent_context;state_flags<=(16'd1<<IDLE);timer<=0;
-    end else if(timer>=TIME_HZ)begin applied_context<=~live_context;state_flags<=(16'd1<<IDLE);timer<=0;end
+     applied_context<=sent_context;state_flags<=(16'd1<<IDLE);timer_reset<=1;
+    end else if(timer>=TIME_HZ)begin applied_context<=~live_context;state_flags<=(16'd1<<IDLE);timer_reset<=1;end
    end
    state_flags[WAIT_CANCEL]:begin
-    if(got && kind==17 && incoming[151:120]==session)begin state_flags<=(16'd1<<IDLE);timer<=0;end
-    else if(timer>=TIME_HZ && !tx_busy && !send)begin message<=packet(16,session,0,0,0,0,0,0);send<=1;timer<=0;end
+    if(got && kind==17 && incoming[151:120]==session)begin state_flags<=(16'd1<<IDLE);timer_reset<=1;end
+    else if(timer>=TIME_HZ && !tx_busy && !send)begin message<=packet(16,session,0,0,0,0,0,0);send<=1;timer_reset<=1;end
    end
    state_flags[WAIT_SETTINGS]:begin
     if(got && kind==13 && incoming[151:120]==session && incoming[42:24]==sent_settings)begin
-     applied_settings<=sent_settings;refresh_pending<=1;state_flags<=(16'd1<<IDLE);timer<=0;
+     applied_settings<=sent_settings;refresh_pending<=1;state_flags<=(16'd1<<IDLE);timer_reset<=1;
      if(high_color!=sent_settings[18])begin
       high_color<=sent_settings[18];format_changed<=1;cache_valid<=0;have_current<=0;
       nav_target<=have_current ? current_image:nav_target;nav_right<=1;nav_pending<=0;
       display_pending<=0;ready_toggle<=0;ready_immediate<=1;refresh_display<=1;
      end
-    end else if(timer>=(settings_state[18]!=high_color ? 64'd40*TIME_HZ:TIME_HZ))begin applied_settings<=~settings_state;state_flags<=(16'd1<<IDLE);timer<=0;end
+    end else if(timer>=(settings_state[18]!=high_color ? 64'd40*TIME_HZ:TIME_HZ))begin applied_settings<=~settings_state;state_flags<=(16'd1<<IDLE);timer_reset<=1;end
    end
    state_flags[GET]:if(SETTINGS_LINK && background_transaction && (settings_mode || settings_dirty))state_flags<=(16'd1<<IDLE);
        else if(!tx_busy && !send)begin
     message<=packet(3,session,request_seq,{5'd0,target},{1'b0,high_color,receive_fluid,3'd0,1'b1,direction},frame_bytes,0,0);
-    send<=1;state_flags<=(16'd1<<WAIT_BEGIN);timer<=0;done_seen<=0;end_seen<=0;
+    send<=1;state_flags<=(16'd1<<WAIT_BEGIN);timer_reset<=1;done_seen<=0;end_seen<=0;
    end
    state_flags[WAIT_BEGIN]:begin
     if(SETTINGS_LINK && background_transaction && (settings_mode || settings_dirty) && !tx_busy && !send)begin
-     message<=packet(16,session,0,0,0,0,0,0);send<=1;state_flags<=(16'd1<<WAIT_CANCEL);timer<=0;
+     message<=packet(16,session,0,0,0,0,0,0);send<=1;state_flags<=(16'd1<<WAIT_CANCEL);timer_reset<=1;
     end else if(got && matching && kind==4 && incoming[87:56]==frame_bytes && incoming[94]==high_color && incoming[93]==receive_fluid)begin
      // Metadata belongs to this transfer, never to a background display.
      target_width<=incoming[95] ? incoming[55:40]:16'd0;
      target_height<=incoming[95] ? incoming[39:24]:16'd0;
-     arm_toggle<=~arm_toggle;state_flags<=(16'd1<<ARM);timer<=0;
+     arm_toggle<=~arm_toggle;state_flags<=(16'd1<<ARM);timer_reset<=1;
     end else if(got && matching && kind==11)begin
-     error<=incoming[19:16];timer<=0;
+     error<=incoming[19:16];timer_reset<=1;
      if(first_transfer_origin==0)begin first_transfer_origin<=1;first_transfer_error<=incoming[19:16];end
      if(AWARD_CONTROL && have_current)begin state_flags<=(16'd1<<IDLE);nav_pending<=0;award_wait<=0;award_selected<=current_image==6;award_notice<=target==6 ? 3'd3:3'd4;last_transfer_error<=incoming[19:16];end
      else state_flags<=(16'd1<<FAILED);
     end
     else if(timer>=64'd45*TIME_HZ)begin
-     error<=1;state_flags<=(16'd1<<FAILED);timer<=0;
+     error<=1;state_flags<=(16'd1<<FAILED);timer_reset<=1;
      if(first_transfer_origin==0)begin first_transfer_origin<=4;first_transfer_error<=1;end
     end
    end
-   state_flags[ARM]:if(rx_armed)begin state_flags<=(16'd1<<READY);timer<=0;end
+   state_flags[ARM]:if(rx_armed)begin state_flags<=(16'd1<<READY);timer_reset<=1;end
        else if(timer>=TIME_HZ*2)begin
         state_flags<=(16'd1<<NACK);error<=2;
         if(first_transfer_origin==0)begin first_transfer_origin<=5;first_transfer_error<=2;end
        end
    state_flags[READY]:if(!tx_busy && !send)begin
-    message<=packet(5,session,request_seq,{5'd0,target},2,frame_bytes,0,0);send<=1;state_flags<=(16'd1<<RECEIVE);timer<=0;
+    message<=packet(5,session,request_seq,{5'd0,target},2,frame_bytes,0,0);send<=1;state_flags<=(16'd1<<RECEIVE);timer_reset<=1;
    end
    state_flags[RECEIVE]:begin
     if(rx_done)begin done_seen<=1;received_crc<=rx_crc;end
     if(got && matching && kind==6)begin expected_crc<=incoming[55:24];end_seen<=1;end
     if(got && matching && kind==11)begin
-     error<=incoming[19:16];state_flags<=(16'd1<<FAILED);timer<=0;
+     error<=incoming[19:16];state_flags<=(16'd1<<FAILED);timer_reset<=1;
      if(first_transfer_origin==0)begin first_transfer_origin<=1;first_transfer_error<=incoming[19:16];end
     end
     else if(rx_fault)begin
@@ -303,7 +313,7 @@ always @(posedge clk or posedge rst)begin
       error<=4;state_flags<=(16'd1<<NACK);
       if(first_transfer_origin==0)begin first_transfer_origin<=3;first_transfer_error<=4;end
      end
-     else begin state_flags<=(16'd1<<STORE);timer<=0;end
+     else begin state_flags<=(16'd1<<STORE);timer_reset<=1;end
     end else if(timer>=64'd5*TIME_HZ)begin
      error<=5;state_flags<=(16'd1<<NACK);
      if(first_transfer_origin==0)begin first_transfer_origin<=4;first_transfer_error<=5;end
@@ -311,24 +321,24 @@ always @(posedge clk or posedge rst)begin
    end
    state_flags[STORE]:begin
     cache_id[receive_slot]<=target;cache_width[receive_slot]<=target_width;cache_height[receive_slot]<=target_height;
-    cache_valid[receive_slot]<=1;state_flags<=(16'd1<<ACCEPT);timer<=0;
+    cache_valid[receive_slot]<=1;state_flags<=(16'd1<<ACCEPT);timer_reset<=1;
    end
    state_flags[ACCEPT]:if(!tx_busy && !send)begin
-    message<=packet(7,session,request_seq,{5'd0,target},2,frame_bytes,received_crc,0);send<=1;state_flags<=(16'd1<<COMMIT);timer<=0;
+    message<=packet(7,session,request_seq,{5'd0,target},2,frame_bytes,received_crc,0);send<=1;state_flags<=(16'd1<<COMMIT);timer_reset<=1;
    end
    state_flags[COMMIT]:if(!tx_busy && !send)begin
-    message<=packet(8,session,request_seq,{5'd0,target},2,frame_bytes,received_crc,0);send<=1;state_flags<=(16'd1<<IDLE);error<=0;timer<=0;
+    message<=packet(8,session,request_seq,{5'd0,target},2,frame_bytes,received_crc,0);send<=1;state_flags<=(16'd1<<IDLE);error<=0;timer_reset<=1;
    end
    state_flags[NACK]:if(!tx_busy && !send)begin
     abort_toggle<=~abort_toggle;
     message<=packet(9,session,request_seq,{5'd0,target},2,frame_bytes,received_crc,{4'd0,error});send<=1;
-    done_seen<=0;end_seen<=0;timer<=0;
+    done_seen<=0;end_seen<=0;timer_reset<=1;
     if(retries<2)begin retries<=retries+1'b1;state_flags<=(16'd1<<WAIT_BEGIN);end else state_flags<=(16'd1<<FAILED);
    end
    state_flags[FAILED]:if(AWARD_CONTROL && have_current && !transition_active && !display_pending && !tx_busy && !send)begin
-    abort_toggle<=~abort_toggle;message<=packet(16,session,0,0,0,0,0,0);send<=1;state_flags<=(16'd1<<WAIT_CANCEL);nav_pending<=0;award_wait<=0;award_selected<=current_image==6;award_notice<=target==6 ? 3'd3:3'd4;last_transfer_error<=error;timer<=0;
+    abort_toggle<=~abort_toggle;message<=packet(16,session,0,0,0,0,0,0);send<=1;state_flags<=(16'd1<<WAIT_CANCEL);nav_pending<=0;award_wait<=0;award_selected<=current_image==6;award_notice<=target==6 ? 3'd3:3'd4;last_transfer_error<=error;timer_reset<=1;
    end else if(timer>=TIME_HZ && !transition_active && !display_pending)begin
-    abort_toggle<=~abort_toggle;session<=uptime;state_flags<=(16'd1<<HELLO_SEND);timer<=0;
+    abort_toggle<=~abort_toggle;session<=uptime;state_flags<=(16'd1<<HELLO_SEND);timer_reset<=1;
     cache_valid<=0;have_current<=0;nav_pending<=0;
     if(SETTINGS_LINK)begin applied_settings<=~settings_state;applied_context<=~live_context;end refresh_pending<=0;
    end

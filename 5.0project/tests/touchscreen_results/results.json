@@ -1,5 +1,26 @@
 [
   {
+    "test": "tb_award_v5_control",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_award_v5_control.v": "447972c5ad12f136d809e70fbbd9aec04f286064e6ffd607e98222ee02805eda",
+      "common/photo_cached_control_a.v": "96494b090e85d245f633df434e73cdca49dc8d2c56408c89c9f4ce55ee7e982b",
+      "common/photo_control.v": "27a341863d68d28c0b11141310c6ff9a13ae39e53c880313354dd447fe79f5ad",
+      "common/photo_uart.v": "9bfea0d435766f36db5136c25c351569105102b163674cbc02f835704dae9318",
+      "common/photo_link.v": "b5220867ab286874518d2918f7e1640e2829535fbdfdbfc8f022529e3cca530a"
+    }
+  },
+  {
+    "test": "tb_timer_equivalence",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_timer_equivalence.v": "58cb5163e0eb8dc138cd9d17aacaf3c5fb26af131a6c8300a6688dc177b8492e",
+      "common/photo_cached_control_a.v": "96494b090e85d245f633df434e73cdca49dc8d2c56408c89c9f4ce55ee7e982b",
+      "tests/touchscreen_timer_reference.v": "f37adf2761417f274d887fae46f0e9a84b5123d74a86388a888361665ed6843e",
+      "common/photo_uart.v": "9bfea0d435766f36db5136c25c351569105102b163674cbc02f835704dae9318"
+    }
+  },
+  {
     "test": "tb_spotlight_product",
     "passed": true,
     "inputs_sha256": {

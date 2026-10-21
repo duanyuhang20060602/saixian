@@ -11,7 +11,7 @@ def main():
  assert record['timing_ns']['STNS']==record['timing_ns']['HTNS']==0
  assert record['timing_ns']['SWNS']>=0 and record['timing_ns']['HWNS']>=0
  tests=json.loads((ROOT/'tests/touchscreen_results/results.json').read_text(encoding='utf-8'))
- assert len(tests)==14 and all(t['passed'] for t in tests)
+ assert len(tests)==16 and all(t['passed'] for t in tests)
  for t in tests:
   for path,h in t['inputs_sha256'].items():assert digest(ROOT/path)==h,'Test source is stale: '+path
  # B is reused only if every declared B input remains byte-exact to the base.
