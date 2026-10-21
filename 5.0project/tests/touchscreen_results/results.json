@@ -1,5 +1,13 @@
 [
   {
+    "test": "tb_spotlight_product",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_spotlight_product.v": "f807e08567502411e3cc0867b8e80523b30df57ff2b197be4aafe4fc98ae85fd",
+      "common/photo_spotlight_player.v": "7c7bdefb355098208883a71d2eb1138c0e67f3d28a68eb2a5c4a2dae3bac6152"
+    }
+  },
+  {
     "test": "tb_resolution_position",
     "passed": true,
     "inputs_sha256": {

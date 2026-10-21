@@ -198,6 +198,11 @@ wire [7:0] source_byte=read_zero ? 8'd0:(read0>>{read_point,3'b000});
 reg [7:0] top_a,top_b;
 wire [7:0] top_selected=read_lane[0] ? top_b:top_a;
 wire signed [8:0] vertical_difference=$signed({1'b0,source_byte})-$signed({1'b0,top_selected});
+// The fraction is only three bits: keep the product local to the row cache.
+// Explicit signed shift/add avoids a RAM -> distant DSP -> register route.
+wire signed [12:0] vertical_term0=line_fy[0] ? {{4{vertical_difference[8]}},vertical_difference}:13'sd0;
+wire signed [12:0] vertical_term1=line_fy[1] ? {{3{vertical_difference[8]}},vertical_difference,1'b0}:13'sd0;
+wire signed [12:0] vertical_term2=line_fy[2] ? {{2{vertical_difference[8]}},vertical_difference,2'b0}:13'sd0;
 reg signed [12:0] vertical_product;
 reg [10:0] vertical_base,point_a;
 reg vertical_valid,vertical_field;reg [1:0] vertical_slot;
@@ -222,7 +227,7 @@ always @(posedge video_clk)begin
   read_valid_d<=source_valid;read_lane<=fetch_lane;read_point<=fetch_x[1:0];
   vertical_valid<=read_valid_d && read_lane[1];
   vertical_field<=read_lane[0];vertical_slot<=read_point;
-  vertical_product<=vertical_difference*$signed({1'b0,line_fy});
+  vertical_product<=vertical_term0+vertical_term1+vertical_term2;
   vertical_base<={top_selected,3'b000};
   if(read_valid_d && !read_lane[1])begin
    if(read_lane[0])top_b<=source_byte;else top_a<=source_byte;
