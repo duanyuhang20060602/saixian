@@ -76,6 +76,13 @@ reg [31:0] session,uptime;reg [15:0] request_seq;
 // timer still returns zero in the very cycle that a clear is committed.
 reg timer_reset;reg [31:0] timer_count;
 wire [31:0] timer=timer_reset ? 32'd0:timer_count;
+// Compare the physical count once per threshold, then qualify the 1-bit
+// result. Avoid routing timer_reset through a 32-bit zero-select mux.
+wire timeout1=(TIME_HZ==0) || (!timer_reset && timer_count>=TIME_HZ);
+wire timeout2=(TIME_HZ*2==0) || (!timer_reset && timer_count>=TIME_HZ*2);
+wire timeout5=(TIME_HZ==0) || (!timer_reset && timer_count>=64'd5*TIME_HZ);
+wire timeout40=(TIME_HZ==0) || (!timer_reset && timer_count>=64'd40*TIME_HZ);
+wire timeout45=(TIME_HZ==0) || (!timer_reset && timer_count>=64'd45*TIME_HZ);
 always @(posedge clk or posedge rst)begin
  if(rst)timer_count<=0;
  else if(timer_reset)timer_count<=1;
@@ -100,11 +107,11 @@ wire response_error=got && matching && kind==11;
 wire begin_cancel=SETTINGS_LINK && background_transaction && (settings_mode || settings_dirty) && !tx_busy && !send;
 wire begin_ok=got && matching && kind==4 && incoming[87:56]==frame_bytes && incoming[94]==high_color && incoming[93]==receive_fluid;
 wire first_remote=(state_flags[WAIT_BEGIN] && !begin_cancel || state_flags[RECEIVE]) && response_error;
-wire first_begin_timeout=state_flags[WAIT_BEGIN] && !begin_cancel && !begin_ok && !response_error && timer>=64'd45*TIME_HZ;
-wire first_arm_timeout=state_flags[ARM] && !rx_armed && timer>=TIME_HZ*2;
+wire first_begin_timeout=state_flags[WAIT_BEGIN] && !begin_cancel && !begin_ok && !response_error && timeout45;
+wire first_arm_timeout=state_flags[ARM] && !rx_armed && timeout2;
 wire first_rx_fault=state_flags[RECEIVE] && !response_error && rx_fault;
 wire first_crc=state_flags[RECEIVE] && !response_error && !rx_fault && done_seen && end_seen && CHECK_FRAME_CRC && received_crc!=expected_crc;
-wire first_rx_timeout=state_flags[RECEIVE] && !response_error && !rx_fault && !(done_seen && end_seen) && timer>=64'd5*TIME_HZ;
+wire first_rx_timeout=state_flags[RECEIVE] && !response_error && !rx_fault && !(done_seen && end_seen) && timeout5;
 wire first_event=first_remote || first_begin_timeout || first_arm_timeout || first_rx_fault || first_crc || first_rx_timeout;
 wire [3:0] first_origin_value=({4{first_remote}} & 4'd1) |
  ({4{first_begin_timeout || first_rx_timeout}} & 4'd4) |
@@ -252,7 +259,7 @@ always @(posedge clk or posedge rst)begin
      image_count<=incoming[18:16];nav_target<=incoming[18:16]==0 ? 3'd6:3'd0;nav_right<=1;nav_pending<=1;
      if(AWARD_CONTROL)begin award_available<=incoming[23];award_scan_complete<=incoming[22];award_selected<=incoming[18:16]==0;end
      state_flags<=(16'd1<<IDLE);timer_reset<=1;error<=0;
-    end else if(timer>=TIME_HZ)begin state_flags<=(16'd1<<HELLO_SEND);timer_reset<=1;end
+    end else if(timeout1)begin state_flags<=(16'd1<<HELLO_SEND);timer_reset<=1;end
    end
    state_flags[IDLE]:if(count_reply && !tx_busy && !send)begin
     message<=packet(19,session,0,0,0,FRAME_BYTES,0,(AWARD_CONTROL ? {award_available,award_scan_complete,3'd0,image_count}:{5'd0,image_count}));send<=1;count_reply<=0;
@@ -278,11 +285,11 @@ always @(posedge clk or posedge rst)begin
    state_flags[WAIT_CONTEXT]:begin
     if(got && kind==15 && incoming[151:120]==session && {incoming[89],incoming[98:96],incoming[88]}==sent_context)begin
      applied_context<=sent_context;state_flags<=(16'd1<<IDLE);timer_reset<=1;
-    end else if(timer>=TIME_HZ)begin applied_context<=~live_context;state_flags<=(16'd1<<IDLE);timer_reset<=1;end
+    end else if(timeout1)begin applied_context<=~live_context;state_flags<=(16'd1<<IDLE);timer_reset<=1;end
    end
    state_flags[WAIT_CANCEL]:begin
     if(got && kind==17 && incoming[151:120]==session)begin state_flags<=(16'd1<<IDLE);timer_reset<=1;end
-    else if(timer>=TIME_HZ && !tx_busy && !send)begin message<=packet(16,session,0,0,0,0,0,0);send<=1;timer_reset<=1;end
+    else if(timeout1 && !tx_busy && !send)begin message<=packet(16,session,0,0,0,0,0,0);send<=1;timer_reset<=1;end
    end
    state_flags[WAIT_SETTINGS]:begin
     if(got && kind==13 && incoming[151:120]==session && incoming[42:24]==sent_settings)begin
@@ -292,7 +299,7 @@ always @(posedge clk or posedge rst)begin
       nav_target<=have_current ? current_image:nav_target;nav_right<=1;nav_pending<=0;
       display_pending<=0;ready_toggle<=0;ready_immediate<=1;refresh_display<=1;
      end
-    end else if(timer>=(settings_state[18]!=high_color ? 64'd40*TIME_HZ:TIME_HZ))begin applied_settings<=~settings_state;state_flags<=(16'd1<<IDLE);timer_reset<=1;end
+    end else if((settings_state[18]!=high_color ? timeout40:timeout1))begin applied_settings<=~settings_state;state_flags<=(16'd1<<IDLE);timer_reset<=1;end
    end
    state_flags[GET]:if(SETTINGS_LINK && background_transaction && (settings_mode || settings_dirty))state_flags<=(16'd1<<IDLE);
        else if(!tx_busy && !send)begin
@@ -312,12 +319,12 @@ always @(posedge clk or posedge rst)begin
      if(AWARD_CONTROL && have_current)begin state_flags<=(16'd1<<IDLE);nav_pending<=0;award_wait<=0;award_selected<=current_image==6;award_notice<=target==6 ? 3'd3:3'd4;last_transfer_error<=incoming[19:16];end
      else state_flags<=(16'd1<<FAILED);
     end
-    else if(timer>=64'd45*TIME_HZ)begin
+    else if(timeout45)begin
      error<=1;state_flags<=(16'd1<<FAILED);timer_reset<=1;
     end
    end
    state_flags[ARM]:if(rx_armed)begin state_flags<=(16'd1<<READY);timer_reset<=1;end
-       else if(timer>=TIME_HZ*2)begin
+       else if(timeout2)begin
         state_flags<=(16'd1<<NACK);error<=2;
        end
    state_flags[READY]:if(!tx_busy && !send)begin
@@ -338,7 +345,7 @@ always @(posedge clk or posedge rst)begin
       error<=4;state_flags<=(16'd1<<NACK);
      end
      else begin state_flags<=(16'd1<<STORE);timer_reset<=1;end
-    end else if(timer>=64'd5*TIME_HZ)begin
+    end else if(timeout5)begin
      error<=5;state_flags<=(16'd1<<NACK);
     end
    end
@@ -360,7 +367,7 @@ always @(posedge clk or posedge rst)begin
    end
    state_flags[FAILED]:if(AWARD_CONTROL && have_current && !transition_active && !display_pending && !tx_busy && !send)begin
     abort_toggle<=~abort_toggle;message<=packet(16,session,0,0,0,0,0,0);send<=1;state_flags<=(16'd1<<WAIT_CANCEL);nav_pending<=0;award_wait<=0;award_selected<=current_image==6;award_notice<=target==6 ? 3'd3:3'd4;last_transfer_error<=error;timer_reset<=1;
-   end else if(timer>=TIME_HZ && !transition_active && !display_pending)begin
+   end else if(timeout1 && !transition_active && !display_pending)begin
     abort_toggle<=~abort_toggle;session<=uptime;state_flags<=(16'd1<<HELLO_SEND);timer_reset<=1;
     cache_valid<=0;have_current<=0;nav_pending<=0;
     if(SETTINGS_LINK)begin applied_settings<=~settings_state;applied_context<=~live_context;end refresh_pending<=0;

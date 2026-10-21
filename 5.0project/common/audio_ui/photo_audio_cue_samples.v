@@ -1,10 +1,12 @@
 module photo_audio_cue_samples #(
+    parameter integer PAGE_STYLES = 0,
     parameter integer CLK_FREQ_HZ    = 25_000_000,
     parameter integer SAMPLE_RATE_HZ = 48_000
 )(
     input  wire        clk,
     input  wire        rst,
     input  wire [3:0]  cue_event,
+    input wire [3:0] page_style,
     input wire sample_tick,
     output reg         audio_valid,
     output reg  [23:0] audio_left,
@@ -28,9 +30,14 @@ reg [31:0] phase_inc;
 reg [16:0] samples_left;
 reg [16:0] segment_samples;
 reg [2:0]  segment;
-reg [3:0]  active_cue;
+reg [3:0]  active_cue;reg [3:0] active_style;reg [15:0] page_noise;
 reg signed [23:0] pcm;
 reg [7:0] envelope;
+// The burst interface spaces sample ticks by hundreds of system clocks.
+// Register the page waveform/old envelope before the shared multiplier;
+// PCM is ready one clock later, before the next sample tick, so audio_left
+// retains its original sample alignment. PAGE_STYLES needs ticks >=2 clocks.
+reg signed [15:0] wave_q;reg [7:0] envelope_q;reg multiply_pending;
 reg [7:0] peak_hold;
 reg [10:0] peak_decay_count;
 
@@ -40,6 +47,22 @@ wire [16:0] attack_samples = segment_samples - samples_left;
 wire signed [23:0] triangle = phase_acc[31] ?
                               -$signed({1'b0, phase_acc[30:8]}) :
                                $signed({1'b0, phase_acc[30:8]});
+
+// Shared waveform/envelope multiplier for all page styles and legacy cues.
+wire page_sound=PAGE_STYLES && active_cue==CUE_PAGE;
+wire page_rustle=active_style==0 || active_style==8 || active_style==10;
+wire page_gate=(active_style==3 && attack_samples[9:8]==3) ||
+               (active_style==4 && attack_samples[9]);
+wire signed [23:0] rustle=$signed({page_noise,8'd0})>>>2;
+wire signed [23:0] page_wave=active_style==0 ? rustle:(triangle>>>1)+(rustle>>>1);
+reg [31:0] page_step;
+always @*begin
+ case(active_style)
+  1,5:page_step=32'd50000;2:page_step=32'd25000;7:page_step=32'd60000;
+  9:page_step=32'd90000;10:page_step=-32'd14000;default:page_step=0;
+ endcase
+end
+wire signed [23:0] waveform=page_sound ? (page_gate ? 24'sd0:page_rustle ? page_wave:triangle):triangle;
 
 // The cue generator already knows the exact tone being played. Export that
 // metadata so the lightweight display can place energy in physical bins
@@ -87,6 +110,7 @@ endtask
 always @(posedge clk or posedge rst) begin
     if (rst) begin
         
+        wave_q<=0;envelope_q<=0;multiply_pending<=0;active_style<=0;page_noise<=16'h1ace;
         phase_acc        <= 32'd0;
         phase_inc        <= 32'd0;
         samples_left     <= 17'd0;
@@ -103,6 +127,9 @@ always @(posedge clk or posedge rst) begin
         peak_decay_count  <= 11'd0;
     end else begin
         audio_valid <= 1'b0;
+        multiply_pending<=PAGE_STYLES && cue_event==0 && sample_tick && samples_left!=0 && phase_inc!=0;
+        if(PAGE_STYLES && sample_tick)begin wave_q<=waveform>>>8;envelope_q<=envelope;end
+        if(PAGE_STYLES && multiply_pending)pcm<=wave_q*$signed({1'b0,envelope_q});
 
         if (cue_event != 4'd0) begin
             active_cue <= cue_event;
@@ -112,7 +139,24 @@ always @(posedge clk or posedge rst) begin
                 CUE_START : start_segment(16'd1320,17'd28800);  // 600 ms
                 CUE_PAUSE : start_segment(16'd440, 17'd7200);   // first low pulse
                 CUE_RESUME: start_segment(16'd660, 17'd7200);   // rising pair
-                CUE_PAGE  : start_segment(16'd1320,17'd1440);   // 30 ms soft page cue
+                CUE_PAGE  : begin
+                    active_style<=page_style<=10 ? page_style:4'd0;
+                    if(!PAGE_STYLES)start_segment(16'd1320,17'd1440);
+                    else case(page_style)
+                     0:start_segment(660,2400);  // scroll: paper rustle, 50 ms
+                     1:start_segment(330,1920);  // flip: short low sweep
+                     2:start_segment(440,3840);  // ribbons: smooth rising tone
+                     3:start_segment(880,3456);  // columns: repeated clicks
+                     4:start_segment(660,4800);  // accordion: pulsed tone
+                     5:start_segment(330,3840);  // metal: low rising sweep
+                     6:start_segment(1320,960);  // water: three falling droplets
+                     7:start_segment(440,4800);  // portal: rising energy
+                     8:start_segment(1320,2880); // glass: high noisy grains
+                     9:start_segment(330,5760);  // tunnel: long rising sweep
+                     10:start_segment(990,4320); // tear: falling noisy sweep
+                     default:start_segment(660,2400);
+                    endcase
+                end   // Legacy default remains 30 ms.
                 CUE_FINISH: start_segment(16'd440, 17'd12000);  // falling pair
                 default   : start_segment(16'd0,   17'd1);
             endcase
@@ -124,6 +168,10 @@ always @(posedge clk or posedge rst) begin
 
             if (samples_left != 0 && phase_inc != 0) begin
                 phase_acc <= phase_acc + phase_inc;
+                if(page_sound)begin
+                 page_noise<={page_noise[14:0],page_noise[15]^page_noise[13]^page_noise[12]^page_noise[10]};
+                 phase_inc<=phase_inc+page_step;
+                end
                 samples_left <= samples_left - 17'd1;
 
                 if (samples_left < 17'd480)
@@ -133,7 +181,7 @@ always @(posedge clk or posedge rst) begin
                 else
                     envelope <= 8'd220;
 
-                pcm <= (triangle >>> 8) * $signed({1'b0,envelope});
+                if(!PAGE_STYLES)pcm <= (waveform >>> 8) * $signed({1'b0,envelope});
                 audio_left  <= pcm;
                 audio_right <= pcm;
             end else begin
@@ -144,6 +192,12 @@ always @(posedge clk or posedge rst) begin
 
                 if(samples_left!=0)begin samples_left<=samples_left-1'b1;end
                 else case (active_cue)
+                    CUE_PAGE:begin
+                     if(PAGE_STYLES && active_style==6 && segment<2)begin
+                      segment<=segment+1'b1;
+                      if(segment==0)start_segment(990,960);else start_segment(660,1440);
+                     end else active_cue<=0;
+                    end
                     CUE_PAUSE: begin
                         if (segment == 3'd0) begin
                             segment <= 3'd1;

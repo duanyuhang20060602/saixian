@@ -34,17 +34,21 @@ wire [31:0] offset=descriptor[31:0],length=descriptor[63:32];
 wire [1:0] kind=word_data[31:30];wire [29:0] amount=word_data[29:0];
 reg [20:0] remaining_frame,available_encoded;reg [4:0] command_checks;
 reg [32:0] descriptor_end;reg [6:0] index_checks;
+reg light_tail_invalid;
 // Register the SD input before CRC/header/index enables. Keep async RAM
 // lookup and command validation out of the same 100 MHz transition path.
 always @(posedge clk or posedge rst)begin
  if(rst)begin input_valid<=0;input_end<=0;input_data<=0;word_data<=0;
-  remaining_frame<=0;available_encoded<=0;command_checks<=0;descriptor_end<=0;index_checks<=0;
+  remaining_frame<=0;available_encoded<=0;command_checks<=0;descriptor_end<=0;index_checks<=0;light_tail_invalid<=0;
   header_sector<=0;frame_sector<=0;tail_sector<=0;end
  else begin
   input_valid<=byte_valid;input_end<=block_end;input_data<=byte_data;
   word_data<=buffer[read_index[6:0]];
   remaining_frame<=460800-cursor;available_encoded<=encoded_left-1'b1;
   descriptor_end<={1'b0,offset}+{1'b0,length};
+  // The light header ends at byte 275, long before HEADER_CHECK after byte 511.
+  // Precompute its bounds check outside the 100 MHz state transition path.
+  light_tail_invalid<=({1'b0,light_header[63:32]}+33'd230400>{3'd0,header_bytes[31:2]});
   // Sector bases settle hundreds of SD clocks before their consuming states.
   // Keep the 32-bit adders ahead of the state-selected request register.
   header_sector<=base+1'b1;frame_sector<=base+(offset>>7);tail_sector<=base+(tail_offset>>7);
@@ -100,7 +104,7 @@ always @(posedge clk or posedge rst)begin
    HEADER_CHECK:begin
     if(count!=512)begin error<=2;state<=FAILED;end
     else if(!header_ok || light_header[31:0]!=120 || light_header[95:64]!=230400 || light_header[127:96]!=32'h53505835 || light_header[159:128]!=6 || light_header[38:32]!=0)begin error<=1;state<=FAILED;end
-    else if({1'b0,light_header[63:32]}+33'd230400>{3'd0,header_bytes[31:2]})begin error<=1;state<=FAILED;end
+    else if(light_tail_invalid)begin error<=1;state<=FAILED;end
     else begin total_bytes<=header_bytes;tail_offset<=light_header[63:32];
      sector<=header_sector;count<=0;state<=VERIFY;end
    end

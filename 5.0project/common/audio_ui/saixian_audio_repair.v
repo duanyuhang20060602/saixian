@@ -1,7 +1,7 @@
 // 48 kHz signed-16 stereo repair. FIR uses one shared multiplier/history RAM.
 // Input spacing >=360 clocks; production 48 kHz spacing is >1500 clocks.
 // Sample-aligned dry/wet delay: 32 samples (666.7 us), ~335 processing clocks.
-module saixian_audio_repair(
+module saixian_audio_repair #(parameter PACKED_HISTORY=0)(
     input wire clk, rst, clear, sample_valid, enable,
     input wire signed [15:0] left_in, right_in,
     output reg signed [15:0] left_out, right_out,
@@ -55,7 +55,7 @@ localparam IDLE=0,READ_A=1,WAIT_A=2,GET_A=3,READ_B=4,WAIT_B=5,
 wire [5:0] reverse_age=6'd62-{1'b0,tap_index};
 wire memory_write=front_phase==9 && !rst && !clear_q;
 wire [63:0] memory_q;
-saixian_repair_history_ram history_ram(clk,memory_write,write_index,read_index,
+saixian_repair_history_ram #(.PACKED(PACKED_HISTORY)) history_ram(clk,memory_write,write_index,read_index,
     {center_r,center_l,hp_r,hp_l},memory_q);
 reg product_valid,product_channel;
 reg signed [28:0] product;
@@ -274,7 +274,7 @@ endmodule
 
 // Same synchronous PDPW primitive pattern as production visualizer memories.
 // Valid-history masking in the controller makes uninitialized/stale RAM unreadable.
-module saixian_repair_history_ram(
+module saixian_repair_history_ram #(parameter PACKED=1)(
     input clk,we,input [5:0] wa,ra,input [63:0] wd,output [63:0] rd
 );
 `ifdef VICTORY_SIM
@@ -283,20 +283,25 @@ reg [63:0] q;
 always @(posedge clk) begin q<=mem[ra];if(we) mem[wa]<=wd;end
 assign rd=q;
 `else
+// Same 64x64 history and synchronous latency; widen lanes to avoid
+// reserving a separate 512x16 primitive for each 64-word field.
+localparam LANE_BITS=PACKED ? 32:16;
+localparam LANE_ADDR=PACKED ? 8:9;
+localparam LANE_DEPTH=PACKED ? 256:512;
 genvar lane;
-generate for(lane=0;lane<4;lane=lane+1) begin: lanes
+generate for(lane=0;lane<(PACKED ? 2:4);lane=lane+1) begin: lanes
     EG_LOGIC_BRAM #(
-        .DATA_WIDTH_A(16),.ADDR_WIDTH_A(9),.DATA_DEPTH_A(512),
-        .DATA_WIDTH_B(16),.ADDR_WIDTH_B(9),.DATA_DEPTH_B(512),
+        .DATA_WIDTH_A(LANE_BITS),.ADDR_WIDTH_A(LANE_ADDR),.DATA_DEPTH_A(LANE_DEPTH),
+        .DATA_WIDTH_B(LANE_BITS),.ADDR_WIDTH_B(LANE_ADDR),.DATA_DEPTH_B(LANE_DEPTH),
         .BYTE_ENABLE(0),.MODE("PDPW"),.REGMODE_A("NOREG"),.REGMODE_B("NOREG"),
         .WRITEMODE_A("NORMAL"),.WRITEMODE_B("NORMAL"),.RESETMODE("SYNC"),
         .DEBUGGABLE("NO"),.PACKABLE("NO"),.FORCE_KEEP("OFF"),
         .INIT_FILE("NONE"),.FILL_ALL("NONE"),.IMPLEMENT("9K")
     ) ram9k(
-        .doa(),.dob(rd[lane*16+:16]),.dia(wd[lane*16+:16]),.dib(16'd0),
+        .doa(),.dob(rd[lane*LANE_BITS+:LANE_BITS]),.dia(wd[lane*LANE_BITS+:LANE_BITS]),.dib({LANE_BITS{1'b0}}),
         .cea(1'b1),.ocea(1'b0),.clka(clk),.wea(we),.rsta(1'b0),
         .ceb(1'b1),.oceb(1'b0),.clkb(clk),.web(1'b0),.rstb(1'b0),
-        .bea(1'b0),.beb(1'b0),.addra({3'd0,wa}),.addrb({3'd0,ra}));
+        .bea(1'b0),.beb(1'b0),.addra({{(LANE_ADDR-6){1'b0}},wa}),.addrb({{(LANE_ADDR-6){1'b0}},ra}));
 end endgenerate
 `endif
 endmodule

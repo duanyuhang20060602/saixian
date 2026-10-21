@@ -17,7 +17,7 @@ dual_still_reset_sync rs(.clk(sd_clk),.arst(!sys_lock || !link_lock),.rst(rst_sd
 dual_still_reset_sync rm(.clk(mem_clk),.arst(!sys_lock),.rst(rst_mem));
 dual_still_reset_sync rl(.clk(link_clk),.arst(!link_lock || !sys_lock),.rst(rst_link));
 wire audio_request_repair;wire [3:0] audio_scan_state;wire audio_sample_prepare,audio_bg_enabled,audio_request_bg;
-wire [2:0] audio_page_cue_count;
+wire [2:0] audio_page_cue_count;wire audio_page_valid,audio_page_ready;wire [3:0] audio_page_style;
 wire [3:0] audio_request_volume,audio_request_cue;wire [31:0] processed_audio;reg audio_request_seen;
 always @(posedge sd_clk or posedge rst_sd)
  if(rst_sd)audio_request_seen<=0;else if(audio_request_valid)audio_request_seen<=1;
@@ -55,10 +55,10 @@ always @(posedge sd_clk or posedge rst_sd)
  else begin av_data_meta<=av_data;av_data_sync<=av_data_meta;end
 photo_av_metadata_b audio_analysis(.clk(mem_clk),.rst(av_analysis_rst),
  .pcm_sent(av_pcm_valid),.snapshot(av_snapshot_event),.pcm(av_pcm_sync),.address(av_address_sync),.data(av_data));
-photo_audio_spi_b #(.CATALOG_STATUS(1),.EXTENDED_AV(1),.PAGE_CUE(1)) audio_link(.page_cue_count(audio_page_cue_count),.catalog_complete(award_scan_complete),.clk(sd_clk),.rst(rst_sd),.spi_sclk(audio_sclk),.spi_cs(audio_cs),.spi_mosi(audio_mosi),.spi_miso(audio_miso),.packet_active(audio_packet_active),
+photo_audio_spi_b #(.CATALOG_STATUS(1),.EXTENDED_AV(1),.PAGE_CUE(1),.TYPED_PAGE(1)) audio_link(.page_valid(audio_page_valid),.page_style(audio_page_style),.page_ready(audio_page_ready),.page_cue_count(audio_page_cue_count),.catalog_complete(award_scan_complete),.clk(sd_clk),.rst(rst_sd),.spi_sclk(audio_sclk),.spi_cs(audio_cs),.spi_mosi(audio_mosi),.spi_miso(audio_miso),.packet_active(audio_packet_active),
  .active_epoch(active_audio_epoch),.active_track(active_audio_track),.track_count(audio_count),.switching(audio_switching),
  .fifo_used(audio_fifo_used),.processed_pcm(processed_audio),.bg_enabled(audio_bg_enabled && audio_count!=0),.sample_prepare(audio_sample_prepare),.fifo_read(audio_fifo_read),.request_valid(audio_request_valid),.request_epoch(requested_audio_epoch),.request_track(requested_audio_track),.request_repair(audio_request_repair),.request_bg(audio_request_bg),.request_volume(audio_request_volume),.request_cue(audio_request_cue),.pcm_sent(av_pcm_sent),.av_snapshot(av_snapshot),.av_address(av_address),.av_data(av_data_sync));
-photo_audio_processing_b #(.PAGE_CUE(1)) audio_processing(.page_cue_count(audio_page_cue_count),.background_available(audio_count!=0),.clk(sd_clk),.rst(rst_sd),.prepare(audio_sample_prepare),
+photo_audio_processing_b #(.PAGE_CUE(1),.TYPED_PAGE(1),.SHARED_SCALE(1)) audio_processing(.page_valid(audio_page_valid),.page_style(audio_page_style),.page_ready(audio_page_ready),.page_cue_count(audio_page_cue_count),.background_available(audio_count!=0),.clk(sd_clk),.rst(rst_sd),.prepare(audio_sample_prepare),
  .request_valid(audio_request_valid),.request_epoch(requested_audio_epoch),.request_repair(audio_request_repair),.request_bg(audio_request_bg),
  .request_volume(audio_request_volume),.request_cue(audio_request_cue),.raw_pcm(audio_fifo_data),
  .processed_pcm(processed_audio),.bg_enabled(audio_bg_enabled));

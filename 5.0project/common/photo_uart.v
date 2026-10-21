@@ -19,10 +19,35 @@ reg [4:0] tx_pos;reg [159:0] tx_payload;reg [15:0] tx_crc;
 reg tx_active;
 assign busy=tx_active;
 assign tx=tx_active ? tx_bits[0] : 1'b1;
-// Serialize the payload once instead of selecting a variable byte through a
-// 160-bit barrel mux twice (TX and CRC). The byte and CRC edge are unchanged.
-wire [7:0] next_byte=tx_pos==0 ? 8'h5a:tx_pos<21 ? tx_payload[159:152]:
-                      tx_pos==21 ? tx_crc[15:8]:tx_crc[7:0];
+// Fixed byte slices preserve constant packet fields and share TX/CRC selection.
+reg [7:0] next_byte;
+always @* begin
+ case(tx_pos)
+  0:next_byte=8'h5a;
+  1:next_byte=tx_payload[159:152];
+  2:next_byte=tx_payload[151:144];
+  3:next_byte=tx_payload[143:136];
+  4:next_byte=tx_payload[135:128];
+  5:next_byte=tx_payload[127:120];
+  6:next_byte=tx_payload[119:112];
+  7:next_byte=tx_payload[111:104];
+  8:next_byte=tx_payload[103:96];
+  9:next_byte=tx_payload[95:88];
+  10:next_byte=tx_payload[87:80];
+  11:next_byte=tx_payload[79:72];
+  12:next_byte=tx_payload[71:64];
+  13:next_byte=tx_payload[63:56];
+  14:next_byte=tx_payload[55:48];
+  15:next_byte=tx_payload[47:40];
+  16:next_byte=tx_payload[39:32];
+  17:next_byte=tx_payload[31:24];
+  18:next_byte=tx_payload[23:16];
+  19:next_byte=tx_payload[15:8];
+  20:next_byte=tx_payload[7:0];
+  21:next_byte=tx_crc[15:8];
+  default:next_byte=tx_crc[7:0];
+ endcase
+end
 always @(posedge clk or posedge rst)begin
  if(rst)begin tx_bits<=10'h3ff;tx_count<=0;tx_bit<=0;tx_pos<=0;tx_payload<=0;tx_crc<=16'hffff;tx_active<=0;end
  else if(!tx_active)begin
@@ -35,8 +60,7 @@ always @(posedge clk or posedge rst)begin
    else begin
     tx_pos<=tx_pos+1'b1;
     if(tx_pos>=1 && tx_pos<21)begin
-     tx_crc<=crc_byte(tx_crc,tx_payload[159:152]);
-     tx_payload<={tx_payload[151:0],8'd0};
+     tx_crc<=crc_byte(tx_crc,next_byte);
     end
     tx_bits<={1'b1,next_byte,1'b0};
    end

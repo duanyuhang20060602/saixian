@@ -219,8 +219,10 @@ photo_cached_control_a #(.CHECK_FRAME_CRC(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1)
  .ready_immediate(ready_immediate),.rx_fault(fault_sync),.rx_crc(rx_crc),.ready_toggle(ready_toggle),.ready_slot(ready_slot),.ready_right(ready_right),
  .image_count(count),.current_image(current),.busy(busy),.error(error),.debug_state(control_state),
  .current_source_width(current_source_width),.current_source_height(current_source_height));
-wire page_turn_cue;
-photo_page_change_event page_feedback(.clk(pixel_clk),.rst(rst_pixel),
+wire page_turn_cue;wire [3:0] page_turn_style;
+photo_transition_page_event page_feedback(.clk(pixel_clk),.rst(rst_pixel),
+ .enable(carousel_mode && !settings_mode && !award_active && !award_loading && !result_busy && !boot_active),
+ .transition_active(transition_active),.transition_mode(transition_mode),.page_style(page_turn_style),
  .display_valid(display_valid),.image(current),.count(count),.page_event(page_turn_cue));
 wire [2:0] music_count,music_index;wire [7:0] music_epoch;
 wire [3:0] audio_diag_stage,audio_buffer_level;wire audio_header_seen,audio_pcm_seen,audio_nonzero_seen;
@@ -232,7 +234,7 @@ wire music_buffer_ready,music_catalog_complete;reg startup_released;
 wire audio_sample_valid;wire [23:0] audio_left,audio_right;wire [15:0] audio_packet_errors,audio_underflows;
 wire av_available,av_begin,av_word_valid,av_commit,av_finish,av_stream_reset;
 wire [8:0] av_word_index;wire [31:0] av_word,av_play_position;
-photo_audio_spi_a #(.STARTUP_SYNC(1),.FIFO_AW(11),.FIFO_RAM32_HEAD(2048),.EXTENDED_AV(1),.PAGE_CUE(1)) audio_link(.page_event(page_turn_cue),.playback_hold(!startup_released),.buffer_ready(music_buffer_ready),.catalog_complete(music_catalog_complete),.clk(pixel_clk),.rst(rst_pixel),.bg_enable(bg_music_enable),.repair_enable(audio_repair_enable),.volume(volume),.cue_event(cue_event),
+photo_audio_spi_a #(.STARTUP_SYNC(1),.FIFO_AW(11),.FIFO_RAM32_HEAD(2048),.EXTENDED_AV(1),.PAGE_CUE(1),.TYPED_PAGE(1)) audio_link(.page_style(page_turn_style),.page_event(page_turn_cue),.playback_hold(!startup_released),.buffer_ready(music_buffer_ready),.catalog_complete(music_catalog_complete),.clk(pixel_clk),.rst(rst_pixel),.bg_enable(bg_music_enable),.repair_enable(audio_repair_enable),.volume(volume),.cue_event(cue_event),
  .next_track(carousel_mode && !result_busy && ((!settings_mode && !award_active && presses[1]) || hmi_music_next)),
  .spi_miso(audio_miso),.spi_sclk(audio_sclk),.spi_cs(audio_cs),.spi_mosi(audio_mosi),
  .track_count(music_count),.track_index(music_index),.desired_epoch(music_epoch),

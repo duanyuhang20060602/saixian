@@ -4,9 +4,9 @@
     "passed": true,
     "inputs_sha256": {
       "tests/tb_award_v5_control.v": "447972c5ad12f136d809e70fbbd9aec04f286064e6ffd607e98222ee02805eda",
-      "common/photo_cached_control_a.v": "6248681bf35e6e269507ab7afa93d4fa286692d86100292c240bf6e72d156ac8",
+      "common/photo_cached_control_a.v": "5978d5cec49546b9f45cf6de09e19367fb4000537d31ee1019d13fc1c4a8da54",
       "common/photo_control.v": "27a341863d68d28c0b11141310c6ff9a13ae39e53c880313354dd447fe79f5ad",
-      "common/photo_uart.v": "23063b9a21c870442df372f7802a31c6d4873463c95574b649bb975855848a03",
+      "common/photo_uart.v": "fe87579e83c8233f5ee8e6fe3668d8914eddb977fba826d0fd2bd4a81201d82e",
       "common/photo_link.v": "b5220867ab286874518d2918f7e1640e2829535fbdfdbfc8f022529e3cca530a"
     }
   },
@@ -15,9 +15,9 @@
     "passed": true,
     "inputs_sha256": {
       "tests/tb_timer_equivalence.v": "58cb5163e0eb8dc138cd9d17aacaf3c5fb26af131a6c8300a6688dc177b8492e",
-      "common/photo_cached_control_a.v": "6248681bf35e6e269507ab7afa93d4fa286692d86100292c240bf6e72d156ac8",
+      "common/photo_cached_control_a.v": "5978d5cec49546b9f45cf6de09e19367fb4000537d31ee1019d13fc1c4a8da54",
       "tests/touchscreen_timer_reference.v": "f37adf2761417f274d887fae46f0e9a84b5123d74a86388a888361665ed6843e",
-      "common/photo_uart.v": "23063b9a21c870442df372f7802a31c6d4873463c95574b649bb975855848a03"
+      "common/photo_uart.v": "fe87579e83c8233f5ee8e6fe3668d8914eddb977fba826d0fd2bd4a81201d82e"
     }
   },
   {
@@ -63,11 +63,11 @@
     "passed": true,
     "inputs_sha256": {
       "tests/tb_touch_top.v": "d69cfc0279e5946ef38cc5580d56943fced78876bc407ba3c1e30cfd1d0c19ef",
-      "common/top_photo_a.v": "5a71ee68775238a68a9f0e33803176b36bb69b51075fbccd052bf6feaba662db",
+      "common/top_photo_a.v": "9976a143fc616079eec785ac7222db76e3965ea0fbbb95cb9e485ef659d87747",
       "common/saixian_hmi_uart.v": "2c040152d6381f82ba34d6ef9933d4e08ac72d2eb60549a5289f9d35d7db5b00",
       "common/photo_touchpad.v": "3cc8c9b46b9b206b0c37353823ca9635cbde5cd9f77058a9a45664061bfdb956",
       "common/photo_unified_settings_controller.v": "f0eab33923e7cc80a081af70d141a283189aa5f3163a305532540906958e70b5",
-      "tests/touchscreen_results/top_hardware_shells.v": "5805cd64768a68a32f6ec5a116e0ac6dce1b449a306cead19d94c6fa0543b3cf"
+      "tests/touchscreen_results/top_hardware_shells.v": "c97a16d3be7e9ceb6ce3604fa1cba89d132bc0052cc4378178293e0689cbfb02"
     }
   },
   {
