@@ -1,0 +1,82 @@
+{
+  "hardware_recording": false,
+  "measurements": [
+    {
+      "input_hz": 110,
+      "mode": 1,
+      "target_hz": 138.59100341796875,
+      "old_rms_ripple_db": 2.3634556014200316,
+      "new_rms_ripple_db": 0.7781051255753751,
+      "matched_resets": 12
+    },
+    {
+      "input_hz": 110,
+      "mode": 2,
+      "target_hz": 82.40768432617188,
+      "old_rms_ripple_db": 0.8325346343131097,
+      "new_rms_ripple_db": 0.8358660147525755,
+      "matched_resets": 11
+    },
+    {
+      "input_hz": 110,
+      "mode": 4,
+      "target_hz": 220.0,
+      "old_rms_ripple_db": 0.974884589259231,
+      "new_rms_ripple_db": 0.5937359443531388,
+      "matched_resets": 44
+    },
+    {
+      "input_hz": 440,
+      "mode": 1,
+      "target_hz": 554.364013671875,
+      "old_rms_ripple_db": 8.084963747001645,
+      "new_rms_ripple_db": 0.0024968005461387657,
+      "matched_resets": 12
+    },
+    {
+      "input_hz": 440,
+      "mode": 2,
+      "target_hz": 329.6307373046875,
+      "old_rms_ripple_db": 7.144951665338471,
+      "new_rms_ripple_db": 0.0003415412781310231,
+      "matched_resets": 11
+    },
+    {
+      "input_hz": 440,
+      "mode": 4,
+      "target_hz": 880.0,
+      "old_rms_ripple_db": 6.029856045009103,
+      "new_rms_ripple_db": 0.008940235261414277,
+      "matched_resets": 44
+    },
+    {
+      "input_hz": 997,
+      "mode": 1,
+      "target_hz": 1256.1384582519531,
+      "old_rms_ripple_db": 3.375487192093221,
+      "new_rms_ripple_db": 0.009964217160505853,
+      "matched_resets": 12
+    },
+    {
+      "input_hz": 997,
+      "mode": 2,
+      "target_hz": 746.9132843017578,
+      "old_rms_ripple_db": 3.2562924262419113,
+      "new_rms_ripple_db": 0.0018636288894925538,
+      "matched_resets": 11
+    },
+    {
+      "input_hz": 997,
+      "mode": 4,
+      "target_hz": 1994.0,
+      "old_rms_ripple_db": 3.0856544824407344,
+      "new_rms_ripple_db": 0.021313879674531824,
+      "matched_resets": 44
+    }
+  ],
+  "old_12khz_downshift_rms": 0.0,
+  "new_12khz_downshift_rms": 9317.024820909539,
+  "downshift_12khz_gain_change_db": 79.3855450493508,
+  "measurement_floor_rms_lsb": 1.0,
+  "old_12khz_below_1lsb": true
+}

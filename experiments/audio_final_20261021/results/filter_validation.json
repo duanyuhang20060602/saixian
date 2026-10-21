@@ -1,0 +1,17 @@
+[
+  {
+    "mode": 1,
+    "first_alias_input_hz": 19048.85551653143,
+    "worst_stopband_db": -72.8091016825592
+  },
+  {
+    "mode": 3,
+    "first_alias_input_hz": 16018.08682900003,
+    "worst_stopband_db": -71.05241531406786
+  },
+  {
+    "mode": 4,
+    "first_alias_input_hz": 12000.0,
+    "worst_stopband_db": -46.558584282463016
+  }
+]
