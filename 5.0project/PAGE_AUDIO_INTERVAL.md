@@ -22,7 +22,7 @@
 
 运行 `python tools/test_touchscreen.py --reuse` 和 `python tools/test_page_audio.py --reuse`。原设置/触控回归包含 130 万像素菜单对比和 6 万拍控制器对比；新增回归检查 UART 逐周期等价、所有间隔边界、新菜单 ROM、实际翻页事件、双时钟 SPI 去重和音频混合。
 
-完整综合与布局布线结果、当前输入 SHA256 和测试结果放在交付包的 `board_a_build.json`、`board_b_build.json`、`manifest.json` 中。两板必须一起更新才能使用新翻页命令。本次实板试听和触控体验仍待上板验证。
+完整综合与布局布线结果、当前输入 SHA256 和测试结果放在交付包的 `board_a_build.json`、`board_b_build.json`、`manifest.json` 中。两板必须一起更新才能使用新翻页命令。用户于 2026-10-21 反馈先前奖杯加载问题已解除；未将该反馈等同于全部实板场景的逐项验收。详见 [A、B 板资源占用报告](RESOURCE_REPORT_PAGE_AUDIO_INTERVAL.md)。
 
 ### 本次通过结果
 
