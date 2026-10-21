@@ -1,0 +1,281 @@
+{
+  "bit_sha256": "adffe3d6051bba85bb60b0c2d5f9e9f54b79551cd6e0dc4e33b06c1ddce97b60",
+  "setup": [
+    0.142,
+    0.0
+  ],
+  "hold": [
+    0.011,
+    0.0
+  ],
+  "sta_coverage": 99.92,
+  "resources": {
+    "lut": {
+      "used": 12540,
+      "available": 19600
+    },
+    "reg": {
+      "used": 8893,
+      "available": 19600
+    },
+    "bram": {
+      "used": 49,
+      "available": 64
+    },
+    "bram32k": {
+      "used": 10,
+      "available": 16
+    },
+    "dsp": {
+      "used": 7,
+      "available": 29
+    }
+  },
+  "resolution": [
+    1280,
+    720
+  ],
+  "pixel_clock_hz": 75000000,
+  "refresh_hz": 60.60606060606061,
+  "animation_update_hz": 30.303030303030305,
+  "internal_resolution": [
+    1280,
+    720
+  ],
+  "framebuffer_words": 460800,
+  "effect_resolution": [
+    640,
+    720
+  ],
+  "effect_framebuffer_words": 230400,
+  "slot_words": 691200,
+  "slot_bases": [
+    0,
+    691200,
+    1382400
+  ],
+  "allocated_sdram_words": 2073600,
+  "horizontal_reconstruction": "Native four-pixel groups are read atomically with the same address cadence as effect blocks; native RGB565 outside displaced 4-pixel blocks; even-pixel-centred [1,2,1]/4 filtered 640x720 effect plane, 2x RGB565 interpolation with cross-word lookahead and right-edge clamp inside waves and all transitions",
+  "sdram_user_clock_hz": 50000000,
+  "media_clock_hz": 50000000,
+  "tf_spi_clock_hz": 12500000,
+  "bit": "E:\\Codex\\Downloads\\qiansai\\liuti\\WATER_SINGLE.bit",
+  "project": "E:\\Codex\\Downloads\\qiansai\\liuti\\WATER_SINGLE.al",
+  "hardware_validation": "User reported successful single-board acceptance on 2026-10-17 for this delivered build.",
+  "bmp_input": "24-bit uncompressed bottom-up BMP: 640x480, 1280x720, 1920x1080 and legal sizes within 640..1920 by 360..1080. Runtime FPGA scaler produces 1280x720; native-sized sources bypass interpolation. The loader additionally derives a horizontally even-pixel-centred [1,2,1]/4 filtered 640x720 effect plane; both planes are generated on FPGA from the same BMP.",
+  "monitor_diagnostic": "User reports internal TPG visible in the 75MHz nominal-720p60 mode; nominal-720p30 mode black.",
+  "sdram_read_contract": "Four consecutive aligned words per SDR burst. Only sequential row requests reach SDRAM; all ripple/random reads use a 32-row on-chip cache.",
+  "row_cache": {
+    "old_effect_rows": 32,
+    "new_effect_rows": 2,
+    "native_rows": 2,
+    "native_pixels_per_read": 4,
+    "native_ram9k_blocks": 6,
+    "ram32k_blocks": 10,
+    "shared_destination_native": true,
+    "maximum_vertical_displacement": 14
+  },
+  "optimization": {
+    "baseline": "Seven-DSP build 91e24a4abf33f4db42b7bd3a71c83314ba1a43c2b0eecd054a6814a3afcfbecb; 12811 routed LUT. This baseline itself was not board-confirmed",
+    "resources": {
+      "lut": {
+        "before": 12811,
+        "after": 12540,
+        "saved": 271,
+        "saved_percent": 2.12
+      },
+      "reg": {
+        "before": 8878,
+        "after": 8893,
+        "saved": -15,
+        "saved_percent": -0.17
+      },
+      "bram": {
+        "before": 49,
+        "after": 49,
+        "saved": 0,
+        "saved_percent": 0.0
+      },
+      "bram32k": {
+        "before": 10,
+        "after": 10,
+        "saved": 0,
+        "saved_percent": 0.0
+      },
+      "dsp": {
+        "before": 7,
+        "after": 7,
+        "saved": 0,
+        "saved_percent": 0.0
+      }
+    },
+    "geometry_engines": 1,
+    "coordinate_interval_clocks": 2,
+    "blend_channel_multipliers": 0,
+    "video_fifo_words": 1024,
+    "effect_shared_dsp": 1,
+    "metadata_token_banks": 2,
+    "coordinate_lut_fifo_entries": 16,
+    "square_implementation": "Symmetric bit-pair square with carry-save compression; sqrt comparison reuses subtraction sign",
+    "progress_square_storage": "ROM spare addresses 257..511, explicit 0/256 endpoints",
+    "ribbon_shared_classification": true,
+    "ribbon_shared_wave_product": true,
+    "folded_sine_magnitudes": 17,
+    "lighting_unsigned_result_bits": 7,
+    "reciprocal_rom_ports": 1,
+    "reciprocal_reads_per_coordinate": 2,
+    "folded_surface_pixels_per_unit": 2,
+    "result_equivalence": "Integer coordinates, RGB565 blend rounding, lighting and image data remain bit-exact; external pipeline latency and throughput are unchanged",
+    "blend_implementation": "Four-row radix-four Booth recoding with carry-save reduction; exact rounding and four-edge latency",
+    "constant_products": "Explicit shift/add for 3x, 5x, 6x and power-of-two coordinate arithmetic",
+    "native_cache_packing": "512 direct four-pixel entries plus a 128-entry two-slot byte-dual-port tail. Six RAM9K, unchanged atomic read latency; destination half-plane and native dwell share the same store."
+  },
+  "audio": {
+    "pcm_fifo_samples": 2048,
+    "refill_level": 1536,
+    "format": "48000Hz signed16 stereo, left shifted by 8 into HDMI signed24",
+    "diagnostic_key": "KEY2 short: drop; hold 1s: music -> digital zero -> 1kHz -18dBFS sine -> music",
+    "status_digit": "Second digit from right: mode in bits3:2, sticky PCM underrun in bit1, SDR read timeout in bit0",
+    "source_hiss": "Previous BGM1 was confirmed clean by the user. Current selection is Time is Broken, decoded locally to 48kHz signed16 stereo without denoising or gain changes. AUD payload is byte-exact to the converted WAV; source quality and live playback still need listening verification."
+  },
+  "transition_handoff": "All eleven effects use progress 0..256 and show a native destination frame before commit. Native and effect paths use one four-pixel coordinate per block. SW2 still offers a forced effect-plane comparison.",
+  "transition_mode_bits": 4,
+  "coordinate_map_latency_clocks": 6,
+  "transition_sequence_ids": [
+    6,
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    7,
+    8,
+    9,
+    10
+  ],
+  "transition_effects": [
+    "WaterDrop multi-ring",
+    "Scroll curl with reflected texture, shadow and specular edge",
+    "Orthographic card flip with projected texture and illuminated rim",
+    "Eight staggered ribbons with curved edges and eased motion",
+    "Eight staggered column flips",
+    "Accordion compression with illuminated folds",
+    "Liquid metal front with local refraction and silver rim",
+    "Circular energy portal with refraction",
+    "Slanted glass fragments with staggered horizontal movement",
+    "Horizontal tunnel with contracting and expanding texture projections",
+    "Viscous curved split with independently displaced halves"
+  ],
+  "music_asset": {
+    "file": "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tf_assets\\TIMEBRK.AUD",
+    "sha256": "6061dc1184e25efde5e6edde0b62be7312e24629cf163f6776c2c984302771d8",
+    "data_bytes": 35230400,
+    "duration_seconds": 183.49166666666667,
+    "selection": "Only the chosen header length is published; previous BGM1 is ignored"
+  },
+  "tests": {
+    "arithmetic": "PASS arithmetic 200895 exhaustive products/squares and 47059 pipelined sqrt boundary/random vectors\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_arithmetic.v:47: $finish called at 500190000 (1ps)",
+    "cache": "PASS packed native cache: 5440 atomic 64-bit reads, every entry, opposite-row simultaneous writes, invalid-coordinate changes and half-plane ownership\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_cache.v:44: $finish called at 129200000 (1ps)",
+    "surface": "PASS folded surface lighting: 32768 exact packed RGB565 pairs, all shades/highlights and green values, gaps and reset flush\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_surface.v:29: $finish called at 681450000 (1ps)",
+    "photos": "PASS five actual TF photos: 110 eight-row frames / 563200 exact RGB565 words, all eleven transitions, native endpoints, packed-cache tail and shared new/native ownership; 897600 SDRAM requests\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_photos.v:48: $finish called at 9594690 (1s)",
+    "effects": "PASS eleven showcase maps: 272416 exact coordinates, local alpha, shade and specular RGB565 cases; both directions, every progress value, endpoints, borders, disabled path and displaced water\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_effects.v:32: $finish called at 5448440000 (1ps)",
+    "math": "PASS 83456 streamed coordinates bit-exact to integer reference\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_math.v:27: $finish called at 1920180 (1s)",
+    "reader": "PASS reader identity, multi-ring blend, two drops; 29760 SDRAM requests\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_reader.v:37: $finish called at 316470 (1s)",
+    "fx_reader": "PASS integrated showcase reader: 110 frames / 563200 exact RGB565 words, all eleven geometries, both directions, old/new endpoints, local alpha and lighting; 1056000 SDRAM requests\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_fx_reader.v:36: $finish called at 11304690 (1s)",
+    "frame": "PASS frame adapter and actual async FIFO: 15360 bit-exact words, identity/blend/two drops\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_frame.v:46: $finish called at 1688440000 (1ps)",
+    "expand": "PASS native RGB565 scanout: 5120 exact RGB pixels, 2560 source words, exact first/last pixels\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_expand.v:25: $finish called at 66390000 (1ps)",
+    "edge": "PASS edge light RGB, black fade, SOF/EOL matched for 1000 pixels\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_edge.v:25: $finish called at 10170 (1s)",
+    "scene": "PASS 85-frame dwell waves, farthest-corner coverage, manual trigger, max two sources\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_scene.v:27: $finish called at 10040 (1s)",
+    "transition": "PASS eleven showcase transitions over three cycles, all 36-frame animations, stable source ownership and commit\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_transition.v:25: $finish called at 25840 (1s)",
+    "blend": "PASS 1056768 exact RGB565 blends, all 257 weights and all 64x64 green pairs, back-to-back pairs and gaps\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_blend.v:47: $finish called at 21196970000 (1ps)",
+    "native": "PASS native BMP stream: 921600 exact pixels with sector/byte gaps, delayed ACK, rejected non-720p and non-24-bit headers\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_native.v:57: $finish called at 29614270000 (1ps)",
+    "scaler_pacing": "PASS paced vertical writes: exact pixel count, RGB alignment, at least 16 clocks between pixels\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_scaler_pacing.v:28: $finish called at 24260000 (1ps)",
+    "multires": "PASS BMP 640x480 -> 1280x720: all 921600 RGB pixels bit-exact to independent reference, first/last rows and checkerboard\nPASS BMP 1280x720 -> 1280x720: all 921600 RGB pixels bit-exact to independent reference, first/last rows and checkerboard\nPASS BMP 1920x1080 -> 1280x720: all 921600 RGB pixels bit-exact to independent reference, first/last rows and checkerboard\nPASS multiresolution decoder/scaler: 2764800 exact output pixels\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_multires.v:58: $finish called at 199194260000 (1ps)",
+    "bandwidth": "PASS full 720p60 frame mode6: 921600 exact RGB pixels checksumabedd906, 50MHz SDRAM model, 460800 requests, actual async FIFO peak 640/1024\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_bandwidth.v:56: $finish called at 16501018343 (1ps)",
+    "bandwidth_dwell": "PASS full 720p60 frame mode0: 921600 exact RGB pixels checksumea439001, 50MHz SDRAM model, 691200 requests, actual async FIFO peak 640/1024\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_bandwidth.v:56: $finish called at 16501018343 (1ps)",
+    "bandwidth_native": "PASS full 720p60 frame mode7: 921600 exact RGB pixels checksumd6e849c5, 50MHz SDRAM model, 460800 requests, actual async FIFO peak 640/1024\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_bandwidth.v:56: $finish called at 16501018343 (1ps)",
+    "bandwidth_metal": "PASS full 720p60 frame mode5: 921600 exact RGB pixels checksum5aa1ac24, 50MHz SDRAM model, 460800 requests, actual async FIFO peak 640/1024\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_bandwidth.v:56: $finish called at 16501018343 (1ps)",
+    "bandwidth_tunnel": "PASS full 720p60 frame mode9: 921600 exact RGB pixels checksum80e8c8ea, 50MHz SDRAM model, 460800 requests, actual async FIFO peak 640/1024\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_bandwidth.v:56: $finish called at 16501018343 (1ps)",
+    "mapper": "PASS 57680 transition addresses: six original 2.0 effects, both directions, complete endpoints and compact framebuffer columns\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_mapper.v:22: $finish called at 57680 (1s)",
+    "expand_recovery": "PASS interpolator underflow latching, VS-boundary recovery, sticky diagnostic and complete recovered row\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_expand_recovery.v:18: $finish called at 14760 (1s)",
+    "serializer": "PASS TMDS serializer: 18004 exact lane bits against vendor, four channels, both DDR edges, independent reset release and restart\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_serializer.v:19: $finish called at 8290300 (1ps)",
+    "sd_clock": "PASS 50MHz media / 12.5MHz SPI: CMD0/CMD8, ACMD41 busy retries, CMD16 and 512-byte read (188567 clocks)\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_sd_clock.v:73: $finish called at 3771340000 (1ps)",
+    "audio_output": "PASS HDMI audio output: 384 exact stereo strobes, registered-player alignment, music/silence/1kHz tone/music mode cycle\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_audio_output.v:26: $finish called at 31120000 (1ps)",
+    "audio_chain": "PASS audio chain: 1200 exact stereo samples to HDMI input, actual 2048-sample async FIFO, 16ms card delay, partial-sector loop, N6144/CTS75000, zero underruns\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_audio_chain.v:42: $finish called at 29501735013 (1ps)",
+    "sample_phase": "PASS sample phase: 7680 exact pixels through actual packer/reconstruction, native/effect/native, ascending/descending ramps, identical interior pixel origins and row-edge clamps\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_sample_phase.v:56: $finish called at 90160000 (1ps)",
+    "music_select": "PASS selected music: stale BGM1 header ignored, both AUD payloads skipped, actual TIMEBRK header published as track0 with exact sector and length\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_music_select.v:34: $finish called at 20630000 (1ps)",
+    "origin": "PASS origin: 240640 exact pixels in 94 frames through actual packer, SDRAM planes, reader caches and reconstruction; pre-end effect/native/commit plus eleven-effect forced-plane endpoint/commit and same-image A/B in both slot directions\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_origin.v:84: $finish called at 6000940000 (1ps)",
+    "handoff": "PASS transition handoff: 44 frames, 112640 native destination words; all eleven showcase effects, both directions, final transition and first committed frames bit-identical in position and detail\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_handoff.v:33: $finish called at 1502030000 (1ps)",
+    "storage": "PASS dual-plane storage: 122880 exact native/filtered writes, 61440 readback words, concurrent loading, vertical flip, aligned SDR bursts\nE:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\tests\\tb_storage.v:81: $finish called at 53207020218 (1ps)"
+  },
+  "memory_model": "Aligned four-word burst assertions, ordered 14-cycle responses, periodic 6/768 refresh stalls and 256-cycle write turns; additional actual packer/FIFO/write-FSM readback integration.",
+  "source_hashes": {
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\project\\WATER_SINGLE.al": "4733f019034520116416e89ac6855ba6a357bc165cab30d000248a085b6b1df2",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\top_water_single.v": "149b7cca156897c4ed42df114c5728966df5a62dfb137dd6952b31db14a64961",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_audio_output.v": "dc5f1615e8308673006b9b33a5421dc5426a0e552594bd9be96601724b94127a",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_blend.v": "7b2d5fb3f1774f0285edad03977f5c511c67f1609fe330c40be07e803a1a2a84",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_cache.v": "cedaddcd3ffe5ba131f90239cb25cb539e1743b94cfd6ebdf161fac4f05e81c7",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_edge.v": "ec32e4b8a741166d68fb836811bf9bce3c5085bc2b53736ef3487318b61b0748",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_effect_map.v": "0ad7ad10929b96f6d37785a9c0823623313117609041b6ede185fb1d6e78af02",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_expand.v": "bdf8c0e9f4c9052f5331362b25bf07db8878b5ee7976e7e65ed1b7bc54fdc44b",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_extra_effect_map.v": "3081f22845d7b75bed0b78f3f9aac6f7f4482438e522cc94e9e7f60dbb5ded34",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_frame_mapper.v": "9bc02b8c56012122edcefea6718b9138547628499e18f20c8f35e6225e9dcdfa",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_hdmi_phy.v": "e951645b4679c3a3ba40c726c99f3e55cab75b231f6ed314dd137c7f3fb51234",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_image_writer.v": "71780fd825d949b5c77de2623a8ef3aeb564b693f86eaca057b1eefa03d5e6e5",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_math.v": "258ec77e2040be58525e47cd5346759e42e05b457594d79a7426271776cf2c03",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_pack.v": "27e4478f5b79973a01697cde029955b7bff6b7b5fb038bc2e8cf25e54c497960",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_reader.v": "1880a9f1b2b454b3711841a784e271eabd27f663cbfffdb5dc409f081d3c3b60",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_scene.v": "bdf2882020a4ba6a87614a57c21008354136c283ac074e7ab2073b594f531903",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_status.v": "20f1de833016ac770d64afe46683aa179d3d2d75e8edf46a75ac6556911d9708",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_sys_pll.v": "500273e08bb03adc4759e0d250542a08f958aade8ff6f19186cd7f8872ec1345",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_transition.v": "15e5f8be35c7f11e73f7da6daafee0821ffc51d017ab01bedabf8b06c7c34802",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\vendor\\board_helpers.v": "fde145a7572f0a8cd5b7adbc49f3d374ef607fd8c577e439ed4324f2cec9205b",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\vendor\\saixian_key_debounce.v": "0ce5ef658b14de16b3d74c81c055ebfadaa7276d9f73aec02417329c80648968",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\vendor\\bmp_read.v": "9ce78db98a12ceabc7b3da304e2d458a4708960e60d1050c6721d967963a321d",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\vendor\\sd_card_bmp.v": "739de4f7fb31f1886815560a69b14f324ae1c2e92f3f7fb5e3554da3b7e83775",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\vendor\\saixian_media_header.v": "f8092e34232ab7d5a379903b7f8602168ca3b89d5397d8a222c55ba45332271e",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\vendor\\frame_fifo_write.v": "7d16f58b25895f1b882a14b4579cdf8306ac8773006f7123052e4c311456cd1a",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\vendor\\frame_read_write.v": "9fdae086bcab1946e4516a0342c1203bb9c8d52a876c9998175d1021fa76929b",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\vendor\\video_delay.v": "68d599f9ae6794f80441cd90d5bcb39b0cc75f3383c7b8a88da628be635b349d",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\vendor\\sdram.v": "c74c547816599f6bf036e6792c9b76e579f76bf2232ddc10d8a7cbe82472b6d2",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\vendor\\afifo_16_32_256.v": "acee22723ed0bc9029b6f40879d52734b645466cdb9fae7919297263e7858e55",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\vendor\\afifo_32_16_256.v": "a3c84d9b9a083d1eb2e82f0047aaa1a2d0d0d7ff96bf8dc8159d334c6096b6a8",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\vendor\\sdr_as_ram.enc.v": "d4f94dec37e3ff862718360393b646d75ec778c8f5daaf0e00444f8060c8a28c",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\vendor\\sdr_init_ref.enc.v": "0886a3f8d4a6ed8492a0578d57b44bdeec728829bfacf869e8e3b02e85edc008",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\vendor\\sdr_wrrd.enc.v": "c7d7fe07d75f66aa88d9f986b3006319c995162434f104f9990664b374cdfdd2",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\vendor\\sd_card_top.v": "96a83af8c155514f4fe8a802d207caea1577702d97bf362b0955bdc2f243214f",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\vendor\\sd_card_cmd.v": "ee93ef4fce483306a204c8d0232f35418e4e4a6b94df7f11e912048f7d8aa46c",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\vendor\\sd_card_sec_read_write.v": "2c51c66e347595d20ddd5d6b3a5cad9252fb308a754aa59140f739636b3d7dd6",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\vendor\\spi_master.v": "f3f04df5bc162fba03beff74fc506bace4038d2667505e498731a06f6b5a27e9",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\vendor\\audio_arc_calculate.v": "b3b55c90ad7ba679b0f4cb550cdf656230d15a3facab00ce7f561f32bd63eb0d",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\vendor\\hdmi_phy_wrapper.v": "7665996d6504860ef2554fb8fc70df0746b54dcb2fe078883c2f72c898366ffb",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\vendor\\lane_lvds_10_1.v": "fd61b139c3803a16d1a3ed33bbd9babd88af4c73702a98b406d7ea6b7771269b",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\vendor\\hdmi_audio.enc.v": "25a28679c51d779a1c811772cf83e3092a3106b25e2e21f1560ba624ebd72bd0",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\rtl\\fluid_plls.v": "778480d8d156ac4961daa13f140a6d52561ef29222cfc8d38696c02903598a1d",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\rtl\\fluid_rgb_limited.v": "71e848c0a1a57a86331cdd6cfa07180ed515a473ecf4bd3487371860928910cb",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\project\\pins.adc": "119915ddbb033daa8c3a2ab72f2ccfd6d771e25e652ae5b15cd2244fc4ddbc86",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\project\\timing.sdc": "dfcc85bac8aa813dbfec5c5b09616310e3cae3fa57768f085de1ca4eb11106a1",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\rtl\\water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\project\\water_global_def.v": "db5b9b6f6a08e7b8ea0d9709f1595da17dc86061e94576fc3ccdee733a94efd2",
+    "E:\\Codex\\Downloads\\qiansai\\liuti\\water_single\\project\\build.tcl": "5f5345e7dc2671c8577813fbef19563f6275a529f80b47baa8becaa9c7ece5c8"
+  },
+  "hardware_acceptance": {
+    "status": "passed_user_report",
+    "date": "2026-10-17",
+    "reported_by": "user",
+    "statement": "实板验收挺好的",
+    "bit_sha256": "adffe3d6051bba85bb60b0c2d5f9e9f54b79551cd6e0dc4e33b06c1ddce97b60",
+    "board": "HX4S20 single-board configuration"
+  }
+}
