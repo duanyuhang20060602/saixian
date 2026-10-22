@@ -118,7 +118,8 @@ module photo_control_b #(parameter CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=18
  output reg media_request,output reg [2:0] media_target,output reg media_release,media_cancel,
  output reg [1:0] transmit_slot,output reg start_toggle,abort_toggle,
  output reg display_valid,prefetch_pause,output reg [2:0] display_image,
- output reg [18:0] settings_state,input tx_done,input [31:0] tx_crc,output busy,output reg [3:0] error,output [3:0] debug_state
+ output reg [18:0] settings_state,input tx_done,input [31:0] tx_crc,output busy,output reg [3:0] error,output [3:0] debug_state,
+ output reg timing_begin,timing_ready,timing_send,timing_done,output timing_cancel
 );
 
 wire tx_busy,got,bad;wire [159:0] incoming;
@@ -146,13 +147,15 @@ photo_uart #(.CLK_HZ(CLK_HZ),.PULSE_PAYLOAD(1)) port(.clk(clk),.rst(rst),.rx(uar
  .send(send),.message(message),.busy(tx_busy),.received(got),.received_message(incoming),.bad_packet(bad));
 wire [7:0] kind=incoming[159:152];
 wire matching=incoming[151:120]==session && incoming[119:104]==request_seq && incoming[103:96]=={5'd0,media_target};
+assign timing_cancel=media_cancel || error!=0 || (got && matching && kind==9);
 assign busy=state!=IDLE && state!=DISCOVER;
 always @(posedge clk or posedge rst)begin
  if(rst)begin announced_count<=0;display_valid<=0;display_image<=0;prefetch_pause<=0;context_reply<=0;cancel_reply<=0;settings_state<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};settings_reply<=0;state<=DISCOVER;session<=0;request_seq<=0;timer<=0;direction<=1;retries<=0;send<=0;message<=0;
   media_request<=0;media_target<=0;media_release<=0;media_cancel<=0;transmit_slot<=0;start_toggle<=0;abort_toggle<=0;error<=0;completed_crc<=0;
-  source_width<=0;source_height<=0;end
+  source_width<=0;source_height<=0;timing_begin<=0;timing_ready<=0;timing_send<=0;timing_done<=0;end
  else begin
   timer<=timer+1'b1;send<=0;media_request<=0;
+  timing_begin<=0;timing_ready<=0;timing_send<=0;timing_done<=0;
   if(got && kind==19 && incoming[151:120]==session && incoming[23:16]==catalog)announced_count<=incoming[23:16];media_release<=0;media_cancel<=0;
   if(got && kind==1 && incoming[87:56]==FRAME_BYTES && (image_count>0 || (AWARD_CONTROL && award_available)))begin
    session<=incoming[151:120];abort_toggle<=~abort_toggle;media_cancel<=1;state<=HELLO_ACK;timer<=0;error<=0;
@@ -183,13 +186,14 @@ always @(posedge clk or posedge rst)begin
     message<=packet(13,session,0,0,0,0,{13'd0,settings_state},0);send<=1;settings_reply<=0;
    end else if(got && kind==3 && incoming[151:120]==session && valid_target && incoming[87:56]==request_bytes && incoming[93]==request_fluid && incoming[94]==1'b0 && settings_state[18]==1'b0)begin
     request_seq<=incoming[119:104];media_target<=incoming[98:96];direction<=incoming[88];retries<=0;
-    media_request<=1;state<=LOAD;timer<=0;error<=0;
+    media_request<=1;state<=LOAD;timer<=0;error<=0;timing_begin<=1;
    end else if(catalog!=announced_count && (image_count>0 || (AWARD_CONTROL && award_available)) && timer>=TIME_HZ/10 && !tx_busy && !send)begin
     // Reliable count growth notification; acknowledgement never resets caches.
     message<=packet(18,session,0,0,0,FRAME_BYTES,0,catalog);send<=1;timer<=0;
    end
    LOAD:begin
     if(media_ready)begin
+     timing_ready<=1;
      transmit_slot<=media_slot;source_width<=media_source_width;source_height<=media_source_height;
      state<=BEGIN_SEND;timer<=0;
     end
@@ -203,9 +207,9 @@ always @(posedge clk or posedge rst)begin
       SEND_SOURCE_SIZE ? {source_width,source_height}:32'd0,0);
     send<=1;state<=WAIT_READY;timer<=0;
    end
-   WAIT_READY:if(got && matching && kind==5)begin start_toggle<=~start_toggle;state<=SENDING;timer<=0;end
+   WAIT_READY:if(got && matching && kind==5)begin start_toggle<=~start_toggle;state<=SENDING;timer<=0;timing_send<=1;end
               else if(timer>=64'd5*TIME_HZ)begin error<=2;state<=ERROR_SEND;end
-   SENDING:if(tx_done)begin completed_crc<=tx_crc;state<=END_SEND;timer<=0;end
+   SENDING:if(tx_done)begin completed_crc<=tx_crc;state<=END_SEND;timer<=0;timing_done<=1;end
            else if(timer>=64'd5*TIME_HZ)begin abort_toggle<=~abort_toggle;error<=5;state<=ERROR_SEND;end
    END_SEND:if(!tx_busy && !send)begin
     message<=packet(6,session,request_seq,{5'd0,media_target},0,frame_bytes,completed_crc,0);send<=1;state<=WAIT_ACCEPT;timer<=0;

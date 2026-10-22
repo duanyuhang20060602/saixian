@@ -1,0 +1,54 @@
+[
+  {
+    "test": "compare",
+    "passed": true,
+    "seconds": 2.34,
+    "inputs_sha256": {
+      "tools/test_prefetch_overlap.py": "f1308f7484c28f08ec73e8860002f967ea648216082746cf61b7ab887181e348",
+      "tests/tb_prefetch_overlap.v": "5b159b56d972e4f51a85b63e89310711f2a9d62cafda70d546a24c7f36d5a09a",
+      "tests/tb_two_slot_cache.v": "a3dc849e0c8982dea90a827e15e58f9b2fddf81b61de12db43401149df5f116a",
+      "tests/prefetch_overlap_results/ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d",
+      "common/photo_sd_cache.v": "e7fbe213b26dcaf52c8ab09a7361d2d050179296ed040608f288c0541461a3c7",
+      "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+      "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+      "common/photo_sd_audio_stream.v": "5c1c0196bed7661ba9fdf2edab80630f3860223e6a8858935012083738c95a7a",
+      "common/photo_sd/photo_dlt_reader.v": "ec84458bc7160f3ad1031925c9e5ce7f748b6df95e46c465578b1af5296e2411",
+      "common/photo_sd/photo_dlt_header.v": "de847966c33258984f35ee4422220c828e92ad0d34283150e5204ba267762ce3"
+    }
+  },
+  {
+    "test": "baseline_safety",
+    "passed": true,
+    "seconds": 0.66,
+    "inputs_sha256": {
+      "tools/test_prefetch_overlap.py": "f1308f7484c28f08ec73e8860002f967ea648216082746cf61b7ab887181e348",
+      "tests/tb_prefetch_overlap.v": "5b159b56d972e4f51a85b63e89310711f2a9d62cafda70d546a24c7f36d5a09a",
+      "tests/tb_two_slot_cache.v": "a3dc849e0c8982dea90a827e15e58f9b2fddf81b61de12db43401149df5f116a",
+      "tests/prefetch_overlap_results/ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d",
+      "common/photo_sd_cache.v": "e7fbe213b26dcaf52c8ab09a7361d2d050179296ed040608f288c0541461a3c7",
+      "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+      "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+      "common/photo_sd_audio_stream.v": "5c1c0196bed7661ba9fdf2edab80630f3860223e6a8858935012083738c95a7a",
+      "common/photo_sd/photo_dlt_reader.v": "ec84458bc7160f3ad1031925c9e5ce7f748b6df95e46c465578b1af5296e2411",
+      "common/photo_sd/photo_dlt_header.v": "de847966c33258984f35ee4422220c828e92ad0d34283150e5204ba267762ce3"
+    }
+  },
+  {
+    "test": "early_safety",
+    "passed": true,
+    "seconds": 0.56,
+    "inputs_sha256": {
+      "tools/test_prefetch_overlap.py": "f1308f7484c28f08ec73e8860002f967ea648216082746cf61b7ab887181e348",
+      "tests/tb_prefetch_overlap.v": "5b159b56d972e4f51a85b63e89310711f2a9d62cafda70d546a24c7f36d5a09a",
+      "tests/tb_two_slot_cache.v": "a3dc849e0c8982dea90a827e15e58f9b2fddf81b61de12db43401149df5f116a",
+      "tests/prefetch_overlap_results/ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d",
+      "tests/prefetch_overlap_results/tb_two_slot_early.v": "dbb9b31a4071c29f0affc91076b0f9207f288434d1af9df66c44c9e090ba6e04",
+      "common/photo_sd_cache.v": "e7fbe213b26dcaf52c8ab09a7361d2d050179296ed040608f288c0541461a3c7",
+      "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+      "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+      "common/photo_sd_audio_stream.v": "5c1c0196bed7661ba9fdf2edab80630f3860223e6a8858935012083738c95a7a",
+      "common/photo_sd/photo_dlt_reader.v": "ec84458bc7160f3ad1031925c9e5ce7f748b6df95e46c465578b1af5296e2411",
+      "common/photo_sd/photo_dlt_header.v": "de847966c33258984f35ee4422220c828e92ad0d34283150e5204ba267762ce3"
+    }
+  }
+]

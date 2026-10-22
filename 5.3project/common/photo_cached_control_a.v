@@ -2,7 +2,7 @@
 // A keeps current, next, next+1 and next+2 in four independent SDRAM slots.
 // Link transactions finish when stored; display commits run independently.
 module photo_cached_control_a #(
- parameter CLK_HZ=75000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0,AWARD_LIGHTS=0
+ parameter CLK_HZ=75000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0,AWARD_LIGHTS=0,EARLY_THUMBNAIL=0
 )(
  output receive_award,output receive_fluid,
  input settings_mode,input [18:0] settings_state,output settings_updating,
@@ -18,15 +18,19 @@ module photo_cached_control_a #(
  output [3:0] debug_state,output reg [31:0] debug_local_crc,debug_remote_crc,
  output cache_window_ready,output [2:0] cached_count,
  output thumbnail_valid,output [1:0] thumbnail_slot,output [2:0] thumbnail_id,
- output reg [15:0] current_source_width,current_source_height
+ output reg [15:0] current_source_width,current_source_height,
+ output reg timing_begin,timing_present,timing_commit,output timing_cancel,
+ input thumbnail_read_busy,input [1:0] thumbnail_read_slot
 );
 localparam TIME_HZ=CLK_HZ/TIMER_SCALE;
 localparam HELLO_SEND=0,HELLO_WAIT=1,IDLE=2,GET=3,WAIT_BEGIN=4,ARM=5,
  READY=6,RECEIVE=7,ACCEPT=8,STORE=9,COMMIT=10,NACK=11,FAILED=12,WAIT_SETTINGS=13,WAIT_CONTEXT=14,WAIT_CANCEL=15;
 reg [18:0] applied_settings,sent_settings;reg refresh_pending;
 reg have_current,nav_pending,nav_right,display_pending,commit_seen;
+reg timing_pending,timing_display;
 reg [2:0] target;
 wire settings_dirty=SETTINGS_LINK && settings_state!=applied_settings;
+assign timing_cancel=award_toggle || settings_dirty || refresh_pending || state_flags[FAILED] || (got && kind==10);
 reg refresh_display,background_transaction;reg count_reply;
 reg [4:0] applied_context,sent_context;
 wire settings_focus=settings_mode || settings_dirty || refresh_pending || refresh_display || (display_pending && ready_immediate);
@@ -176,6 +180,8 @@ wire [2:0] center_hit=lookup(window_center_q,cache_valid,cache_ids),next_hit=loo
 
 reg fetch_needed,demand_fetch,victim_ok;reg [2:0] fetch_target;
 reg [1:0] victim;integer i,reset_index;
+wire preview_locked=EARLY_THUMBNAIL && thumbnail_read_busy;
+wire [2:0] preview_context={preview_locked,(preview_locked ? thumbnail_read_slot:2'd0)};
 always @*begin
  fetch_needed=0;demand_fetch=0;fetch_target=0;victim_ok=0;victim=0;
  if(nav_pending && !nav_hit[2])begin fetch_needed=1;demand_fetch=1;fetch_target=nav_target;end
@@ -186,7 +192,7 @@ always @*begin
   else if(!FLUID && !next3_hit[2])begin fetch_needed=1;fetch_target=window_next3_q;end
  end
  for(i=3;i>=0;i=i-1)begin
-  if((!FLUID || i<3) && i!=active_slot && (!transition_active || i!=new_slot) &&
+  if((!FLUID || i<3) && (!preview_locked || i!=thumbnail_read_slot) && i!=active_slot && (!transition_active || i!=new_slot) &&
      (!display_pending || i!=ready_slot) && (!nav_pending || !nav_hit[2] || i!=nav_hit[1:0]) &&
      (demand_fetch || (cache_id[i]!=window_center_q && cache_id[i]!=window_next_q &&
                        (cache_id[i]!=window_next2_q && (FLUID || cache_id[i]!=window_next3_q)))))begin
@@ -195,7 +201,7 @@ always @*begin
  end
  // Prefer an empty slot, including a slot invalidated by a failed receive.
  for(i=3;i>=0;i=i-1)begin
-  if((!FLUID || i<3) && !cache_valid[i] && i!=active_slot && (!transition_active || i!=new_slot) &&
+  if((!FLUID || i<3) && (!preview_locked || i!=thumbnail_read_slot) && !cache_valid[i] && i!=active_slot && (!transition_active || i!=new_slot) &&
      (!display_pending || i!=ready_slot))begin victim_ok=1;victim=i[1:0];end
  end
 end
@@ -207,8 +213,10 @@ assign cache_window_ready=window_context==fetch_context && have_current && cente
 assign thumbnail_slot=next_hit[1:0];
 assign thumbnail_id=window_next_q;
 assign thumbnail_valid=have_current && next_hit[2] &&
- current_image<6 && image_count>1 && !busy && !settings_dirty && !refresh_pending;
+ current_image<6 && image_count>1 && !settings_dirty && !refresh_pending &&
+ (EARLY_THUMBNAIL ? (window_center_q==center && window_next_q==window_next && center<6 && !nav_pending):!busy);
 reg [25:0] plan_context;
+reg [2:0] plan_preview_context;
 // Stage one computes the window, stage two chooses the cache victim. Both
 // stages retain their context; stale decisions cannot launch a transfer.
 always @(posedge clk or posedge rst)begin
@@ -217,11 +225,12 @@ always @(posedge clk or posedge rst)begin
   window_next3_q<=window_next3;window_context<=fetch_context;end
 end
 always @(posedge clk or posedge rst)begin
- if(rst)begin plan_needed<=0;plan_ok<=0;plan_target<=0;plan_victim<=0;plan_context<=0;end
- else begin plan_needed<=fetch_needed;plan_ok<=victim_ok && window_context==fetch_context;plan_target<=fetch_target;plan_victim<=victim;plan_context<=fetch_context;end
+ if(rst)begin plan_needed<=0;plan_ok<=0;plan_target<=0;plan_victim<=0;plan_context<=0;plan_preview_context<=0;end
+ else begin plan_needed<=fetch_needed;plan_ok<=victim_ok && window_context==fetch_context;plan_target<=fetch_target;plan_victim<=victim;plan_context<=fetch_context;plan_preview_context<=preview_context;end
 end
 always @(posedge clk or posedge rst)begin
  if(rst)begin
+  timing_begin<=0;timing_present<=0;timing_commit<=0;timing_pending<=0;timing_display<=0;
   award_available<=0;award_scan_complete<=0;award_notice<=0;last_transfer_error<=0;award_selected<=0;award_wait<=0;return_photo<=0;
   count_reply<=0;applied_settings<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};sent_settings<=0;refresh_pending<=0;
   applied_context<=31;sent_context<=0;background_transaction<=0;refresh_display<=0;ready_immediate<=0;state_flags<=(16'd1<<HELLO_SEND);send<=0;message<=0;session<=1;uptime<=1;timer_reset<=1;request_seq<=0;
@@ -234,16 +243,19 @@ always @(posedge clk or posedge rst)begin
   for(reset_index=0;reset_index<4;reset_index=reset_index+1)cache_id[reset_index]<=0;
  end else begin
   uptime<=uptime+1'b1;timer_reset<=0;send<=0;
+  timing_begin<=0;timing_present<=0;timing_commit<=0;
   if(got && kind==18 && incoming[151:120]==session && incoming[18:16]>=image_count && incoming[18:16]<=6 && (incoming[18:16]>0 || (AWARD_CONTROL && incoming[23])))begin
    image_count<=incoming[18:16];count_reply<=1;
    if(AWARD_CONTROL)begin award_available<=incoming[23];award_scan_complete<=incoming[22];end
   end
   if(display_pending && commit_toggle!=commit_seen)begin
+   timing_commit<=timing_display;timing_display<=0;
    current_image<=display_target;have_current<=1;display_pending<=0;
    if(AWARD_CONTROL && display_target==6)award_notice<=0;
    current_source_width<=display_width;current_source_height<=display_height;
   end
   if(!settings_dirty && !refresh_pending && !state_flags[WAIT_SETTINGS] && !display_pending && !transition_active && nav_pending && nav_hit[2])begin
+   timing_present<=timing_pending;timing_display<=timing_pending;timing_pending<=0;
     // Tagged plates cannot pass through photo spatial/dissolve transitions.
     ready_slot<=nav_hit[1:0];ready_right<=nav_right;ready_immediate<=refresh_display || cache_width[nav_hit[1:0]][15] || current_source_width[15];refresh_display<=0;ready_toggle<=~ready_toggle;
    display_target<=nav_target;display_pending<=1;commit_seen<=commit_toggle;nav_pending<=0;
@@ -283,7 +295,7 @@ always @(posedge clk or posedge rst)begin
     if(!display_pending && !transition_active)begin
      refresh_display<=1;cache_valid<=0;nav_target<=have_current ? current_image:nav_target;nav_right<=1;nav_pending<=1;refresh_pending<=0;
     end
-   end else if(plan_needed && plan_ok && plan_context==fetch_context && (nav_pending || !settings_focus))begin
+   end else if(plan_needed && plan_ok && plan_context==fetch_context && plan_preview_context==preview_context && (nav_pending || !settings_focus))begin
     background_transaction<=!nav_pending;target<=plan_target;direction<=nav_right;receive_slot<=plan_victim;cache_valid[plan_victim]<=0;
     request_seq<=request_seq+1'b1;retries<=0;error<=0;state_flags<=(16'd1<<GET);timer_reset<=1;
    end
@@ -393,9 +405,11 @@ always @(posedge clk or posedge rst)begin
    end
   end
   if(next && image_count!=0)begin
+   timing_begin<=1;timing_pending<=1;timing_display<=0;
    nav_target<=adjacent(AWARD_CONTROL && (center==6 || award_selected) ? return_photo:center,image_count,1'b1);
    nav_right<=1'b1;nav_pending<=1;award_selected<=0;award_wait<=0;award_notice<=0;
   end
+  if(timing_cancel)begin timing_pending<=0;timing_display<=0;end
  end
 end
 endmodule

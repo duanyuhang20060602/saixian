@@ -325,6 +325,14 @@
                     <Attr Name="CompileOrder" Val="39"/>
                 </FileInfo>
             </File>
+            <File Path="../../../common/photo_switch_timing.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="40"/>
+                </FileInfo>
+            </File>
         </Verilog>
     </Source_Files>
     <FileSets>

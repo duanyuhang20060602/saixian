@@ -104,12 +104,13 @@ endmodule
 
 // Whole-preview handshake: hold the source slot until completion or a
 // safely acknowledged cancellation. New cache identities never show old RAM.
-module photo_thumbnail_overlay #(parameter X=1088,Y=528,DELAY=1)(
+module photo_thumbnail_overlay #(parameter X=1088,Y=528,DELAY=1,SEPARATE_DISPLAY=0)(
  input clk,rst,frame_tick,enable,cache_valid,input [1:0] cache_slot,input [5:0] identity,
  input de,input [11:0] x,input [10:0] y,
  output reg request,output reg [1:0] slot,output cancel,
  input done,input [15:0] data,output [11:0] address,
- output visible,input [23:0] rgb_in,output [23:0] rgb_out
+ output visible,input [23:0] rgb_in,output [23:0] rgb_out,
+ input display_enable,output read_busy
 );
 (* async_reg="true" *)reg [2:0] done_sync;
 reg pending,cancel_pending,ready,armed;
@@ -117,7 +118,9 @@ reg [5:0] held;
 wire eligible=enable && cache_valid && cache_slot<3;
 wire changed=identity!=held;
 assign cancel=cancel_pending || !eligible || (pending && changed);
-assign visible=armed && ready && eligible && !changed;
+wire show_allowed=!SEPARATE_DISPLAY || display_enable;
+assign visible=armed && ready && eligible && !changed && show_allowed;
+assign read_busy=pending || cancel_pending;
 reg [5:0] source_x,source_y;reg [2:0] phase_x,phase_y;
 wire advance_x=phase_x==2 || phase_x==4;
 wire [5:0] next_x=x==X-1 ? 6'd0:
@@ -137,7 +140,8 @@ always @(posedge clk or posedge rst)
    held<=identity;slot<=cache_slot;request<=!request;pending<=1;cancel_pending<=0;
   end
   if(!eligible || changed)begin ready<=0;armed<=0;end
-  if(frame_tick)armed<=ready && eligible && !changed;
+  if(!show_allowed)armed<=0;
+  if(frame_tick)armed<=ready && eligible && !changed && show_allowed;
   // Exact 2/5 source-coordinate increments: three then two display pixels
   // per sample. Counters replace division and retain the 16:9 aspect ratio.
   if(x==X-1)begin source_x<=0;phase_x<=0;end

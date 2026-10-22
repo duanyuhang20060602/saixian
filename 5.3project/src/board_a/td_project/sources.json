@@ -61,5 +61,6 @@
   "../../../common/photo_award_memory.v",
   "../../../common/photo_raster_delay.v",
   "../../../common/photo_touchpad.v",
-  "../../../common/photo_thumbnail.v"
+  "../../../common/photo_thumbnail.v",
+  "../../../common/photo_switch_timing.v"
 ]
