@@ -1,0 +1,12 @@
+[
+  "../rtl/photo_touchpad.v",
+  "../rtl/saixian_hmi_uart.v",
+  "../rtl/top_touch_single.v",
+  "../rtl/touch_test_core.v",
+  "../rtl/touch_test_scene.v",
+  "../rtl/vendor/dual_still_reset_sync.v",
+  "../rtl/vendor/hdmi_minimal_tx.v",
+  "../rtl/vendor/hdmi_phy_warpper.v",
+  "../rtl/vendor/lane_lvds_10_1.v",
+  "../rtl/vendor/video_pll.v"
+]

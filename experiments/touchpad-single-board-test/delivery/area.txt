@@ -1,0 +1,95 @@
+standard
+***Report Model: top_touch_single Device: EG4S20BG256***
+
+IO Statistics
+#IO                         9   out of    188    4.79%
+  #input                    2
+  #output                   6
+  #inout                    1
+
+Utilization Statistics
+#lut                     2201   out of  19600   11.23%
+#reg                      666   out of  19600    3.40%
+#le                      2318
+  #lut only              1652   out of   2318   71.27%
+  #reg only               117   out of   2318    5.05%
+  #lut&reg                549   out of   2318   23.68%
+#bram                       0   out of     64    0.00%
+  #bram9k                   0
+  #fifo9k                   0
+#bram32k                    0   out of     16    0.00%
+#dsp                        0   out of     29    0.00%
+#pad                       13   out of    188    6.91%
+  #ireg                     1
+  #oreg                     4
+  #treg                     0
+#pll                        1   out of      4   25.00%
+#gclk                       1   out of     16    6.25%
+
+
+Detailed IO Report
+
+      Name         Direction    Location    IOStandard    IOType    DriveStrength    PullType    PackReg  
+       clk           INPUT         R7        LVCMOS33      PAD           N/A          PULLUP      NONE    
+   hmi_uart_rx       INPUT        D14        LVCMOS33      PAD           N/A          PULLUP      IREG    
+   HDMI_CLK_P       OUTPUT         K1         LVDS33       PAD           NA            NONE       DDRX1   
+  HDMI_CLK_P(n)     OUTPUT         J1         LVDS33       PAD           NA            NONE       NONE    
+    HDMI_D0_P       OUTPUT         F5         LVDS33       PAD           NA            NONE       DDRX1   
+  HDMI_D0_P(n)      OUTPUT         F4         LVDS33       PAD           NA            NONE       NONE    
+    HDMI_D1_P       OUTPUT         E3         LVDS33       PAD           NA            NONE       DDRX1   
+  HDMI_D1_P(n)      OUTPUT         E4         LVDS33       PAD           NA            NONE       NONE    
+    HDMI_D2_P       OUTPUT         B3         LVDS33       PAD           NA            NONE       DDRX1   
+  HDMI_D2_P(n)      OUTPUT         D3         LVDS33       PAD           NA            NONE       NONE    
+  HDMI_DDC_SCL      OUTPUT         P1        LVCMOS33      PAD            8           PULLUP      NONE    
+   hmi_uart_tx      OUTPUT        G11        LVCMOS33      PAD            8            NONE       NONE    
+  HDMI_DDC_SDA       INOUT         R1        LVCMOS33      PAD            8           PULLUP      NONE    
+
+Report Clock Domain Luts:
+
+----------------------------------------------------------------------------------------------------------------------
+  Index   |  Name             |  Frequency   |  LUT As Logic   |  LUT As Shifter   |  LUT As Dram   |  BRAM   |  DSP
+----------------------------------------------------------------------------------------------------------------------
+  #1      |  board_pixel_clk  |  75MHz       |  970            |  0                |  0             |  0      |  0
+  #2      |  hdmi_5x_clk      |  375MHz      |  50             |  0                |  0             |  0      |  0
+----------------------------------------------------------------------------------------------------------------------
+
+Clock Resource Statistics
+Index     ClockNet                             Type               DriverType         Driver                        Fanout
+#1        u_video_pll/clk0_buf                 Global             pll                u_video_pll/pll_inst.clkc0    388
+#2        phy/u0_lane_lvds_8_1/I_serial_clk    Global             pll                u_video_pll/pll_inst.clkc1    33
+#3        clk_dup_1                            GeneralRouting     io                 clk_syn_2.di                  1
+
+Report Hierarchy Area:
++--------------------------------------------------------------------------------------------------+
+|Instance             |Module                |le      |lut     |ripple  |seq     |bram    |dsp     |
++--------------------------------------------------------------------------------------------------+
+|top                  |top_touch_single      |2318    |1688    |513     |671     |0       |0       |
+|  core               |touch_test_core       |761     |470     |198     |347     |0       |0       |
+|    pointer          |photo_touchpad        |298     |153     |89      |133     |0       |0       |
+|    uart             |saixian_hmi_uart      |313     |216     |60      |145     |0       |0       |
+|  phy                |hdmi_phy_wrapper      |52      |39      |0       |52      |0       |0       |
+|    u0_lane_lvds_8_1 |lane_lvds_10_1        |18      |12      |0       |18      |0       |0       |
+|    u1_lane_lvds_8_1 |lane_lvds_10_1        |14      |12      |0       |14      |0       |0       |
+|    u2_lane_lvds_8_1 |lane_lvds_10_1        |10      |8       |0       |10      |0       |0       |
+|    u3_lane_lvds_8_1 |lane_lvds_10_1        |10      |7       |0       |10      |0       |0       |
+|  scene              |touch_test_scene      |990     |784     |200     |145     |0       |0       |
+|  u_video_pll        |video_pll             |0       |0       |0       |0       |0       |0       |
+|  video              |hdmi_minimal_tx       |504     |389     |115     |113     |0       |0       |
+|    ch0              |hdmi_minimal_channel  |115     |106     |9       |34      |0       |0       |
+|    ch1              |hdmi_minimal_channel  |81      |72      |9       |20      |0       |0       |
+|    ch2              |hdmi_minimal_channel  |95      |86      |9       |30      |0       |0       |
+|  rp                 |dual_still_reset_sync |11      |6       |0       |9       |0       |0       |
++--------------------------------------------------------------------------------------------------+
+
+
+DataNet Average Fanout:
+
+   Index     Fanout    Nets  
+    #1         1       1372  
+    #2         2       315   
+    #3         3       166   
+    #4         4       120   
+    #5        5-10     174   
+    #6       11-50     106   
+    #7       51-100     1    
+  Average     2.84           
