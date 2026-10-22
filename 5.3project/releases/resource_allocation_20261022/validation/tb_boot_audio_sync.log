@@ -1,0 +1,2 @@
+PASS startup: silent preload, first sample preserved, first-track launch before scan end, frame-boundary release, empty-card exit
+tests/tb_boot_audio_sync.v:56: $finish called at 13664636531 (1ps)

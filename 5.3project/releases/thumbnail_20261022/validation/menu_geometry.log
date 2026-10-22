@@ -1,0 +1,2 @@
+PASS geometry pipeline equivalence: 1300000 pixels, interval/original menus, arbitrary snapshots and resets, exact 4/6/21-clock latency
+tests/tb_menu_geometry.v:23: $finish called at 13000050000 (1ps)

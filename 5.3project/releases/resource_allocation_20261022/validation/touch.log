@@ -1,0 +1,2 @@
+PASS thumbnail click and actual top wiring: UART -> gesture -> launcher -> menu volume, drag rejection, default enable, mode and boot/result/event gates (other hardware blocks omitted)
+E:\Codex\Downloads\qiansai\5.1project\tests\tb_thumbnail_touch.v:74: $finish called at 5053770000 (1ps)

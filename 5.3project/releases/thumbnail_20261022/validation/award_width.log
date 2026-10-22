@@ -1,0 +1,4 @@
+PASS 671744 sprite address boundary comparisons: all phases, source columns, four layers and rejected neighbors
+PASS exhaustive 1048576 trophy blends
+PASS exact award shader retiming: 66460 pixels, all 1024 phases and 64 tags, hold/pause/reset, unchanged latency
+E:\Codex\Work\thumbnail-5.0-20261021-172807\center-source\tests\tb_award_width.v:82: $finish called at 664640000 (1ps)

@@ -1,0 +1,2 @@
+PASS explicit onehot controller: 60008 exact cycles, all 16 states, every timeout boundary and wrap, UART payloads, CRC/errors, settings/awards/cache navigation and reset
+E:\Codex\Downloads\qiansai\cooperate\3.1Project\tests\fx11_water\tb_protocol.v:97: $finish called at 600080000 (1ps)

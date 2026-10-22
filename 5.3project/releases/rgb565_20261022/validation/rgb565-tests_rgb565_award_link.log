@@ -1,0 +1,2 @@
+PASS contiguous award+light dual-board transfer: 691200 exact words, SOF/EOF, CRC, receiver backpressure, no photo plane restart
+E:\Codex\Downloads\qiansai\5.2project\tests\tb_award_v5_link.v:30: $finish called at 24977830000 (1ps)

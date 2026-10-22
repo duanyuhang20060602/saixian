@@ -1,0 +1,2 @@
+PASS negative control: original B wrapper corrupts 209407 tail words despite matching link CRC; A light error=3; first bad word=1
+E:\Codex\Downloads\qiansai\cooperate\3.1Project\tests\tb_award_v5_sdram_link.v:71: $finish called at 99919300000 (1ps)

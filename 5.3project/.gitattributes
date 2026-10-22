@@ -1,0 +1,2 @@
+# Preserve the frozen package bytes for SHA256 verification on every OS.
+* -text

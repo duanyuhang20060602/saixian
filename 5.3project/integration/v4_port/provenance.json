@@ -1,0 +1,53 @@
+{
+  "created_utc": "2026-10-18T11:34:57.266584+00:00",
+  "baseline_commit": "7800f11e75ae5ad1c8ce759986c77648aeb68277",
+  "donor_root": "E:\\Codex\\Downloads\\qiansai\\4.0Project",
+  "imports": [
+    {
+      "purpose": "uart_counter_ranges",
+      "source": "common/photo_uart.v",
+      "source_sha256": "6d13118da87d3b0b37b96b97e009966f039ed5206b73d5fa6d67684058d40317",
+      "target": "common/photo_uart.v",
+      "target_sha256": "9bfea0d435766f36db5136c25c351569105102b163674cbc02f835704dae9318",
+      "mode": "selective; preserve cooperate interfaces and behavior"
+    },
+    {
+      "purpose": "rational_audio_rate",
+      "source": "common/dual_audio_pipeline.v",
+      "source_sha256": "589ba9cf9fc3f2d4ad9d52be8376ee1e095ea6c493b5116bb53ea28ee373321a",
+      "target": "common/photo_audio_link.v",
+      "target_sha256": "a79f0aa866e6ebd55dbac7f1a44f717f4b688e0bb9b819da07c4555222dd4225",
+      "mode": "selective; preserve cooperate interfaces and behavior"
+    },
+    {
+      "purpose": "award_light_pipeline_and_blend",
+      "source": "common/media/award_fx.v",
+      "source_sha256": "22a292f7892d27aaf1b3b9bd233ab57b582f4a66de40aef4291cc1b34056e83c",
+      "target": "common/award_fx.v",
+      "target_sha256": "34ed1dd3efc715ef457a91dceea1aab5cec4505ebfd10f6533df812c8a163a49",
+      "mode": "selective; preserve cooperate interfaces and behavior"
+    },
+    {
+      "purpose": "battle_geometry_pipeline",
+      "source": "common/media/saixian_battle_result_fx_pipelined.v",
+      "source_sha256": "f2d74f258be75ee4c3f4f488b440646d95810f6d581b7b5ea6ae39ca7837ac15",
+      "target": "common/saixian_battle_result_fx_pipelined.v",
+      "target_sha256": "2730e4b67b506a0986b78bdbfbac4f50fca69445cbde163b79b3a013df788d90",
+      "mode": "selective; preserve cooperate interfaces and behavior"
+    }
+  ],
+  "donor_evidence_sha256": {
+    "README.md": "b0409d6de5e234493c3dc67c18c122004de478a6f772cf3845199a06fccb3ba9",
+    "integration/status.json": "660a2dca22fe2620cb40f457074a333f5844e06b9fc8b7d2b88a631628db8cce",
+    "integration/builds/board_a/result.json": "6293af6f92c1e1a273fdb73b8824f4446eb2c27d0baaf3e8381eb8a00c0250cf",
+    "integration/builds/board_b/result.json": "a68d7ec24f06b0ed64f02afc20a87b65d00dd9021b0726e129c46949bd5774fc",
+    "integration/validation.json": "3dedea43d48ad0b8d06e5a2b513af3b52cf3863578a6a5e25c718cd36754e2cf"
+  },
+  "donor_4_0_modified": false,
+  "build_flow_import": {
+    "source": "tools/reroute_integration_stage.py",
+    "source_sha256": "a2255543e552a0e81bf23bb999ce7001ac01e27704460bc6b66ebbc13ccc554b",
+    "target": "tools/build_v4_port.py",
+    "purpose": "verified mapped-checkpoint reuse with source/constraint/toolchain hashes; no clock relaxation"
+  }
+}

@@ -1,0 +1,3 @@
+PASS exhaustive 1048576 trophy blends
+PASS exact award shader retiming: 66460 pixels, all 1024 phases and 64 tags, hold/pause/reset, unchanged latency
+E:\Codex\Downloads\qiansai\cooperate\3.1Project\tests\tb_award_v5_visual.v:51: $finish called at 664640000 (1ps)

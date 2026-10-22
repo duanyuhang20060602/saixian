@@ -1,0 +1,109 @@
+[
+  {
+    "test": "original_corruption",
+    "passed": true,
+    "inputs_unchanged": true,
+    "seconds": 356.34,
+    "inputs_sha256": {
+      "tests/tb_award_v5_sdram_link.v": "a0eb8fdf5d7ac53ff3a5a846da2e750280a603d68eecf127628e304993b856c5",
+      "projects/board_b/src/user_source/hdl_source/frame_store.v": "712f5cc92c8b8d6c6d9fc2a987040be867ced34c4864d201f3aabe7dc3449954",
+      "projects/board_b/src/user_source/hdl_source/SD/frame_read_write.v": "c05d2a32ffcddbf66515d964e010fd3df33bd043822012e186b17d9e9cf727c6",
+      "projects/board_b/src/user_source/hdl_source/SD/frame_fifo_read.v": "4d024cc949f4d021ab16fe89134f6c446ea6f2ccae957d952e7aab9a747eb52f",
+      "projects/board_b/src/user_source/hdl_source/SD/frame_fifo_write.v": "cae0788ca240f21f6898c2bc75270df44e919e7cdc97d79834b2c38e1567a2a2",
+      "projects/board_b/src/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+      "projects/board_b/src/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+      "common/photo_link.v": "b5220867ab286874518d2918f7e1640e2829535fbdfdbfc8f022529e3cca530a",
+      "common/photo_award_memory.v": "0421eb047bc5a1654f78c3670b75f6f2d0931fe3832d18a2c8c72d0c4d87ce91",
+      "common/photo_spotlight_player.v": "900301ab829bba3d02e47daced9d8c4ec58371c1a5cf7013b8d065974ed4d867",
+      "tools/test_spotlight_fix.py": "3383ebfcdbe710ea6242eb5154ce9368b781f1b001d7daad8161d42de3bb43e1"
+    },
+    "external_inputs_sha256": {
+      "E:\\Codex\\Work\\cooperate-research-20261020\\build-r4\\builds\\board_b\\result.json": "9af8d9862e8712737c913be6b3b6192164a88d707f45be4173a93989ff1cfe0a",
+      "E:\\Codex\\Work\\cooperate-research-20261020\\build-r4\\builds\\board_b\\project\\projects\\board_b\\src\\user_source\\hdl_source\\frame_store.v": "7e68e647fb3f3e1c827975c5533593c84db8046553b77d4bc7f5093081775982"
+    },
+    "stimuli_sha256": {
+      "award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+      "light_tail.hex": "17aa3ee96bbb2b71e19be2bc3d388870d59ad6ea1d8808e100bcf9f936156dbd"
+    },
+    "derived_sha256": {
+      "board_b_frame_store_before.v": "7e68e647fb3f3e1c827975c5533593c84db8046553b77d4bc7f5093081775982"
+    },
+    "log_sha256": "a38bed883b350709b77db765a6bc638c306ea9e7d78b017e40a938e8e3eac4d2"
+  },
+  {
+    "test": "sdram_link_565",
+    "passed": true,
+    "inputs_unchanged": true,
+    "seconds": 337.22,
+    "inputs_sha256": {
+      "tests/tb_award_v5_sdram_link.v": "a0eb8fdf5d7ac53ff3a5a846da2e750280a603d68eecf127628e304993b856c5",
+      "projects/board_b/src/user_source/hdl_source/frame_store.v": "712f5cc92c8b8d6c6d9fc2a987040be867ced34c4864d201f3aabe7dc3449954",
+      "projects/board_b/src/user_source/hdl_source/SD/frame_read_write.v": "c05d2a32ffcddbf66515d964e010fd3df33bd043822012e186b17d9e9cf727c6",
+      "projects/board_b/src/user_source/hdl_source/SD/frame_fifo_read.v": "4d024cc949f4d021ab16fe89134f6c446ea6f2ccae957d952e7aab9a747eb52f",
+      "projects/board_b/src/user_source/hdl_source/SD/frame_fifo_write.v": "cae0788ca240f21f6898c2bc75270df44e919e7cdc97d79834b2c38e1567a2a2",
+      "projects/board_b/src/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+      "projects/board_b/src/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+      "common/photo_link.v": "b5220867ab286874518d2918f7e1640e2829535fbdfdbfc8f022529e3cca530a",
+      "common/photo_award_memory.v": "0421eb047bc5a1654f78c3670b75f6f2d0931fe3832d18a2c8c72d0c4d87ce91",
+      "common/photo_spotlight_player.v": "900301ab829bba3d02e47daced9d8c4ec58371c1a5cf7013b8d065974ed4d867",
+      "tools/test_spotlight_fix.py": "3383ebfcdbe710ea6242eb5154ce9368b781f1b001d7daad8161d42de3bb43e1"
+    },
+    "external_inputs_sha256": {},
+    "stimuli_sha256": {
+      "award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+      "light_tail.hex": "17aa3ee96bbb2b71e19be2bc3d388870d59ad6ea1d8808e100bcf9f936156dbd"
+    },
+    "derived_sha256": {},
+    "log_sha256": "8ab58c433eb41c7c53daf696e296f497331335d6a807c8eaeb690838d5b6ab46"
+  },
+  {
+    "test": "sdram_link_888",
+    "passed": true,
+    "inputs_unchanged": true,
+    "seconds": 308.61,
+    "inputs_sha256": {
+      "tests/tb_award_v5_sdram_link.v": "a0eb8fdf5d7ac53ff3a5a846da2e750280a603d68eecf127628e304993b856c5",
+      "projects/board_b/src/user_source/hdl_source/frame_store.v": "712f5cc92c8b8d6c6d9fc2a987040be867ced34c4864d201f3aabe7dc3449954",
+      "projects/board_b/src/user_source/hdl_source/SD/frame_read_write.v": "c05d2a32ffcddbf66515d964e010fd3df33bd043822012e186b17d9e9cf727c6",
+      "projects/board_b/src/user_source/hdl_source/SD/frame_fifo_read.v": "4d024cc949f4d021ab16fe89134f6c446ea6f2ccae957d952e7aab9a747eb52f",
+      "projects/board_b/src/user_source/hdl_source/SD/frame_fifo_write.v": "cae0788ca240f21f6898c2bc75270df44e919e7cdc97d79834b2c38e1567a2a2",
+      "projects/board_b/src/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+      "projects/board_b/src/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+      "common/photo_link.v": "b5220867ab286874518d2918f7e1640e2829535fbdfdbfc8f022529e3cca530a",
+      "common/photo_award_memory.v": "0421eb047bc5a1654f78c3670b75f6f2d0931fe3832d18a2c8c72d0c4d87ce91",
+      "common/photo_spotlight_player.v": "900301ab829bba3d02e47daced9d8c4ec58371c1a5cf7013b8d065974ed4d867",
+      "tools/test_spotlight_fix.py": "3383ebfcdbe710ea6242eb5154ce9368b781f1b001d7daad8161d42de3bb43e1"
+    },
+    "external_inputs_sha256": {},
+    "stimuli_sha256": {
+      "award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+      "light_tail.hex": "17aa3ee96bbb2b71e19be2bc3d388870d59ad6ea1d8808e100bcf9f936156dbd"
+    },
+    "derived_sha256": {},
+    "log_sha256": "9cc7e4c6d1583a5267afaa561577053967cde28869962480f0e5952483cf139c"
+  },
+  {
+    "test": "native_midframe",
+    "passed": true,
+    "inputs_unchanged": true,
+    "seconds": 173.06,
+    "inputs_sha256": {
+      "tests/tb_award_v5_startup.v": "8a8efd68bc26a27e9884922cc7a5c84f402efa0e2907f14111fde8d074e1bab0",
+      "common/photo_spotlight_player.v": "900301ab829bba3d02e47daced9d8c4ec58371c1a5cf7013b8d065974ed4d867",
+      "common/photo_award_memory.v": "0421eb047bc5a1654f78c3670b75f6f2d0931fe3832d18a2c8c72d0c4d87ce91",
+      "tools/test_spotlight_fix.py": "3383ebfcdbe710ea6242eb5154ce9368b781f1b001d7daad8161d42de3bb43e1"
+    },
+    "external_inputs_sha256": {
+      "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\sim_release\\eg4\\eg_logic_dram.v": "b620cebfe67f8829df3b737d1f75072b5f42bae7a2396b36616e85aa3cc9ea1e"
+    },
+    "stimuli_sha256": {
+      "award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+      "light_tail.hex": "17aa3ee96bbb2b71e19be2bc3d388870d59ad6ea1d8808e100bcf9f936156dbd"
+    },
+    "derived_sha256": {
+      "photo_spotlight_player_native.v": "c859d60b1ff3101870d81f550e9f333c4d997eb1ad9f1ef909bcfdca379e7684",
+      "vendor_logic_dram_functional.v": "654f60acb74bc3066cb79fbb42d51973cd0b5bbbd8c6f3bd0680db93879de966"
+    },
+    "log_sha256": "0840dc06211817d52732643196110fdb9663ebe60ec4e7b529f56a2feb1c62b3"
+  }
+]

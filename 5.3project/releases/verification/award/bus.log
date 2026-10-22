@@ -1,0 +1,4 @@
+E:\Codex\Downloads\qiansai\cooperate\3.1Project\tests\tb_award_v5_bus.v:62: warning: Port 26 (read_len) of module frame_read_write expects 21 bit(s), given 32.
+E:\Codex\Downloads\qiansai\cooperate\3.1Project\tests\tb_award_v5_bus.v:62:        : Pruning (signed) 11 high bits of the expression.
+PASS 5 spotlight scan frames, 409600 pixels, zero underflow during photo store; 1108 refreshes; worst row latency 2740 memory clocks; 57785 accepted photo words with 10 Mword/s offered load
+E:\Codex\Downloads\qiansai\cooperate\3.1Project\tests\tb_award_v5_bus.v:124: $finish called at 10343450480 (1ps)

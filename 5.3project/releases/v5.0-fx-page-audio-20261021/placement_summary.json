@@ -1,0 +1,16 @@
+[
+  {
+    "board": "a",
+    "build": 52,
+    "mslices": 4721,
+    "log": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\tmp\\v50-fx-build-52\\builds\\board_a\\project\\src\\board_a\\td_project\\td_20261021_154228.log",
+    "log_sha256": "c118dc7130bac498f05e53b421e2b456ea41e3d119b4a3048f8f4dad19be03fe"
+  },
+  {
+    "board": "b",
+    "build": 59,
+    "mslices": 3677,
+    "log": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\tmp\\v50-fx-build-59\\builds\\board_b\\project\\src\\board_b\\td_project\\td_20261021_161253.log",
+    "log_sha256": "a71d87977ff8abe139347e2b0e67a04963fbfd8207cb1acd30afb1e7bf44dcb9"
+  }
+]

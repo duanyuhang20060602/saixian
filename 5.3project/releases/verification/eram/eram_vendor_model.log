@@ -1,0 +1,2 @@
+PASS eRAM video delays: 1300000 pixels, 7/12/15-clock taps, blanking and synchronous/asynchronous resets
+E:\Codex\Downloads\qiansai\cooperate\3.1Project\tests\tb_eram_video_delay.v:28: $finish called at 13000046000 (1ps)

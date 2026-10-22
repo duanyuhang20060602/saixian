@@ -1,0 +1,2 @@
+PASS victory geometry retiming:      277773 exact RGB pixels, 9 scene states/16 boundary phases, blue/red, rank/podium, background/fallback and unchanged DE/VS latency
+tests/tb_v4_battle_equivalence.v:39: $finish called at 2952260000 (1ps)
