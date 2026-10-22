@@ -1,0 +1,2 @@
+PASS 9000 lossless queued stereo frames, 1215-sample dry delay, raw FIFO latency, ring wrap, full-queue backpressure, mid-flight clear and no stale history
+E:\Codex\Downloads\qiansai\5.4project\tests\tb_pitch_flow.v:52: $finish called at 113457500000 (1ps)

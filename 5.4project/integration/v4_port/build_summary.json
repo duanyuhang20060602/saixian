@@ -1,0 +1,52 @@
+{
+  "baseline": "7800f11e75ae5ad1c8ce759986c77648aeb68277",
+  "validation": "passed",
+  "hardware_validation": "pending",
+  "archive": "E:\\Codex\\Downloads\\qiansai\\cooperate\\3.1Project\\delivery\\v4_port_20261018\\V4_PORT_AB_20261018.zip",
+  "archive_sha256": "a857280a20ec5e20854240675b0a1338fde66ad955fe527dfc7002f252b0842b",
+  "boards": [
+    {
+      "board": "a",
+      "status": "passed",
+      "timing_ns": {
+        "SWNS": 0.102,
+        "STNS": 0.0,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      },
+      "resources": {
+        "lut": 14455,
+        "reg": 11930,
+        "bram": 58,
+        "bram32k": 14,
+        "dsp": 14
+      }
+    },
+    {
+      "board": "b",
+      "status": "passed",
+      "timing_ns": {
+        "SWNS": 0.169,
+        "STNS": 0.0,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      },
+      "resources": {
+        "lut": 12786,
+        "reg": 8914,
+        "bram": 60,
+        "bram32k": 12,
+        "dsp": 10
+      }
+    }
+  ],
+  "tests": [
+    "tb_v4_uart_equivalence",
+    "tb_v4_audio_rate",
+    "tb_v4_battle_equivalence",
+    "tb_boot_audio_sync",
+    "tb_audio_transport_repair",
+    "tb_v4_transition_48",
+    "tb_v4_award_equivalence"
+  ]
+}

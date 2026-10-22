@@ -1,0 +1,94 @@
+[
+  {
+    "test": "tb_page_uart",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_page_uart.v": "c7ccfcf229d0a5d0594f0195a0d17f68fa0f309076dff3a770946de2c554456f",
+      "common/photo_uart.v": "23063b9a21c870442df372f7802a31c6d4873463c95574b649bb975855848a03",
+      "tests/page_uart_reference.v": "64931bae335ace42db76dcf8b16edbed7ec77831a1d55fe409c8536571e69f9b"
+    }
+  },
+  {
+    "test": "tb_interval",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_interval.v": "768c90686fb81c06efa4c90e2d84b133fdc637f26944149be535714178e52d3e",
+      "common/photo_auto_advance.v": "f9a152567fa93f8a376879aba4678a45c3d1c7db07ec6b7cf38f21b71585dbb0",
+      "common/photo_unified_settings_controller.v": "f0eab33923e7cc80a081af70d141a283189aa5f3163a305532540906958e70b5"
+    }
+  },
+  {
+    "test": "tb_auto_compat",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_auto_compat.v": "d27bf894f35fb384e75e4acae3f4f33f7fa9cebe73e8c90880d760b31d17278c",
+      "common/photo_auto_advance.v": "f9a152567fa93f8a376879aba4678a45c3d1c7db07ec6b7cf38f21b71585dbb0",
+      "tests/page_auto_reference.v": "2dd0581433336b806fc8c6a2a9205e1dca3edd482b9ad9e86ef928f083fa0ace"
+    }
+  },
+  {
+    "test": "tb_interval_menu",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_interval_menu.v": "c620ea39d1b1a3df859ada9935e2f0418dd7426f683f7c45deac8ef975261ff6",
+      "common/photo_settings_overlay.v": "50d219f8f1fc855a05b25c8bd1f6c07e085b02b3ed55b2d754bb458fa2391739",
+      "tests/touchscreen_menu_font.v": "12fda21482b92b9b53b2db223dfd64334b6ec345a9345944381ffa64f7fd80bf",
+      "common/photo_menu_font.mif": "2bc93d7d132dcd858edf436d5c55e73896996cf89a2d224cbd8f78bf337d4c5d",
+      "tests/touchscreen_results/menu_font.hex": "ba163be9b68bed0aa7c67eaaf81c5806136eba6c20b8efa27cf19495bdb94858",
+      "src/board_a/user_source/hdl_source/photo_menu_text_lookup.hex": "754b5d6f555a8118b10d149314378f63d485fa63d13c0c3c8f6a2b9eb94864b9",
+      "src/board_a/user_source/hdl_source/photo_menu_text_lookup.mif": "6bd358ea5b82f7a65629595a1f4415d67d02936c2e7ecb704e6166dbfc6441b1"
+    }
+  },
+  {
+    "test": "tb_page_detector",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_page_detector.v": "671c68600859ec262a67fff7ce6d2b0d87ad5e673c4cab4555f49f89ae6a650a",
+      "common/photo_audio_link.v": "3de14a5e096643b8abab1c855f92aea68453907197192d34a0d17b2654c7e372",
+      "common/photo_audio_features.v": "6c1f2501228ff93909839f06cf38b58b63a4a5b91a8257b0ddf4f8e595778d08",
+      "common/audio_ui/saixian_audio_repair.v": "8a6b03dbc3a368179d1d318c86d286a86424a8c31066977eb05d8c2a3695af51",
+      "common/audio_ui/photo_audio_cue_samples.v": "1263f63cd02d1e52b45bbc303634c8dce14eae619b3184e2ab904b5d197d7ef7"
+    }
+  },
+  {
+    "test": "tb_no_resolution",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_no_resolution.v": "8d0e26b4ee603946733439a9a5333e1107d944cce37ac36a873bd1881998295d",
+      "common/audio_ui/saixian_osd_overlay.v": "6c889c7d6da3adc00b41d7a29dac35de4c32b60717e7e93b9f3b36a4667d2598"
+    }
+  },
+  {
+    "test": "tb_page_mix",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_page_mix.v": "096018ddda080c52af42f9960731558855fbd901ba2d2b1c39212ba177e3e759",
+      "common/photo_audio_link.v": "3de14a5e096643b8abab1c855f92aea68453907197192d34a0d17b2654c7e372",
+      "common/photo_audio_features.v": "6c1f2501228ff93909839f06cf38b58b63a4a5b91a8257b0ddf4f8e595778d08",
+      "common/audio_ui/saixian_audio_repair.v": "8a6b03dbc3a368179d1d318c86d286a86424a8c31066977eb05d8c2a3695af51",
+      "common/audio_ui/photo_audio_cue_samples.v": "1263f63cd02d1e52b45bbc303634c8dce14eae619b3184e2ab904b5d197d7ef7"
+    }
+  },
+  {
+    "test": "tb_page_audio",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_page_audio.v": "22dfb975468eb69e6145e0f12618883d50fb8f72548fe52eed75edcdf2b2e041",
+      "common/photo_audio_link.v": "3de14a5e096643b8abab1c855f92aea68453907197192d34a0d17b2654c7e372",
+      "common/photo_audio_features.v": "6c1f2501228ff93909839f06cf38b58b63a4a5b91a8257b0ddf4f8e595778d08",
+      "common/audio_ui/saixian_audio_repair.v": "8a6b03dbc3a368179d1d318c86d286a86424a8c31066977eb05d8c2a3695af51",
+      "common/audio_ui/photo_audio_cue_samples.v": "1263f63cd02d1e52b45bbc303634c8dce14eae619b3184e2ab904b5d197d7ef7"
+    }
+  },
+  {
+    "test": "tb_award_v5_audio",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_award_v5_audio.v": "f8b67b6cf8cd114d02a98147caedb7694599986586393764c3c34e36d64339a0",
+      "common/photo_audio_link.v": "3de14a5e096643b8abab1c855f92aea68453907197192d34a0d17b2654c7e372",
+      "common/photo_audio_features.v": "6c1f2501228ff93909839f06cf38b58b63a4a5b91a8257b0ddf4f8e595778d08",
+      "common/audio_ui/saixian_audio_repair.v": "8a6b03dbc3a368179d1d318c86d286a86424a8c31066977eb05d8c2a3695af51",
+      "common/audio_ui/photo_audio_cue_samples.v": "1263f63cd02d1e52b45bbc303634c8dce14eae619b3184e2ab904b5d197d7ef7"
+    }
+  }
+]

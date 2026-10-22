@@ -1,0 +1,42 @@
+{
+  "B_KEY2": {
+    "short_release": "Cycle F0 -> F1 -> F2 -> F3 -> F4 -> F0",
+    "hold_seconds": 1,
+    "long_press": "F0 original"
+  },
+  "modes": {
+    "F0": "Original, fixed 1183-sample effect delay plus 32-sample repair delay",
+    "F1": "Up 4 semitones",
+    "F2": "Down 5 semitones",
+    "F3": "Original + up 7 semitones",
+    "F4": "Original + up 12 semitones"
+  },
+  "B_display": "Last digit shows selected effect 0..4 when no diagnostic error is displayed.",
+  "volume": {
+    "control": "Existing A keys/touchscreen",
+    "default": 5,
+    "range": [
+      0,
+      8
+    ],
+    "gain_numerators_over_8": [
+      0,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ],
+    "zero": "Exact mute",
+    "clipping": "Signed 16-bit saturation",
+    "arithmetic": "Release gain factors and saturation, quantized to the existing 16-bit PCM SPI payload."
+  },
+  "wiring": "No inter-board wiring change. B KEY2 is the on-board button at B2. A retains HDMI/touchscreen.",
+  "preserved": "Existing A KEY2/KEY3, waveform/spectrum, 11 transitions, dwell ripples, trophy/spotlights, audio repair and typed page cues.",
+  "integration_scope": "Port the release pitch/harmony algorithm and gain table into the full dual-board project; retain its existing display UI rather than the experimental single-board UI.",
+  "audio_latency": "Fixed dry-mode DSP delay 1215 samples (25.3125 ms) plus the existing A/SPI queues and up to 256 new completed frames; this is not a measured end-to-end latency.",
+  "limitations": "Time-domain experimental pitch algorithm; low bass/complex music can retain grain. No new hardware measurements."
+}

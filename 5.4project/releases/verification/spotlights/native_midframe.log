@@ -1,0 +1,7 @@
+FRAME 0 init=0 ready=0 index=0 step=0 error=0 videoerr=0 nz=0 jobs=0
+FRAME 1 init=1 ready=1 index=0 step=0 error=0 videoerr=0 nz=329219 jobs=66
+FRAME 2 init=1 ready=1 index=0 step=1 error=0 videoerr=0 nz=658546 jobs=132
+FRAME 3 init=1 ready=1 index=0 step=2 error=0 videoerr=0 nz=988040 jobs=198
+FRAME 4 init=1 ready=1 index=1 step=0 error=0 videoerr=0 nz=1317646 jobs=264
+PASS continuous startup at 347/300: frames=5 jobs=265 max latency=1415 lit pixels=1317646 index=1
+E:\Codex\Downloads\qiansai\cooperate\3.1Project\tests\tb_award_v5_startup.v:25: $finish called at 82504278341 (1ps)
