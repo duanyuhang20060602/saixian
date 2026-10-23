@@ -1,0 +1,2 @@
+PASS dual SPI 1280 samples, dry delay, stereo, repair crossfade, deadlines
+tests/tb_audio_transport_repair.v:47: $finish called at 13111135524 (1ps)

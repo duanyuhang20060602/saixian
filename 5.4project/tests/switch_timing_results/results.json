@@ -1,0 +1,33 @@
+[
+  {
+    "test": "tb_switch_timing",
+    "passed": true,
+    "seconds": 14.77,
+    "inputs_sha256": {
+      "tests/tb_switch_timing.v": "4d6b6ddd3dc82eb2f343f266aa850ab199d77f23122d69a45dcc9b0888bac404",
+      "common/photo_switch_timing.v": "f7f05a978d079181da57519a489a9a25b107840a888ad3c944151d31a0b0528b"
+    }
+  },
+  {
+    "test": "tb_switch_timing_control",
+    "passed": true,
+    "seconds": 0.23,
+    "inputs_sha256": {
+      "tests/tb_switch_timing_control.v": "024ff8b5726bd59775cb61bfca0950493d28cbec0fa5e7c9638231e63c075247",
+      "common/photo_switch_timing.v": "f7f05a978d079181da57519a489a9a25b107840a888ad3c944151d31a0b0528b",
+      "common/photo_cached_control_a.v": "b2c01bbf5a67e3254e3a295608f24ecf25cf04f75e75f482ac7b3f0960fbc2c7",
+      "common/photo_control.v": "f263a0a351e914596095161953bc01617f063940b3210e20d4a54fb9ece845d6",
+      "common/photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df"
+    }
+  },
+  {
+    "test": "tb_thumbnail_control",
+    "passed": true,
+    "seconds": 0.17,
+    "inputs_sha256": {
+      "tests/tb_thumbnail_control.v": "87b28af4133ea1d8decab661b8278fd9d2a62c4bae18d1c56e06b11ac511c68b",
+      "common/photo_cached_control_a.v": "b2c01bbf5a67e3254e3a295608f24ecf25cf04f75e75f482ac7b3f0960fbc2c7",
+      "common/photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df"
+    }
+  }
+]

@@ -1,0 +1,21 @@
+缩略图提前准备版 / v5.3-thumbnail-early-20261022
+
+用户于 2026-10-22 上板反馈：效果很好。
+发布基于 bcfb810ad621cde50475b83e6c3bf046098cea1f，保留 5.3 完整工程。
+
+下载 A: PHOTO_BOARD_A_THUMBNAIL_EARLY.bit
+下载 B: PHOTO_BOARD_B_PREFETCH_OVERLAP.bit
+已使用上一版 B 预取优化固件的用户，只需更新 A。
+A 在转场期间提前生成下一张缩略图，完成后保留并按帧边界显示。
+B 保留发送期间预读下一张的重叠调度。保留 A 三槽、B 两槽及计时显示。
+A/B 的 BRAM 和 DSP 数量与此前测量版一致。像素格式和 SPI 时钟没有改变。
+
+验证：9 项相关仿真通过；A/B 完整布局布线 setup/hold 时序通过。
+A: LUT 16931, REG 11648, RAM9K 58, RAM32K 16, DSP 27; SWNS 0.207ns, HWNS 0.022ns。
+B: LUT 13107, REG 9317, RAM9K 47, RAM32K 9, DSP 10; SWNS 0.103ns, HWNS 0.024ns。
+硬件反馈为用户总体使用反馈，不代表所有单独场景都已逐项验收。
+
+源码在 5.3project/。本目录保存版本说明与输入指纹。
+GitHub Release 附件提供 bit、资源报告、时序报告、仿真日志和 SHA256SUMS.txt。
+需要在本地复核交付文件时，将附件放回本目录后核对 validation.json 和 SHA256SUMS.txt。
+原有冻结版本的固件与 package_manifest.json 保持历史记录含义。

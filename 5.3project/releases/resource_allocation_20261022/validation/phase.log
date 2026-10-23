@@ -1,0 +1,2 @@
+PASS raster26: all 14400 scaled pixels, exact 64x36 to 160x90 mapping, zero added RGB latency
+E:\Codex\Downloads\qiansai\5.1project\tests\tb_thumbnail_phase.v:34: $finish called at 1534820000 (1ps)

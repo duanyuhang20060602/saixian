@@ -1,0 +1,2 @@
+PASS UART exact TX/RX/CRC/timeout/snapshot at 75MHz, 50MHz and DIV10
+tests/tb_v4_uart_equivalence.v:63: $finish called at 5195030000 (1ps)

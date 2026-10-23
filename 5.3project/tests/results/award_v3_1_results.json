@@ -1,0 +1,37 @@
+[
+  {
+    "test": "tb_award_notice_v3",
+    "passed": true,
+    "seconds": 1.08
+  },
+  {
+    "test": "tb_boot_v3_1",
+    "passed": true,
+    "seconds": 55.77
+  },
+  {
+    "test": "tb_award_entry_v3_1",
+    "passed": true,
+    "seconds": 0.56
+  },
+  {
+    "test": "tb_award_headers",
+    "passed": true,
+    "seconds": 0.31
+  },
+  {
+    "test": "tb_award_mode_v3",
+    "passed": true,
+    "seconds": 36.28
+  },
+  {
+    "test": "tb_award_catalog_v3",
+    "passed": true,
+    "seconds": 0.5
+  },
+  {
+    "test": "tb_award_mode_v3_1",
+    "passed": true,
+    "seconds": 153.42
+  }
+]

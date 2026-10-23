@@ -1,0 +1,2 @@
+PASS real asynchronous A/B SPI: AV2 metadata, one injected CRC error, 2 good packets, 3 frame boundaries, no future-audio publication, reset
+E:\Codex\Downloads\qiansai\5.1project\tests\tb_resource_av_link.v:46: $finish called at 49502621674 (1ps)

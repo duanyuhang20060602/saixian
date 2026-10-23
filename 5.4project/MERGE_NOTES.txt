@@ -1,0 +1,46 @@
+5.4 audio + early thumbnail + overlapping prefetch integration
+
+Source parents
+  Audio: b56f0afa5d40f9e9d69806118a93b16255d364b9
+  Thumbnail/prefetch: 7130c380f86acf23708a57273c79f5dbf849e2cb
+  Integrated project: 5.4project. The 5.3project directory is the historical
+  incoming branch snapshot, not the combined project.
+
+Combined behavior
+  Retains B's five pitch/harmony modes, KEY2 controls, PCM producer queue,
+  boosted saturated volume, compact audio history and DLT sector guard.
+  Enables B early photo prefetch while its protected sender slot is read.
+  Enables A hidden thumbnail preparation during transitions, including
+  source-slot protection, cancellation acknowledgement and frame publication.
+  Retains original 48-step transitions, A three photo slots and B two slots.
+  Includes the A/B millisecond timing display from the thumbnail branch.
+  Once a successful photo timing exists, timing pages take normal display
+  priority; B KEY2 pitch controls remain active. Error diagnostics retain
+  priority. See SWITCH_TIMING.txt for measurement boundaries.
+
+Conflict resolution
+  B photo_sd_cache instance retains 5.4 audio_stream_reset and enables
+  EARLY_PREFETCH. B TD sources include both pitch modules AND timing RTL.
+  No wiring, image pixel format or board-link protocol changes are required.
+
+Firmware
+  Use the new matched PHOTO_BOARD_A_5_4_MERGED.bit and
+  PHOTO_BOARD_B_5_4_MERGED.bit only after fresh builds pass. Historical .bit
+  files from either parent are not a compiled version of this integration.
+  integration_validation.json records current regression and build evidence.
+  package_manifest.audio_baseline.json preserves the original 5.4 manifest.
+  package_manifest.json describes the merged package and canonical firmware.
+
+Rebuild
+  powershell -File build_saixian.ps1 -Board Both -WorkDir <fresh-directory>
+  python tools/verify_saved_project.py
+  Set IVERILOG to the local iverilog.exe path when running imported tests.
+  test_audio_pitch_b.py now accepts a local output path and IVERILOG.
+
+Validation accounting: 17 fresh simulation cases and 4 unchanged audio
+cases reverified against original input and saved-log SHA256 values.
+Long redundant audio runs were stopped and are not claimed as fresh passes.
+
+Hardware validation remains pending. Check music continuity, all pitch modes,
+rapid navigation, NEXT-preview identity, menu entry/exit and award entry/exit
+with the matched A/B pair on physical boards.

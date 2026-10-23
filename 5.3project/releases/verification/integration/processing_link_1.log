@@ -1,0 +1,2 @@
+PASS real processing-to-link mode=1: 691200 identical processed words, native eRAM queue vs frozen register queue, wraparound, source gaps, receiver stalls and plane restart
+E:\Codex\Downloads\qiansai\cooperate\3.1Project\tests\tb_research_processing_link.v:62: $finish called at 42863400000 (1ps)

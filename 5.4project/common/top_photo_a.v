@@ -52,6 +52,7 @@ wire thumbnail_request,thumbnail_done,thumbnail_cache_valid,thumbnail_visible,th
 wire [1:0] thumbnail_slot,thumbnail_cache_slot;wire [2:0] thumbnail_id;
 wire [11:0] thumbnail_address;wire [15:0] thumbnail_data;
 wire thumbnail_blank;
+wire thumbnail_read_busy;
 wire auto_next,award_available,award_scan_complete,award_loading;wire [2:0] award_notice;wire [3:0] last_transfer_error;
 wire settings_mode;
 wire boot_active;
@@ -206,7 +207,17 @@ always @(posedge pixel_clk or posedge rst_pixel)
   photo_award_event<=carousel_mode && !settings_mode && !result_busy && key4_short;
  end
 wire settings_updating;
-photo_cached_control_a #(.CHECK_FRAME_CRC(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1)) ctrl(.receive_award(receive_award),.receive_fluid(receive_fluid),.settings_mode(photo_focus),.settings_state(image_settings),.settings_updating(settings_updating),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
+wire timing_begin,timing_present,timing_commit,timing_cancel,timing_running,timing_valid;
+wire [19:0] timing_wait_ms,timing_effect_ms,timing_total_ms;
+wire [5:0] timing_seg_sel,base_seg_sel;wire [7:0] timing_seg_data,base_seg_data;
+photo_switch_timing #(.CLK_HZ(75000000),.PHASES(2)) timing_probe(.clk(pixel_clk),.rst(rst_pixel),
+ .start(timing_begin),.mark1(timing_present),.mark2(1'b0),.finish(timing_commit),.cancel(timing_cancel),
+ .running(timing_running),.valid(timing_valid),.first_ms(timing_wait_ms),.second_ms(timing_effect_ms),.third_ms(),.total_ms(timing_total_ms));
+photo_switch_timing_display #(.CLK_HZ(75000000),.PAGES(3)) timing_display(.clk(pixel_clk),.rst(rst_pixel),.running(timing_running),
+ .first_ms(timing_wait_ms),.second_ms(timing_effect_ms),.third_ms(20'd0),.total_ms(timing_total_ms),.seg_sel(timing_seg_sel),.seg_data(timing_seg_data));
+photo_cached_control_a #(.CHECK_FRAME_CRC(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.EARLY_THUMBNAIL(1)) ctrl(.receive_award(receive_award),.receive_fluid(receive_fluid),.settings_mode(photo_focus),.settings_state(image_settings),.settings_updating(settings_updating),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
+ .thumbnail_read_busy(thumbnail_read_busy),.thumbnail_read_slot(thumbnail_slot),
+ .timing_begin(timing_begin),.timing_present(timing_present),.timing_commit(timing_commit),.timing_cancel(timing_cancel),
  .award_toggle(photo_award_event),.award_available(award_available),.award_scan_complete(award_scan_complete),.award_loading(award_loading),.award_notice(award_notice),.last_transfer_error(last_transfer_error),
  .first_transfer_origin(first_transfer_origin),.first_transfer_error(first_transfer_error),
  .previous(1'b0),.next(photo_next_event),
@@ -406,8 +417,9 @@ photo_boot_screen #(.VIDEO_DELAY(26),.MIN_FRAMES(90),.STAGED_LOADING(1)) boot_sc
  .frame_ready(display_valid && started),.active(boot_active),.rgb(boot_rgb));
 wire [23:0] pointer_rgb;
 wire [23:0] thumbnail_rgb;
-photo_thumbnail_overlay #(.Y(528),.DELAY(1)) preview(.clk(pixel_clk),.rst(rst_image_pixel),.frame_tick(blank_start),
- .enable(display_valid && carousel_mode && !boot_active && !settings_mode && !settings_updating && !result_busy && !award_active && !award_loading && !transition_active),
+photo_thumbnail_overlay #(.Y(528),.DELAY(1),.SEPARATE_DISPLAY(1)) preview(.clk(pixel_clk),.rst(rst_image_pixel),.frame_tick(blank_start),
+ .enable(display_valid && carousel_mode && !boot_active && !settings_mode && !result_busy && !award_active && !award_loading),
+ .display_enable(!settings_updating && !transition_active),.read_busy(thumbnail_read_busy),
  .cache_valid(thumbnail_cache_valid),.cache_slot(thumbnail_cache_slot),.identity({1'b0,thumbnail_id,thumbnail_cache_slot}),
  .de(raster_de26),.x(raster_x26),.y(raster_y26),.request(thumbnail_request),.slot(thumbnail_slot),.cancel(thumbnail_cancel),
  .done(thumbnail_done),.data(thumbnail_data),.address(thumbnail_address),.visible(thumbnail_visible),
@@ -454,6 +466,10 @@ always @(posedge clk or posedge rst_ref)
   status_sync<=status_meta;end
 photo_status #(.CLK_HZ(50000000)) status(.clk(clk),.rst(rst_ref),.status(menu_sync ? (hpd_sync ? status_sync[3:0]:4'd0):audio_diag_sync[3:0]),
  .error(status_sync[7:4]),.state(status_sync[11:8]),.image(status_sync[14:12]),.count(status_sync[17:15]),
- .diagnostic_page(menu_sync ? 3'd1:award_diag_sync[15:12]!=0 ? 3'd4:3'd5),.diagnostic_crc(menu_sync ? menu_digits_sync:award_diag_sync[15:12]!=0 ? award_diag_sync:audio_diag_sync[19:4]),.seg_sel(seg_sel),.seg_data(seg_data));
+ .diagnostic_page(menu_sync ? 3'd1:award_diag_sync[15:12]!=0 ? 3'd4:3'd5),.diagnostic_crc(menu_sync ? menu_digits_sync:award_diag_sync[15:12]!=0 ? award_diag_sync:audio_diag_sync[19:4]),.seg_sel(base_seg_sel),.seg_data(base_seg_data));
+wire show_timing=timing_valid && !settings_mode && !award_active && !award_loading &&
+ first_transfer_origin==0 && startup_first_error==0 && error==0;
+assign seg_sel=show_timing ? timing_seg_sel:base_seg_sel;
+assign seg_data=show_timing ? timing_seg_data:base_seg_data;
 
 endmodule

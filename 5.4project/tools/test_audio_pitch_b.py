@@ -10,8 +10,8 @@ JOBS=('model','native_model','volume','keys','transport')
 def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def main():
  ap=argparse.ArgumentParser();ap.add_argument('--out',type=Path,required=True);ap.add_argument('--only',nargs='+',choices=JOBS);ap.add_argument('--jobs',type=int,default=3);a=ap.parse_args()
- out=a.out.resolve();assert out.drive.upper()=='E:';out.mkdir(parents=True,exist_ok=True)
- env=os.environ.copy();temp=Path('E:/Codex/Temp/audio-pitch-tests');temp.mkdir(parents=True,exist_ok=True);env.update(TEMP=str(temp),TMP=str(temp),TMPDIR=str(temp),PYTHONDONTWRITEBYTECODE='1')
+ out=a.out.resolve();out.mkdir(parents=True,exist_ok=True)
+ env=os.environ.copy();temp=Path(os.environ.get('SAIXIAN_TEMP_ROOT',str(out/'temp')));temp.mkdir(parents=True,exist_ok=True);env.update(TEMP=str(temp),TMP=str(temp),TMPDIR=str(temp),PYTHONDONTWRITEBYTECODE='1')
  def run(name):
   start=time.monotonic();folder=out/name;folder.mkdir(exist_ok=True);defines=['-DVICTORY_SIM'];flags=[];measurements={}
   if name in ('model','native_model'):
@@ -35,10 +35,10 @@ def main():
   else:
    bench=ROOT/f'tests/tb_pitch_{name}.v';top='tb';files=[bench,*[ROOT/p for p in COMMON]];evidence=[Path(__file__)];extra=[]
   hashes={p.relative_to(ROOT).as_posix() if p.is_relative_to(ROOT) else str(p):sha(p) for p in [*files,*evidence]}
-  binary=folder/'simulation.vvp';c=subprocess.run(['C:/iverilog/bin/iverilog.exe','-g2012',*defines,*flags,'-s',top,'-o',str(binary),*map(str,files)],cwd=ROOT,env=env,capture_output=True,text=True)
+  binary=folder/'simulation.vvp';c=subprocess.run([os.environ.get('IVERILOG','C:/iverilog/bin/iverilog.exe'),'-g2012',*defines,*flags,'-s',top,'-o',str(binary),*map(str,files)],cwd=ROOT,env=env,capture_output=True,text=True)
   log=c.stdout+c.stderr
   if c.returncode==0:
-   c=subprocess.run(['C:/iverilog/bin/vvp.exe',str(binary),*extra],cwd=ROOT,env=env,capture_output=True,text=True,timeout=900);log+=c.stdout+c.stderr
+   c=subprocess.run([str(Path(os.environ.get('IVERILOG','C:/iverilog/bin/iverilog.exe')).with_name('vvp.exe')),str(binary),*extra],cwd=ROOT,env=env,capture_output=True,text=True,timeout=900);log+=c.stdout+c.stderr
   passed=c.returncode==0 and 'PASS ' in log and not re.search(r'(?im)^(ERROR:|FATAL:)',log)
   if passed and name in ('model','native_model'):
    refpath=ROOT/'tests/reference/audio_pitch/quality_model.py';spec=importlib.util.spec_from_file_location('pitch_reference_'+name,refpath);ref=importlib.util.module_from_spec(spec);spec.loader.exec_module(ref);ref.ROOT=folder

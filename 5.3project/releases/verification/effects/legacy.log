@@ -1,0 +1,4 @@
+RGB888 concurrent prefetch: misses=0 pops=691200 producer_words=12071
+PASS RGB888 display has zero underflow while prefetch makes progress
+PASS 1079 refresh windows with zero commands during refresh
+E:\Codex\Downloads\qiansai\cooperate\3.1Project\tests\fx11_water\tb_legacy.v:99: $finish called at 16501518368 (1ps)

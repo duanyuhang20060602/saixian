@@ -36,7 +36,7 @@ def main():
     destination=work/'release';destination.mkdir(parents=True,exist_ok=False)
     files={}
     for record in records:
-        board=record['board'];name='PHOTO_BOARD_'+board.upper()+'_5_4.bit'
+        board=record['board'];name='PHOTO_BOARD_'+board.upper()+'_5_4_MERGED.bit'
         shutil.copy2(record['bit']['path'],destination/name);files[name]=digest(destination/name)
         for kind in ('timing','area'):shutil.copy2(record[kind]['path'],destination/Path(record[kind]['path']).name)
     (destination/'validation.json').write_text(json.dumps({'hardware_validation':'pending','boards':records,'files_sha256':files},indent=2)+'\n',encoding='utf-8')

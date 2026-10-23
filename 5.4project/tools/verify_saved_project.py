@@ -26,17 +26,20 @@ def verify(strict=True):
         saved=candidates[0]
         if strict:
             assert digest(saved)==record['release_files'][saved.relative_to(ROOT).as_posix()]
-            if record.get('firmware_layout')!='canonical_only':assert digest(td/(name+'.bit'))==digest(saved)
+            if record.get('firmware_layout') not in ('canonical_only','canonical_with_history'):assert digest(td/(name+'.bit'))==digest(saved)
         boards[board]={'project':str(td/(name+'.al')),'source_count':len(paths),'bit_sha256':digest(saved)}
     origin=json.loads((ROOT/'releases/origin_validation.json').read_text(encoding="utf-8-sig"))
     if strict:
         assert origin['test_count']==65 and all(r['passed'] for rs in origin['tests'].values() for r in rs)
         assert digest(ROOT/'examples/TF卡素材/AWARD720.DLT')==digest(ROOT/'award_media/AWARD720.DLT')==origin['files_sha256']['AWARD720.DLT']
     if strict:
-        if record.get('firmware_layout')=='canonical_only':
+        if record.get('firmware_layout') in ('canonical_only','canonical_with_history'):
             allowed={ROOT/p for p in record['release_files']}
             actual={p for p in ROOT.rglob('*') if p.is_file() and p.suffix.lower()=='.bit'}
-            assert actual==allowed,'Only the two current release bitstreams may be included'
+            historical={ROOT/p for p in record.get('historical_firmware',{})}
+            assert actual==allowed|historical,'Unexpected current or historical bitstreams'
+            for relative,expected in record.get('historical_firmware',{}).items():
+                assert digest(ROOT/relative)==expected,'Historical firmware changed: '+relative
             version=record['version'].replace('.','_')
             assert {p.relative_to(ROOT).as_posix() for p in allowed}=={
                 f'releases/PHOTO_BOARD_A_{version}.bit',f'releases/PHOTO_BOARD_B_{version}.bit'}

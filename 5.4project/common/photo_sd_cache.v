@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 // Six-entry directory, two external SDRAM slots. A locked transmit slot is never a
 // load destination. Neighbour prefetch runs while the link consumes its slot.
-module photo_sd_cache #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=1048575,FRAME_WORDS=460800,FORWARD_ONLY=0,DISPLAY_PIN=0)(
+module photo_sd_cache #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=1048575,FRAME_WORDS=460800,FORWARD_ONLY=0,DISPLAY_PIN=0,EARLY_PREFETCH=0)(
  input display_valid,input [2:0] display_image,input prefetch_pause,
  input audio_packet_active,input audio_request_valid,input [7:0] requested_audio_epoch,input [2:0] requested_audio_track,
  output reg [7:0] active_audio_epoch,output reg [2:0] active_audio_track,audio_count,
@@ -219,6 +219,12 @@ always @(posedge clk or posedge rst)begin
    if(demand && hit && !ready)begin
     ready<=1;ready_slot<=hit_slot;ready_gain<=cache_gain[hit_slot];demand<=0;
     ready_source_width<=directory_width[wanted];ready_source_height<=directory_height[wanted];
+    // A owns the displayed copy. Once the complete sender slot is locked,
+    // its predecessor may be replaced while the link reads the locked slot.
+    // Advance the raw prefetch window now instead of waiting for link COMMIT.
+    // Settings pin/pause and award transfers retain the original policy.
+    if(EARLY_PREFETCH && !pin_active && !prefetch_pause && wanted<image_count)
+     playback_image<=wanted;
    end
    else if(!loading && !scanning && bmp_ready && (!DISPLAY_PIN || current_image==(pin_active ? display_image:playback_image)))begin
    if(demand && !hit && victim_ok)begin

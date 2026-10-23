@@ -1,0 +1,2 @@
+PASS fixed RGB565: 120000 cycle comparisons to frozen 5.1, packing gaps/clear, HDMI pair order, blanking, ACK, underflow recovery and resets
+E:\Codex\Downloads\qiansai\5.2project\tests\tb_rgb565_equivalence.v:32: $finish called at 1200040000 (1ps)

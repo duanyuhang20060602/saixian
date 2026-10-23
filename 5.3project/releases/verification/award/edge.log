@@ -1,0 +1,2 @@
+PASS native edge/fade multipliers: all 147456 operands and 1237500 complete raster pipeline clocks match shift-add reference
+E:\Codex\Downloads\qiansai\cooperate\3.1Project\tests\tb_award_v5_edge.v:37: $finish called at 12375086000 (1ps)

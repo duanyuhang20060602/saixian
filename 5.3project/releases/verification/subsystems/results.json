@@ -1,0 +1,74 @@
+[
+  {
+    "test": "tb_v4_uart_equivalence",
+    "passed": true,
+    "seconds": 6.8,
+    "inputs_unchanged": true,
+    "inputs_sha256": {
+      "common/photo_uart.v": "9bfea0d435766f36db5136c25c351569105102b163674cbc02f835704dae9318",
+      "tests/reference/v4_port/photo_uart.v": "8ab6334a3af1f5015c4dccad344f05c6a5f8f7d6d8da7727aed64f6ae2f7badd",
+      "tests/tb_v4_uart_equivalence.v": "ef8f7813c0ad8be3b52d5d9a223d9300ec7714d185f3c6ab2f9c7d4bd85e2013"
+    },
+    "log_sha256": "2ba236a25ef6e3b7a55c06b9fe77b4124ff3aee2dcfd340485e0417af4aed54d"
+  },
+  {
+    "test": "tb_v4_audio_rate",
+    "passed": true,
+    "seconds": 3.83,
+    "inputs_unchanged": true,
+    "inputs_sha256": {
+      "common/photo_audio_link.v": "9e47793489b118f7b15fb0051af8b916422d38b4700446e16e289301ab7af563",
+      "tests/tb_v4_audio_rate.v": "f080ab87c10d3a59093966dabb592779a82f356f52776a71261ab3cb16dd4ee9"
+    },
+    "log_sha256": "5afee3da9e89834b5bd08df93c17df0a05d0c2b6812f9ad4fadaab8cfc9b3630"
+  },
+  {
+    "test": "tb_boot_audio_sync",
+    "passed": true,
+    "seconds": 40.47,
+    "inputs_unchanged": true,
+    "inputs_sha256": {
+      "common/audio_ui/photo_audio_cue_samples.v": "1b1bf98878e1d27d6687c76a35913715d119b307f5a2453b8926c596fec95a60",
+      "common/audio_ui/saixian_audio_repair.v": "8a6b03dbc3a368179d1d318c86d286a86424a8c31066977eb05d8c2a3695af51",
+      "common/photo_audio_features.v": "2e93491a129a74efbf4645bf84435c3edf854a5c02557452ee69d3fcbfefa4bf",
+      "common/photo_audio_link.v": "9e47793489b118f7b15fb0051af8b916422d38b4700446e16e289301ab7af563",
+      "common/photo_boot_screen.v": "394fee66adf031a9dc2bc65233181765058e631e7456171500546fdeafa10d14",
+      "tests/tb_boot_audio_sync.v": "1bcac0451d9b86d1f16d95d34a92180e782a6c07f107633ba17ab615f4217c3d"
+    },
+    "log_sha256": "606a482392c54a467c055838e4eea91d7906c80e1824a1bfc062541d3fe53147"
+  },
+  {
+    "test": "tb_audio_transport_repair",
+    "passed": true,
+    "seconds": 14.05,
+    "inputs_unchanged": true,
+    "inputs_sha256": {
+      "common/audio_ui/photo_audio_cue_samples.v": "1b1bf98878e1d27d6687c76a35913715d119b307f5a2453b8926c596fec95a60",
+      "common/audio_ui/saixian_audio_repair.v": "8a6b03dbc3a368179d1d318c86d286a86424a8c31066977eb05d8c2a3695af51",
+      "common/photo_audio_features.v": "2e93491a129a74efbf4645bf84435c3edf854a5c02557452ee69d3fcbfefa4bf",
+      "common/photo_audio_link.v": "9e47793489b118f7b15fb0051af8b916422d38b4700446e16e289301ab7af563",
+      "tests/tb_audio_transport_repair.v": "434ec0c3cebe69cce255cbcfe7f6d219a3aa1b1718740ff14a2bd02da08062ee"
+    },
+    "log_sha256": "f9e2a9e46276078ddc11071f3254ff329d8a4a3c331ad729270846017bd85eee"
+  },
+  {
+    "test": "tb_v4_battle_equivalence",
+    "passed": true,
+    "seconds": 50.31,
+    "inputs_unchanged": true,
+    "inputs_sha256": {
+      "common/saixian_battle_result_fx_pipelined.v": "96c139405d6dad50e083af9107796f0979f19f5e20eab0826781ae638f71f711",
+      "projects/board_a/src/user_source/hdl_source/saixian_red_victory_atlas.hex": "b48bc7f529f641d866dc2aacecc71f73a84b89c4e467e0e2d81791312454254d",
+      "projects/board_a/src/user_source/hdl_source/saixian_sprint_atlas.hex": "bbbe5b68d823c1f576c9833ab1076a24c1a06d594adc9e60e93a041d0a053ce5",
+      "projects/board_a/src/user_source/hdl_source/saixian_sprint_atlas_dict.hex": "64c5222100f363712b59bff77a320ad6090e86caaf2c003faec655a98687d786",
+      "projects/board_a/src/user_source/hdl_source/saixian_sprint_atlas_index_hi.hex": "b151e46caf61a2a57e118fd84cae5be147c3777bc892b0ebe5e6fe436e3c9d22",
+      "projects/board_a/src/user_source/hdl_source/saixian_sprint_atlas_index_lo.hex": "35bc52a5815d83337bd981de00b0346469715c031c16e2c0d1fd85ffd69f8354",
+      "projects/board_a/src/user_source/hdl_source/saixian_victory_atlas_dict.hex": "df85e46376a2fe6147f4ff36c207166ba46ed44d553427235baeaf2524ba6363",
+      "projects/board_a/src/user_source/hdl_source/saixian_victory_atlas_index_hi.hex": "f0d5d45a7f8b8330d6a884e06c8f44e15d7dd7b6fc1be0a47316b59327a776f8",
+      "projects/board_a/src/user_source/hdl_source/saixian_victory_atlas_index_lo.hex": "2e762fac282ca53b374fce893741feca3197a23d227fd6a3c677d81f3e7738d0",
+      "tests/reference/v4_port/saixian_battle_result_fx_pipelined.v": "4dd2b56458160b101583fac697fce23060e6b31fd392fe98cefed4ff162b3bfe",
+      "tests/tb_v4_battle_equivalence.v": "7f89ff3ad156cb07003b9b25590c6b1a7b4e42d50422dd2da4329c6cf2bd3102"
+    },
+    "log_sha256": "a249462f005d2712c44e65913b11da7842ec6a4a912726e85201b020db014d96"
+  }
+]
