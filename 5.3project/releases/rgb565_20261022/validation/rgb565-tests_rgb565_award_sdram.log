@@ -1,0 +1,2 @@
+PASS B production SDRAM/FIFO to A: 691200 exact award words, all 230400 light words, link CRC/backpressure and sparse decode; COLOR=0
+E:\Codex\Downloads\qiansai\5.2project\tests\tb_award_v5_sdram_link.v:71: $finish called at 99939440000 (1ps)

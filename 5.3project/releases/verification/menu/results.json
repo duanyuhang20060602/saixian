@@ -1,0 +1,25 @@
+[
+  {
+    "test": "menu_palette",
+    "passed": true,
+    "inputs_unchanged": true,
+    "seconds": 68.3,
+    "inputs_sha256": {
+      "tests/tb_ip_menu.v": "c8e8ea5659f516c700d80ed332a2bfb91faccf85247035b5e3fbf26bf013ba72",
+      "tests/reference/award_v5/photo_settings_overlay.v": "fce8b437b18083409c1cabf7b1e5209d3e58b932f72129c14ddad5c5d93d2046",
+      "common/photo_settings_overlay.v": "b74fc1a27351c7947aa92be6c65af6d3ea6d743bd83da68e9d6cd56376c87cc8",
+      "common/photo_menu_font.v": "1016a06667d94531745b5d80b0eecb17285f41d8bd17900ed75ec6c190f228db",
+      "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+      "common/photo_menu_font.mif": "95c8e66f6f9448db0d388f8d0b21621ff1703967a8915ab348ddf9d7f5ca8dbf",
+      "tools/test_menu_palette.py": "1e70ca47ff1356367bd2c34e8444e44eeaee014f3fed285ec723aaf146551fc7"
+    },
+    "external_inputs_sha256": {
+      "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95"
+    },
+    "stimuli_sha256": {
+      "font.hex": "eacbfc515e692b1b6c33e901845d24fe433dde75a5ed58b8d07f0ceac399728a",
+      "ip_init_map.vh": "1b76ae07619991dceca6a6b5fccc4313770ca7aff268118c2dd9bc21fca6363b"
+    },
+    "log_sha256": "1e871776309cfec020a948ec00f95ef2480702f895f9ede79a01585a20ed23ea"
+  }
+]

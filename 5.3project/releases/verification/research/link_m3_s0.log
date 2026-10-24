@@ -1,0 +1,4 @@
+MEASURE mode=3 stress=0 prefetch=1 words=691200 cycles=2073621 crc=bcf852f3
+MEASURE mode=3 stress=0 prefetch=0 words=691200 cycles=2764820 crc=bcf852f3
+PASS elastic link mode=3 stress=0 baseline=2764820 optimized=2073621 cycles; exact word count, independent CRC, SOF/EOF, plane isolation, source gaps and receive backpressure
+E:\Codex\Downloads\qiansai\cooperate\3.1Project\tests\tb_research_link.v:62: $finish called at 27648380000 (1ps)

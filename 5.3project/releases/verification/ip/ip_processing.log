@@ -1,0 +1,2 @@
+PASS B eRAM pixel queue: RGB565/effect plane/full RGB888, 700800 exact output words, backpressure, settings, abort/restart; 2600688 clocks
+E:\Codex\Downloads\qiansai\cooperate\3.1Project\tests\tb_ip_processing.v:49: $finish called at 26006880000 (1ps)

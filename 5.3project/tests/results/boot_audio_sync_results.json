@@ -1,0 +1,13 @@
+{
+  "test": "tb_boot_audio_sync",
+  "passed": true,
+  "seconds": 93.64,
+  "source_sha256": {
+    "tests/tb_boot_audio_sync.v": "1bcac0451d9b86d1f16d95d34a92180e782a6c07f107633ba17ab615f4217c3d",
+    "common/photo_boot_screen.v": "4372472dae27f79635f637eb3789c289634eeee93f536ccb6d3ca39af42eb026",
+    "common/photo_audio_link.v": "53d5c7e9e9bf9264f682f155022c9c87f8de0eaf652429b82a410db9b28d8801",
+    "common/photo_audio_features.v": "b846eda9d761e64805ebb7659cc98ca04190d2fcf8e35987b0a6bc9319602cdb",
+    "common/audio_ui/saixian_audio_repair.v": "8a6b03dbc3a368179d1d318c86d286a86424a8c31066977eb05d8c2a3695af51",
+    "common/audio_ui/photo_audio_cue_samples.v": "1b1bf98878e1d27d6687c76a35913715d119b307f5a2453b8926c596fec95a60"
+  }
+}

@@ -1,0 +1,383 @@
+[
+  {
+    "test": "reader",
+    "passed": true,
+    "inputs_unchanged": true,
+    "seconds": 284.92,
+    "inputs_sha256": {
+      "tests/tb_award_v5_reader.v": "ee60f18549b455c3dd43bcc4f284e01135727017556fef5d7834141906f0d9e2",
+      "common/photo_sd/photo_dlt_reader.v": "9aaed13528c98791bd4843e2a776c80280c1395dd17b1458600b4fcca175d6cb",
+      "common/photo_sd/photo_dlt_header.v": "de847966c33258984f35ee4422220c828e92ad0d34283150e5204ba267762ce3",
+      "common/photo_color_format.v": "f4dbd9d53bdea9303cdcf7f9f9a3c6af2614e1b001a23695f0347e1adaa31be0",
+      "tools/test_award_v5.py": "5eac5836b031bcd93108b59b5c4a7835a620c734992a7f84f7936ba7116639dc",
+      "tools/prepare_award_v5.py": "8a033aa3ece92cb9d524ae6fb1e103dfad947cc30507cfae27a19540a824ccc3",
+      "award_media/AWARD720.DLT": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5"
+    },
+    "external_inputs_sha256": {
+      "E:\\Codex\\Downloads\\qiansai\\3.0Project\\examples\\TF\u5361\u7d20\u6750\\AWARD720.DLT": "6ba3b06f56978615f436e680fd459e7113bceba6317dbe9fe1ab42d936358c27"
+    },
+    "stimuli_sha256": {
+      "award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+      "award_file.hex": "055731d3803478b8955b4ab76cc11b447aad47ac67d908f47a0a06b40fb41077",
+      "light_golden.hex": "41fabdd702bd9435ebaad67b28c18365cfe29442e4df925fe5a6e9e50296bacc",
+      "light_raw.hex": "f9306eb3216a0986b05e5151c1a2a16a9a2abc51058e336295ff2ec06f0a77d5",
+      "light_tail.hex": "17aa3ee96bbb2b71e19be2bc3d388870d59ad6ea1d8808e100bcf9f936156dbd",
+      "water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+      "water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+      "water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+      "water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+      "water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+      "water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+      "water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+      "water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+      "water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+      "water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3"
+    },
+    "log_sha256": "436b0786f81d5cea911535fd1deb4cb231f765bde593e8bca773a2edcb899d07"
+  },
+  {
+    "test": "rows",
+    "passed": true,
+    "inputs_unchanged": true,
+    "seconds": 187.94,
+    "inputs_sha256": {
+      "tests/tb_award_v5_rows.v": "451d55e959b10a873b90b4fea704163ce9814d9c55e597962b0eb495b2807fe7",
+      "common/photo_spotlight_player.v": "900301ab829bba3d02e47daced9d8c4ec58371c1a5cf7013b8d065974ed4d867",
+      "common/photo_award_memory.v": "0421eb047bc5a1654f78c3670b75f6f2d0931fe3832d18a2c8c72d0c4d87ce91",
+      "tools/test_award_v5.py": "5eac5836b031bcd93108b59b5c4a7835a620c734992a7f84f7936ba7116639dc",
+      "tools/prepare_award_v5.py": "8a033aa3ece92cb9d524ae6fb1e103dfad947cc30507cfae27a19540a824ccc3",
+      "award_media/AWARD720.DLT": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5"
+    },
+    "external_inputs_sha256": {
+      "E:\\Codex\\Downloads\\qiansai\\3.0Project\\examples\\TF\u5361\u7d20\u6750\\AWARD720.DLT": "6ba3b06f56978615f436e680fd459e7113bceba6317dbe9fe1ab42d936358c27"
+    },
+    "stimuli_sha256": {
+      "award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+      "award_file.hex": "055731d3803478b8955b4ab76cc11b447aad47ac67d908f47a0a06b40fb41077",
+      "light_golden.hex": "41fabdd702bd9435ebaad67b28c18365cfe29442e4df925fe5a6e9e50296bacc",
+      "light_raw.hex": "f9306eb3216a0986b05e5151c1a2a16a9a2abc51058e336295ff2ec06f0a77d5",
+      "light_tail.hex": "17aa3ee96bbb2b71e19be2bc3d388870d59ad6ea1d8808e100bcf9f936156dbd",
+      "water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+      "water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+      "water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+      "water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+      "water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+      "water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+      "water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+      "water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+      "water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+      "water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3"
+    },
+    "log_sha256": "7440020aad90f78423f8f9e2c10ceb3fc44e80c983b7eb54065dfed2d1b1e735"
+  },
+  {
+    "test": "visual",
+    "passed": true,
+    "inputs_unchanged": true,
+    "seconds": 20.58,
+    "inputs_sha256": {
+      "tests/tb_award_v5_visual.v": "3a5f4d6aed857d857e90ebd7ce1f22d55a34e00e21397119c78b5cc69d3941f7",
+      "tests/reference/award_v5/award_fx.v": "cace994fa0d8929a88e147a6abc0ebba61c3003e353fe813728d84e12d9e3311",
+      "common/award_fx.v": "ff0b5bff8cd4b04e05cb56e7124d468f79dd4648a90a23ac2ac9ffd51281f3c0",
+      "common/award_sprite_rom.v": "b8fb7656be0428d515bb44c1bb2737f57e2fecf3b1fd80ee38a667be618a21c3",
+      "tools/test_award_v5.py": "5eac5836b031bcd93108b59b5c4a7835a620c734992a7f84f7936ba7116639dc",
+      "tools/prepare_award_v5.py": "8a033aa3ece92cb9d524ae6fb1e103dfad947cc30507cfae27a19540a824ccc3",
+      "award_media/AWARD720.DLT": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5"
+    },
+    "external_inputs_sha256": {
+      "E:\\Codex\\Downloads\\qiansai\\3.0Project\\examples\\TF\u5361\u7d20\u6750\\AWARD720.DLT": "6ba3b06f56978615f436e680fd459e7113bceba6317dbe9fe1ab42d936358c27"
+    },
+    "stimuli_sha256": {
+      "award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+      "award_file.hex": "055731d3803478b8955b4ab76cc11b447aad47ac67d908f47a0a06b40fb41077",
+      "light_golden.hex": "41fabdd702bd9435ebaad67b28c18365cfe29442e4df925fe5a6e9e50296bacc",
+      "light_raw.hex": "f9306eb3216a0986b05e5151c1a2a16a9a2abc51058e336295ff2ec06f0a77d5",
+      "light_tail.hex": "17aa3ee96bbb2b71e19be2bc3d388870d59ad6ea1d8808e100bcf9f936156dbd",
+      "water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+      "water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+      "water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+      "water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+      "water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+      "water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+      "water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+      "water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+      "water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+      "water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3"
+    },
+    "log_sha256": "9e38d963f4b3e5f21e333011c5bd2a261b9af1cf63db72831c4364f69c706235"
+  },
+  {
+    "test": "audio",
+    "passed": true,
+    "inputs_unchanged": true,
+    "seconds": 76.17,
+    "inputs_sha256": {
+      "tests/tb_award_v5_audio.v": "f8b67b6cf8cd114d02a98147caedb7694599986586393764c3c34e36d64339a0",
+      "common/photo_audio_link.v": "9e47793489b118f7b15fb0051af8b916422d38b4700446e16e289301ab7af563",
+      "common/photo_audio_features.v": "2e93491a129a74efbf4645bf84435c3edf854a5c02557452ee69d3fcbfefa4bf",
+      "common/audio_ui/saixian_audio_repair.v": "8a6b03dbc3a368179d1d318c86d286a86424a8c31066977eb05d8c2a3695af51",
+      "common/audio_ui/photo_audio_cue_samples.v": "1b1bf98878e1d27d6687c76a35913715d119b307f5a2453b8926c596fec95a60",
+      "tools/test_award_v5.py": "5eac5836b031bcd93108b59b5c4a7835a620c734992a7f84f7936ba7116639dc",
+      "tools/prepare_award_v5.py": "8a033aa3ece92cb9d524ae6fb1e103dfad947cc30507cfae27a19540a824ccc3",
+      "award_media/AWARD720.DLT": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5"
+    },
+    "external_inputs_sha256": {
+      "E:\\Codex\\Downloads\\qiansai\\3.0Project\\examples\\TF\u5361\u7d20\u6750\\AWARD720.DLT": "6ba3b06f56978615f436e680fd459e7113bceba6317dbe9fe1ab42d936358c27"
+    },
+    "stimuli_sha256": {
+      "award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+      "award_file.hex": "055731d3803478b8955b4ab76cc11b447aad47ac67d908f47a0a06b40fb41077",
+      "light_golden.hex": "41fabdd702bd9435ebaad67b28c18365cfe29442e4df925fe5a6e9e50296bacc",
+      "light_raw.hex": "f9306eb3216a0986b05e5151c1a2a16a9a2abc51058e336295ff2ec06f0a77d5",
+      "light_tail.hex": "17aa3ee96bbb2b71e19be2bc3d388870d59ad6ea1d8808e100bcf9f936156dbd",
+      "water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+      "water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+      "water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+      "water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+      "water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+      "water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+      "water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+      "water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+      "water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+      "water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3"
+    },
+    "log_sha256": "75de419765164dab8e1ae9b7125686596a0e3d802d05def728ea29d172ece606"
+  },
+  {
+    "test": "edge",
+    "passed": true,
+    "inputs_unchanged": true,
+    "seconds": 59.23,
+    "inputs_sha256": {
+      "tests/tb_award_v5_edge.v": "aaeacaef2b9873de9d361c75c80e46615d2f79e298e9a8bcc7b7f9468c83e681",
+      "tests/reference/award_v5/water_edge.v": "e1bc5ade86dff71c6c08fb6f9656e63e1fa39718a7e40d15d60eb63fffd52601",
+      "common/fluid/water_edge.v": "d8ecfe400ea1797675c86e23170d10a1eb55f153ac9d2b6c8979ad0a93866d4b",
+      "tools/test_award_v5.py": "5eac5836b031bcd93108b59b5c4a7835a620c734992a7f84f7936ba7116639dc",
+      "tools/prepare_award_v5.py": "8a033aa3ece92cb9d524ae6fb1e103dfad947cc30507cfae27a19540a824ccc3",
+      "award_media/AWARD720.DLT": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5"
+    },
+    "external_inputs_sha256": {
+      "E:\\Codex\\Downloads\\qiansai\\3.0Project\\examples\\TF\u5361\u7d20\u6750\\AWARD720.DLT": "6ba3b06f56978615f436e680fd459e7113bceba6317dbe9fe1ab42d936358c27"
+    },
+    "stimuli_sha256": {
+      "award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+      "award_file.hex": "055731d3803478b8955b4ab76cc11b447aad47ac67d908f47a0a06b40fb41077",
+      "light_golden.hex": "41fabdd702bd9435ebaad67b28c18365cfe29442e4df925fe5a6e9e50296bacc",
+      "light_raw.hex": "f9306eb3216a0986b05e5151c1a2a16a9a2abc51058e336295ff2ec06f0a77d5",
+      "light_tail.hex": "17aa3ee96bbb2b71e19be2bc3d388870d59ad6ea1d8808e100bcf9f936156dbd",
+      "water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+      "water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+      "water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+      "water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+      "water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+      "water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+      "water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+      "water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+      "water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+      "water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3"
+    },
+    "log_sha256": "37ca126dc3862fe3e1e6549bc677cb60adad1b87d317af28e3a16eca9cf73f70"
+  },
+  {
+    "test": "link",
+    "passed": true,
+    "inputs_unchanged": true,
+    "seconds": 42.88,
+    "inputs_sha256": {
+      "tests/tb_award_v5_link.v": "70c81346c04e30cc128c7d8c62a4827a9dabb8963e20e476b33c4f35be407dda",
+      "common/photo_link.v": "b5220867ab286874518d2918f7e1640e2829535fbdfdbfc8f022529e3cca530a",
+      "tools/test_award_v5.py": "5eac5836b031bcd93108b59b5c4a7835a620c734992a7f84f7936ba7116639dc",
+      "tools/prepare_award_v5.py": "8a033aa3ece92cb9d524ae6fb1e103dfad947cc30507cfae27a19540a824ccc3",
+      "award_media/AWARD720.DLT": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5"
+    },
+    "external_inputs_sha256": {
+      "E:\\Codex\\Downloads\\qiansai\\3.0Project\\examples\\TF\u5361\u7d20\u6750\\AWARD720.DLT": "6ba3b06f56978615f436e680fd459e7113bceba6317dbe9fe1ab42d936358c27"
+    },
+    "stimuli_sha256": {
+      "award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+      "award_file.hex": "055731d3803478b8955b4ab76cc11b447aad47ac67d908f47a0a06b40fb41077",
+      "light_golden.hex": "41fabdd702bd9435ebaad67b28c18365cfe29442e4df925fe5a6e9e50296bacc",
+      "light_raw.hex": "f9306eb3216a0986b05e5151c1a2a16a9a2abc51058e336295ff2ec06f0a77d5",
+      "light_tail.hex": "17aa3ee96bbb2b71e19be2bc3d388870d59ad6ea1d8808e100bcf9f936156dbd",
+      "water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+      "water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+      "water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+      "water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+      "water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+      "water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+      "water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+      "water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+      "water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+      "water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3"
+    },
+    "log_sha256": "a293f78ac2b276d9dea6e4900df93595d3357646e5bf012a16a808219c7b4903"
+  },
+  {
+    "test": "control",
+    "passed": true,
+    "inputs_unchanged": true,
+    "seconds": 4.41,
+    "inputs_sha256": {
+      "tests/tb_award_v5_control.v": "447972c5ad12f136d809e70fbbd9aec04f286064e6ffd607e98222ee02805eda",
+      "common/photo_cached_control_a.v": "6fc5d38f98920cbb8034379a33c58f8b1aba7536a409247a2a4fc24a07432de0",
+      "common/photo_control.v": "27a341863d68d28c0b11141310c6ff9a13ae39e53c880313354dd447fe79f5ad",
+      "common/photo_uart.v": "9bfea0d435766f36db5136c25c351569105102b163674cbc02f835704dae9318",
+      "common/photo_link.v": "b5220867ab286874518d2918f7e1640e2829535fbdfdbfc8f022529e3cca530a",
+      "tools/test_award_v5.py": "5eac5836b031bcd93108b59b5c4a7835a620c734992a7f84f7936ba7116639dc",
+      "tools/prepare_award_v5.py": "8a033aa3ece92cb9d524ae6fb1e103dfad947cc30507cfae27a19540a824ccc3",
+      "award_media/AWARD720.DLT": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5"
+    },
+    "external_inputs_sha256": {
+      "E:\\Codex\\Downloads\\qiansai\\3.0Project\\examples\\TF\u5361\u7d20\u6750\\AWARD720.DLT": "6ba3b06f56978615f436e680fd459e7113bceba6317dbe9fe1ab42d936358c27"
+    },
+    "stimuli_sha256": {
+      "award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+      "award_file.hex": "055731d3803478b8955b4ab76cc11b447aad47ac67d908f47a0a06b40fb41077",
+      "light_golden.hex": "41fabdd702bd9435ebaad67b28c18365cfe29442e4df925fe5a6e9e50296bacc",
+      "light_raw.hex": "f9306eb3216a0986b05e5151c1a2a16a9a2abc51058e336295ff2ec06f0a77d5",
+      "light_tail.hex": "17aa3ee96bbb2b71e19be2bc3d388870d59ad6ea1d8808e100bcf9f936156dbd",
+      "water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+      "water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+      "water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+      "water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+      "water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+      "water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+      "water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+      "water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+      "water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+      "water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3"
+    },
+    "log_sha256": "91fde8d0f3d8ba41da7d5344e09846d9db765664ba9b87ef3d672639eb3e4a9d"
+  },
+  {
+    "test": "raster",
+    "passed": true,
+    "inputs_unchanged": true,
+    "seconds": 14.03,
+    "inputs_sha256": {
+      "tests/tb_award_v5_raster.v": "579772931e54ab496711a7267196e42ac4997025953ab32de31a5f69669236f9",
+      "common/photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795",
+      "tools/test_award_v5.py": "5eac5836b031bcd93108b59b5c4a7835a620c734992a7f84f7936ba7116639dc",
+      "tools/prepare_award_v5.py": "8a033aa3ece92cb9d524ae6fb1e103dfad947cc30507cfae27a19540a824ccc3",
+      "award_media/AWARD720.DLT": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5"
+    },
+    "external_inputs_sha256": {
+      "E:\\Codex\\Downloads\\qiansai\\3.0Project\\examples\\TF\u5361\u7d20\u6750\\AWARD720.DLT": "6ba3b06f56978615f436e680fd459e7113bceba6317dbe9fe1ab42d936358c27"
+    },
+    "stimuli_sha256": {
+      "award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+      "award_file.hex": "055731d3803478b8955b4ab76cc11b447aad47ac67d908f47a0a06b40fb41077",
+      "light_golden.hex": "41fabdd702bd9435ebaad67b28c18365cfe29442e4df925fe5a6e9e50296bacc",
+      "light_raw.hex": "f9306eb3216a0986b05e5151c1a2a16a9a2abc51058e336295ff2ec06f0a77d5",
+      "light_tail.hex": "17aa3ee96bbb2b71e19be2bc3d388870d59ad6ea1d8808e100bcf9f936156dbd",
+      "water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+      "water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+      "water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+      "water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+      "water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+      "water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+      "water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+      "water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+      "water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+      "water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3"
+    },
+    "log_sha256": "5973b01249a00224dc4a642bc6077f1a3d305e55e9762c4ae5dce5f73a5f49ec"
+  },
+  {
+    "test": "bus",
+    "passed": true,
+    "inputs_unchanged": true,
+    "seconds": 132.78,
+    "inputs_sha256": {
+      "tests/tb_award_v5_bus.v": "738190f4b2c13a0af006764f880184a312d9229db6c7953ed1990703a28cf64f",
+      "common/photo_spotlight_player.v": "900301ab829bba3d02e47daced9d8c4ec58371c1a5cf7013b8d065974ed4d867",
+      "common/photo_award_memory.v": "0421eb047bc5a1654f78c3670b75f6f2d0931fe3832d18a2c8c72d0c4d87ce91",
+      "common/fluid/water_drop_small.v": "256019f9db84e617f6acbb2d60efcba636d2949343115e510c68be4d00bacea0",
+      "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+      "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+      "common/fluid/water_priority_map.v": "f646b1f41b25eddaec072533e1dffd4d1ced9738fd51121c1baec7861f31c100",
+      "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+      "common/fluid/water_blend.v": "907f59518cfa02cbea456923c57ae7402551dd5e8a7fd8c7a748cfc40b9c7a24",
+      "common/fluid/water_cache.v": "162653dbe2c0ead67ca65fe689bfa3b21e711dd6d5556de698c758a2ac7afafe",
+      "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb",
+      "projects/board_a/src/user_source/hdl_source/SD/frame_read_write.v": "a990a666f93eebb6413bf876f2988e561d0b14c0b23dea0645919f08ee8bbea1",
+      "projects/board_a/src/user_source/hdl_source/SD/frame_fifo_read.v": "5d65d95dab0edc1345bd49e6101a708d70278372ece8761637caad109be3dab7",
+      "projects/board_a/src/user_source/hdl_source/SD/frame_fifo_write.v": "45a916cf077aa38e9725e32705e4b5a076828be9c9a4c460c21736e32b44ee09",
+      "projects/board_a/src/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+      "projects/board_a/src/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+      "tools/test_award_v5.py": "5eac5836b031bcd93108b59b5c4a7835a620c734992a7f84f7936ba7116639dc",
+      "tools/prepare_award_v5.py": "8a033aa3ece92cb9d524ae6fb1e103dfad947cc30507cfae27a19540a824ccc3",
+      "award_media/AWARD720.DLT": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5"
+    },
+    "external_inputs_sha256": {
+      "E:\\Codex\\Downloads\\qiansai\\3.0Project\\examples\\TF\u5361\u7d20\u6750\\AWARD720.DLT": "6ba3b06f56978615f436e680fd459e7113bceba6317dbe9fe1ab42d936358c27"
+    },
+    "stimuli_sha256": {
+      "award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+      "award_file.hex": "055731d3803478b8955b4ab76cc11b447aad47ac67d908f47a0a06b40fb41077",
+      "light_golden.hex": "41fabdd702bd9435ebaad67b28c18365cfe29442e4df925fe5a6e9e50296bacc",
+      "light_raw.hex": "f9306eb3216a0986b05e5151c1a2a16a9a2abc51058e336295ff2ec06f0a77d5",
+      "light_tail.hex": "17aa3ee96bbb2b71e19be2bc3d388870d59ad6ea1d8808e100bcf9f936156dbd",
+      "water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+      "water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+      "water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+      "water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+      "water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+      "water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+      "water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+      "water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+      "water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+      "water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3"
+    },
+    "log_sha256": "28f1080f7f866f3b27ee1267cacc04043949dd19c4e54eca1d794207650d9a75"
+  },
+  {
+    "test": "native_bus",
+    "passed": true,
+    "inputs_unchanged": true,
+    "seconds": 219.02,
+    "inputs_sha256": {
+      "tests/tb_award_v5_bus.v": "738190f4b2c13a0af006764f880184a312d9229db6c7953ed1990703a28cf64f",
+      "common/photo_spotlight_player.v": "900301ab829bba3d02e47daced9d8c4ec58371c1a5cf7013b8d065974ed4d867",
+      "common/photo_award_memory.v": "0421eb047bc5a1654f78c3670b75f6f2d0931fe3832d18a2c8c72d0c4d87ce91",
+      "common/fluid/water_drop_small.v": "256019f9db84e617f6acbb2d60efcba636d2949343115e510c68be4d00bacea0",
+      "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+      "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+      "common/fluid/water_priority_map.v": "f646b1f41b25eddaec072533e1dffd4d1ced9738fd51121c1baec7861f31c100",
+      "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+      "common/fluid/water_blend.v": "907f59518cfa02cbea456923c57ae7402551dd5e8a7fd8c7a748cfc40b9c7a24",
+      "common/fluid/water_cache.v": "162653dbe2c0ead67ca65fe689bfa3b21e711dd6d5556de698c758a2ac7afafe",
+      "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb",
+      "projects/board_a/src/user_source/hdl_source/SD/frame_read_write.v": "a990a666f93eebb6413bf876f2988e561d0b14c0b23dea0645919f08ee8bbea1",
+      "projects/board_a/src/user_source/hdl_source/SD/frame_fifo_read.v": "5d65d95dab0edc1345bd49e6101a708d70278372ece8761637caad109be3dab7",
+      "projects/board_a/src/user_source/hdl_source/SD/frame_fifo_write.v": "45a916cf077aa38e9725e32705e4b5a076828be9c9a4c460c21736e32b44ee09",
+      "projects/board_a/src/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+      "projects/board_a/src/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+      "tools/test_award_v5.py": "5eac5836b031bcd93108b59b5c4a7835a620c734992a7f84f7936ba7116639dc",
+      "tools/prepare_award_v5.py": "8a033aa3ece92cb9d524ae6fb1e103dfad947cc30507cfae27a19540a824ccc3",
+      "award_media/AWARD720.DLT": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5"
+    },
+    "external_inputs_sha256": {
+      "E:\\Codex\\Downloads\\qiansai\\3.0Project\\examples\\TF\u5361\u7d20\u6750\\AWARD720.DLT": "6ba3b06f56978615f436e680fd459e7113bceba6317dbe9fe1ab42d936358c27",
+      "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\sim_release\\eg4\\eg_logic_dram.v": "b620cebfe67f8829df3b737d1f75072b5f42bae7a2396b36616e85aa3cc9ea1e"
+    },
+    "stimuli_sha256": {
+      "award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+      "award_file.hex": "055731d3803478b8955b4ab76cc11b447aad47ac67d908f47a0a06b40fb41077",
+      "light_golden.hex": "41fabdd702bd9435ebaad67b28c18365cfe29442e4df925fe5a6e9e50296bacc",
+      "light_raw.hex": "f9306eb3216a0986b05e5151c1a2a16a9a2abc51058e336295ff2ec06f0a77d5",
+      "light_tail.hex": "17aa3ee96bbb2b71e19be2bc3d388870d59ad6ea1d8808e100bcf9f936156dbd",
+      "water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+      "water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+      "water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+      "water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+      "water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+      "water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+      "water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+      "water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+      "water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+      "water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3"
+    },
+    "log_sha256": "dec243cc45c5055095db8640c808364df6a6a44755d75ea019757eca63c75bad"
+  }
+]
