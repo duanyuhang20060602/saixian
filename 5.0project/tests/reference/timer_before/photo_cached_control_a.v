@@ -4,7 +4,7 @@
 module photo_cached_control_a #(
  parameter CLK_HZ=75000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0,AWARD_LIGHTS=0,EARLY_THUMBNAIL=0,RELIEF_CONTROL=0
 )(
- output receive_award,output receive_fluid,
+ output receive_relief,output receive_award,output receive_fluid,
  input settings_mode,input [18:0] settings_state,output settings_updating,
  input award_toggle,relief_toggle,output reg award_available,award_scan_complete,relief_available,
  output award_loading,output reg [2:0] award_notice,output reg [3:0] last_transfer_error,
@@ -65,9 +65,10 @@ end
 wire relief_command=RELIEF_CONTROL && relief_toggle;
 wire [2:0] requested_award=relief_command ? 3'd7:3'd6;
 wire requested_available=relief_command ? relief_available:award_available;
+assign receive_relief=RELIEF_CONTROL && target==7;
 assign receive_award=AWARD_CONTROL && target>=6;
 assign receive_fluid=FLUID && target<6;
-wire [31:0] frame_bytes=(AWARD_LIGHTS && receive_award) || receive_fluid ? 32'd2764800:FRAME_BYTES;
+wire [31:0] frame_bytes=(AWARD_LIGHTS && RELIEF_CONTROL && target==7) ? 32'd3940352:(AWARD_LIGHTS && receive_award) || receive_fluid ? 32'd2764800:FRAME_BYTES;
 
 assign settings_updating=settings_dirty || refresh_pending || (SETTINGS_LINK && (nav_pending || display_pending));
 // A reverse one-hot case removes binary state decoding from the UART
@@ -195,7 +196,7 @@ endfunction
 function [2:0] lookup;
  input [2:0] image;input [3:0] valid_bits;input [11:0] image_ids;integer j;
  begin lookup=0;for(j=3;j>=0;j=j-1)
-  if((!FLUID || j<3) && valid_bits[j] && image_ids[j*3+:3]==image)lookup={1'b1,j[1:0]};end
+  if((!FLUID || j<2) && valid_bits[j] && image_ids[j*3+:3]==image)lookup={1'b1,j[1:0]};end
 endfunction
 // Explicit function dependencies keep cache fills/invalidation observable in
 // simulation as well as synthesis, even when the requested image is constant.
@@ -221,27 +222,27 @@ always @*begin
  else if(have_current && center<6 && image_count>1)begin
   // Prefetch the following three images in order.
   if(!next_hit[2])begin fetch_needed=1;fetch_target=window_next_q;end
-  else if(!next2_hit[2])begin fetch_needed=1;fetch_target=window_next2_q;end
+  else if(!FLUID && !next2_hit[2])begin fetch_needed=1;fetch_target=window_next2_q;end
   else if(!FLUID && !next3_hit[2])begin fetch_needed=1;fetch_target=window_next3_q;end
  end
  for(i=3;i>=0;i=i-1)begin
-  if((!FLUID || i<3) && (!preview_locked || i!=thumbnail_read_slot) && i!=active_slot && (!transition_active || i!=new_slot) &&
+  if((!FLUID || i<2) && (!preview_locked || i!=thumbnail_read_slot) && i!=active_slot && (!transition_active || i!=new_slot) &&
      (!display_pending || i!=ready_slot) && (!nav_pending || !nav_hit[2] || i!=nav_hit[1:0]) &&
      (demand_fetch || (cache_id[i]!=window_center_q && cache_id[i]!=window_next_q &&
-                       (cache_id[i]!=window_next2_q && (FLUID || cache_id[i]!=window_next3_q)))))begin
+                       (FLUID || (cache_id[i]!=window_next2_q && cache_id[i]!=window_next3_q)))))begin
    victim_ok=1;victim=i[1:0];
   end
  end
  // Prefer an empty slot, including a slot invalidated by a failed receive.
  for(i=3;i>=0;i=i-1)begin
-  if((!FLUID || i<3) && (!preview_locked || i!=thumbnail_read_slot) && !cache_valid[i] && i!=active_slot && (!transition_active || i!=new_slot) &&
+  if((!FLUID || i<2) && (!preview_locked || i!=thumbnail_read_slot) && !cache_valid[i] && i!=active_slot && (!transition_active || i!=new_slot) &&
      (!display_pending || i!=ready_slot))begin victim_ok=1;victim=i[1:0];end
  end
 end
 reg plan_needed,plan_ok;reg [2:0] plan_target;reg [1:0] plan_victim;
 wire [25:0] fetch_context={cache_valid,active_slot,new_slot,transition_active,display_pending,ready_slot,
  nav_pending,nav_target,current_image,image_count,display_target,have_current};
-assign cache_window_ready=window_context==fetch_context && have_current && center_hit[2] && next_hit[2] && (next2_hit[2] && (FLUID || next3_hit[2]));
+assign cache_window_ready=window_context==fetch_context && have_current && center_hit[2] && next_hit[2] && (FLUID || (next2_hit[2] && next3_hit[2]));
 // Only accepted, CRC-checked cache entries can be exposed as the next preview.
 assign thumbnail_slot=next_hit[1:0];
 assign thumbnail_id=window_next_q;

@@ -19,11 +19,11 @@ wire pop=need && !empty;
 wire tq,td,tc;wire [1:0] ts;wire [12:0] ta;wire [15:0] tv;
 wire visible;wire [23:0] rgb;
 wire tick=running && raster_valid && x==0 && y==720;
-photo_thumbnail_overlay #(.Y(528),.DELAY(1)) overlay(.clk(pc),.rst(rst),.frame_tick(tick),.enable(1'b1),.cache_valid(1'b1),.cache_slot(2'd2),.identity({1'b0,3'd1,2'd2}),.de(de),.x(x[11:0]),.y(y[10:0]),.request(tq),.slot(ts),.cancel(tc),.done(td),.data(tv),.address(ta),
+photo_thumbnail_overlay #(.Y(528),.DELAY(1)) overlay(.clk(pc),.rst(rst),.frame_tick(tick),.enable(1'b1),.cache_valid(1'b1),.cache_slot(2'd1),.identity({1'b0,3'd1,2'd1}),.de(de),.x(x[11:0]),.y(y[10:0]),.request(tq),.slot(ts),.cancel(tc),.done(td),.data(tv),.address(ta),
  .visible(visible),.rgb_in(24'h112233),.rgb_out(rgb));
 frame_store dut(.display_active(1'b1),.thumbnail_request(tq),.thumbnail_cancel(tc),.thumbnail_blank(!running || (raster_valid && y>=720)),.thumbnail_slot(ts),
  .thumbnail_address(ta),.thumbnail_done(td),.thumbnail_data(tv),
- .write_award(1'b0),.read_award(1'b0),.light_enable(1'b0),.light_request(1'b0),.light_address(21'd0),
+ .write_relief(1'b0),.write_award(1'b0),.read_award(1'b0),.light_enable(1'b0),.light_request(1'b0),.light_address(21'd0),
  .water_cfg(77'd0),.fluid_progress(9'd0),.write_fluid(1'b0),.write_slot(2'd1),.read_slot(2'd0),.new_slot(2'd1),
  .slide_active(1'b0),.slide_right(1'b0),.slide_offset(11'd0),.transition_mode(5'd0),
  .mem_clk(mc),.mem_clk_sft(mc),.rst(rst),.write_clk(lc),.write_req(wreq),.write_en(we),.write_data(32'h12345678),
@@ -99,9 +99,9 @@ assign Sdr_rd_en=vp[11];assign Sdr_rd_dout=dp[10];
 always @(posedge Clk)begin
  cycles<=cycles+1;
  vp<={vp[10:0],App_rd_en};
- dp[0]<=App_rd_addr>=1382400 ? 32'hf800f800:{11'd0,App_rd_addr};
- if(App_rd_en && App_rd_addr>=1382400)preview_reads<=preview_reads+1;
- if(App_rd_en && App_rd_addr>=1382400 && tb_thumbnail_bandwidth.running &&
+ dp[0]<=App_rd_addr>=1048576 ? 32'hf800f800:{11'd0,App_rd_addr};
+ if(App_rd_en && App_rd_addr>=1048576)preview_reads<=preview_reads+1;
+ if(App_rd_en && App_rd_addr>=1048576 && tb_thumbnail_bandwidth.running &&
     tb_thumbnail_bandwidth.receiving && tb_thumbnail_bandwidth.writes<460800)
   overlapping_preview_reads<=overlapping_preview_reads+1;
  for(j=1;j<11;j=j+1)dp[j]<=dp[j-1];

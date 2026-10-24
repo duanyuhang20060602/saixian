@@ -22,7 +22,7 @@ def main():
  path=out/'shared_cache.log';path.write_text(log,encoding='utf-8')
  unchanged=all(sha(ROOT/q if not Path(q).is_absolute() else Path(q))==h for q,h in hashes.items())
  passed=p.returncode==0 and 'PASS shared award cache:' in log and not re.search(r'(?im)^(ERROR:|FATAL:)',log) and unchanged
- record=dict(test='shared_cache',passed=passed,seconds=round(time.monotonic()-started,2),inputs_sha256=hashes,inputs_unchanged=unchanged,log=str(path),log_sha256=sha(path),asset_sha256=sha(a.asset),scope='Two production renderers, independent caches versus a shared synchronous 512x32 cache. Six full 720p frames and old-new-old transitions, 50MHz memory/75MHz video, randomized grant waits, four-word response bursts, pause/touch, same-cycle final RGB/menu/errors/frame indexes and identical memory requests.')
+ record=dict(test='shared_cache',passed=passed,seconds=round(time.monotonic()-started,2),inputs_sha256=hashes,inputs_unchanged=unchanged,log=str(path),log_sha256=sha(path),asset_sha256=sha(a.asset),scope='Two production renderers, independent caches versus a shared synchronous 512x32 cache. Six full 720p frames and old-new-old transitions, 50MHz memory/75MHz video, randomized grant waits, mixed four/sixty-four-word response bursts, pause/touch, same-cycle final RGB/menu/errors/frame indexes and identical memory requests.')
  (out/'results.json').write_text(json.dumps([record],indent=2)+'\n',encoding='utf-8');print(log,flush=True)
  if not passed:raise SystemExit('Shared-cache differential failed')
 if __name__=='__main__':main()

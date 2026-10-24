@@ -8,7 +8,7 @@ parameter PAUSED=0;
 reg clk=0;always #5 clk=~clk;reg rst=1,request=0,release_slot=0;
 reg[2:0] target=0;wire ready,directory_ready,req,we;wire[1:0] slot,write_slot;
 wire[2:0] count;wire[3:0] error;wire[31:0] data;wire old,new_mode,complete;
-wire[15:0] width,height;wire write_award;
+wire[15:0] width,height;wire write_award,write_relief;
 reg finish_t=0,pause_prefetch=0;integer words=0,loads=0;
 photo_sd_cache #(.CLK_HZ(100000000),.SCAN_MAX_SECTOR(40000),.FRAME_WORDS(16),.DISPLAY_PIN(1),.FORWARD_ONLY(1)) dut(
  .display_valid(1'b0),.display_image(3'd0),.prefetch_pause(pause_prefetch),.audio_packet_active(1'b0),.audio_request_valid(1'b0),
@@ -16,15 +16,16 @@ photo_sd_cache #(.CLK_HZ(100000000),.SCAN_MAX_SECTOR(40000),.FRAME_WORDS(16),.DI
  .clk(clk),.rst(rst),.request(request),.target(target),.release_slot(release_slot),.cancel(1'b0),
  .ready(ready),.ready_slot(slot),.image_count(count),.error(error),.directory_ready(directory_ready),
  .award_available(old),.relief_available(new_mode),.award_scan_complete(complete),.ready_source_width(width),.ready_source_height(height),
- .write_slot(write_slot),.write_req(req),.write_ack(req),.full(1'b0),.write_en(we),.write_data(data),.write_award(write_award),.finish_toggle(finish_t),
+ .write_slot(write_slot),.write_req(req),.write_ack(req),.full(1'b0),.write_en(we),.write_data(data),.write_relief(write_relief),.write_award(write_award),.finish_toggle(finish_t),
  .sd_ncs(),.sd_dclk(),.sd_mosi(),.sd_miso(1'b1));
 defparam dut.bmp.REVERSE=REVERSE;
+defparam dut.dlt.REVERSE=REVERSE;
 always @(posedge clk)begin
  if(req)begin words<=0;loads<=loads+1;end
  if(we)begin
   if(ready && write_slot==slot)$fatal(1,"award load overwrote locked transmit slot");
   words<=words+1;
-  if(words==(write_award ? 691199:15))finish_t<=~finish_t;
+  if(words==(write_relief ? 985087:write_award ? 691199:15))finish_t<=~finish_t;
  end
  if(error)$fatal(1,"cache error %0d",error);
 end
@@ -47,7 +48,7 @@ initial begin
  end
  choose(7);choose(6);choose(0);choose(6);choose(7);
  if(dut.bmp.resumes<1 || dut.dlt.starts<2)$fatal(1,"cache scan-resume/full-award-load paths not exercised");
- $display("PASS cache: six photos retained; independent id6/id7, duplicate headers, source metadata, scan resume, complete 691200-word transfers, locked slots and navigation; reverse=%0d",REVERSE);$finish;
+ $display("PASS cache: six photos retained; independent id6/id7, duplicate headers, source metadata, scan resume, complete 691200/985088-word transfers, locked slots and navigation; reverse=%0d",REVERSE);$finish;
 end
 initial begin #120000000;$fatal(1,"cache catalog timeout count=%0d old/new=%b%b complete=%b loading=%b words=%0d",count,old,new_mode,complete,dut.loading,words);end
 endmodule
@@ -91,7 +92,7 @@ always @(posedge clk)begin
  end
 end
 endmodule
-module photo_dlt_reader(input clk,rst,start,input[31:0] start_sector,output ready,done,output[3:0] error,
+module photo_dlt_reader #(parameter REVERSE=0)(input clk,rst,start,input[31:0] start_sector,output ready,done,output[3:0] error,
  output reg write_req,input write_ack,full,output reg pixel_valid,output reg[23:0] pixel,
  output req,output[31:0] sector,input byte_valid,input[7:0] byte_data,input block_end);
 reg[1:0] state=0;integer pixels=0,starts=0;
@@ -104,7 +105,7 @@ always @(posedge clk)begin
    0:if(start)begin state<=1;write_req<=1;pixels<=0;starts<=starts+1;end
    1:if(write_ack)begin write_req<=0;state<=2;end
    2:if(!full)begin pixel_valid<=1;pixel<={start_sector[7:0],pixels[7:0],pixels[7:0]};pixels<=pixels+1;
-    if(pixels==1382399)state<=3;
+    if(pixels==((REVERSE ? start_sector==196:start_sector==212) ? 1970175:1382399))state<=3;
    end
    3:state<=0;
   endcase

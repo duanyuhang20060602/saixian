@@ -3,35 +3,35 @@ module tb;
 reg clk=0,mc=0;always #6.667 clk=~clk;always #10 mc=~mc;
 reg rst=1,enable=0,mode=0,pause=0,touch=0,de=0,tick=0;
 reg[10:0]x=0,cursor_x=640;reg[9:0]y=720,cursor_y=360;reg[23:0]pixel=0;
-wire[20:0]base=mode ? 21'd262144:21'd0;
-wire request,ref_request;wire[20:0]address,ref_address;reg ack=0,valid=0;reg[31:0]data=0;
+wire[20:0]base=mode ? 21'd524288:21'd0;
+wire request,ref_request,wide,ref_wide;wire[20:0]address,ref_address;reg ack=0,valid=0;reg[31:0]data=0;
 wire[23:0]rgb,menu,ref_rgb,ref_menu;wire[3:0]error,ref_error;wire[6:0]frame,ref_frame;
 photo_award_render #(.RELIEF_ENABLE(1),.SHARED_ENABLE(1)) dut(
  .relief_mode(mode),.touch_contact(touch),.cursor_x(cursor_x),.cursor_y(cursor_y),
- .mem_clk(mc),.mem_rst(rst),.light_base(base),.light_request(request),.light_address(address),.light_ack(ack),.light_data(data),.light_valid(valid),
+ .mem_clk(mc),.mem_rst(rst),.light_base(base),.light_wide(wide),.light_request(request),.light_address(address),.light_ack(ack),.light_data(data),.light_valid(valid),
  .de_in(de),.clk(clk),.rst(rst),.enable(enable),.pause(pause),.frame_tick(tick),.x(x),.y(y),.tagged_rgb(pixel),.rgb(rgb),.menu_rgb(menu),.light_error(error),.light_frame(frame));
 photo_award_render #(.RELIEF_ENABLE(1),.SHARED_ENABLE(0)) reference(
  .relief_mode(mode),.touch_contact(touch),.cursor_x(cursor_x),.cursor_y(cursor_y),
- .mem_clk(mc),.mem_rst(rst),.light_base(base),.light_request(ref_request),.light_address(ref_address),.light_ack(ack),.light_data(data),.light_valid(valid),
+ .mem_clk(mc),.mem_rst(rst),.light_base(base),.light_wide(ref_wide),.light_request(ref_request),.light_address(ref_address),.light_ack(ack),.light_data(data),.light_valid(valid),
  .de_in(de),.clk(clk),.rst(rst),.enable(enable),.pause(pause),.frame_tick(tick),.x(x),.y(y),.tagged_rgb(pixel),.rgb(ref_rgb),.menu_rgb(ref_menu),.light_error(ref_error),.light_frame(ref_frame));
 defparam dut.gold.player.HOLD_FRAMES=2;
 defparam reference.gold.player.HOLD_FRAMES=2;
-reg[31:0]legacy[0:230399],relief[0:230399];reg[15:0]background[0:921599];
-integer ms=0,waits=0,lane=0,transactions=0;reg[20:0]latched;
+reg[31:0]legacy[0:230399],relief[0:524287];reg[15:0]background[0:921599];
+integer ms=0,waits=0,lane=0,transactions=0,burst_words=4;reg[20:0]latched;
 always @(posedge mc)begin
  ack<=0;valid<=0;
  if(rst)begin ms<=0;transactions<=0;end
  else begin
-  if(request!==ref_request || (request && address!==ref_address))$fatal(1,"cache sharing changed memory requests");
+  if(wide!==ref_wide || request!==ref_request || (request && address!==ref_address))$fatal(1,"cache sharing changed memory requests");
   case(ms)
   0:if(request)begin
-   if(!((address<230400)||(address>=262144 && address<492544)) || address[1:0]!=0)$fatal(1,"memory request bounds");
-   latched<=address;waits<=transactions%17+5;transactions<=transactions+1;ms<=1;
+   if(!((address<230400)||(address>=524288 && address<1048576)) || address[1:0]!=0)$fatal(1,"memory request bounds");
+   latched<=address;burst_words<=wide ? 64:4;waits<=transactions%17+5;transactions<=transactions+1;ms<=1;
   end
   1:if(waits==0)begin ack<=1;lane<=0;ms<=2;end else waits<=waits-1;
   2:begin
-   data<=latched>=262144 ? relief[latched-262144+lane]:legacy[latched+lane];valid<=1;lane<=lane+1;
-   if(lane==3)begin ms<=3;waits<=12;end
+   data<=latched>=524288 ? relief[latched-524288+lane]:legacy[latched+lane];valid<=1;lane<=lane+1;
+   if(lane==burst_words-1)begin ms<=3;waits<=12;end
   end
   3:if(waits==0)ms<=0;else waits<=waits-1;
   endcase

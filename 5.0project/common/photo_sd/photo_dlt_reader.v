@@ -49,7 +49,7 @@ always @(posedge clk or posedge rst)begin
   descriptor_end<={1'b0,offset}+{1'b0,length};
   // The light header ends at byte 275, long before HEADER_CHECK after byte 511.
   // Precompute its bounds check outside the 100 MHz state transition path.
-  light_tail_invalid<=({1'b0,light_header[63:32]}+33'd230400>{3'd0,header_bytes[31:2]});
+  light_tail_invalid<=({1'b0,light_header[63:32]}+(header_relief ? 33'd524288:33'd230400)>{3'd0,header_bytes[31:2]});
   // Sector bases settle hundreds of SD clocks before their consuming states.
   // Keep the 32-bit adders ahead of the state-selected request register.
   header_sector<=base+1'b1;frame_sector<=base+(offset>>7);tail_sector<=base+(tail_offset>>7);
@@ -110,7 +110,7 @@ always @(posedge clk or posedge rst)begin
    end
    HEADER_CHECK:begin
     if(!block_size_ok)begin error<=2;state<=FAILED;end
-    else if(!header_ok || light_header[31:0]!=(header_relief ? 24:120) || light_header[95:64]!=230400 || light_header[127:96]!=(header_relief ? 32'h524c4636:32'h53505835) || light_header[159:128]!=6 || light_header[38:32]!=0)begin error<=1;state<=FAILED;end
+    else if(!header_ok || light_header[31:0]!=(header_relief ? 24:120) || light_header[95:64]!=(header_relief ? 524288:230400) || light_header[127:96]!=(header_relief ? 32'h524c4638:32'h53505835) || light_header[159:128]!=6 || light_header[38:32]!=0)begin error<=1;state<=FAILED;end
     else if(light_tail_invalid)begin error<=1;state<=FAILED;end
     else begin total_bytes<=header_bytes;tail_offset<=light_header[63:32];
      sector<=header_sector;count<=0;state<=VERIFY;end
@@ -154,7 +154,7 @@ always @(posedge clk or posedge rst)begin
     if(run==1)begin word_state<=CMD;state<=FETCH;end
     else if(fill)state<=LOW;else begin word_state<=LITERAL;state<=FETCH;end
    end
-   FINISH:begin sector<=tail_sector;tail_left<=230400;count<=0;return_state<=TAIL_LOW;state<=TAIL;end
+   FINISH:begin sector<=tail_sector;tail_left<=header_relief ? 524288:230400;count<=0;return_state<=TAIL_LOW;state<=TAIL;end
    TAIL_LOW:begin
     if(tail_left==0)state<=DONE;
     else if(read_index==128)begin sector<=sector+1'b1;count<=0;return_state<=TAIL_LOW;state<=TAIL;end

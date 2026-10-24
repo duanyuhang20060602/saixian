@@ -11,7 +11,7 @@ module photo_sd_cache #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=1048575,FRAME
  output reg [3:0] error,output directory_ready,output reg award_available,relief_available,output award_scan_complete,
  output reg [3:0] award_decode_error,
  output reg [15:0] ready_source_width,ready_source_height,
- output write_award,output [1:0] write_slot,output write_req,output write_top_down,input write_ack,full,
+ output write_relief,output write_award,output [1:0] write_slot,output write_req,output write_top_down,input write_ack,full,
  output write_en,output [31:0] write_data,input finish_toggle,
  output sd_ncs,sd_dclk,sd_mosi,input sd_miso
 );
@@ -52,6 +52,7 @@ photo_color_pack packing(.clk(clk),.rst(rst),.clear(load_start || write_req),
 reg [1:0] read_owner;reg read_settle;reg [31:0] read_address;
 assign write_slot=load_slot;
 assign write_award=load_is_dlt;
+assign write_relief=load_is_dlt && load_image==7;
 assign directory_ready=scanned && (image_count!=0 || award_available || relief_available);
 assign award_scan_complete=scan_complete;
 function [15:0] rgb565;
@@ -266,7 +267,7 @@ always @(posedge clk or posedge rst)begin
    
    if(load_started && load_ready && fin_sync!=fin_seen)begin
     loading<=0;fin_seen<=fin_sync;
-    if(words==(load_is_dlt ? 21'd691200:frame_words) && pack_aligned)begin cache_valid[load_slot]<=1;cache_id[load_slot]<=load_image;cache_gain[load_slot]<=loaded_gain;end
+    if(words==(load_is_dlt ? (load_image==7 ? 21'd985088:21'd691200):frame_words) && pack_aligned)begin cache_valid[load_slot]<=1;cache_id[load_slot]<=load_image;cache_gain[load_slot]<=loaded_gain;end
     else begin error<=3;abort_op<=1;end
    end
    if((write_en && full) || scaler_fault || timer>=64'd30*CLK_HZ)begin

@@ -1,0 +1,2 @@
+PASS four production video-selection registers versus original conditions: all 4096 scene/count combinations, one-clock settling, held outputs and async reset; other top wiring and RGB/DE/coordinates unchanged
+E:\Codex\Work\saixian-relief-hq-20261024\display_controls\display_controls.v:35: $finish called at 41030000 (1ps)

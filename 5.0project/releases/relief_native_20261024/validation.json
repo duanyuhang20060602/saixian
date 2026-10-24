@@ -1,0 +1,2695 @@
+{
+  "version": "5.0",
+  "build_id": "gold-relief-native-bright-20261024",
+  "hardware_validation": "pending",
+  "baseline_hardware_validation": "Previous 5.0 passed on hardware according to user; new images require a new board check.",
+  "boards": [
+    {
+      "board": "a",
+      "resources": {
+        "lut": 18049,
+        "reg": 12363,
+        "bram": 64,
+        "bram32k": 16,
+        "dsp": 29
+      },
+      "timing_ns": {
+        "SWNS": 0.152,
+        "STNS": 0.0,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      },
+      "physical_mslices": 4737,
+      "bit_sha256": "a964e47efef6bf94839b0e626b1475605f1c39aca5733a1df9a123be7abdb77a",
+      "record": "releases/relief_native_20261024/board_a_build.json"
+    },
+    {
+      "board": "b",
+      "resources": {
+        "lut": 15136,
+        "reg": 10077,
+        "bram": 44,
+        "bram32k": 12,
+        "dsp": 14
+      },
+      "timing_ns": {
+        "SWNS": 0.113,
+        "STNS": 0.0,
+        "HWNS": 0.02,
+        "HTNS": 0.0
+      },
+      "physical_mslices": 4209,
+      "bit_sha256": "7e845ede445e610a9af2603fe9dee26919fa78a6742ea281a7d629f935876763",
+      "record": "releases/relief_native_20261024/board_b_build.json"
+    }
+  ],
+  "asset": {
+    "format": "SXDLT008",
+    "bytes": 3942400,
+    "sha256": "56e7878857030cabac1b35bdb495b1378ac545f3aa103bae33865a34172b0a90",
+    "frame_count": 24,
+    "sprite_resolution": [
+      576,
+      576
+    ],
+    "display_origin": [
+      352,
+      48
+    ],
+    "display_resolution": [
+      576,
+      576
+    ],
+    "scale": "1/1",
+    "palette": "24 independent 256-entry RGB565 + surface-normal palettes",
+    "codec": "Per-row PackBits with implicit trailing transparency; 21-bit byte offset and 11-bit byte length",
+    "tail_offset_words": 461312,
+    "tail_words": 524288,
+    "used_tail_bytes": 1958441,
+    "transport_words": 985088,
+    "color_quantization_psnr_db": 32.08192883481885,
+    "normal_mean_error_degrees": 8.427180886175996,
+    "hardware_validation": "pending",
+    "row_layout": "Rows up to 256 encoded bytes never cross a 64-word burst; longer rows start on a 256-byte boundary",
+    "brightness_exposure": 2,
+    "brightness_curve": "round(510*c/(255+c)); protects highlights",
+    "hold_frames": 10
+  },
+  "reexecuted": 40,
+  "unchanged_reverified": 34,
+  "current_passed_records": 74,
+  "tests": [
+    {
+      "test": "hmi_legacy",
+      "passed": true,
+      "seconds": 0.11,
+      "inputs_sha256": {
+        "tests/tb_hmi.v": "c3c51d898e2d41e18861a5b18a4d20982b0d834dd2cccbcb783165df4831b20a",
+        "common/saixian_hmi_uart.v": "22c726a0f74a84790ebd05f594ddca31360af6d5dc010a2f404d8c22d547b666",
+        "tools/test_relief_controls.py": "80343febd29773cf057b346bf1643e37d1f9a4ee55ff7b07eafba741beb7a88b"
+      },
+      "inputs_unchanged": true,
+      "flags": [],
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\hmi_legacy.log",
+      "log_sha256": "ed1a6b379fc0f2ffaa5640f0a2969ff1eac5c06a19ccbb863b306c8655f18655",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_hmi_legacy.log"
+    },
+    {
+      "test": "hmi_relief",
+      "passed": true,
+      "seconds": 0.11,
+      "inputs_sha256": {
+        "tests/tb_relief_hmi.v": "a36257a33f76705f997fa44ea104c05ef61291107a2210033a6114ff797aa093",
+        "common/saixian_hmi_uart.v": "22c726a0f74a84790ebd05f594ddca31360af6d5dc010a2f404d8c22d547b666",
+        "tools/test_relief_controls.py": "80343febd29773cf057b346bf1643e37d1f9a4ee55ff7b07eafba741beb7a88b"
+      },
+      "inputs_unchanged": true,
+      "flags": [],
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\hmi_relief.log",
+      "log_sha256": "f60f0bab70d58c128cb32835a17404314c6844c275dda52ecec205a98fbb9b92",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_hmi_relief.log"
+    },
+    {
+      "test": "control_legacy",
+      "passed": true,
+      "seconds": 3.55,
+      "inputs_sha256": {
+        "tests/tb_award_v5_control.v": "6c64225eee8e1a71de1b3277184c0e8fb2123873e4903069a02d2c27d18dc1c9",
+        "common/photo_cached_control_a.v": "61b4163849ac8eea1c643df2cd1537dacf83234961501b71b038eb3c9f29aed3",
+        "common/photo_control.v": "d7cfcc4a038e58d24f00b73fc3f99435ec2ab6b95e0b4573cfc6e2d4e02cf906",
+        "common/photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df",
+        "common/photo_link.v": "af5e47d1c89cb5c1bc6513900afdbb6680a63b9e3c43a6c873780c5745d514dd",
+        "tools/test_relief_controls.py": "80343febd29773cf057b346bf1643e37d1f9a4ee55ff7b07eafba741beb7a88b"
+      },
+      "inputs_unchanged": true,
+      "flags": [],
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\control_legacy.log",
+      "log_sha256": "d8e8f85cba7cf6ff877f221b6bb2d403086fddb425369668b8d934f6d63bc6d7",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_control_legacy.log"
+    },
+    {
+      "test": "control_relief",
+      "passed": true,
+      "seconds": 4.56,
+      "inputs_sha256": {
+        "tests/tb_relief_control.v": "d39f44ffe24628b3956053f9240294c291bbe94a643bf0d7cdad5003c2ca4b71",
+        "common/photo_cached_control_a.v": "61b4163849ac8eea1c643df2cd1537dacf83234961501b71b038eb3c9f29aed3",
+        "common/photo_control.v": "d7cfcc4a038e58d24f00b73fc3f99435ec2ab6b95e0b4573cfc6e2d4e02cf906",
+        "common/photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df",
+        "common/photo_link.v": "af5e47d1c89cb5c1bc6513900afdbb6680a63b9e3c43a6c873780c5745d514dd",
+        "tools/test_relief_controls.py": "80343febd29773cf057b346bf1643e37d1f9a4ee55ff7b07eafba741beb7a88b"
+      },
+      "inputs_unchanged": true,
+      "flags": [],
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\control_relief.log",
+      "log_sha256": "9542627d13089be21c625853f66c839a8f6dad4425ce8fecf732af10cf708148",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_control_relief.log"
+    },
+    {
+      "test": "control_wait_catalog",
+      "passed": true,
+      "seconds": 9.06,
+      "inputs_sha256": {
+        "tests/tb_relief_control.v": "d39f44ffe24628b3956053f9240294c291bbe94a643bf0d7cdad5003c2ca4b71",
+        "common/photo_cached_control_a.v": "61b4163849ac8eea1c643df2cd1537dacf83234961501b71b038eb3c9f29aed3",
+        "common/photo_control.v": "d7cfcc4a038e58d24f00b73fc3f99435ec2ab6b95e0b4573cfc6e2d4e02cf906",
+        "common/photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df",
+        "common/photo_link.v": "af5e47d1c89cb5c1bc6513900afdbb6680a63b9e3c43a6c873780c5745d514dd",
+        "tools/test_relief_controls.py": "80343febd29773cf057b346bf1643e37d1f9a4ee55ff7b07eafba741beb7a88b"
+      },
+      "inputs_unchanged": true,
+      "flags": [
+        "-P",
+        "tb.WAIT_CATALOG=1"
+      ],
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\control_wait_catalog.log",
+      "log_sha256": "1ec35d9377b1b09e387c18ab1078a5508eceb530db4d1e02a6932b81c7466faa",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_control_wait_catalog.log"
+    },
+    {
+      "test": "control_only_relief",
+      "passed": true,
+      "seconds": 1.58,
+      "inputs_sha256": {
+        "tests/tb_relief_control.v": "d39f44ffe24628b3956053f9240294c291bbe94a643bf0d7cdad5003c2ca4b71",
+        "common/photo_cached_control_a.v": "61b4163849ac8eea1c643df2cd1537dacf83234961501b71b038eb3c9f29aed3",
+        "common/photo_control.v": "d7cfcc4a038e58d24f00b73fc3f99435ec2ab6b95e0b4573cfc6e2d4e02cf906",
+        "common/photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df",
+        "common/photo_link.v": "af5e47d1c89cb5c1bc6513900afdbb6680a63b9e3c43a6c873780c5745d514dd",
+        "tools/test_relief_controls.py": "80343febd29773cf057b346bf1643e37d1f9a4ee55ff7b07eafba741beb7a88b"
+      },
+      "inputs_unchanged": true,
+      "flags": [
+        "-P",
+        "tb.ONLY_RELIEF=1"
+      ],
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\control_only_relief.log",
+      "log_sha256": "3ff90de6a6e18fe640d2c8afa336ad9addc01d9fdd9098202f5e454971ac47a6",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_control_only_relief.log"
+    },
+    {
+      "test": "motion",
+      "passed": true,
+      "seconds": 0.16,
+      "inputs_sha256": {
+        "tests/tb_relief_motion.v": "7896325492bc7d5ef18305cbcacef6e49867479c85b4d65a664defa7c7c59bd7",
+        "common/photo_relief_motion.v": "7562f6399325955a04e80ac73fbcf59c6a9c525c25d61e372fc7ac4f01a4be50",
+        "tools/test_relief_controls.py": "80343febd29773cf057b346bf1643e37d1f9a4ee55ff7b07eafba741beb7a88b"
+      },
+      "inputs_unchanged": true,
+      "flags": [],
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\motion.log",
+      "log_sha256": "3feded01acd8f05e3d82c4877be747b8b194bf6fbfccfa89557ccd7fa8dce00d",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_motion.log"
+    },
+    {
+      "test": "catalog",
+      "passed": true,
+      "seconds": 0.28,
+      "inputs_sha256": {
+        "tests/tb_relief_catalog_scan.v": "74af7338a48411351eab1a38d5a8f5839a3a8ba9bb5707c626c7748dbcdc319e",
+        "common/photo_sd/bmp_read.v": "7df5ab8f3690d311f2d3f1cd36c082b314e96251a3c0d59e110815f9af8692d1",
+        "common/photo_sd/photo_dlt_header.v": "a68b4fea22cb09cf52bfa56f605ecae507caeabd171b335bc88a31af834b937c",
+        "common/photo_sd/saixian_media_header.v": "f8092e34232ab7d5a379903b7f8602168ca3b89d5397d8a222c55ba45332271e",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "tools/test_relief_controls.py": "80343febd29773cf057b346bf1643e37d1f9a4ee55ff7b07eafba741beb7a88b",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\catalog\\catalog_headers.hex": "45e2abd290a691f1b0b98e0c361a97ecbfd9d6896c6de41d02d61c27b2ce622a",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\catalog\\catalog_sectors.hex": "6cfd32f45e5989b7471f86d38251dd0f4558b7276d876f74f6147229c1ed124d",
+        "award_media/AWARD720.DLT": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\media\\RELIEF720.DLT": "56e7878857030cabac1b35bdb495b1378ac545f3aa103bae33865a34172b0a90",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\catalog\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "inputs_unchanged": true,
+      "flags": [],
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\catalog.log",
+      "log_sha256": "fdb1a20e51493a2b3deb312ed183664337521877848cedda930a20932024b9ae",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_catalog.log"
+    },
+    {
+      "test": "catalog_reverse",
+      "passed": true,
+      "seconds": 0.34,
+      "inputs_sha256": {
+        "tests/tb_relief_catalog_scan.v": "74af7338a48411351eab1a38d5a8f5839a3a8ba9bb5707c626c7748dbcdc319e",
+        "common/photo_sd/bmp_read.v": "7df5ab8f3690d311f2d3f1cd36c082b314e96251a3c0d59e110815f9af8692d1",
+        "common/photo_sd/photo_dlt_header.v": "a68b4fea22cb09cf52bfa56f605ecae507caeabd171b335bc88a31af834b937c",
+        "common/photo_sd/saixian_media_header.v": "f8092e34232ab7d5a379903b7f8602168ca3b89d5397d8a222c55ba45332271e",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "tools/test_relief_controls.py": "80343febd29773cf057b346bf1643e37d1f9a4ee55ff7b07eafba741beb7a88b",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\catalog_reverse\\catalog_headers.hex": "d556b6ba40a4f6ad7b9843da5617b2a3d39cab9d907d2d3c9f572a5b666345c2",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\catalog_reverse\\catalog_sectors.hex": "e95dcf06a0c48b49448a0c017d59f2c3e2fcc1536913c4800b66c8c3ce68c4aa",
+        "award_media/AWARD720.DLT": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\media\\RELIEF720.DLT": "56e7878857030cabac1b35bdb495b1378ac545f3aa103bae33865a34172b0a90",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\catalog_reverse\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "inputs_unchanged": true,
+      "flags": [
+        "-P",
+        "tb.REVERSE=1"
+      ],
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\catalog_reverse.log",
+      "log_sha256": "7d50f2c5a8705f380fa8d8c41fd8d6ee54e9c0b284fe5a0c571596bd5d322ad7",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_catalog_reverse.log"
+    },
+    {
+      "test": "cache",
+      "passed": true,
+      "seconds": 90.61,
+      "inputs_sha256": {
+        "tests/tb_relief_cache_catalog.v": "fc7c74c978b27e9277b47155fa129e9d969d905fc2fa86941cf00d20bcbf1507",
+        "common/photo_sd_cache.v": "340fa7ffed3932fe4a0fffeaebcb0aa5b959ae05d562dd5603a55d3b7ce0b787",
+        "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "common/photo_sd_audio_stream.v": "5c1c0196bed7661ba9fdf2edab80630f3860223e6a8858935012083738c95a7a",
+        "tools/test_relief_controls.py": "80343febd29773cf057b346bf1643e37d1f9a4ee55ff7b07eafba741beb7a88b"
+      },
+      "inputs_unchanged": true,
+      "flags": [
+        "-DVICTORY_SIM"
+      ],
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\cache.log",
+      "log_sha256": "b8108cedf3d6d5e93be937afcabfa8fc40b53038b7fbae5daca11a8d446f7958",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_cache.log"
+    },
+    {
+      "test": "cache_reverse",
+      "passed": true,
+      "seconds": 90.14,
+      "inputs_sha256": {
+        "tests/tb_relief_cache_catalog.v": "fc7c74c978b27e9277b47155fa129e9d969d905fc2fa86941cf00d20bcbf1507",
+        "common/photo_sd_cache.v": "340fa7ffed3932fe4a0fffeaebcb0aa5b959ae05d562dd5603a55d3b7ce0b787",
+        "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "common/photo_sd_audio_stream.v": "5c1c0196bed7661ba9fdf2edab80630f3860223e6a8858935012083738c95a7a",
+        "tools/test_relief_controls.py": "80343febd29773cf057b346bf1643e37d1f9a4ee55ff7b07eafba741beb7a88b"
+      },
+      "inputs_unchanged": true,
+      "flags": [
+        "-DVICTORY_SIM",
+        "-P",
+        "tb.REVERSE=1"
+      ],
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\cache_reverse.log",
+      "log_sha256": "97d4b95766fec79a38d636a8da3315d3494c8e003d9fee96a2db4e4759af3c0b",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_cache_reverse.log"
+    },
+    {
+      "test": "cache_paused",
+      "passed": true,
+      "seconds": 0.24,
+      "inputs_sha256": {
+        "tests/tb_relief_cache_catalog.v": "fc7c74c978b27e9277b47155fa129e9d969d905fc2fa86941cf00d20bcbf1507",
+        "common/photo_sd_cache.v": "340fa7ffed3932fe4a0fffeaebcb0aa5b959ae05d562dd5603a55d3b7ce0b787",
+        "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "common/photo_sd_audio_stream.v": "5c1c0196bed7661ba9fdf2edab80630f3860223e6a8858935012083738c95a7a",
+        "tools/test_relief_controls.py": "80343febd29773cf057b346bf1643e37d1f9a4ee55ff7b07eafba741beb7a88b"
+      },
+      "inputs_unchanged": true,
+      "flags": [
+        "-DVICTORY_SIM",
+        "-P",
+        "tb.PAUSED=1"
+      ],
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\cache_paused.log",
+      "log_sha256": "18f9226c853f717b7d84bfc44068284c4e2898da48461140df505d76a5cc7d21",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_cache_paused.log"
+    },
+    {
+      "test": "cache_paused_reverse",
+      "passed": true,
+      "seconds": 0.17,
+      "inputs_sha256": {
+        "tests/tb_relief_cache_catalog.v": "fc7c74c978b27e9277b47155fa129e9d969d905fc2fa86941cf00d20bcbf1507",
+        "common/photo_sd_cache.v": "340fa7ffed3932fe4a0fffeaebcb0aa5b959ae05d562dd5603a55d3b7ce0b787",
+        "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "common/photo_sd_audio_stream.v": "5c1c0196bed7661ba9fdf2edab80630f3860223e6a8858935012083738c95a7a",
+        "tools/test_relief_controls.py": "80343febd29773cf057b346bf1643e37d1f9a4ee55ff7b07eafba741beb7a88b"
+      },
+      "inputs_unchanged": true,
+      "flags": [
+        "-DVICTORY_SIM",
+        "-P",
+        "tb.PAUSED=1",
+        "-P",
+        "tb.REVERSE=1"
+      ],
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\cache_paused_reverse.log",
+      "log_sha256": "b96343a1b03fc19382648f12b35b5dca25842073e892eb940295edbc462072ff",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_cache_paused_reverse.log"
+    },
+    {
+      "test": "fx_controls",
+      "passed": true,
+      "seconds": 0.17,
+      "inputs_sha256": {
+        "tests/fx11_water/tb_controls.v": "a60881f6651d7b5f0347abbdf83ff8d0dc1c07fb696c7678a96acaaeca01bdff",
+        "common/saixian_hmi_uart.v": "22c726a0f74a84790ebd05f594ddca31360af6d5dc010a2f404d8c22d547b666",
+        "common/photo_unified_settings_controller.v": "a2b7444b42f071dc800ea8927dfe6d7d45abcb71b7d23e16f1bdcd03b179938b",
+        "tools/test_relief_controls.py": "80343febd29773cf057b346bf1643e37d1f9a4ee55ff7b07eafba741beb7a88b"
+      },
+      "inputs_unchanged": true,
+      "flags": [],
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\fx_controls.log",
+      "log_sha256": "cc6d10e1a90280c021803389c043a258b125ec7d03dc5443db49d1c7d885e547",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_fx_controls.log"
+    },
+    {
+      "test": "keys",
+      "passed": true,
+      "seconds": 0.14,
+      "inputs_sha256": {
+        "tests/tb_pitch_keys.v": "18c155d851e80efa811b7de93ee0b00909877e878c4f7d1dca6121f04e453552",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "common/photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
+        "common/photo_audio_pitch_b.v": "9fe035e6fc6b9c29da6abaa640261bd84eb5d1fcc8876fb0b0ba2af024b1cb5f",
+        "common/audio_ui/saixian_audio_pitch.v": "dd1cdedcc9c1309023a3f56f807e5f3e5bed3aa85d3f9f68cf4746e4e3cf611d",
+        "common/audio_ui/saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+        "common/audio_ui/photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1",
+        "tools/test_relief_controls.py": "80343febd29773cf057b346bf1643e37d1f9a4ee55ff7b07eafba741beb7a88b"
+      },
+      "inputs_unchanged": true,
+      "flags": [
+        "-DVICTORY_SIM"
+      ],
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\keys.log",
+      "log_sha256": "88c1da3b8837031a0554edb2ccd1d60cedfd22f3c972fd9f2edb215de85ae690",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_keys.log"
+    },
+    {
+      "test": "volume",
+      "passed": true,
+      "seconds": 2.36,
+      "inputs_sha256": {
+        "tests/tb_pitch_volume.v": "f5433367da81932f5a83a5911b112bd2787d27cc5378faf5d849ed7c562ac8fc",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "common/photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
+        "common/photo_audio_pitch_b.v": "9fe035e6fc6b9c29da6abaa640261bd84eb5d1fcc8876fb0b0ba2af024b1cb5f",
+        "common/audio_ui/saixian_audio_pitch.v": "dd1cdedcc9c1309023a3f56f807e5f3e5bed3aa85d3f9f68cf4746e4e3cf611d",
+        "common/audio_ui/saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+        "common/audio_ui/photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1",
+        "tools/test_relief_controls.py": "80343febd29773cf057b346bf1643e37d1f9a4ee55ff7b07eafba741beb7a88b"
+      },
+      "inputs_unchanged": true,
+      "flags": [
+        "-DVICTORY_SIM"
+      ],
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\controls_03\\volume.log",
+      "log_sha256": "4f3d1b5de73ef338b0397ada9b402047d746006ebb36ce72f98c055f7ec3e913",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_volume.log"
+    },
+    {
+      "test": "reader",
+      "passed": true,
+      "inputs_unchanged": true,
+      "seconds": 415.55,
+      "inputs_sha256": {
+        "tests/tb_relief_reader.v": "2ddbcaf72b652f372caffef80d7eb733618c3ce56f077f3d93fcd9bd33c80793",
+        "common/photo_sd/photo_dlt_reader.v": "b8b084efc84322b8200c22e8a498879c9d529dad02120dd64619019886338cc6",
+        "common/photo_sd/photo_dlt_header.v": "a68b4fea22cb09cf52bfa56f605ecae507caeabd171b335bc88a31af834b937c",
+        "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+        "tools/test_relief_bus.py": "40c1b1c35550acb63a2082e8167b2fe178fb3a692eb5d3ea8c3a38f85541e5f4"
+      },
+      "asset_sha256": "56e7878857030cabac1b35bdb495b1378ac545f3aa103bae33865a34172b0a90",
+      "legacy_asset_sha256": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5",
+      "log_sha256": "b0854ecb50c60b171ba53c93dddd8fcad6294517e348287540d5d108e7f55242",
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\readers\\reader.log",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_reader.log"
+    },
+    {
+      "test": "legacy_reader",
+      "passed": true,
+      "inputs_unchanged": true,
+      "seconds": 293.95,
+      "inputs_sha256": {
+        "tests/tb_relief_reader.v": "2ddbcaf72b652f372caffef80d7eb733618c3ce56f077f3d93fcd9bd33c80793",
+        "common/photo_sd/photo_dlt_reader.v": "b8b084efc84322b8200c22e8a498879c9d529dad02120dd64619019886338cc6",
+        "common/photo_sd/photo_dlt_header.v": "a68b4fea22cb09cf52bfa56f605ecae507caeabd171b335bc88a31af834b937c",
+        "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+        "tools/test_relief_bus.py": "40c1b1c35550acb63a2082e8167b2fe178fb3a692eb5d3ea8c3a38f85541e5f4"
+      },
+      "asset_sha256": "56e7878857030cabac1b35bdb495b1378ac545f3aa103bae33865a34172b0a90",
+      "legacy_asset_sha256": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5",
+      "log_sha256": "acbec0e6151a844c800fffe0d6ef4f1dd60fff4203fdcd1a682216c09181b443",
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\readers\\legacy_reader.log",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_legacy_reader.log"
+    },
+    {
+      "test": "timer_equivalence",
+      "passed": true,
+      "inputs_sha256": {
+        "common/photo_cached_control_a.v": "61b4163849ac8eea1c643df2cd1537dacf83234961501b71b038eb3c9f29aed3",
+        "tests/reference/timer_before/photo_cached_control_a.v": "ce19fcdf7e643973a84e09fccb584fbd2d23e889810ec171e483c2a2843a2c9d",
+        "tests/reference/timer_before/source.json": "ee9699bdbc6b3d926cc1864b5342162c52f09251030641bd58e3b2b6738abd07",
+        "tools/test_relief_timer.py": "1e5a0d00d0b3f9c753a539774ad45681053aaa3bbaae86683a78e0f01e188776",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\timer\\timer_equivalence.v": "f9b4e93ecac7861922888cce85951eaf02014cac880913622b8a042aed6b9030"
+      },
+      "inputs_unchanged": true,
+      "seconds": 0.11,
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\timer\\timer_equivalence.log",
+      "log_sha256": "56c3a98979dd90e3aeb198e0ac417f9ce723d98ac02b71d0a9c0a9cef9ee964c",
+      "scope": "Only timeout comparison implementation changes. Counter wraps at 32 bits, timer_reset exposes zero immediately and loads count=1 on the next edge. All packet/control logic outside this timer block is unchanged. Actual old/new timer code compared around each threshold, wrap and randomized clears in nine parameter configurations.",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_timer_equivalence.log"
+    },
+    {
+      "test": "uart_contract",
+      "passed": true,
+      "seconds": 9.88,
+      "inputs_sha256": {
+        "tests/tb_relief_uart_contract.v": "1680a7c99b4e63fcc52d7c63193b422ea41a0afc2569d7b6bcc4d004d12bfa01",
+        "common/photo_cached_control_a.v": "61b4163849ac8eea1c643df2cd1537dacf83234961501b71b038eb3c9f29aed3",
+        "common/photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df",
+        "tools/test_relief_uart_contract.py": "941e8a457d5fb1cfba5e9f11d59ce4ab11aa31f36653af0353c8dff926cdb5c1",
+        "tests/reference/kind_before/photo_cached_control_a.v": "a14609c200f8293eede2cc72f7f8cbef717b130cc1e7b5375cdd3914e7ab13bd",
+        "tests/reference/kind_before/source.json": "9f70454a36c9a52e00506f5c5bcf840ee819a66c169132c4f1b7de3e5b132d1e"
+      },
+      "inputs_unchanged": true,
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\uart\\uart_contract.log",
+      "log_sha256": "c6ba72f1c47b37e9fb031eddfb4cd7a0fbf80726dcc25d971e796201f2f03424",
+      "scope": "Real production UART TX/RX; local state/timer positioning only for deterministic reconnect/CRC collision.",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_uart_contract.log"
+    },
+    {
+      "test": "display_controls",
+      "passed": true,
+      "inputs_sha256": {
+        "common/top_photo_a.v": "1a0274139a6bc99e0a1352349db550f23137891dc84c643be5541293c48fc8f2",
+        "tests/reference/display_controls_before/top_photo_a.v": "38a27d87c3d83edeb1fb726d01320840cded2508f57ea46d947ddb4553438ac2",
+        "tests/reference/display_controls_before/source.json": "4c8bb2bd53b0dbfbe079fbf848077ccca43841b6e4b0cf8799d887cd7c535584",
+        "tools/test_relief_display_controls.py": "f34f5c3ce41f46341b110ef8646ea9db78b1ba1b89f9e034096707d0f60f7a86",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\display_controls\\display_controls.v": "7701357aad65e4068e8b1a28a8252d8a5008ca7710c217dd53198db916a21747"
+      },
+      "inputs_unchanged": true,
+      "seconds": 0.2,
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\display_controls\\display_controls.log",
+      "log_sha256": "f504eea015ce6a2f28bdfc94af840ad67e817c52a8073067d9e8a18800b93fee",
+      "scope": "Only four scene-selection controls gain one register. All other top wiring and all RGB/DE/coordinate data paths remain byte-identical. Original conditions compared exhaustively with the actual registered production block, delayed one clock.",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_display_controls.log"
+    },
+    {
+      "test": "result_controls",
+      "passed": true,
+      "seconds": 1.26,
+      "inputs_sha256": {
+        "tests/tb_relief_result_controls.v": "938f404f92b05fffe8d75a0441f03d9e80d7928c8397239d9fdca1eaa663338d",
+        "common/top_photo_a.v": "1a0274139a6bc99e0a1352349db550f23137891dc84c643be5541293c48fc8f2",
+        "common/saixian_battle_result_fx_pipelined.v": "5c8d134b87235052054374c635dbb127ca2f38b764fe5e2d211926c894caefe8",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\result_controls\\hardware_shells.v": "1d0706ddbe242f0c58ed3619bc3274c6381df198cbe672618e496c4fbca323db",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\result_controls\\reference_result_fx.v": "e3580905294ef1440461d7676ff6ef230c7ae3b549de85348c0093d8654f4a56",
+        "tools/test_relief_result_controls.py": "d740d3eb7901c1635c8a74325dbf01e9927fb586e3c2c9eb13bcb2c937fc61f1",
+        "src/board_a/user_source/hdl_source/photo_menu_text_lookup.hex": "754b5d6f555a8118b10d149314378f63d485fa63d13c0c3c8f6a2b9eb94864b9",
+        "src/board_a/user_source/hdl_source/saixian_red_victory_atlas.hex": "b48bc7f529f641d866dc2aacecc71f73a84b89c4e467e0e2d81791312454254d",
+        "src/board_a/user_source/hdl_source/saixian_sprint_atlas.hex": "bbbe5b68d823c1f576c9833ab1076a24c1a06d594adc9e60e93a041d0a053ce5",
+        "src/board_a/user_source/hdl_source/saixian_sprint_atlas_dict.hex": "64c5222100f363712b59bff77a320ad6090e86caaf2c003faec655a98687d786",
+        "src/board_a/user_source/hdl_source/saixian_sprint_atlas_index_hi.hex": "b151e46caf61a2a57e118fd84cae5be147c3777bc892b0ebe5e6fe436e3c9d22",
+        "src/board_a/user_source/hdl_source/saixian_sprint_atlas_index_lo.hex": "35bc52a5815d83337bd981de00b0346469715c031c16e2c0d1fd85ffd69f8354",
+        "src/board_a/user_source/hdl_source/saixian_victory_atlas_dict.hex": "df85e46376a2fe6147f4ff36c207166ba46ed44d553427235baeaf2524ba6363",
+        "src/board_a/user_source/hdl_source/saixian_victory_atlas_index_hi.hex": "f0d5d45a7f8b8330d6a884e06c8f44e15d7dd7b6fc1be0a47316b59327a776f8",
+        "src/board_a/user_source/hdl_source/saixian_victory_atlas_index_lo.hex": "2e762fac282ca53b374fce893741feca3197a23d227fd6a3c677d81f3e7738d0"
+      },
+      "inputs_unchanged": true,
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\result_controls\\result_controls.log",
+      "log_sha256": "aac7fd1f1ff27719e924adce2635b245ef8ef69183a7cf49ff8fccbd88acadc9",
+      "scope": "Actual production top and result FSM; hardware shells omit unrelated blocks. Same qualified event trace shifted one clock; raw busy feedback window settles one clock later.",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_result_controls.log"
+    },
+    {
+      "test": "render_cdc",
+      "passed": true,
+      "inputs_unchanged": true,
+      "seconds": 5.98,
+      "inputs_sha256": {
+        "tests/tb_relief_render_cdc.v": "a7229bed39513b33be0a9977fdd51c0f1c5ae197f7f7cd126073ab003cd15c4e",
+        "common/photo_award_render.v": "b334630382db9b1ba128601006d29429cb77e2a7023889fa8b10f6a3126fc90a",
+        "common/photo_award_memory.v": "1be0c8ecc7fe974b7eb9f294883cea34c8db0acdd00ead25e31996f6b13a0185",
+        "tools/test_relief_render.py": "2b558e927ed28e2f40e5a62121fcaf0e5169e11140de8d1e222579ab9ea68e6b"
+      },
+      "log_sha256": "0a8306ed8d5108d0e3b7434318b1bc9068995c97caeda4b5cc97f0fb0c84eec7",
+      "cases": [
+        {
+          "wide": 0,
+          "phase_ps": 0,
+          "response_clocks": 1,
+          "passed": true
+        },
+        {
+          "wide": 0,
+          "phase_ps": 0,
+          "response_clocks": 3,
+          "passed": true
+        },
+        {
+          "wide": 0,
+          "phase_ps": 0,
+          "response_clocks": 12,
+          "passed": true
+        },
+        {
+          "wide": 0,
+          "phase_ps": 0,
+          "response_clocks": 27,
+          "passed": true
+        },
+        {
+          "wide": 0,
+          "phase_ps": 1700,
+          "response_clocks": 1,
+          "passed": true
+        },
+        {
+          "wide": 0,
+          "phase_ps": 1700,
+          "response_clocks": 3,
+          "passed": true
+        },
+        {
+          "wide": 0,
+          "phase_ps": 1700,
+          "response_clocks": 12,
+          "passed": true
+        },
+        {
+          "wide": 0,
+          "phase_ps": 1700,
+          "response_clocks": 27,
+          "passed": true
+        },
+        {
+          "wide": 0,
+          "phase_ps": 4900,
+          "response_clocks": 1,
+          "passed": true
+        },
+        {
+          "wide": 0,
+          "phase_ps": 4900,
+          "response_clocks": 3,
+          "passed": true
+        },
+        {
+          "wide": 0,
+          "phase_ps": 4900,
+          "response_clocks": 12,
+          "passed": true
+        },
+        {
+          "wide": 0,
+          "phase_ps": 4900,
+          "response_clocks": 27,
+          "passed": true
+        },
+        {
+          "wide": 1,
+          "phase_ps": 0,
+          "response_clocks": 1,
+          "passed": true
+        },
+        {
+          "wide": 1,
+          "phase_ps": 0,
+          "response_clocks": 3,
+          "passed": true
+        },
+        {
+          "wide": 1,
+          "phase_ps": 0,
+          "response_clocks": 12,
+          "passed": true
+        },
+        {
+          "wide": 1,
+          "phase_ps": 0,
+          "response_clocks": 27,
+          "passed": true
+        },
+        {
+          "wide": 1,
+          "phase_ps": 1700,
+          "response_clocks": 1,
+          "passed": true
+        },
+        {
+          "wide": 1,
+          "phase_ps": 1700,
+          "response_clocks": 3,
+          "passed": true
+        },
+        {
+          "wide": 1,
+          "phase_ps": 1700,
+          "response_clocks": 12,
+          "passed": true
+        },
+        {
+          "wide": 1,
+          "phase_ps": 1700,
+          "response_clocks": 27,
+          "passed": true
+        },
+        {
+          "wide": 1,
+          "phase_ps": 4900,
+          "response_clocks": 1,
+          "passed": true
+        },
+        {
+          "wide": 1,
+          "phase_ps": 4900,
+          "response_clocks": 3,
+          "passed": true
+        },
+        {
+          "wide": 1,
+          "phase_ps": 4900,
+          "response_clocks": 12,
+          "passed": true
+        },
+        {
+          "wide": 1,
+          "phase_ps": 4900,
+          "response_clocks": 27,
+          "passed": true
+        }
+      ],
+      "scope": "Production photo_award_render plus photo_award_memory; players/video effect are interface stubs. Logical CDC/owner routing proof, not analog metastability simulation.",
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\render_cdc\\render_cdc.log",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_render_cdc.log"
+    },
+    {
+      "test": "shared_legacy_rows",
+      "passed": true,
+      "inputs_sha256": {
+        "tests/tb_award_v5_rows.v": "451d55e959b10a873b90b4fea704163ce9814d9c55e597962b0eb495b2807fe7",
+        "common/photo_spotlight_player.v": "8bc4811742e2c061fc70eb8a1840482b8791e003dd0a13b061e974ff181ea58f",
+        "common/photo_award_memory.v": "1be0c8ecc7fe974b7eb9f294883cea34c8db0acdd00ead25e31996f6b13a0185",
+        "tests/reference/accepted_v3/AWARD720.DLT": "6ba3b06f56978615f436e680fd459e7113bceba6317dbe9fe1ab42d936358c27",
+        "award_media/AWARD720.DLT": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5",
+        "tools/test_relief_shared_rows.py": "f8073921870feb5c8ea2df048bc390bde6d91ebe3e9e7d2fff2fc6ff07eac638",
+        "tools/test_relief_bus.py": "40c1b1c35550acb63a2082e8167b2fe178fb3a692eb5d3ea8c3a38f85541e5f4",
+        "tools/prepare_award_v5.py": "c3da10065a19caf91d66a859fcf87f3f537c68d45d645d3cd27c3aa971d71e32",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\shared_rows\\light_raw.hex": "f9306eb3216a0986b05e5151c1a2a16a9a2abc51058e336295ff2ec06f0a77d5",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\shared_rows\\light_tail.hex": "17aa3ee96bbb2b71e19be2bc3d388870d59ad6ea1d8808e100bcf9f936156dbd"
+      },
+      "inputs_unchanged": true,
+      "seconds": 198.83,
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\shared_rows\\shared_legacy_rows.log",
+      "log_sha256": "799df626a2892f07327009bc493b1e67bcd7b283142c6afc6c0bcf4e9129392f",
+      "scope": "Production row decoder and arbiter versus pinned independent uncompressed donor, all 120 fields and 68 rows, both current/following cache banks, wrap, refresh/contention.",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_shared_legacy_rows.log"
+    },
+    {
+      "test": "player",
+      "passed": true,
+      "inputs_unchanged": true,
+      "seconds": 78.62,
+      "inputs_sha256": {
+        "tests/tb_relief_player.v": "35483c15711720c5cd45a9dabe4a9cc041a9c21b3eebba5a0ed160ed1f762f59",
+        "common/photo_relief_player.v": "e37e239cfab8b8e7280f6d80d3381e2aae465d9f986bb38e2cfd77cae4b1ca9c",
+        "common/photo_relief_motion.v": "7562f6399325955a04e80ac73fbcf59c6a9c525c25d61e372fc7ac4f01a4be50",
+        "tools/test_relief_bus.py": "40c1b1c35550acb63a2082e8167b2fe178fb3a692eb5d3ea8c3a38f85541e5f4"
+      },
+      "asset_sha256": "56e7878857030cabac1b35bdb495b1378ac545f3aa103bae33865a34172b0a90",
+      "legacy_asset_sha256": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5",
+      "log_sha256": "315ca1c1bf9cfea5ea77e9d9f5bc51ad8845e70dacf0de0d67076c325b936162",
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\display_tests_03\\player.log",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_player.log"
+    },
+    {
+      "test": "bus",
+      "passed": true,
+      "inputs_unchanged": true,
+      "seconds": 310.14,
+      "inputs_sha256": {
+        "tests/tb_relief_bus.v": "70b86d2b50d8259b963c01201dfd658e81e868d01eb7c49e5d28118a2205fb02",
+        "common/photo_relief_player.v": "e37e239cfab8b8e7280f6d80d3381e2aae465d9f986bb38e2cfd77cae4b1ca9c",
+        "common/photo_relief_motion.v": "7562f6399325955a04e80ac73fbcf59c6a9c525c25d61e372fc7ac4f01a4be50",
+        "common/photo_award_memory.v": "1be0c8ecc7fe974b7eb9f294883cea34c8db0acdd00ead25e31996f6b13a0185",
+        "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_priority_map.v": "8a1680b4734b41dc00f92c7721931381925b3526dcf87b00a3d63999c83a8e8b",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_blend.v": "02b9ac8df414a7252263e6dc4f863bbc801e09dd793f7e85dd3282b8bc41b3d7",
+        "common/fluid/water_cache.v": "1634fa246c169facdba844c5e255efed7363a5bceb1954bd45ef5db851fce33a",
+        "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb",
+        "src/board_a/user_source/hdl_source/SD/frame_read_write.v": "bc86f0d36dd660e97922ccb86a671412cfd41787d0454fd4330e43470b261adf",
+        "src/board_a/user_source/hdl_source/SD/frame_fifo_write.v": "2d77247259a858f1a752748d721c3db422b0be5c1d70a2ce6dc828a7dfa6a020",
+        "src/board_a/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "src/board_a/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+        "tools/test_relief_bus.py": "40c1b1c35550acb63a2082e8167b2fe178fb3a692eb5d3ea8c3a38f85541e5f4"
+      },
+      "asset_sha256": "56e7878857030cabac1b35bdb495b1378ac545f3aa103bae33865a34172b0a90",
+      "legacy_asset_sha256": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5",
+      "log_sha256": "d2e3a81b1cc500dcca4352c3e037149b1ce76f6c94a242569d25b7fddaebe95b",
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\display_tests_03\\bus.log",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_bus.log"
+    },
+    {
+      "test": "product_native",
+      "passed": true,
+      "seconds": 0.23,
+      "inputs_sha256": {
+        "tests/tb_relief_product_native.v": "16b019efdea7d9777f7ba7ea7cca474d2dd06358af3cef5eecb556e315c2c276",
+        "common/photo_relief_player.v": "e37e239cfab8b8e7280f6d80d3381e2aae465d9f986bb38e2cfd77cae4b1ca9c",
+        "common/photo_relief_motion.v": "7562f6399325955a04e80ac73fbcf59c6a9c525c25d61e372fc7ac4f01a4be50",
+        "tests/relief_native_glbl.v": "fd3489e1f84cb1ed54060be51a973b1602f20e48c5f566d36b3500b95fb559a8",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\native_dsp\\relief\\eg_phy_mult18_functional.v": "368bccedd08fd749a4826b35cee69d169ca71461267ad960c3d08df9a0aae27b",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\sim_release\\eg4\\eg_phy_mult18.v": "25ca8de5e98253510d0417d6710046c107064b0decc952a602667117bdd6fbdc",
+        "tools/test_relief_native_dsp.py": "51838121b87078773a9ce93025ce03249efcb88c232231b462e81ccc579c377e",
+        "tools/test_relief_bus.py": "40c1b1c35550acb63a2082e8167b2fe178fb3a692eb5d3ea8c3a38f85541e5f4"
+      },
+      "inputs_unchanged": true,
+      "asset_sha256": "56e7878857030cabac1b35bdb495b1378ac545f3aa103bae33865a34172b0a90",
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\native_dsp\\product_native.log",
+      "log_sha256": "9124a892c3d2e37570135f5f5423ed94b7e74c675946605317708fd45183d784",
+      "flags": [
+        "-DWATER_SIM",
+        "-DVICTORY_SIM",
+        "-DRELIEF_SIM",
+        "-DRELIEF_NATIVE_DSP",
+        "-DFX11_ROM_ROOT=\"\""
+      ],
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_product_native.log"
+    },
+    {
+      "test": "player_native",
+      "passed": true,
+      "seconds": 107.39,
+      "inputs_sha256": {
+        "tests/tb_relief_player.v": "35483c15711720c5cd45a9dabe4a9cc041a9c21b3eebba5a0ed160ed1f762f59",
+        "common/photo_relief_player.v": "e37e239cfab8b8e7280f6d80d3381e2aae465d9f986bb38e2cfd77cae4b1ca9c",
+        "common/photo_relief_motion.v": "7562f6399325955a04e80ac73fbcf59c6a9c525c25d61e372fc7ac4f01a4be50",
+        "tests/relief_native_glbl.v": "fd3489e1f84cb1ed54060be51a973b1602f20e48c5f566d36b3500b95fb559a8",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\native_dsp\\relief\\eg_phy_mult18_functional.v": "368bccedd08fd749a4826b35cee69d169ca71461267ad960c3d08df9a0aae27b",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\sim_release\\eg4\\eg_phy_mult18.v": "25ca8de5e98253510d0417d6710046c107064b0decc952a602667117bdd6fbdc",
+        "tools/test_relief_native_dsp.py": "51838121b87078773a9ce93025ce03249efcb88c232231b462e81ccc579c377e",
+        "tools/test_relief_bus.py": "40c1b1c35550acb63a2082e8167b2fe178fb3a692eb5d3ea8c3a38f85541e5f4"
+      },
+      "inputs_unchanged": true,
+      "asset_sha256": "56e7878857030cabac1b35bdb495b1378ac545f3aa103bae33865a34172b0a90",
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\native_dsp\\player_native.log",
+      "log_sha256": "86a52fb6cabbc0f884d21c4e12871394058e3b377c2b49586883ba9d3b2db9ed",
+      "flags": [
+        "-DWATER_SIM",
+        "-DVICTORY_SIM",
+        "-DRELIEF_SIM",
+        "-DRELIEF_NATIVE_DSP",
+        "-DFX11_ROM_ROOT=\"\""
+      ],
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_player_native.log"
+    },
+    {
+      "test": "bus_native",
+      "passed": true,
+      "seconds": 375.83,
+      "inputs_sha256": {
+        "tests/tb_relief_bus.v": "70b86d2b50d8259b963c01201dfd658e81e868d01eb7c49e5d28118a2205fb02",
+        "common/photo_relief_player.v": "e37e239cfab8b8e7280f6d80d3381e2aae465d9f986bb38e2cfd77cae4b1ca9c",
+        "common/photo_relief_motion.v": "7562f6399325955a04e80ac73fbcf59c6a9c525c25d61e372fc7ac4f01a4be50",
+        "common/photo_award_memory.v": "1be0c8ecc7fe974b7eb9f294883cea34c8db0acdd00ead25e31996f6b13a0185",
+        "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_priority_map.v": "8a1680b4734b41dc00f92c7721931381925b3526dcf87b00a3d63999c83a8e8b",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_blend.v": "02b9ac8df414a7252263e6dc4f863bbc801e09dd793f7e85dd3282b8bc41b3d7",
+        "common/fluid/water_cache.v": "1634fa246c169facdba844c5e255efed7363a5bceb1954bd45ef5db851fce33a",
+        "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb",
+        "src/board_a/user_source/hdl_source/SD/frame_read_write.v": "bc86f0d36dd660e97922ccb86a671412cfd41787d0454fd4330e43470b261adf",
+        "src/board_a/user_source/hdl_source/SD/frame_fifo_write.v": "2d77247259a858f1a752748d721c3db422b0be5c1d70a2ce6dc828a7dfa6a020",
+        "src/board_a/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "src/board_a/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+        "tests/relief_native_glbl.v": "fd3489e1f84cb1ed54060be51a973b1602f20e48c5f566d36b3500b95fb559a8",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\native_dsp\\relief\\eg_phy_mult18_functional.v": "368bccedd08fd749a4826b35cee69d169ca71461267ad960c3d08df9a0aae27b",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\sim_release\\eg4\\eg_phy_mult18.v": "25ca8de5e98253510d0417d6710046c107064b0decc952a602667117bdd6fbdc",
+        "tools/test_relief_native_dsp.py": "51838121b87078773a9ce93025ce03249efcb88c232231b462e81ccc579c377e",
+        "tools/test_relief_bus.py": "40c1b1c35550acb63a2082e8167b2fe178fb3a692eb5d3ea8c3a38f85541e5f4"
+      },
+      "inputs_unchanged": true,
+      "asset_sha256": "56e7878857030cabac1b35bdb495b1378ac545f3aa103bae33865a34172b0a90",
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\native_dsp\\bus_native.log",
+      "log_sha256": "20322e2b99c4e15594ab0c6473f621938a45640bd6c0ea112751b0eb1f7aebf5",
+      "flags": [
+        "-DWATER_SIM",
+        "-DVICTORY_SIM",
+        "-DRELIEF_SIM",
+        "-DRELIEF_NATIVE_DSP",
+        "-DFX11_ROM_ROOT=\"\""
+      ],
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_bus_native.log"
+    },
+    {
+      "test": "shared_cache",
+      "passed": true,
+      "seconds": 1312.73,
+      "inputs_sha256": {
+        "tests/tb_relief_shared_cache.v": "25d1624c62a9dae0d57cc15d7670b3b62bbdb894b845a40967aa66f43035a0d3",
+        "common/photo_award_render.v": "b334630382db9b1ba128601006d29429cb77e2a7023889fa8b10f6a3126fc90a",
+        "common/photo_relief_player.v": "e37e239cfab8b8e7280f6d80d3381e2aae465d9f986bb38e2cfd77cae4b1ca9c",
+        "common/photo_relief_motion.v": "7562f6399325955a04e80ac73fbcf59c6a9c525c25d61e372fc7ac4f01a4be50",
+        "common/photo_spotlight_player.v": "8bc4811742e2c061fc70eb8a1840482b8791e003dd0a13b061e974ff181ea58f",
+        "common/award_fx.v": "7a8d850f27931635e997df6db0de880486e1da0a04ee58be8cb37be63f430ed6",
+        "common/award_sprite_rom.v": "f92edd17e605ded17d834eb408475ac66f061f99c7b94edfdad9d4997242f768",
+        "common/photo_display_pipe.v": "e6ba29eb4142b690a5abb9be5b07c0b880040736485cdbeb1013f040559718c3",
+        "tools/test_relief_shared_cache.py": "5a911e409e0507713bb4909f0cfcfcce7d8ba20ecc4be5bc15378376113ae55f",
+        "tools/test_relief_bus.py": "40c1b1c35550acb63a2082e8167b2fe178fb3a692eb5d3ea8c3a38f85541e5f4",
+        "award_media/AWARD720.DLT": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\media\\RELIEF720.DLT": "56e7878857030cabac1b35bdb495b1378ac545f3aa103bae33865a34172b0a90",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\shared_cache\\legacy_tail.hex": "17aa3ee96bbb2b71e19be2bc3d388870d59ad6ea1d8808e100bcf9f936156dbd",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\shared_cache\\relief_tail.hex": "3b34e6c19a21e497e4109ee9ada040101ce659088b61eb11942eb1e2bbb7f327",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\shared_cache\\relief_base.hex": "71b899dc6927b7b082f40a26f94ed720a142011d3e48bf27e579ae56c577fd69"
+      },
+      "inputs_unchanged": true,
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\shared_cache\\shared_cache.log",
+      "log_sha256": "814186c5149e4a447fa66bc13d5f378bc27bd03ff5e2cf4b64233645f2281f1e",
+      "asset_sha256": "56e7878857030cabac1b35bdb495b1378ac545f3aa103bae33865a34172b0a90",
+      "scope": "Two production renderers, independent caches versus a shared synchronous 512x32 cache. Six full 720p frames and old-new-old transitions, 50MHz memory/75MHz video, randomized grant waits, mixed four/sixty-four-word response bursts, pause/touch, same-cycle final RGB/menu/errors/frame indexes and identical memory requests.",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_shared_cache.log"
+    },
+    {
+      "test": "native_materials",
+      "passed": true,
+      "inputs_sha256": {
+        "tools/test_relief_hq.py": "c3141c0873945928b886c747f89c03882832299cf72aaf8b33b6ec7957b57a81",
+        "tools/test_relief_bus.py": "40c1b1c35550acb63a2082e8167b2fe178fb3a692eb5d3ea8c3a38f85541e5f4",
+        "award_media/RELIEF720_DLT.json": "0b89b40ab68c60d65dc2a79cc842bfb95b298181360252d4df35f361b61144d9",
+        "award_media/RELIEF720.DLT": "56e7878857030cabac1b35bdb495b1378ac545f3aa103bae33865a34172b0a90",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\baseline\\5.0project\\award_media\\RELIEF720.DLT": "986b6e0eb496ac5550645ee3133d891c00dc03e75384ef47050b0ed166d2439d",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\native_materials.npz": "8e9ae196b158b88774c702c8ed0014f911e05169f08099abe95c57dcfbafdea9",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_00.png": "d4ab29970eda8dd980fc46130491d370779471f9d82944dd981eedd137eccfb2",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_01.png": "80a295290ae08e0d7936826295a7759f260f247a60561de68228f0d31a4b875d",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_02.png": "10c3d9938d8e495c6efa883e07a71ed3926c3893d1291b53095b6aa9d4d3d7e2",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_03.png": "e0738462a2872b86664b607e61a5c1644974cd9e80fcb51acee994129687c912",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_04.png": "463bd87948bd4eda82fece4134fb300c983ac71433afb4f144e2a270ac450235",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_05.png": "35de51dfb2d265415786b8099599b27dda7c5d036f7de1dd87220ba84f3a8980",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_06.png": "cacd5214f67158474e8bdb328ce612fe343158a4e28b4d72b6ca87500071a0c3",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_07.png": "47836e9d761b60e946aca87a2a30a25325fa5645b0930f4ef678caad4c063dd2",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_08.png": "9787f632ff04be37352a85bda35a86f0d84695fd85db0b6eeebf59ace967bb03",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_09.png": "f6ef40e5a5fcd9f9af1e492e7b104917b8d8beba8af9c4fa6aef2f79de6eea83",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_10.png": "0e0545392de392854de23736b2c817326699e74109758477cc2e130408f28569",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_11.png": "fb26aa8ab1720b56ba005c56004ffcf20eb3bff80df169d460da82cd2501776a",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_12.png": "ee024768fe2075141de09a839da5c9980cdb8330c170675fbc81e3d2c440bb4a",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_13.png": "a958d66b1063fb3f7aac4501ca1ba2025048692399d734462cd939e35e23c4a4",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_14.png": "7f763e32a75354620015cfb93b7cb896747c2963e14ce2b12ad86c5b01093f9b",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_15.png": "b0912750e31196e7f7172ea176384884901bf87dc1fc6df785d53597592bc06c",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_16.png": "b64a1afcf57ef46714142cc86c0da3d36ec38228cc3fec29664381200b92e2c4",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_17.png": "e4b7cd01a864464d270e481230cbb88b4e0abcb29081df1a2c8935cbe5973d41",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_18.png": "e81f4f3d8d7b91efb122c51b01fadeb6739d01ed356469e9b9f63688cd441c98",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_19.png": "4d92dbb227f5c23455e477d1fee4da7718f5dbdf03bb13ec3acf08bf8c3d16cd",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_20.png": "a667bea26ea10b64488bdbeea28a090304a4259c6c7e8a62a4df1aed75f7281b",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_21.png": "6ebba56c3d124f24be96dd154a7f20343c9ae93517e43060b6f86e0354f1a81a",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_22.png": "f9192a390352236aad80d8ca008e96dec63d6ccc333471377eca1405eccd380f",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\artwork\\angle_23.png": "dd5c284bc5ac614138d4bb07649660f137398700c39073cd53f08e190e09e816"
+      },
+      "inputs_unchanged": true,
+      "asset_sha256": "56e7878857030cabac1b35bdb495b1378ac545f3aa103bae33865a34172b0a90",
+      "seconds": 2.48,
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\published_material_tests\\native_materials.log",
+      "log_sha256": "7b361329f515766844cc2bf6ecc100addd4812befa3e045c32ca0d0237db0035",
+      "details": {
+        "source_size": [
+          576,
+          576
+        ],
+        "old_source_size": [
+          384,
+          384
+        ],
+        "display_footprint": [
+          576,
+          576
+        ],
+        "views": 24,
+        "exact_decoded_source_pixels": 7962624,
+        "background_byte_identical": true,
+        "mean_old_color_psnr_db": 21.842236450542497,
+        "mean_new_color_psnr_db": 31.243785855728095,
+        "minimum_psnr_gain_db": 9.024980426623205,
+        "mean_oracle_light_difference": 38.837579558194314,
+        "scope": "Material data and same-size source detail comparison; CPU lighting oracle, not a board capture or optical sharpness measurement."
+      },
+      "reexecuted": true,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_native_materials.log"
+    },
+    {
+      "test": "touch",
+      "passed": true,
+      "seconds": 16.67,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_touch.v": "bfa7b1b822ede3b15da5b82b54f534ef934b249ee4758719c6d779f9e4fe8b31",
+        "common/top_photo_a.v": "1a0274139a6bc99e0a1352349db550f23137891dc84c643be5541293c48fc8f2",
+        "common/saixian_hmi_uart.v": "22c726a0f74a84790ebd05f594ddca31360af6d5dc010a2f404d8c22d547b666",
+        "common/photo_touchpad.v": "3cc8c9b46b9b206b0c37353823ca9635cbde5cd9f77058a9a45664061bfdb956",
+        "common/photo_unified_settings_controller.v": "a2b7444b42f071dc800ea8927dfe6d7d45abcb71b7d23e16f1bdcd03b179938b",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\thumbnail_native\\hardware_shells.v": "417069c5b5652b84ab7df3133cd73d850357215f9a02599e467f2cf730eeec56"
+      },
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\thumbnail_native\\touch.log",
+      "log_sha256": "84b908d6ec8ea905a9533be5542fadaf2607330180baa70ecbd89911dc695b47",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_touch.log"
+    },
+    {
+      "test": "memory",
+      "passed": true,
+      "seconds": 11.69,
+      "defines": [
+        "THUMBNAIL_SIM"
+      ],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_memory.v": "2a907ded2cf3c911bd7cd75e522b5f22f4a422db4df5af6bfd0cb4f244e24e86",
+        "common/photo_thumbnail.v": "bff41a53ecaa49b4b586e049562cf69e3aa535fbb767a1637262b44206689000"
+      },
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\thumbnail_native\\memory.log",
+      "log_sha256": "61fff1a83cf71f09d278ec1a4850e83914e6aa9bdb3fce9b3365b40b2fe777da",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_memory.log"
+    },
+    {
+      "test": "vendor",
+      "passed": true,
+      "seconds": 38.14,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_memory.v": "2a907ded2cf3c911bd7cd75e522b5f22f4a422db4df5af6bfd0cb4f244e24e86",
+        "common/photo_thumbnail.v": "bff41a53ecaa49b4b586e049562cf69e3aa535fbb767a1637262b44206689000",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\thumbnail_native\\vendor_include\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\thumbnail_native\\vendor.log",
+      "log_sha256": "61fff1a83cf71f09d278ec1a4850e83914e6aa9bdb3fce9b3365b40b2fe777da",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_vendor.log"
+    },
+    {
+      "test": "bandwidth565",
+      "passed": true,
+      "seconds": 169.28,
+      "defines": [
+        "THUMBNAIL_SIM",
+        "WATER_SIM",
+        "THUMBNAIL_RGB565"
+      ],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_bandwidth.v": "5e23b84f83c589de584df494e45b3164078f4135b63336d919caa437c91286c5",
+        "common/photo_thumbnail.v": "bff41a53ecaa49b4b586e049562cf69e3aa535fbb767a1637262b44206689000",
+        "common/photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795",
+        "common/photo_award_memory.v": "1be0c8ecc7fe974b7eb9f294883cea34c8db0acdd00ead25e31996f6b13a0185",
+        "src/board_a/user_source/hdl_source/frame_store.v": "588633043fc3645057e2cbebed7614a5ad853a585bac29eaa24d267ffa954cce",
+        "src/board_a/user_source/hdl_source/SD/frame_read_write.v": "bc86f0d36dd660e97922ccb86a671412cfd41787d0454fd4330e43470b261adf",
+        "src/board_a/user_source/hdl_source/SD/frame_fifo_write.v": "2d77247259a858f1a752748d721c3db422b0be5c1d70a2ce6dc828a7dfa6a020",
+        "src/board_a/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "src/board_a/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+        "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_priority_map.v": "8a1680b4734b41dc00f92c7721931381925b3526dcf87b00a3d63999c83a8e8b",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_blend.v": "02b9ac8df414a7252263e6dc4f863bbc801e09dd793f7e85dd3282b8bc41b3d7",
+        "common/fluid/water_cache.v": "1634fa246c169facdba844c5e255efed7363a5bceb1954bd45ef5db851fce33a",
+        "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb"
+      },
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\thumbnail_native\\bandwidth565.log",
+      "log_sha256": "2027fc22834e253fccc3ad9a65a2b3b00dc15638a171169c796d92f67d993984",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_bandwidth565.log"
+    },
+    {
+      "test": "live_bandwidth",
+      "passed": true,
+      "seconds": 512.61,
+      "defines": [
+        "THUMBNAIL_SIM",
+        "WATER_SIM",
+        "THUMBNAIL_RGB565",
+        "THUMBNAIL_DYNAMIC"
+      ],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_bandwidth.v": "5e23b84f83c589de584df494e45b3164078f4135b63336d919caa437c91286c5",
+        "common/photo_thumbnail.v": "bff41a53ecaa49b4b586e049562cf69e3aa535fbb767a1637262b44206689000",
+        "common/photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795",
+        "common/photo_award_memory.v": "1be0c8ecc7fe974b7eb9f294883cea34c8db0acdd00ead25e31996f6b13a0185",
+        "src/board_a/user_source/hdl_source/frame_store.v": "588633043fc3645057e2cbebed7614a5ad853a585bac29eaa24d267ffa954cce",
+        "src/board_a/user_source/hdl_source/SD/frame_read_write.v": "bc86f0d36dd660e97922ccb86a671412cfd41787d0454fd4330e43470b261adf",
+        "src/board_a/user_source/hdl_source/SD/frame_fifo_write.v": "2d77247259a858f1a752748d721c3db422b0be5c1d70a2ce6dc828a7dfa6a020",
+        "src/board_a/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "src/board_a/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+        "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_priority_map.v": "8a1680b4734b41dc00f92c7721931381925b3526dcf87b00a3d63999c83a8e8b",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_blend.v": "02b9ac8df414a7252263e6dc4f863bbc801e09dd793f7e85dd3282b8bc41b3d7",
+        "common/fluid/water_cache.v": "1634fa246c169facdba844c5e255efed7363a5bceb1954bd45ef5db851fce33a",
+        "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb"
+      },
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\thumbnail_native\\live_bandwidth.log",
+      "log_sha256": "261b8c2448e18acd91370e7099d5b63a8e60fc3143e228edf7bab5371909d57a",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_live_bandwidth.log"
+    },
+    {
+      "test": "native_link",
+      "passed": true,
+      "inputs_sha256": {
+        "tests/tb_native_relief_link.v": "dc04605805863e2c7afca2b2c7bb17cd54a5b4688548101b38be73ca5dad1e4c",
+        "common/photo_link.v": "af5e47d1c89cb5c1bc6513900afdbb6680a63b9e3c43a6c873780c5745d514dd",
+        "tools/test_native_relief_link.py": "8db84fce915cadd7995fbd6ea3c56cc6424c0eb7a9872dd0076adcd251dda25b"
+      },
+      "inputs_unchanged": true,
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\native_link_tests\\native_link.log",
+      "log_sha256": "5f27f2f9103ace193e4b999ae62ddf3f104ffe39bcaa1f858cd418ef0a89b2ea",
+      "cases": [
+        {
+          "kind": 0,
+          "words": 691200,
+          "passed": true,
+          "seconds": 42.06,
+          "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\native_link_tests\\0\\native_link.log",
+          "log_sha256": "a3a9d74ff70fd73b561e354d2cd01cab183da0482304dfab359e5491d103662a",
+          "crc32": 270961550
+        },
+        {
+          "kind": 1,
+          "words": 691200,
+          "passed": true,
+          "seconds": 42.02,
+          "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\native_link_tests\\1\\native_link.log",
+          "log_sha256": "ade7b89fb01ef8b6e02d6e78ef7e22b12e373c38ed9b399d1de6118ec4e7efe0",
+          "crc32": 270961550
+        },
+        {
+          "kind": 2,
+          "words": 985088,
+          "passed": true,
+          "seconds": 57.12,
+          "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\native_link_tests\\2\\native_link.log",
+          "log_sha256": "0fd31b70e059444f5dca4540cf69c49754fe7751ae96401b7d1f9f12d217ecb8",
+          "crc32": 2576491101
+        }
+      ],
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_native_link.log"
+    },
+    {
+      "test": "native_slots",
+      "passed": true,
+      "inputs_unchanged": true,
+      "inputs_sha256": {
+        "src/board_a/user_source/hdl_source/frame_store.v": "588633043fc3645057e2cbebed7614a5ad853a585bac29eaa24d267ffa954cce",
+        "src/board_a/user_source/hdl_source/SD/frame_read_write.v": "bc86f0d36dd660e97922ccb86a671412cfd41787d0454fd4330e43470b261adf",
+        "common/photo_award_memory.v": "1be0c8ecc7fe974b7eb9f294883cea34c8db0acdd00ead25e31996f6b13a0185",
+        "common/photo_thumbnail.v": "bff41a53ecaa49b4b586e049562cf69e3aa535fbb767a1637262b44206689000",
+        "src/board_a/user_source/hdl_source/SD/sdram.v": "beb0a3e8497f8e30a7c0fc6ba6981316f571443460455f4f3b4d5c843d3830fb",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\slots\\shells_a.v": "6d86af49992044f25c2d4e0c3568a30e9709c5a7d176c8937ce9b3cd7fe7cb9d",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\slots\\tb_a.v": "3bf82ad1b1e2949eb10d2bc152351cbcfb90dd653d3da04008bc847adf30f5a6",
+        "tools/test_native_relief_slots.py": "e6525a6b13ddc7d7670d2342c9e362452c502998da97d9dac172dbf7f2b235a4",
+        "src/board_b/user_source/hdl_source/frame_store.v": "9cf751b5efc1c1e347bd2ed0bcafdd1bf380355fb9063b4869bbc915b67ed20c",
+        "src/board_b/user_source/hdl_source/SD/frame_read_write.v": "1f3cf38e143c20906064a359da4a7738bc5aea5eec392c2329a761e218105a34",
+        "src/board_b/user_source/hdl_source/SD/sdram.v": "beb0a3e8497f8e30a7c0fc6ba6981316f571443460455f4f3b4d5c843d3830fb",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\slots\\shells_b.v": "deaaf807fb26130e81034a5a8761d67032f03a660c0a4ff82cfb6b0ade9e89cc",
+        "E:\\Codex\\Work\\saixian-relief-native-20261024\\slots\\tb_b.v": "388b9c95528a714fe428bd6d3ebd544e4bb61d604a86c5bc67aae6134878225d"
+      },
+      "seconds": 0.38,
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\slots\\native_slots.log",
+      "log_sha256": "cfd1bf2c8a8668782d7d31309d11227747b6f9818dccc70c9f0212b37f51a801",
+      "scope": "Production A/B frame_store RTL with original-width controller port shells. Checks length selection, two-stage mode CDC and slot bounds; not SDRAM electrical simulation. Full link and real frame-FIFO pressure are separate tests.",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_native_slots.log"
+    },
+    {
+      "test": "native_cache",
+      "passed": true,
+      "inputs_unchanged": true,
+      "inputs_sha256": {
+        "tests/tb_native_relief_cache.v": "23f971ca59a03c25324687774f2e1b108a2435a5915f96f1b31993ba2a7bbf97",
+        "common/photo_cached_control_a.v": "61b4163849ac8eea1c643df2cd1537dacf83234961501b71b038eb3c9f29aed3",
+        "common/photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df",
+        "tools/test_native_relief_cache.py": "9667e7e2a09035ea2dcfd262eabaf2ee8381174fbdfe132dd028b24f2dbe5364"
+      },
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\cache\\native_cache.log",
+      "log_sha256": "9d7f3005c296b37a9ef59348a628b769e384ee81d9399aad6897bae53b5120e5",
+      "seconds": 0.08,
+      "scope": "Real production controller planner; scheduler held at WAIT_CONTEXT and accepted cache metadata positioned deterministically. UART/transport tested separately.",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_native_cache.log"
+    },
+    {
+      "test": "control",
+      "passed": true,
+      "seconds": 0.14,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_control.v": "0191f4a6453766c795510080eb0c93790cf8079d3aa6df0a153c3b599f9d8924",
+        "common/photo_cached_control_a.v": "61b4163849ac8eea1c643df2cd1537dacf83234961501b71b038eb3c9f29aed3",
+        "common/photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df"
+      },
+      "log": "E:\\Codex\\Work\\saixian-relief-native-20261024\\thumbnail_control_final\\control.log",
+      "log_sha256": "9e0ff87d102d807bee5e4614d25cfa3e05288c4a3699012bcdeeb4f898688846",
+      "reexecuted": true,
+      "unchanged_reverified": false,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_control.log"
+    },
+    {
+      "test": "rgb565_scaler",
+      "passed": true,
+      "seconds": 84.81,
+      "inputs_sha256": {
+        "tests/tb_ip_scaler.v": "ba455c8654eff93f31daeb05ddfcfdfdb3980595118ec97d9dc9f96a69f1e879",
+        "common/photo_sd/bmp_read.v": "7df5ab8f3690d311f2d3f1cd36c082b314e96251a3c0d59e110815f9af8692d1",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "tools/test_rgb565.py": "aaf198936d566e2473c2cb2e4e8e821c1ff3285d61a2efc799994572b3bc5709",
+        "E:\\Codex\\Work\\saixian-relief-integration-20261023\\rgb565_regressions\\rgb565_scaler\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Work\\saixian-relief-integration-20261023\\rgb565_regressions\\rgb565_scaler.log",
+      "log_sha256": "d4ee9051b309dbb5ae825a3d0a65bcf5bf5029b4224f873261a73e69ff9fdb82",
+      "reexecuted": false,
+      "unchanged_reverified": true,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_rgb565_scaler.log"
+    },
+    {
+      "test": "legacy_wave_exact",
+      "passed": true,
+      "seconds": 170.3,
+      "inputs_sha256": {
+        "tests/tb_legacy_wave_exact.v": "4b581d0d42c105c6cc809635e66be3f9b2451d063cdbc34ff7a4364bf819d5f3",
+        "common/award_fx.v": "7a8d850f27931635e997df6db0de880486e1da0a04ee58be8cb37be63f430ed6",
+        "tests/reference/legacy_wave_before/award_fx.v": "bbbd7c7ba2e2a96a2259bae45947c5d3192dc102a8b1034370b44e4a102d295f",
+        "common/award_sprite_rom.v": "f92edd17e605ded17d834eb408475ac66f061f99c7b94edfdad9d4997242f768",
+        "tools/test_legacy_wave_exact.py": "a74214fd70d6ed48540f19f54e856d0c41e9a3759729f58a2c444d24a174092a",
+        "tests/reference/legacy_wave_before/source.json": "f8f345adaf2afe8247cd620ea5a718abb0d8cb4a09e782e905ab3997853407cf"
+      },
+      "inputs_unchanged": true,
+      "log": "E:\\Codex\\Work\\saixian-relief-integration-20261023\\candidate_wave\\wave_tests\\legacy_wave_exact.log",
+      "log_sha256": "fe2e8687e310b0ceb90138305e5f2081dc925115bd06dc676ed0cf9611514c2c",
+      "scope": "512-phase exhaustive function comparison; same-cycle complete 1280x720 award_fx output differential against frozen original production source renamed only; shared real sprite ROM; five-clock bypass identity checked.",
+      "reexecuted": false,
+      "unchanged_reverified": true,
+      "suite": "publication_build_a_06",
+      "saved_log": "releases/relief_native_20261024/validation/publication_build_a_06_legacy_wave_exact.log"
+    },
+    {
+      "test": "timing",
+      "passed": true,
+      "seconds": 4.88,
+      "inputs_sha256": {
+        "tests/tb_switch_timing.v": "4d6b6ddd3dc82eb2f343f266aa850ab199d77f23122d69a45dcc9b0888bac404",
+        "common/photo_switch_timing.v": "f7f05a978d079181da57519a489a9a25b107840a888ad3c944151d31a0b0528b",
+        "tools/test_merge_5fac.py": "bc9e50a490a2e27f5a88938703d5141d242b3580f7ef6f658e6c4c2c51c33d52"
+      },
+      "inputs_unchanged": true,
+      "log": "E:\\Codex\\Work\\thumbnail-hq-20261023-155328\\r2-merge-tests\\timing\\result.log",
+      "log_sha256": "1f506ef43195d8894decfddc11d69a6f2484b1d9ae7f7c92e868f3fb2edbaaa8",
+      "suite": "r2-merge-tests",
+      "current_verification": "Reexecuted on the current 5.8 sources.",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/r2-merge-tests_timing.log",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "effects",
+      "passed": true,
+      "seconds": 34.7,
+      "inputs_sha256": {
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+        "common/fluid/water_priority_map.v": "8a1680b4734b41dc00f92c7721931381925b3526dcf87b00a3d63999c83a8e8b",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "tests/fx11_water/tb_effects.v": "ee55448f8dceb5b634a1a2b29ecfddeb743b34dad4688b1d795e0884af5bad4e",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "b53986eea8b73c8c44ab930bc866e8afce79a183a6a5336902ea6dffa83fc5b6",
+      "suite": "a-tests-r1",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\a-tests-r1_effects.log",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/a-tests-r1_effects.log",
+      "stimuli_base_dir": "E:\\Codex\\Work\\resource-next-20261022-221039\\a-tests-r1",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "dsp_effects",
+      "passed": true,
+      "seconds": 46.27,
+      "inputs_sha256": {
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+        "common/fluid/water_priority_map.v": "8a1680b4734b41dc00f92c7721931381925b3526dcf87b00a3d63999c83a8e8b",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "tests/fx11_water/glbl.v": "2a063611f37926861bb60704f5407c8b569d29b8c3c3171424a2d971240d846f",
+        "tests/fx11_water/tb_effects.v": "ee55448f8dceb5b634a1a2b29ecfddeb743b34dad4688b1d795e0884af5bad4e",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\sim_release\\eg4\\eg_phy_mult18.v": "25ca8de5e98253510d0417d6710046c107064b0decc952a602667117bdd6fbdc"
+      },
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd",
+        "vendor_mult18_functional.v": "3027bc66b99df04b17c595b455fca09a336d6b01831528a7232787dc2acb88df"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "9f3794ffbe5b19ec3263627395113d4d4f1c5434824b5abe6ac8fa05bb3e095b",
+      "suite": "a-tests-r1",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\a-tests-r1_dsp_effects.log",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/a-tests-r1_dsp_effects.log",
+      "stimuli_base_dir": "E:\\Codex\\Work\\resource-next-20261022-221039\\a-tests-r1",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "math",
+      "passed": true,
+      "seconds": 8.61,
+      "inputs_sha256": {
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "tests/fx11_water/tb_math.v": "152a5b3df66bba6d67aae5e9d1b3cab46841f1c4f53d850546e47f0e32d38476",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "fd061a05f3a061d504e8cd476a45c4271367362b81d0b0f68233733851e7d1ca",
+      "suite": "a-tests-r1",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\a-tests-r1_math.log",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/a-tests-r1_math.log",
+      "stimuli_base_dir": "E:\\Codex\\Work\\resource-next-20261022-221039\\a-tests-r1",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "dsp_math",
+      "passed": true,
+      "seconds": 23.67,
+      "inputs_sha256": {
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "tests/fx11_water/glbl.v": "2a063611f37926861bb60704f5407c8b569d29b8c3c3171424a2d971240d846f",
+        "tests/fx11_water/tb_math.v": "152a5b3df66bba6d67aae5e9d1b3cab46841f1c4f53d850546e47f0e32d38476",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\sim_release\\eg4\\eg_phy_mult18.v": "25ca8de5e98253510d0417d6710046c107064b0decc952a602667117bdd6fbdc"
+      },
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd",
+        "vendor_mult18_functional.v": "3027bc66b99df04b17c595b455fca09a336d6b01831528a7232787dc2acb88df"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "50a5be709dd02a8c42f06f4dd614021838230dffd947baa6574a94140fb98e79",
+      "suite": "a-tests-r1",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\a-tests-r1_dsp_math.log",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/a-tests-r1_dsp_math.log",
+      "stimuli_base_dir": "E:\\Codex\\Work\\resource-next-20261022-221039\\a-tests-r1",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "compact",
+      "passed": true,
+      "seconds": 0.42,
+      "inputs_sha256": {
+        "common/fluid/water_cache.v": "1634fa246c169facdba844c5e255efed7363a5bceb1954bd45ef5db851fce33a",
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "tests/fx11_water/tb_compact.v": "b4688e85fd56db838e9fc635b881076483f4debb410079bc77c5b499dd9ccbf3",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "135890e8853e2ccea06af0120d6764f2cafcc5e00a19efae90bcc4d3db77d6e1",
+      "suite": "a-tests-r1",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\a-tests-r1_compact.log",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/a-tests-r1_compact.log",
+      "stimuli_base_dir": "E:\\Codex\\Work\\resource-next-20261022-221039\\a-tests-r1",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "cache",
+      "passed": true,
+      "seconds": 0.34,
+      "inputs_sha256": {
+        "common/fluid/water_cache.v": "1634fa246c169facdba844c5e255efed7363a5bceb1954bd45ef5db851fce33a",
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "tests/fx11_water/tb_cache.v": "49114dd61d5a2ed8aa60a39227cbb73e6a3a2055306101c1bbe0737a3873e5d6",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "1c484ff8846f9390380dec65c772ca920a7b9edcfcc6489e71822dd7cb6aee16",
+      "suite": "a-tests-r1",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\a-tests-r1_cache.log",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/a-tests-r1_cache.log",
+      "stimuli_base_dir": "E:\\Codex\\Work\\resource-next-20261022-221039\\a-tests-r1",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "bandwidth_water",
+      "passed": true,
+      "seconds": 180.31,
+      "inputs_sha256": {
+        "common/fluid/water_blend.v": "02b9ac8df414a7252263e6dc4f863bbc801e09dd793f7e85dd3282b8bc41b3d7",
+        "common/fluid/water_cache.v": "1634fa246c169facdba844c5e255efed7363a5bceb1954bd45ef5db851fce33a",
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+        "common/fluid/water_priority_map.v": "8a1680b4734b41dc00f92c7721931381925b3526dcf87b00a3d63999c83a8e8b",
+        "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+        "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "src/board_a/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "tests/fx11_water/sdram_contract.v": "87fffbfb31d081a35e76eddeb169aff6f420b726c63879198da8e2c17ba9ea3b",
+        "tests/fx11_water/tb_bandwidth.v": "8d3920d614ba4d55e4894b37a6ea504b4713cb48e89fd17a7d93a29416e390a4",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tests/reference/fx11_water/water_expand.v": "bdf8c0e9f4c9052f5331362b25bf07db8878b5ee7976e7e65ed1b7bc54fdc44b",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "15e4a35116f3b0b40640cf2ebb39c5e4b65f9e330ea4c3abc9b0ac5d5e8cdd08",
+      "suite": "a-tests-r1",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\a-tests-r1_bandwidth_water.log",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/a-tests-r1_bandwidth_water.log",
+      "stimuli_base_dir": "E:\\Codex\\Work\\resource-next-20261022-221039\\a-tests-r1",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "bandwidth_metal",
+      "passed": true,
+      "seconds": 174.41,
+      "inputs_sha256": {
+        "common/fluid/water_blend.v": "02b9ac8df414a7252263e6dc4f863bbc801e09dd793f7e85dd3282b8bc41b3d7",
+        "common/fluid/water_cache.v": "1634fa246c169facdba844c5e255efed7363a5bceb1954bd45ef5db851fce33a",
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+        "common/fluid/water_priority_map.v": "8a1680b4734b41dc00f92c7721931381925b3526dcf87b00a3d63999c83a8e8b",
+        "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+        "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "src/board_a/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "tests/fx11_water/sdram_contract.v": "87fffbfb31d081a35e76eddeb169aff6f420b726c63879198da8e2c17ba9ea3b",
+        "tests/fx11_water/tb_bandwidth.v": "8d3920d614ba4d55e4894b37a6ea504b4713cb48e89fd17a7d93a29416e390a4",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tests/reference/fx11_water/water_expand.v": "bdf8c0e9f4c9052f5331362b25bf07db8878b5ee7976e7e65ed1b7bc54fdc44b",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "b741b097b5b26466938afe990ba6291a571bfb26930fe94ad25c6f28447c3802",
+      "suite": "a-tests-r1",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\a-tests-r1_bandwidth_metal.log",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/a-tests-r1_bandwidth_metal.log",
+      "stimuli_base_dir": "E:\\Codex\\Work\\resource-next-20261022-221039\\a-tests-r1",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "bandwidth_tunnel",
+      "passed": true,
+      "seconds": 187.27,
+      "inputs_sha256": {
+        "common/fluid/water_blend.v": "02b9ac8df414a7252263e6dc4f863bbc801e09dd793f7e85dd3282b8bc41b3d7",
+        "common/fluid/water_cache.v": "1634fa246c169facdba844c5e255efed7363a5bceb1954bd45ef5db851fce33a",
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+        "common/fluid/water_priority_map.v": "8a1680b4734b41dc00f92c7721931381925b3526dcf87b00a3d63999c83a8e8b",
+        "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+        "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "src/board_a/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "tests/fx11_water/sdram_contract.v": "87fffbfb31d081a35e76eddeb169aff6f420b726c63879198da8e2c17ba9ea3b",
+        "tests/fx11_water/tb_bandwidth.v": "8d3920d614ba4d55e4894b37a6ea504b4713cb48e89fd17a7d93a29416e390a4",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tests/reference/fx11_water/water_expand.v": "bdf8c0e9f4c9052f5331362b25bf07db8878b5ee7976e7e65ed1b7bc54fdc44b",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "c1e5b631ad84684c23c137680a065fe723eb80be5b0df29654a00c545a28c630",
+      "suite": "a-tests-r1",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\a-tests-r1_bandwidth_tunnel.log",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/a-tests-r1_bandwidth_tunnel.log",
+      "stimuli_base_dir": "E:\\Codex\\Work\\resource-next-20261022-221039\\a-tests-r1",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "scanout_native",
+      "passed": true,
+      "seconds": 175.94,
+      "inputs_sha256": {
+        "common/fluid/water_blend.v": "02b9ac8df414a7252263e6dc4f863bbc801e09dd793f7e85dd3282b8bc41b3d7",
+        "common/fluid/water_cache.v": "1634fa246c169facdba844c5e255efed7363a5bceb1954bd45ef5db851fce33a",
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+        "common/fluid/water_priority_map.v": "8a1680b4734b41dc00f92c7721931381925b3526dcf87b00a3d63999c83a8e8b",
+        "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+        "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "src/board_a/user_source/hdl_source/frame_pixels.v": "0b45d4a61c0eac7cdff33fa0d84f8670fe1dc732fedf44a4baa16e022eed369e",
+        "src/board_a/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "src/board_a/user_source/hdl_source/SD/frame_fifo_write.v": "2d77247259a858f1a752748d721c3db422b0be5c1d70a2ce6dc828a7dfa6a020",
+        "tests/fx11_water/sdram_contract.v": "87fffbfb31d081a35e76eddeb169aff6f420b726c63879198da8e2c17ba9ea3b",
+        "tests/fx11_water/tb_cooperate_scanout.v": "db81f5b1d8c4b3957e403df4c01ee7f13687f224869bcc6e52bcde1bc798731f",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tests/reference/fx11_water/water_expand.v": "bdf8c0e9f4c9052f5331362b25bf07db8878b5ee7976e7e65ed1b7bc54fdc44b",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "61a694b68247116a492fab24f632996f2f6f5ee3e3550bac6f03bfc9938c14bd",
+      "suite": "a-tests-r1",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\a-tests-r1_scanout_native.log",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/a-tests-r1_scanout_native.log",
+      "stimuli_base_dir": "E:\\Codex\\Work\\resource-next-20261022-221039\\a-tests-r1",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "native_geometry_memory",
+      "passed": true,
+      "seconds": 0.58,
+      "inputs_sha256": {
+        "tests/tb_resource_next_memory.v": "cb0b6fe170cf6807eabef43962267fd9b803a68f3e27b2f18d0c6c4cabfea4f6",
+        "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "common/fluid/water_cache.v": "1634fa246c169facdba844c5e255efed7363a5bceb1954bd45ef5db851fce33a",
+        "tools/test_resource_next.py": "6c6f13f4588ee4838961771683483937ddda9378f2a3380cb37c8052459018df",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Work\\resource-next-20261022-221039\\new-unit-proofs\\native_geometry_memory\\ip_init_map.vh": "03c1127fce8aaa13d4d18c1ae3a67b3654dcbde029bfcf32ae50675188619853",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34"
+      },
+      "inputs_unchanged": true,
+      "measurements": {
+        "exact_low9_rom_words": 2048,
+        "high_bits_nonzero_only_at": "1..128",
+        "inverse_ram9k_before": 4,
+        "inverse_ram9k_expected": 2,
+        "cache_tail_ram32k_before": 2,
+        "cache_tail_ram9k_expected": 4
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\new-unit-proofs_native_geometry_memory.log",
+      "log_sha256": "eb6786a1c45dd587bbeda93859edb784894286b61cdef92973c7671d159df132",
+      "suite": "new-unit-proofs",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/new-unit-proofs_native_geometry_memory.log",
+      "stimuli_base_dir": "E:\\Codex\\Work\\resource-next-20261022-221039\\new-unit-proofs\\native_geometry_memory",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "repair_native",
+      "passed": true,
+      "seconds": 145.8,
+      "inputs_sha256": {
+        "tests/tb_repair_packed8.v": "ce456487bebcf9fa8bef791171508c924a3900f8c704885f2c6e162e9989689b",
+        "tests/reference/resource_research/audio_repair_5_4.v": "5683df8b1cde36d41353e3c93421cc3d43916147adc684321dcafd654dc5ccf9",
+        "common/audio_ui/saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Work\\resource-research-20261022-203734\\delivery-audio-proofs\\repair_native\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d",
+        "tools/test_resource_research.py": "c48fb9f01541051a86780b168f76edfa41a35957f31ef70d0072ab907362acd5"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\delivery-audio-proofs_repair_native.log",
+      "log_sha256": "c769d8ad7808603cfa5ea51fb2542051c10a0e42b65fad3e51e2eefcd71cef32",
+      "suite": "delivery-audio-proofs",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/delivery-audio-proofs_repair_native.log",
+      "stimuli_base_dir": "E:\\Codex\\Work\\resource-research-20261022-203734\\delivery-audio-proofs\\repair_native",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "edge_eram",
+      "passed": true,
+      "seconds": 115.08,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_edge_equivalence.v": "69abe992a7f1a7839552459c4e8eb96801f64a081584c1957098029e838b089b",
+        "common/fluid/water_edge.v": "e710bbd4e90cada1011848b4429f40629cc8c4bfc14ecee5bd643de5cf1c5f79",
+        "tests/reference/thumbnail/water_edge.v": "05f9facc4c643b0a652b20402034f48891bc985f956228ad3f2cd77ee77c85b8",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "src/board_a/user_source/hdl_source/IP/water_edge_weights.mif": "1ba4dae4767feaeef087e147b6342e9e0a856f160cf06d9186948f6a272a12fc",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\edge_weights.hex": "ae5e6ea212b2fc2a0f85a6873afef3ab93d7323acd223f6cfa88993268a35b2c",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\edge_eram_include\\ip_init_map.vh": "51bebcf03d44d5fa8e30e769f4708d069946fb46bb3cc411424d9407269ed850"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\thumbnail-tests_edge_eram.log",
+      "log_sha256": "441ac52d4eea4c0b0e2fa2af67c223b6dcbc561ebe8b8462c33b2e0ea84d5ed7",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\thumbnail-tests_edge_eram.log",
+        "saved_log_sha256": "441ac52d4eea4c0b0e2fa2af67c223b6dcbc561ebe8b8462c33b2e0ea84d5ed7"
+      },
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/thumbnail-tests_edge_eram.log",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "menu_geometry",
+      "passed": true,
+      "seconds": 239.2,
+      "defines": [
+        "TOUCHSCREEN_SIM"
+      ],
+      "inputs_sha256": {
+        "tests/tb_menu_geometry.v": "0e1cb53bcddcff650bc9be24695c9fc4810015078603f7abb4693d272c8cebad",
+        "common/photo_settings_overlay.v": "28e19071deea442b93102d7d4aa839ba93b252b757ae853e5ebd7c83df3707f8",
+        "tests/reference/thumbnail/photo_settings_overlay.v": "242c6c8b6ac6e0b85fb1efe032159f07c013a7679f4feccb0a69a1d65bc1b9b9",
+        "tests/touchscreen_menu_font.v": "12fda21482b92b9b53b2db223dfd64334b6ec345a9345944381ffa64f7fd80bf",
+        "common/photo_menu_font.mif": "2bc93d7d132dcd858edf436d5c55e73896996cf89a2d224cbd8f78bf337d4c5d",
+        "tests/touchscreen_results/menu_font.hex": "ba163be9b68bed0aa7c67eaaf81c5806136eba6c20b8efa27cf19495bdb94858",
+        "src/board_a/user_source/hdl_source/photo_menu_text_lookup.mif": "6bd358ea5b82f7a65629595a1f4415d67d02936c2e7ecb704e6166dbfc6441b1",
+        "src/board_a/user_source/hdl_source/photo_menu_text_lookup.hex": "754b5d6f555a8118b10d149314378f63d485fa63d13c0c3c8f6a2b9eb94864b9"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\thumbnail-tests_menu_geometry.log",
+      "log_sha256": "f845bf1ae310dd533d4dd5baf969cfa972390edcbfaa0a12e61d64ad84bbd5b6",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\thumbnail-tests_menu_geometry.log",
+        "saved_log_sha256": "f845bf1ae310dd533d4dd5baf969cfa972390edcbfaa0a12e61d64ad84bbd5b6"
+      },
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/thumbnail-tests_menu_geometry.log",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "av_link",
+      "passed": true,
+      "seconds": 53.52,
+      "inputs_sha256": {
+        "tests/tb_resource_av_link.v": "4ab5bca95df9a02663b6fe721367e04692e32a93ea7bb9d51b12c56f1a7f094d",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "common/photo_av_metadata.v": "ac49f27edce4408f9fee0da1aa67bf60b76bde19790a7e8aea1337faafd236ad",
+        "common/photo_av_receiver.v": "2fd185ece16d7569545eceb4b94d575b560e5288c9a2b4b6683ecb98af3fede7",
+        "tests/resource_av_analysis_stub.v": "c5ab247d2c3563db343b7567e216a54549e1a7b8ddbc4381d10ccc3d6480d89a",
+        "tests/av_bram_model.v": "b18886a5c572acf0aabfcb37cc7aab704c15526cd79193fb0b5b1fa49b7540a6",
+        "tools/test_resource_allocation.py": "e48f2ef26548bdacdcde8ea216c80ce8b33c1ca321adbb04492397af33367ace"
+      },
+      "defines": [],
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\resource-tests_av_link.log",
+      "log_sha256": "c149958009e1a1616408da7320682bf1717b63a1452fe7dba6f41c4efc516a6a",
+      "inputs_unchanged": true,
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\resource-tests_av_link.log",
+        "saved_log_sha256": "c149958009e1a1616408da7320682bf1717b63a1452fe7dba6f41c4efc516a6a"
+      },
+      "suite": "resource-tests",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/resource-tests_av_link.log",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "delay",
+      "passed": true,
+      "seconds": 36.89,
+      "inputs_sha256": {
+        "tests/tb_eram_video_delay.v": "5aa6f8565e66556eb4915bf81bd3e46c00bfdb8213c1fb0065c151f253c6509a",
+        "common/photo_display_pipe.v": "e6ba29eb4142b690a5abb9be5b07c0b880040736485cdbeb1013f040559718c3",
+        "tests/reference/award_v5/photo_display_pipe.v": "4cd9c09a2f814c7abfd3b86b30b6996b8cf23f53ba46dafc850fc4e438b00700",
+        "tools/test_resource_allocation.py": "e48f2ef26548bdacdcde8ea216c80ce8b33c1ca321adbb04492397af33367ace"
+      },
+      "defines": [
+        "ERAM_SIM"
+      ],
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\resource-tests_delay.log",
+      "log_sha256": "966c5768dc2e830417ec5b013b4ee773daf617b6ec76f6545585552060236106",
+      "inputs_unchanged": true,
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\resource-tests_delay.log",
+        "saved_log_sha256": "966c5768dc2e830417ec5b013b4ee773daf617b6ec76f6545585552060236106"
+      },
+      "suite": "resource-tests",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/resource-tests_delay.log",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "delay_vendor",
+      "passed": true,
+      "seconds": 55.59,
+      "inputs_sha256": {
+        "tests/tb_eram_video_delay.v": "5aa6f8565e66556eb4915bf81bd3e46c00bfdb8213c1fb0065c151f253c6509a",
+        "common/photo_display_pipe.v": "e6ba29eb4142b690a5abb9be5b07c0b880040736485cdbeb1013f040559718c3",
+        "tests/reference/award_v5/photo_display_pipe.v": "4cd9c09a2f814c7abfd3b86b30b6996b8cf23f53ba46dafc850fc4e438b00700",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\resource-tests\\vendor_dram_plain.v": "32d2eab62e3c1e3685da9153140d7c49de35d26c456010708444576754491ae0",
+        "tools/test_resource_allocation.py": "e48f2ef26548bdacdcde8ea216c80ce8b33c1ca321adbb04492397af33367ace",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\sim_release\\eg4\\eg_logic_dram.v": "b620cebfe67f8829df3b737d1f75072b5f42bae7a2396b36616e85aa3cc9ea1e"
+      },
+      "defines": [],
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\resource-tests_delay_vendor.log",
+      "log_sha256": "966c5768dc2e830417ec5b013b4ee773daf617b6ec76f6545585552060236106",
+      "inputs_unchanged": true,
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\resource-tests_delay_vendor.log",
+        "saved_log_sha256": "966c5768dc2e830417ec5b013b4ee773daf617b6ec76f6545585552060236106"
+      },
+      "suite": "resource-tests",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/resource-tests_delay_vendor.log",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "hybrid_fifo",
+      "passed": true,
+      "seconds": 5.33,
+      "inputs_sha256": {
+        "tests/tb_ip_audio_fifo.v": "727f62143901ed4c21a1406abf7b1955f0662f44cdf4e6482394546c512f423a",
+        "tests/reference/award_v5/photo_audio_fifo.v": "a81b1c7522511965092ffd63ff95c1534801b9b35b658930d10d2b0d334f71fa",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "tools/test_resource_allocation.py": "e48f2ef26548bdacdcde8ea216c80ce8b33c1ca321adbb04492397af33367ace"
+      },
+      "defines": [],
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\resource-tests_hybrid_fifo.log",
+      "log_sha256": "b52f914685cee49017c549152468361fbf501f3b0d8e6946139c4e4f23f6298b",
+      "inputs_unchanged": true,
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\resource-tests_hybrid_fifo.log",
+        "saved_log_sha256": "b52f914685cee49017c549152468361fbf501f3b0d8e6946139c4e4f23f6298b"
+      },
+      "suite": "resource-tests",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/resource-tests_hybrid_fifo.log",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "metadata",
+      "passed": true,
+      "seconds": 1.06,
+      "inputs_sha256": {
+        "tests/tb_resource_metadata.v": "dbb5393c89f91df66889a66b4610c04b183edf0515d0845182f4b1d64552864a",
+        "common/photo_av_metadata.v": "ac49f27edce4408f9fee0da1aa67bf60b76bde19790a7e8aea1337faafd236ad",
+        "common/photo_av_receiver.v": "2fd185ece16d7569545eceb4b94d575b560e5288c9a2b4b6683ecb98af3fede7",
+        "common/audio_ui/saixian_audio_visualizer.v": "7563a700a7cc89c04351d9fb55049c77adcf78e0807133ef501a51e6d041894d",
+        "tests/av_bram_model.v": "b18886a5c572acf0aabfcb37cc7aab704c15526cd79193fb0b5b1fa49b7540a6",
+        "tools/test_resource_allocation.py": "e48f2ef26548bdacdcde8ea216c80ce8b33c1ca321adbb04492397af33367ace",
+        "common/audio_ui/saixian_av_hann_half.hex": "fc9247268b83a9aca0d5f6022efa586c98c9102fa304ffec024f4cd562375081",
+        "common/audio_ui/saixian_av_twiddle_serial.hex": "dc321b9f2e3779a52b27467170a829039be71b054742e259beb53ffa3c5782f0"
+      },
+      "defines": [],
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\resource-tests_metadata.log",
+      "log_sha256": "36e6ca8d7a699011c79f8e89800a8b6c6d832a084c79bf7ff366bf3520106aa1",
+      "inputs_unchanged": true,
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\resource-tests_metadata.log",
+        "saved_log_sha256": "36e6ca8d7a699011c79f8e89800a8b6c6d832a084c79bf7ff366bf3520106aa1"
+      },
+      "suite": "resource-tests",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/resource-tests_metadata.log",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "typed_protocol",
+      "passed": true,
+      "seconds": 0.61,
+      "inputs_sha256": {
+        "tests/tb_fx_protocol.v": "9d891960c9d0fdaf50f9def9221ee189617c07ad7f056775abe29c9d4f09077d",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "tools/test_resource_allocation.py": "e48f2ef26548bdacdcde8ea216c80ce8b33c1ca321adbb04492397af33367ace"
+      },
+      "defines": [
+        "VICTORY_SIM"
+      ],
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\resource-tests_typed_protocol.log",
+      "log_sha256": "51ebdbe696cf4272707f0d03de99677470687711b506bf0f1168f184c74935de",
+      "inputs_unchanged": true,
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\resource-tests_typed_protocol.log",
+        "saved_log_sha256": "51ebdbe696cf4272707f0d03de99677470687711b506bf0f1168f184c74935de"
+      },
+      "suite": "resource-tests",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/resource-tests_typed_protocol.log",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "rgb565_equivalence",
+      "passed": true,
+      "seconds": 2.17,
+      "inputs_sha256": {
+        "tests/tb_rgb565_equivalence.v": "e7f79fbd67619e09562c85bdc350cdcb24d15f55eaa6b45076811fdc99386f0a",
+        "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+        "tests/reference/rgb565/photo_color_format.v": "7ca4743317914328da696154ed48157b3333cee777ceb21e0d06fc8be47ec1b8",
+        "src/board_a/user_source/hdl_source/frame_pixels.v": "0b45d4a61c0eac7cdff33fa0d84f8670fe1dc732fedf44a4baa16e022eed369e",
+        "tests/reference/rgb565/frame_pixels.v": "25f2cbe7ad71cbbdca10ac86ec0bb7657561eb2b805f576c5346325cedbbcbc4",
+        "tools/test_rgb565.py": "aaf198936d566e2473c2cb2e4e8e821c1ff3285d61a2efc799994572b3bc5709",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_equivalence\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\rgb565-tests_rgb565_equivalence.log",
+      "log_sha256": "1ddb3f8b7b4fe29dcdfe8992f7fff7393b28bae351e261c872e4a518bbe9432b",
+      "suite": "rgb565-tests",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/rgb565-tests_rgb565_equivalence.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\rgb565-tests_rgb565_equivalence.log",
+        "saved_log_sha256": "1ddb3f8b7b4fe29dcdfe8992f7fff7393b28bae351e261c872e4a518bbe9432b"
+      },
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "rgb565_settings",
+      "passed": true,
+      "seconds": 0.06,
+      "inputs_sha256": {
+        "tests/tb_rgb565_settings.v": "296eddc80868b580b72f0759c1a67e4a29ae558dce77016b276f9233e5dafe86",
+        "common/photo_unified_settings_controller.v": "a2b7444b42f071dc800ea8927dfe6d7d45abcb71b7d23e16f1bdcd03b179938b",
+        "tools/test_rgb565.py": "aaf198936d566e2473c2cb2e4e8e821c1ff3285d61a2efc799994572b3bc5709",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_settings\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\rgb565-tests_rgb565_settings.log",
+      "log_sha256": "9530cc0c5a820bfe6c0975be820afb2a5e3d0b824854927290c08ec155199c80",
+      "suite": "rgb565-tests",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/rgb565-tests_rgb565_settings.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\rgb565-tests_rgb565_settings.log",
+        "saved_log_sha256": "9530cc0c5a820bfe6c0975be820afb2a5e3d0b824854927290c08ec155199c80"
+      },
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "tb_v4_audio_rate",
+      "passed": true,
+      "seconds": 4.08,
+      "inputs_unchanged": true,
+      "inputs_sha256": {
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "tests/tb_v4_audio_rate.v": "f080ab87c10d3a59093966dabb592779a82f356f52776a71261ab3cb16dd4ee9"
+      },
+      "log_sha256": "5afee3da9e89834b5bd08df93c17df0a05d0c2b6812f9ad4fadaab8cfc9b3630",
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\uart-tests_tb_v4_audio_rate.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\uart-tests_tb_v4_audio_rate.log",
+        "saved_log_sha256": "5afee3da9e89834b5bd08df93c17df0a05d0c2b6812f9ad4fadaab8cfc9b3630"
+      },
+      "suite": "uart-tests",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/uart-tests_tb_v4_audio_rate.log",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "tb_v4_uart_equivalence",
+      "passed": true,
+      "seconds": 39.2,
+      "inputs_unchanged": true,
+      "inputs_sha256": {
+        "common/photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df",
+        "tests/reference/v4_port/photo_uart.v": "8ab6334a3af1f5015c4dccad344f05c6a5f8f7d6d8da7727aed64f6ae2f7badd",
+        "tests/tb_v4_uart_equivalence.v": "740d73e9b84fea9453e53fdba1c6953a1f628e1c2f3a5e19299a6e251537077c"
+      },
+      "log_sha256": "2687b99b8d9783cce6c17047b29c7b1d5df5d7a207c27393689999d5f46122c6",
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\uart-tests_tb_v4_uart_equivalence.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\uart-tests_tb_v4_uart_equivalence.log",
+        "saved_log_sha256": "2687b99b8d9783cce6c17047b29c7b1d5df5d7a207c27393689999d5f46122c6"
+      },
+      "suite": "uart-tests",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/uart-tests_tb_v4_uart_equivalence.log",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "scene",
+      "passed": true,
+      "seconds": 0.12,
+      "inputs_sha256": {
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_scene.v": "ea6c180517f8c8916884f74f23c1db5a2005bc2cd9373dfcfe4e0faf1c590330",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "tests/fx11_water/tb_scene.v": "d5d5b9629cdc109a2e40635e146d087c971de40fffd00a67fdec2fec909c0d5a",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "8c7befb85f79b3fb5147f17a7650175dd032f182261f4b87d71c8266ae06de6b",
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\fx-tests_scene.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\fx-tests_scene.log",
+        "saved_log_sha256": "8c7befb85f79b3fb5147f17a7650175dd032f182261f4b87d71c8266ae06de6b"
+      },
+      "suite": "fx-tests",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/fx-tests_scene.log",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "transition",
+      "passed": true,
+      "seconds": 0.24,
+      "inputs_sha256": {
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "common/saixian_transition.v": "0db761825a5ca1a810f64b10757b83ba7e3cb4f371a9785441c2a477af321227",
+        "tests/fx11_water/tb_transition.v": "9b036b10466e213a53806633ee29145d94c2888641bf97e9a0b6d4da746cd09b",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "721dd0ff949b767fc27e7427f781f4e2276957eedd6a45efd08a5495299dd46c",
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\fx-tests_transition.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\fx-tests_transition.log",
+        "saved_log_sha256": "721dd0ff949b767fc27e7427f781f4e2276957eedd6a45efd08a5495299dd46c"
+      },
+      "suite": "fx-tests",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/fx-tests_transition.log",
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "blend",
+      "passed": true,
+      "seconds": 4.17,
+      "inputs_sha256": {
+        "tests/tb_blend_native.v": "55a5a8830f65ecbc3bde39ab70d2aabf19e1de03528b3a1a2367542b24dd44bc",
+        "common/fluid/water_blend.v": "02b9ac8df414a7252263e6dc4f863bbc801e09dd793f7e85dd3282b8bc41b3d7",
+        "tests/reference/animation_cache/water_blend.v": "3ff4ba7695dd45ad7b96d29047d1850ff2ca852d3dbfaa0fe9fea73e2c6edbaa",
+        "tools/test_animation_cache.py": "40de88ebd3a90888b0b83f135dd302b070eaeed8a6ce3e39a1f1a620c5655c34",
+        "E:\\Codex\\Work\\animation-cache-20261022\\animation-tests\\blend\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\animation-tests_blend.log",
+      "log_sha256": "61336d2465929e59f67d52a77c4dab6840f327b2f5163207b8a97a870e85d610",
+      "suite": "animation-tests",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/animation-tests_blend.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\animation-tests_blend.log",
+        "saved_log_sha256": "61336d2465929e59f67d52a77c4dab6840f327b2f5163207b8a97a870e85d610"
+      },
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "blend_dsp",
+      "passed": true,
+      "seconds": 8.76,
+      "inputs_sha256": {
+        "tests/tb_blend_native.v": "55a5a8830f65ecbc3bde39ab70d2aabf19e1de03528b3a1a2367542b24dd44bc",
+        "common/fluid/water_blend.v": "02b9ac8df414a7252263e6dc4f863bbc801e09dd793f7e85dd3282b8bc41b3d7",
+        "tests/reference/animation_cache/water_blend.v": "3ff4ba7695dd45ad7b96d29047d1850ff2ca852d3dbfaa0fe9fea73e2c6edbaa",
+        "tests/fx11_water/glbl.v": "2a063611f37926861bb60704f5407c8b569d29b8c3c3171424a2d971240d846f",
+        "E:\\Codex\\Work\\animation-cache-20261022\\animation-tests\\vendor_mult18_functional.v": "3027bc66b99df04b17c595b455fca09a336d6b01831528a7232787dc2acb88df",
+        "tools/test_animation_cache.py": "40de88ebd3a90888b0b83f135dd302b070eaeed8a6ce3e39a1f1a620c5655c34",
+        "E:\\Codex\\Work\\animation-cache-20261022\\animation-tests\\blend_dsp\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\sim_release\\eg4\\eg_phy_mult18.v": "25ca8de5e98253510d0417d6710046c107064b0decc952a602667117bdd6fbdc"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\animation-tests_blend_dsp.log",
+      "log_sha256": "eb10567fb299560d764b7f43cc8e9f92956f03044ee2766001c46148922d988b",
+      "suite": "animation-tests",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/animation-tests_blend_dsp.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\animation-tests_blend_dsp.log",
+        "saved_log_sha256": "eb10567fb299560d764b7f43cc8e9f92956f03044ee2766001c46148922d988b"
+      },
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "fast_processing",
+      "passed": true,
+      "seconds": 13.66,
+      "inputs_sha256": {
+        "tests/tb_fast_processing.v": "a2714b08f84dc08847c0a121dff958a277fa4596278831580a88144694cdaebe",
+        "common/photo_b_processing.v": "cfa81c7f137b4ceae49e05cf11fa6ec21c0b4192bb9e68a1754d0acaf95e7404",
+        "tests/reference/animation_cache/photo_b_processing.v": "f2be3eda2935133a676fa3f075f3a47fce989d2300e67a4fb8fbb8a0551a7cb3",
+        "common/photo_processing.v": "fa835d951d02eedce197444ef59bcad4a578ad1b7ca1739f77b41a2af171ea38",
+        "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+        "common/fluid/water_pack.v": "27e4478f5b79973a01697cde029955b7bff6b7b5fb038bc2e8cf25e54c497960",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "tools/test_animation_cache.py": "40de88ebd3a90888b0b83f135dd302b070eaeed8a6ce3e39a1f1a620c5655c34",
+        "E:\\Codex\\Work\\animation-cache-20261022\\animation-tests\\fast_processing\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\animation-tests_fast_processing.log",
+      "log_sha256": "ce902baae46679e3cc72e40496dccb54fc720da4a732d3cefb7ac23b8aac2027",
+      "suite": "animation-tests",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/animation-tests_fast_processing.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\animation-tests_fast_processing.log",
+        "saved_log_sha256": "ce902baae46679e3cc72e40496dccb54fc720da4a732d3cefb7ac23b8aac2027"
+      },
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "spi_contract",
+      "passed": true,
+      "seconds": 0.12,
+      "inputs_sha256": {
+        "tests/tb_spi_read_speed.v": "4145d657af19aceb6efcf3bb29f47eb8150828ebe05dc0afd86b7bb575a4987c",
+        "common/photo_sd/spi_master.v": "f3f04df5bc162fba03beff74fc506bace4038d2667505e498731a06f6b5a27e9",
+        "tools/test_animation_cache.py": "40de88ebd3a90888b0b83f135dd302b070eaeed8a6ce3e39a1f1a620c5655c34",
+        "E:\\Codex\\Work\\animation-cache-20261022\\animation-tests\\spi_contract\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\animation-tests_spi_contract.log",
+      "log_sha256": "b8cca9c6963ca4cd32e32b2de08dbb4f89102f794ffab6e20480f89859594d1c",
+      "suite": "animation-tests",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/animation-tests_spi_contract.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\animation-tests_spi_contract.log",
+        "saved_log_sha256": "b8cca9c6963ca4cd32e32b2de08dbb4f89102f794ffab6e20480f89859594d1c"
+      },
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    },
+    {
+      "test": "sprite",
+      "passed": true,
+      "seconds": 1.44,
+      "inputs_sha256": {
+        "tests/tb_compact_sprite.v": "8d134a9f99ca5912b9581aa8d74d941987a4c7039ff907be10613a3a623013af",
+        "common/award_sprite_rom.v": "f92edd17e605ded17d834eb408475ac66f061f99c7b94edfdad9d4997242f768",
+        "tests/reference/animation_cache/award_sprite_rom.v": "3834698ce2cfac348491492344f2d73678315b9bec0a32792ae423b22f14def1",
+        "tools/test_animation_cache.py": "40de88ebd3a90888b0b83f135dd302b070eaeed8a6ce3e39a1f1a620c5655c34",
+        "E:\\Codex\\Work\\animation-cache-20261022\\animation-tests\\sprite\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.7project\\releases\\merge_5fac_20261023\\validation\\animation-tests_sprite.log",
+      "log_sha256": "baf11bd3c30ac0b281c9accb893a6292e66fc2a49dfa7949894a59f87e358e0e",
+      "suite": "animation-tests",
+      "saved_log": "releases/thumbnail_hq_20261023/validation/animation-tests_sprite.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\animation-tests_sprite.log",
+        "saved_log_sha256": "baf11bd3c30ac0b281c9accb893a6292e66fc2a49dfa7949894a59f87e358e0e"
+      },
+      "current_verification": "Unchanged source/stimulus inputs and saved log hashes reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation",
+      "reexecuted": false,
+      "unchanged_reverified": true
+    }
+  ],
+  "excluded_historical_records": [
+    {
+      "test": "timing_control",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "early_thumbnail",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "control",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "uart_contract",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "timer_equivalence",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "hmi_legacy",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "hmi_relief",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "control_legacy",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "control_relief",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "control_wait_catalog",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "control_only_relief",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "motion",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "catalog",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "catalog_reverse",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "cache",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "cache_reverse",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "cache_paused",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "cache_paused_reverse",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "fx_controls",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "keys",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "volume",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "reader",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "legacy_reader",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "display_controls",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "result_controls",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "render_cdc",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "shared_legacy_rows",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "player",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "bus",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "product_native",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "player_native",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "bus_native",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "shared_cache",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "hq_materials",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "touch",
+      "suite": "publication_build_a_06",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "packing",
+      "suite": "r2-thumbnail-tests",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "memory",
+      "suite": "r2-thumbnail-tests",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "vendor",
+      "suite": "r2-thumbnail-tests",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "overlay",
+      "suite": "r2-thumbnail-tests",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "phase",
+      "suite": "r2-thumbnail-tests",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "blanking",
+      "suite": "r2-thumbnail-tests",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "early_cancel",
+      "suite": "r2-merge-tests",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "rgb565_award_link",
+      "suite": "rgb565-tests",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "rgb565_link_abort",
+      "suite": "rgb565-tests",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    },
+    {
+      "test": "page_link",
+      "suite": "animation-tests",
+      "reason": "Historical input hashes no longer match current project; excluded from current pass count."
+    }
+  ],
+  "files_sha256": {
+    "releases/PHOTO_BOARD_A_5_0.bit": "a964e47efef6bf94839b0e626b1475605f1c39aca5733a1df9a123be7abdb77a",
+    "releases/PHOTO_BOARD_B_5_0.bit": "7e845ede445e610a9af2603fe9dee26919fa78a6742ea281a7d629f935876763"
+  },
+  "rendering": "24 native 576x576 indexed views with per-view material palettes, aligned PackBits and FPGA interactive lighting; 720p output; 10 display frames per view, twice previous speed; scene-only twofold exposure curve with highlight protection; two 4MiB SDRAM slots."
+}

@@ -1,0 +1,2 @@
+PASS production BMP/DLT scanner: six photos, two old/new award pairs, mixed headers, file-length skipping, exact source-size flags; reverse=1
+E:\Codex\Work\saixian-relief-native-20261024\candidate\5.0project\tests\tb_relief_catalog_scan.v:27: $finish called at 51690000 (1ps)

@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 module photo_link_sender #(parameter FRAME_PIXELS=921600,PREP_CYCLES=2,ENABLE_CRC=0,LEGACY_TIMING=1,AWARD_TAIL=0,PREFETCH_WORD=0)(
- input award_frame,input clk,rst,start,abort,extended_frame,
+ input relief_frame,input award_frame,input clk,rst,start,abort,extended_frame,
  output reg plane_start,output reg effect_plane,input [31:0] data,input empty,read_ack,link_ready,
  output reg read_req,output read_en,
  output reg [15:0] link_data,output reg link_valid,link_sof,link_eof,
@@ -12,11 +12,11 @@ function [31:0] crc_pixel;
  t=t^{24'd0,pixel[7:0]};for(i=0;i<8;i=i+1)t=(t>>1)^(t[0] ? 32'hedb88320:0);crc_pixel=t;end
 endfunction
 localparam IDLE=0,REQUEST=1,DRAIN=2,FETCH=3,LATCH=4,HIGH=5,LOW=6,FINISH=7,PRE_HIGH=8,PRE_LOW=9;
-reg frame_extended;wire [20:0] final_index=frame_extended ? 21'd1382398:FRAME_PIXELS-2;
+reg frame_extended,frame_relief,frame_award;wire [20:0] final_index=frame_relief ? 21'd1970174:frame_extended ? 21'd1382398:FRAME_PIXELS-2;
 reg [3:0] state;reg [2:0] prep_count;reg [20:0] index;reg [31:0] word_data,crc;
 reg ack_meta,ack_sync;reg [2:0] settle;
 reg [31:0] prefetched_data;reg prefetch_pending,prefetch_valid;
-wire plane_boundary=frame_extended && !(AWARD_TAIL && award_frame) && !effect_plane && index==FRAME_PIXELS-2;
+wire plane_boundary=frame_extended && !(AWARD_TAIL && frame_award) && !effect_plane && index==FRAME_PIXELS-2;
 // One elastic word overlaps the source's synchronous read with transmission.
 // Never read beyond a frame or the native/auxiliary-plane transaction boundary.
 wire prefetch_read=PREFETCH_WORD && !abort && state==HIGH && link_valid && link_ready &&
@@ -24,13 +24,13 @@ wire prefetch_read=PREFETCH_WORD && !abort && state==HIGH && link_valid && link_
 assign read_en=(state==FETCH && !empty) || prefetch_read;
 assign busy=state!=IDLE;assign frame_crc=ENABLE_CRC ? ~crc:32'd0;
 always @(posedge clk or posedge rst)begin
- if(rst)begin plane_start<=0;effect_plane<=0;frame_extended<=0;state<=IDLE;prep_count<=0;index<=0;word_data<=0;read_req<=0;done<=0;crc<=32'hffffffff;ack_meta<=0;ack_sync<=0;settle<=0;prefetched_data<=0;prefetch_pending<=0;prefetch_valid<=0;end
+ if(rst)begin frame_award<=0;frame_relief<=0;plane_start<=0;effect_plane<=0;frame_extended<=0;state<=IDLE;prep_count<=0;index<=0;word_data<=0;read_req<=0;done<=0;crc<=32'hffffffff;ack_meta<=0;ack_sync<=0;settle<=0;prefetched_data<=0;prefetch_pending<=0;prefetch_valid<=0;end
  else begin
   ack_meta<=read_ack;ack_sync<=ack_meta;done<=0;plane_start<=0;
   if(prefetch_pending)begin prefetched_data<=data;prefetch_pending<=0;prefetch_valid<=1;end
   if(abort)begin state<=IDLE;read_req<=0;prefetch_pending<=0;prefetch_valid<=0;end
   else case(state)
-   IDLE:if(start)begin effect_plane<=0;frame_extended<=extended_frame || (AWARD_TAIL && award_frame);read_req<=1;index<=0;crc<=32'hffffffff;prefetch_pending<=0;prefetch_valid<=0;state<=REQUEST;end
+   IDLE:if(start)begin frame_award<=award_frame;frame_relief<=relief_frame===1'b1;effect_plane<=0;frame_extended<=extended_frame || (AWARD_TAIL && award_frame);read_req<=1;index<=0;crc<=32'hffffffff;prefetch_pending<=0;prefetch_valid<=0;state<=REQUEST;end
    REQUEST:if(ack_sync)begin read_req<=0;settle<=0;state<=DRAIN;end
    DRAIN:if(!ack_sync)begin if(settle==4)state<=FETCH;else settle<=settle+1'b1;end
    FETCH:if(!empty)state<=LATCH;
@@ -73,7 +73,7 @@ end
 endmodule
 
 module photo_link_receiver #(parameter FRAME_PIXELS=921600,ENABLE_CRC=0,LEGACY_TIMING=1,AWARD_TAIL=0)(
- input award_frame,input clk,rst,arm,abort,extended_frame,input [15:0] data,input valid,sof,eof,
+ input relief_frame,input award_frame,input clk,rst,arm,abort,extended_frame,input [15:0] data,input valid,sof,eof,
  output ready,output armed,output busy,
  output reg write_req,input write_ack,full,output reg write_en,output reg [31:0] write_data,
  input finish_toggle,output reg done,output reg fault,output [31:0] frame_crc,
@@ -85,7 +85,7 @@ function [31:0] crc_pixel;
  t=t^{24'd0,pixel[7:0]};for(i=0;i<8;i=i+1)t=(t>>1)^(t[0] ? 32'hedb88320:0);crc_pixel=t;end
 endfunction
 localparam IDLE=0,REQUEST=1,DRAIN=2,RECEIVE=3,WAIT_WRITE=4,ERROR=5;
-reg frame_extended;wire [20:0] final_count=frame_extended ? 21'd1382399:FRAME_PIXELS-1;
+reg frame_extended,frame_relief;wire [20:0] final_count=frame_relief ? 21'd1970175:frame_extended ? 21'd1382399:FRAME_PIXELS-1;
 reg [2:0] state;reg [20:0] count;reg [15:0] first;reg [31:0] crc;
 reg ack_meta,ack_sync,fin_meta,fin_sync,fin_seen;reg [2:0] settle;
 reg ready_reg;
@@ -97,13 +97,13 @@ always @(negedge clk or posedge rst)
 assign ready=LEGACY_TIMING ? (state==RECEIVE && !full && !write_en):ready_reg;
 assign armed=state==RECEIVE;assign busy=state!=IDLE;assign frame_crc=ENABLE_CRC ? ~crc:32'd0;
 always @(posedge clk or posedge rst)begin
- if(rst)begin frame_extended<=0;state<=IDLE;count<=0;first<=0;crc<=32'hffffffff;write_req<=0;write_en<=0;write_data<=0;done<=0;fault<=0;fault_detail<=0;ack_meta<=0;ack_sync<=0;fin_meta<=0;fin_sync<=0;fin_seen<=0;settle<=0;end
+ if(rst)begin frame_relief<=0;frame_extended<=0;state<=IDLE;count<=0;first<=0;crc<=32'hffffffff;write_req<=0;write_en<=0;write_data<=0;done<=0;fault<=0;fault_detail<=0;ack_meta<=0;ack_sync<=0;fin_meta<=0;fin_sync<=0;fin_seen<=0;settle<=0;end
  else begin
   ack_meta<=write_ack;ack_sync<=ack_meta;fin_meta<=finish_toggle;fin_sync<=fin_meta;
   done<=0;write_en<=write_en && full;
   if(abort)begin state<=IDLE;write_req<=0;fault<=0;end
   else case(state)
-   IDLE:if(arm)begin frame_extended<=extended_frame || (AWARD_TAIL && award_frame);write_req<=1;count<=0;crc<=32'hffffffff;fault<=0;fault_detail<=0;fin_seen<=fin_sync;state<=REQUEST;end
+   IDLE:if(arm)begin frame_relief<=relief_frame===1'b1;frame_extended<=extended_frame || (AWARD_TAIL && award_frame);write_req<=1;count<=0;crc<=32'hffffffff;fault<=0;fault_detail<=0;fin_seen<=fin_sync;state<=REQUEST;end
    REQUEST:if(ack_sync)begin write_req<=0;settle<=0;state<=DRAIN;end
    DRAIN:if(!ack_sync)begin if(settle==4)state<=RECEIVE;else settle<=settle+1'b1;end
    RECEIVE:if(valid && ready)begin

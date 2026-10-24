@@ -1,6 +1,6 @@
 // Frame-boundary controls for the golden relief player. Rotation is enabled
 // immediately on entry. Pause freezes angle and automatic light together.
-module photo_relief_motion #(parameter HOLD_FRAMES=15)(
+module photo_relief_motion #(parameter HOLD_FRAMES=10)(
  input clk,rst,enable,pause,frame_tick,
  input touch_contact,input [10:0] cursor_x,input [9:0] cursor_y,
  output reg [4:0] angle,

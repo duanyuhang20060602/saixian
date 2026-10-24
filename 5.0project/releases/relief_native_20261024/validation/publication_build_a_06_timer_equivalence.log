@@ -1,0 +1,2 @@
+PASS production timer lookahead: exact cycle equivalence in 9 parameter configurations, all 1/2/5/40/45-second boundaries, 32-bit wrap, clears, async reset and randomized states; other controller logic unchanged
+E:\Codex\Work\saixian-relief-native-20261024\timer\timer_equivalence.v:91: $finish called at 6340000 (1ps)

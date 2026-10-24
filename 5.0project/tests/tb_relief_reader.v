@@ -1,8 +1,8 @@
 `timescale 1ns/1ps
-module tb #(parameter FILE_WORDS=700000);
+module tb #(parameter FILE_WORDS=1000000,EXPECTED_WORDS=985088);
 reg clk=0;always #5 clk=~clk;
 reg rst=1,start=0,ack=0,byte_valid=0,block_end=0;reg [7:0] byte_data=0;
-reg [31:0] file_words[0:FILE_WORDS-1],expected[0:691199];
+reg [31:0] file_words[0:FILE_WORDS-1],expected[0:EXPECTED_WORDS-1];
 wire ready,done,write_req,pixel_valid,req,word_valid,aligned;wire [3:0] error;
 wire [23:0] pixel;wire [31:0] sector,word_data;integer n=0,j,checks=0,cycles=0;reg full=0;
 photo_dlt_reader dut(.clk(clk),.rst(rst),.start(start),.start_sector(32'd100),.ready(ready),.done(done),.error(error),
@@ -14,7 +14,7 @@ always @(posedge clk)begin
  cycles<=cycles+1;ack<=write_req;
  if(error)$fatal(1,"DLT reader error %0d",error);
  if(word_valid)begin
-  if(checks>=691200 || word_data!==expected[checks])$fatal(1,"DLT word mismatch %0d actual=%h expected=%h",checks,word_data,expected[checks]);
+  if(checks>=EXPECTED_WORDS || word_data!==expected[checks])$fatal(1,"DLT word mismatch %0d actual=%h expected=%h",checks,word_data,expected[checks]);
   checks=checks+1;
  end
 end
@@ -35,8 +35,8 @@ initial begin
   end
  end
  repeat(8)@(negedge clk);
- if(checks!=691200 || !aligned)$fatal(1,"incomplete DLT transport %0d",checks);
- $display("PASS SXDLT TF decoding and RGB565 packing: 691200 exact words including plate, opaque tail and full backpressure");$finish;
+ if(checks!=EXPECTED_WORDS || !aligned)$fatal(1,"incomplete DLT transport %0d",checks);
+ $display("PASS SXDLT TF decoding and RGB565 packing: %0d exact words including plate, opaque tail and full backpressure",EXPECTED_WORDS);$finish;
 end
 initial begin #500000000;$fatal(1,"reader timeout state=%0d words=%0d",dut.state,checks);end
 endmodule

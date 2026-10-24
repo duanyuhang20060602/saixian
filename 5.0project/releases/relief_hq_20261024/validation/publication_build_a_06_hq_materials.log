@@ -1,0 +1,23 @@
+PASS all 24 HQ views, exact material row codec, preserved background, four times source pixels and improved same-size cup detail
+{
+  "source_size": [
+    384,
+    384
+  ],
+  "old_source_size": [
+    192,
+    192
+  ],
+  "display_footprint": [
+    576,
+    576
+  ],
+  "views": 24,
+  "exact_decoded_source_pixels": 3538944,
+  "background_byte_identical": true,
+  "mean_old_color_psnr_db": 19.2316877000642,
+  "mean_new_color_psnr_db": 22.570321183617036,
+  "minimum_psnr_gain_db": 3.034548153652576,
+  "mean_oracle_light_difference": 38.73849824378102,
+  "scope": "Material data and same-size source detail comparison; CPU lighting oracle, not a board capture or optical sharpness measurement."
+}

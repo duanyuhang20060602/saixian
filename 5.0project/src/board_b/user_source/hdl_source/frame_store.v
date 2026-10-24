@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 // One 1280x720 RGB565 frame, two pixels per SDRAM word.
 module frame_store #(parameter FLIP=0,parameter ENABLE_TOP_DOWN=0)(
- input write_award,read_award,input write_top_down,input [1:0] write_slot,read_slot,new_slot, input slide_active,slide_right, input [10:0] slide_offset,input [2:0] transition_mode,
+ input write_relief,read_relief,input write_award,read_award,input write_top_down,input [1:0] write_slot,read_slot,new_slot, input slide_active,slide_right, input [10:0] slide_offset,input [2:0] transition_mode,
  input mem_clk,mem_clk_sft,rst,write_clk,write_req,write_en,
  input [31:0] write_data,output write_ack,write_finish,write_full,
  input read_clk,read_req,read_en,output read_ack,read_finish,read_empty,
@@ -16,10 +16,12 @@ always @(posedge mem_clk or posedge rst)
 always @(posedge mem_clk or posedge rst)
  if(rst)begin award_w0<=0;award_w1<=0;award_r0<=0;award_r1<=0;end
  else begin award_w0<=write_award;award_w1<=award_w0;award_r0<=read_award;award_r1<=award_r0;end
+(* async_reg="true" *)reg relief_w0,relief_w1,relief_r0,relief_r1;
+always @(posedge mem_clk or posedge rst)if(rst)begin relief_w0<=0;relief_w1<=0;relief_r0<=0;relief_r1<=0;end else begin relief_w0<=write_relief;relief_w1<=relief_w0;relief_r0<=read_relief;relief_r1<=relief_r0;end
 wire [20:0] frame_words=21'd460800;
-wire [20:0] slot1=21'd691200;
-wire [20:0] slot2=21'd1382400;
-wire [20:0] slot3=21'd1382400;
+wire [20:0] slot1=21'd1048576;
+wire [20:0] slot2=21'd0;
+wire [20:0] slot3=21'd0;
 
 wire [20:0] rd_addr,wr_addr;
 wire [31:0] rd_data,wr_data;wire [3:0] dm;
@@ -38,13 +40,13 @@ frame_read_write #(.WRITE_V_FLIP(FLIP),.FRAME_WIDTH(640),.FRAME_HEIGHT(720),.BUR
  .App_rd_en(rd),.App_rd_addr(rd_addr),.Sdr_rd_en(rd_valid),.Sdr_rd_dout(fifo_rd_data),
  .read_clk(read_clk),.read_req(read_req),.read_req_ack(read_ack),.read_finish(read_finish),
  .read_addr_0(21'd0),.read_addr_1(slot1),.read_addr_2(slot2),.read_addr_3(21'd0),.read_addr_index(read_slot),
- .read_len(award_r1 ? 21'd691200:frame_words),.read_en(read_en),.read_data(read_data),.read_fifo_empty(read_empty),
+ .read_len(relief_r1 ? 21'd985088:award_r1 ? 21'd691200:frame_words),.read_en(read_en),.read_data(read_data),.read_fifo_empty(read_empty),
  .slide_active(slide_active),.slide_old_index(read_slot),.slide_new_index(new_slot),.slide_offset(slide_offset),
  .slide_right(slide_right),.transition_mode(transition_mode),.buffer0_vga(1'b0),.buffer1_vga(1'b0),
  .App_wr_en(wr),.App_wr_addr(wr_addr),.App_wr_din(wr_data),.App_wr_dm(dm),
  .write_clk(write_clk),.write_req(write_req),.write_req_ack(write_ack),.write_finish(write_finish),
  .write_addr_0(21'd0),.write_addr_1(slot1),.write_addr_2(slot2),.write_addr_3(21'd0),.write_addr_index(write_slot),
- .write_len(award_w1 ? 21'd691200:frame_words),.write_vga(1'b0),.write_en(write_en),.write_data(write_data),.write_fifo_full(write_full));
+ .write_len(relief_w1 ? 21'd985088:award_w1 ? 21'd691200:frame_words),.write_vga(1'b0),.write_en(write_en),.write_data(write_data),.write_fifo_full(write_full));
 sdram ram(.Clk(mem_clk),.Clk_sft(mem_clk_sft),.Rst(rst),.Sdr_init_done(init_done),
  .Sdr_init_ref_vld(init_ref),.Sdr_busy(busy),.App_wr_en(wr),.App_wr_addr(wr_addr),
  .App_wr_dm(dm),.App_wr_din(wr_data),.App_rd_en(rd),.App_rd_addr(rd_addr),.Sdr_rd_en(rd_valid),.Sdr_rd_dout(rd_data));

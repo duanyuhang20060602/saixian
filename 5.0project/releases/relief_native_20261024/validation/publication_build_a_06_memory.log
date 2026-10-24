@@ -1,0 +1,7 @@
+PASS static eRAM cache: slot=0 color=0, all 7056 pixels including bank boundary, no hold-time SDRAM traffic
+PASS static eRAM cache: slot=1 color=0, all 7056 pixels including bank boundary, no hold-time SDRAM traffic
+PASS static eRAM cache: slot=1 color=0, all 7056 pixels including bank boundary, no hold-time SDRAM traffic
+PASS static eRAM cache: slot=1 color=0, all 7056 pixels including bank boundary, no hold-time SDRAM traffic
+PASS static eRAM cache: slot=0 color=0, all 7056 pixels including bank boundary, no hold-time SDRAM traffic
+PASS whole-cache CDC, RGB565, both native 4MiB slots, refresh, priority, cancellation and restart
+E:\Codex\Work\saixian-relief-native-20261024\candidate\5.0project\tests\tb_thumbnail_memory.v:86: $finish called at 21343280000 (1ps)

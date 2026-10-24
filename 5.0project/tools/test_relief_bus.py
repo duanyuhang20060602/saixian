@@ -20,7 +20,7 @@ def savehex(path, values, width=8):
 def decode(path):
     """Decode file commands, independently of both packer and RTL state machine."""
     blob = path.read_bytes()
-    assert blob[:8] in (b'SXDLT005', b'SXDLT006')
+    assert blob[:8] in (b'SXDLT005', b'SXDLT008')
     version, header_bytes, width, height = struct.unpack_from('<4H', blob, 8)
     assert version == int(chr(blob[7])) and (header_bytes, width, height) == (512, 1280, 720)
     assert struct.unpack_from('<I', blob, 20)[0] == len(blob)
@@ -44,11 +44,34 @@ def decode(path):
     plate = np.asarray(decoded, dtype='<u4')
     assert len(plate) == 460800 and zlib.crc32(plate.tobytes()) == frame_crc
     frames, tail_offset, tail_words, magic, period = struct.unpack_from('<5I', blob, 256)
-    assert (frames, magic) == ((24, 0x524c4636) if version == 6 else (120, 0x53505835))
-    assert tail_words == 230400 and period == 6
+    assert (frames, magic) == ((24, 0x524c4638) if version == 8 else (120, 0x53505835))
+    assert tail_words == (524288 if version==8 else 230400) and period == 6
     tail = np.frombuffer(blob, dtype='<u4', count=tail_words, offset=tail_offset * 4)
     expected = np.concatenate(((plate << 16) | (plate >> 16), tail))
     return blob, plate, tail, expected
+
+def decode_hq(tail):
+    """Independent native PackBits decoder; no packer helpers are imported."""
+    raw=tail.astype('<u4').tobytes()
+    assert struct.unpack_from('<8I',raw)==(0x38514852,576,576,24,256,64,6208,80128)
+    palettes=np.frombuffer(raw,dtype='<u4',count=6144,offset=256).reshape(24,256)
+    assert np.all(palettes[:,0]==0)
+    descriptors=np.frombuffer(raw,dtype='<u4',count=13824,offset=6208*4).reshape(24,576)
+    images=np.zeros((24,576,576),dtype=np.uint8);end=80128
+    for f in range(24):
+        for y in range(576):
+            value=int(descriptors[f,y]);offset=value&0x1fffff;count=value>>21
+            assert offset>=end and not any(raw[end:offset]) and 0<=count<=768 and offset+count<=len(raw)
+            x=0;i=offset;end=offset+count
+            while i<end:
+                command=raw[i];i+=1;n=(command&127)+1;assert x+n<=576
+                if command<128:
+                    assert i+n<=end;images[f,y,x:x+n]=np.frombuffer(raw,dtype=np.uint8,count=n,offset=i);i+=n
+                else:
+                    assert i<end;images[f,y,x:x+n]=raw[i];i+=1
+                x+=n
+    assert not any(raw[end:])
+    return palettes,images
 
 def vectors(directory, source, relief=False):
     directory.mkdir(parents=True, exist_ok=True)
@@ -59,27 +82,29 @@ def vectors(directory, source, relief=False):
         savehex(directory / 'relief_tail.hex', tail)
         base = plate.view('<u2').reshape(720, 1280).astype(np.int32)
         savehex(directory / 'relief_base.hex', base.ravel(), 4)
-        palette = tail[:256]
-        indices = tail[256:].view(np.uint8)[:24 * 192 * 192].reshape(24, 192, 192)
+        palettes,indices=decode_hq(tail)
         def expand(p):
             r, g, b = (p >> 11) & 31, (p >> 5) & 63, p & 31
             return np.stack(((r << 3) | (r >> 2), (g << 2) | (g >> 4), (b << 3) | (b >> 2)), axis=-1)
         images = []
         for angle in range(2):
-            token = np.zeros((720, 1280), dtype=np.uint8)
-            token[48:624, 352:928] = indices[angle].repeat(3, axis=0).repeat(3, axis=1)
-            cup = token != 0
-            surface = np.where(cup, palette[token] & 65535, base).astype(np.int32)
-            color = expand(np.where(cup, palette[token] >> 16, base).astype(np.int32))
+            palette=palettes[angle]
+            token = np.zeros((720,1280),dtype=np.uint8)
+            sample=np.arange(576)
+            token[48:624,352:928]=indices[angle][sample[:,None],sample[None,:]]
+            cup=token!=0
+            surface=np.where(cup,palette[token]&65535,base).astype(np.int32)
+            color=expand(np.where(cup,palette[token]>>16,base).astype(np.int32))
             nx, ny, nz = (surface >> 11) & 31, (surface >> 6) & 31, (surface >> 1) & 31
             nx, ny = np.where(nx >= 16, nx - 32, nx) * 2, np.where(ny >= 16, ny - 32, ny) * 2
             dot = nx * -16 + ny * 6 + nz * 16
-            diffuse, specular = np.clip(dot // 4, 0, 255), np.clip((dot + nz * 16 - 960) * 2, 0, 255)
+            diffuse, specular = np.clip(dot // 4, 0, 255), np.clip(dot + nz * 16 - 1024, 0, 255)
             wall = (~cup) & ((base & 1) != 0)
             shaded = color.copy()
             shaded[wall] = np.stack((24 + diffuse // 2, 12 + diffuse // 4, 3 + diffuse // 16), axis=-1)[wall]
-            metal = color - np.where((dot < 0)[..., None], color // 4, 0) + np.stack((specular // 2, specular // 4, specular // 8), axis=-1)
+            metal = color // 2 + (color * (diffuse[...,None]//16)) // 32 + np.stack((specular // 2, specular // 4, specular // 8), axis=-1)
             shaded[cup] = np.clip(metal, 0, 255)[cup]
+            shaded=np.rint(510*shaded/(255+shaded)).astype(np.int32)
             images.append(((shaded[..., 0] << 16) | (shaded[..., 1] << 8) | shaded[..., 2]).ravel())
         savehex(directory / 'relief_golden.hex', np.concatenate(images), 6)
         for p in (ROOT / 'common/fluid').glob('*.hex'):
@@ -110,7 +135,7 @@ def main():
         hashes = {p.relative_to(ROOT).as_posix(): digest(p) for p in files + [Path(__file__)]}
         extra = ['-DWATER_SIM', '-DVICTORY_SIM', '-DRELIEF_SIM', '-DFX11_ROM_ROOT=""']
         if name in ('reader', 'legacy_reader'):
-            extra += ['-P', 'tb.FILE_WORDS=' + str(word_counts['legacy' if name == 'legacy_reader' else 'relief'])]
+            extra += ['-P', 'tb.FILE_WORDS=' + str(word_counts['legacy' if name == 'legacy_reader' else 'relief']),'-P','tb.EXPECTED_WORDS='+str(691200 if name=='legacy_reader' else 985088)]
         binary = directory / (name + '.vvp')
         p = subprocess.run(['C:/iverilog/bin/iverilog.exe', '-g2012', *extra, '-s', 'tb', '-o', str(binary), *map(str, files)], cwd=directory, env=env, capture_output=True, text=True)
         log = p.stdout + p.stderr

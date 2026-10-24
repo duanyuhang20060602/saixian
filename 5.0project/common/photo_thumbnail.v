@@ -9,7 +9,7 @@ module photo_thumbnail_memory(
 );
 function [20:0] base;
  input [1:0] slot;
- begin case(slot)0:base=0;1:base=21'd691200;default:base=21'd1382400;endcase end
+ begin case(slot)0:base=0;1:base=21'd1048576;default:base=21'd0;endcase end
 endfunction
 localparam IDLE=0,READ=1,RECOVER=2;
 reg [1:0] state;
