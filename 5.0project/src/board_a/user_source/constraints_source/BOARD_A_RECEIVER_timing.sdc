@@ -61,3 +61,7 @@ set_false_path -to [get_regs -nowarn {store/display_meta* store/thumbnails/job_s
 # Relief player: only first-stage CDC samplers are asynchronous. Requested
 # angle/row stay stable until the return toggle; both RAM clock ports are timed.
 set_false_path -to [get_regs -nowarn {award_render/relief_meta* award_render/gold/player/enable_meta* award_render/gold/player/request_sync[0]* award_render/gold/player/angle_meta* award_render/gold/player/row_meta* award_render/gold/player/done_sync[0]* award_render/gold/player/ready_sync[0]*}]
+
+# Native relief packet mode crosses into link/memory clocks through two flops.
+# Only the first sampler is asynchronous; the second flop and consumers stay timed.
+set_false_path -to [get_regs -nowarn {*relief_link_meta* store/relief_w0*}]

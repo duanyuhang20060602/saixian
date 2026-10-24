@@ -1,0 +1,2 @@
+PASS real A/B UART: extended award length, RGB565 and settings refresh, tagged metadata, immediate entry/exit, settings refresh, CRC and cache-hit photo/award restoration
+E:\Codex\Work\saixian-relief-native-20261024\candidate\5.0project\tests\tb_award_v5_control.v:63: $finish called at 1843149000 (1ps)

@@ -3,7 +3,7 @@
 module frame_store #(parameter FLIP=0)(
  input display_active,thumbnail_request,thumbnail_cancel,thumbnail_blank,input [1:0] thumbnail_slot,
  input [12:0] thumbnail_address,output thumbnail_done,output [15:0] thumbnail_data,
- input write_award,read_award,light_enable,light_request,input [20:0] light_address,
+ input write_relief,input write_award,read_award,light_enable,light_request,light_wide,input [20:0] light_address,
  output light_ack,light_valid,output [31:0] light_data,output [20:0] light_base,
  input [76:0] water_cfg,input [8:0] fluid_progress,input write_fluid,input [1:0] write_slot,read_slot,new_slot, input slide_active,slide_right, input [10:0] slide_offset,input [4:0] transition_mode,
  input mem_clk,mem_clk_sft,rst,write_clk,write_req,write_en,
@@ -26,19 +26,21 @@ always @(posedge mem_clk or posedge rst)
  if(rst)begin award_w0<=0;award_w1<=0;award_r0<=0;award_r1<=0;light_en0<=0;light_en1<=0;slot_m0<=0;slot_m1<=0;end
  else begin award_w0<=write_award;award_w1<=award_w0;award_r0<=read_award;award_r1<=award_r0;
   light_en0<=light_enable;light_en1<=light_en0;slot_m0<=read_slot;slot_m1<=slot_m0;end
-assign light_base=(slot_m1==0 ? 21'd0:slot_m1==1 ? 21'd691200:21'd1382400)+21'd460800;
+assign light_base=(slot_m1==1 ? 21'd1048576:21'd0)+21'd460800;
 assign rd=thumb_claim ? thumb_read:light_claim ? light_rd:frame_rd;
 assign rd_addr=thumb_claim ? thumb_address:light_claim ? light_rd_address:frame_address;
-photo_award_memory light_memory(.clk(mem_clk),.rst(rst),.enable(light_en1),.init_done(init_done),
+photo_award_memory light_memory(.wide_request(light_wide),.clk(mem_clk),.rst(rst),.enable(light_en1),.init_done(init_done),
  .refresh(init_ref),.busy(busy),.frame_busy(frame_access || thumb_claim),.request(light_request),.address(light_address),
  .acknowledge(light_ack),.data(light_data),.valid(light_valid),.claim(light_claim),
  .read_command(light_rd),.read_address(light_rd_address),.response_valid(rd_valid && light_claim),.response(aligned_rd_data));
 (* async_reg="true" *)reg fluid_meta,fluid_sync;
 always @(posedge mem_clk or posedge rst)
  if(rst)begin fluid_meta<=0;fluid_sync<=0;end else begin fluid_meta<=write_fluid;fluid_sync<=fluid_meta;end
+(* async_reg="true" *)reg relief_w0,relief_w1;
+always @(posedge mem_clk or posedge rst)if(rst)begin relief_w0<=0;relief_w1<=0;end else begin relief_w0<=write_relief;relief_w1<=relief_w0;end
 wire [20:0] frame_words=21'd460800;
-wire [20:0] slot1=21'd691200;
-wire [20:0] slot2=21'd1382400;
+wire [20:0] slot1=21'd1048576;
+wire [20:0] slot2=21'd0;
 wire [20:0] slot3=21'd0;
 photo_thumbnail_memory thumbnails(.clk(mem_clk),.rst(rst),
  .init_done(init_done),.refresh(init_ref),.busy(busy),.frame_busy(frame_access),.allow_access(external_allowed),
@@ -59,7 +61,7 @@ frame_read_write #(.WRITE_V_FLIP(FLIP),.FRAME_WIDTH(640),.FRAME_HEIGHT(720),.BUR
  .App_wr_en(wr),.App_wr_addr(wr_addr),.App_wr_din(wr_data),.App_wr_dm(dm),
  .write_clk(write_clk),.write_req(write_req),.write_req_ack(write_ack),.write_finish(write_finish),
  .write_addr_0(21'd0),.write_addr_1(slot1),.write_addr_2(slot2),.write_addr_3(slot3),.write_addr_index(write_slot),
- .write_len(award_w1 || fluid_sync ? 21'd691200:21'd460800),.write_vga(1'b0),.write_en(write_en),.write_data(write_data),.write_fifo_full(write_full));
+ .write_len(relief_w1 ? 21'd985088:award_w1 || fluid_sync ? 21'd691200:21'd460800),.write_vga(1'b0),.write_en(write_en),.write_data(write_data),.write_fifo_full(write_full));
 sdram ram(.Clk(mem_clk),.Clk_sft(mem_clk_sft),.Rst(rst),.Sdr_init_done(init_done),
  .Sdr_init_ref_vld(init_ref),.Sdr_busy(busy),.App_wr_en(wr),.App_wr_addr(wr_addr),
  .App_wr_dm(dm),.App_wr_din(wr_data),.App_rd_en(rd),.App_rd_addr(rd_addr),.Sdr_rd_en(rd_valid),.Sdr_rd_dout(rd_data));

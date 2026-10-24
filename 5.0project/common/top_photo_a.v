@@ -23,7 +23,7 @@ always @(posedge mem_clk or posedge rst_mem)
  if(rst_mem)finish_toggle<=0;else if(finish)finish_toggle<=~finish_toggle;
 always @(posedge link_clk or posedge rst_link)
  if(rst_link)done_toggle<=0;else if(rx_done)done_toggle<=~done_toggle;
-wire receive_fluid,receive_award;
+wire receive_fluid,receive_award,receive_relief;
 (* async_reg="true" *)reg fluid_link_meta,fluid_link_sync;
 always @(posedge link_clk or posedge rst_link)
  if(rst_link)begin fluid_link_meta<=0;fluid_link_sync<=0;end
@@ -32,11 +32,13 @@ always @(posedge link_clk or posedge rst_link)
 always @(posedge link_clk or posedge rst_link)
  if(rst_link)begin award_link_meta<=0;award_link_sync<=0;end
  else begin award_link_meta<=receive_award;award_link_sync<=award_link_meta;end
+(* async_reg="true" *)reg relief_link_meta,relief_link_sync;
+always @(posedge link_clk or posedge rst_link)if(rst_link)begin relief_link_meta<=0;relief_link_sync<=0;end else begin relief_link_meta<=receive_relief;relief_link_sync<=relief_link_meta;end
 wire arm_toggle,abort_toggle,arm,abort;
 wire [1:0] receive_slot,active_slot,new_slot,ready_slot;
 photo_event_sync sa(.clk(link_clk),.rst(rst_link),.toggle(arm_toggle),.pulse(arm));
 photo_event_sync sb(.clk(link_clk),.rst(rst_link),.toggle(abort_toggle),.pulse(abort));
-photo_link_receiver #(.ENABLE_CRC(1),.LEGACY_TIMING(1),.AWARD_TAIL(1)) rx(.award_frame(award_link_sync),.extended_frame(fluid_link_sync),.clk(link_clk),.rst(rst_image_link),.arm(arm),.abort(abort),.data(link_data),.valid(link_valid),.sof(link_sof),.eof(link_eof),
+photo_link_receiver #(.ENABLE_CRC(1),.LEGACY_TIMING(1),.AWARD_TAIL(1)) rx(.relief_frame(relief_link_sync),.award_frame(award_link_sync),.extended_frame(fluid_link_sync),.clk(link_clk),.rst(rst_image_link),.arm(arm),.abort(abort),.data(link_data),.valid(link_valid),.sof(link_sof),.eof(link_eof),
  .ready(link_ready),.armed(rx_armed),.busy(),.write_req(req),.write_ack(ack),.full(full),.write_en(we),.write_data(packed_data),
  .finish_toggle(finish_toggle),.done(rx_done),.fault(rx_fault),.frame_crc(rx_crc),.fault_detail(rx_fault_detail));
 
@@ -46,7 +48,7 @@ wire [8:0] fluid_progress;
 wire [76:0] fluid_configuration;
 wire [4:0] transition_mode;wire [10:0] slide_offset;wire [5:0] darkness;
 wire [4:0] effect_select;wire auto_enable;wire [4:0] auto_interval_seconds;
-wire light_request,light_ack,light_valid;wire [20:0] light_address,light_base;wire [31:0] light_data;
+wire light_wide,light_request,light_ack,light_valid;wire [20:0] light_address,light_base;wire [31:0] light_data;
 wire done_pixel,busy;wire [2:0] count,current;wire [3:0] error,control_state;
 wire thumbnail_request,thumbnail_done,thumbnail_cache_valid,thumbnail_visible,thumbnail_cancel;
 wire [1:0] thumbnail_slot,thumbnail_cache_slot;wire [2:0] thumbnail_id;
@@ -61,11 +63,11 @@ wire [15:0] current_source_width,current_source_height;
 wire award_active=display_valid && current>=3'd6 && current_source_width[15];
 // DISPLAY_CONTROL_REGISTERS
 reg award_menu_select_q,award_display_select_q,preview_enable_q,pointer_nav_display_q;
-frame_store #(.FLIP(0)) store(.write_award(receive_award),.read_award(award_active),
+frame_store #(.FLIP(0)) store(.write_relief(receive_relief),.write_award(receive_award),.read_award(award_active),
  .display_active(display_valid),.thumbnail_request(thumbnail_request),.thumbnail_cancel(thumbnail_cancel),
  .thumbnail_blank(thumbnail_blank),.thumbnail_slot(thumbnail_slot),
  .thumbnail_address(thumbnail_address),.thumbnail_done(thumbnail_done),.thumbnail_data(thumbnail_data),
- .light_enable(award_active),.light_request(light_request),.light_address(light_address),.light_ack(light_ack),
+ .light_wide(light_wide),.light_enable(award_active),.light_request(light_request),.light_address(light_address),.light_ack(light_ack),
  .light_data(light_data),.light_valid(light_valid),.light_base(light_base),
  .water_cfg(fluid_configuration),.fluid_progress(fluid_progress),.write_fluid(receive_fluid),.write_slot(receive_slot),.read_slot(active_slot),.new_slot(new_slot),
  .slide_active(transition_active),.slide_right(slide_right),.slide_offset({1'b0,slide_offset[10:1]}),.transition_mode(transition_mode),
@@ -223,7 +225,7 @@ photo_switch_timing #(.CLK_HZ(75000000),.PHASES(2)) timing_probe(.clk(pixel_clk)
  .running(timing_running),.valid(timing_valid),.first_ms(timing_wait_ms),.second_ms(timing_effect_ms),.third_ms(),.total_ms(timing_total_ms));
 photo_switch_timing_display #(.CLK_HZ(75000000),.PAGES(3)) timing_display(.clk(pixel_clk),.rst(rst_pixel),.running(timing_running),
  .first_ms(timing_wait_ms),.second_ms(timing_effect_ms),.third_ms(20'd0),.total_ms(timing_total_ms),.seg_sel(timing_seg_sel),.seg_data(timing_seg_data));
-photo_cached_control_a #(.CHECK_FRAME_CRC(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.EARLY_THUMBNAIL(1),.RELIEF_CONTROL(1)) ctrl(.receive_award(receive_award),.receive_fluid(receive_fluid),.settings_mode(photo_focus),.settings_state(image_settings),.settings_updating(settings_updating),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
+photo_cached_control_a #(.CHECK_FRAME_CRC(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.EARLY_THUMBNAIL(1),.RELIEF_CONTROL(1)) ctrl(.receive_relief(receive_relief),.receive_award(receive_award),.receive_fluid(receive_fluid),.settings_mode(photo_focus),.settings_state(image_settings),.settings_updating(settings_updating),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
  .thumbnail_read_busy(thumbnail_read_busy),.thumbnail_read_slot(thumbnail_slot),
  .timing_begin(timing_begin),.timing_present(timing_present),.timing_commit(timing_commit),.timing_cancel(timing_cancel),
  .award_toggle(photo_award_event),.relief_toggle(photo_relief_event),.relief_available(relief_available),.award_available(award_available),.award_scan_complete(award_scan_complete),.award_loading(award_loading),.award_notice(award_notice),.last_transfer_error(last_transfer_error),
@@ -421,7 +423,7 @@ end
 // Bypass photo fades and music graphics for the full scene.
 photo_award_render #(.RELIEF_ENABLE(1)) award_render(
  .relief_mode(current==7),.touch_contact(pointer_contact),.cursor_x(cursor_x),.cursor_y(cursor_y),.mem_clk(mem_clk),.mem_rst(rst_image_mem),.light_base(light_base),
- .light_request(light_request),.light_address(light_address),.light_ack(light_ack),.light_data(light_data),.light_valid(light_valid),
+ .light_wide(light_wide),.light_request(light_request),.light_address(light_address),.light_ack(light_ack),.light_data(light_data),.light_valid(light_valid),
  .de_in(award_raw_de[1]),.clk(pixel_clk),.rst(rst_pixel),.enable(award_active),
  .pause(award_pause || settings_mode),.frame_tick(blank_start),.x(x1),.y(y1),
  .tagged_rgb(raw_rgb),.rgb(award_rgb),.menu_rgb(award_menu_rgb),

@@ -21,7 +21,7 @@ always @(posedge bc)begin
   if(start_t!=previous_start)transfer_delay<=20;
   if(transfer_delay>0)begin transfer_delay<=transfer_delay-1;if(transfer_delay==1)begin finished_toggle<=~finished_toggle;transfers<=transfers+1;end end
   if(b.got && b.kind==3 && b.incoming[98:96]>=6)begin
-   if(b.incoming[87:56]!=2764800 || b.incoming[93]!=0)$fatal(1,"award request still uses legacy plate length/plane");
+   if(b.incoming[87:56]!=(b.incoming[98:96]==7 ? 3940352:2764800) || b.incoming[93]!=0)$fatal(1,"award request still uses legacy plate length/plane");
    award_requests=award_requests+1;
   end
  end
@@ -31,7 +31,7 @@ always @(posedge ac)begin
  else begin
   if(ready_t!=seen_ready)begin seen_ready<=ready_t;active_slot<=ready_slot;commit<=~commit;end
   if(a.got && a.kind==4 && a.incoming[98:96]>=6)begin
-   if(a.incoming[87:56]!=2764800 || a.incoming[93]!=0 || !a.incoming[55])$fatal(1,"award BEGIN metadata is incompatible");
+   if(a.incoming[87:56]!=(a.incoming[98:96]==7 ? 3940352:2764800) || a.incoming[93]!=0 || !a.incoming[55])$fatal(1,"award BEGIN metadata is incompatible");
    begins=begins+1;
   end
  end

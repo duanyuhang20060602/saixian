@@ -30,8 +30,8 @@ always @(posedge clk or posedge rst)begin
  end
  else begin
   if(valid && index<44)begin
-   if(index==7)begin constant_match[index]<=data==8'h35 || data==8'h36;relief_digit<=data==8'h36;end
-   else if(index==8)begin constant_match[index]<=data==5 || data==6;relief_version<=data==6;end
+   if(index==7)begin constant_match[index]<=data==8'h35 || data==8'h38;relief_digit<=data==8'h38;end
+   else if(index==8)begin constant_match[index]<=data==5 || data==8;relief_version<=data==8;end
    else constant_match[index]<=data==expected_byte(index);
   end
   if(valid && index>=20 && index<24)bytes_q[index[1:0]*8+:8]<=data;

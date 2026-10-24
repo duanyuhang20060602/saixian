@@ -48,7 +48,7 @@ def catalog_fixtures(folder, old, new, reverse):
     struct.pack_into('<I', bmp, 10, 54)
     struct.pack_into('<IiiHHI', bmp, 14, 40, 1280, 720, 1, 24, 0)
     a, b = old.read_bytes()[:512], new.read_bytes()[:512]
-    assert a[:8] == b'SXDLT005' and b[:8] == b'SXDLT006'
+    assert a[:8] == b'SXDLT005' and b[:8] == b'SXDLT008'
     headers = [bytes(bmp)] * 6 + ([b, a, b, a] if reverse else [a, b, a, b])
     lengths = [size] * 6 + [struct.unpack_from('<I', h, 20)[0] for h in headers[6:]]
     sectors = [0]

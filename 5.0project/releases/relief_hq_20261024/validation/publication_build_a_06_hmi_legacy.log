@@ -1,0 +1,4 @@
+E:\Codex\Work\saixian-relief-hq-20261024\candidate\5.0project\tests\tb_hmi.v:6: warning: Port 32 (effect_value) of module saixian_hmi_uart expects 5 bit(s), given 3.
+E:\Codex\Work\saixian-relief-hq-20261024\candidate\5.0project\tests\tb_hmi.v:6:        : Padding 2 high bits of the port.
+PASS HMI previous/next/settings, invalid value, partial frame and recovery
+E:\Codex\Work\saixian-relief-hq-20261024\candidate\5.0project\tests\tb_hmi.v:32: $finish called at 57960000 (1ps)

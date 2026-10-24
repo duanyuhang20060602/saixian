@@ -173,9 +173,11 @@ def build(board, work, mapped_from=None, checkpoint_stage='gate'):
             assert digest(Path(record['synthesis_strategy']['catalog'])) == record['synthesis_strategy']['catalog_sha256']
     elif synthesis_strategy:
         catalog = td_root/'doc/strategies/official_strategy_ph1.json'
-        synthesis_base = {'AreaOptimizeSparseCE': 'AreaOptimizeHigh', 'AreaOptimizeGlobalHFN': 'AreaOptimizeHigh'}.get(synthesis_strategy, synthesis_strategy)
+        synthesis_base = {'AreaOptimizeSparseCE': 'AreaOptimizeHigh', 'AreaOptimizeGlobalHFN': 'AreaOptimizeHigh','AreaPackHigh':'AreaOptimizeHigh'}.get(synthesis_strategy, synthesis_strategy)
         strategy = dict(json.loads(catalog.read_text(encoding='utf-8'))[synthesis_base])
         strategy['params'] = list(strategy['params'])
+        if synthesis_strategy == 'AreaPackHigh':
+            strategy['params'].append({'step':'gate','param':'pack_effort','val':'high'})
         if synthesis_strategy == 'AreaOptimizeSparseCE':
             strategy['params'].append({'step': 'rtl', 'param': 'min_ce_fanout', 'val': '64'})
         if synthesis_strategy == 'AreaOptimizeGlobalHFN':

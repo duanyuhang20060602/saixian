@@ -11,7 +11,7 @@ task settle;begin repeat(5)@(negedge clk);end endtask
 initial begin
  repeat(5)@(negedge clk);rst=0;
  @(negedge clk);dut.state_flags=16'd4;dut.have_current=1;dut.current_image=0;dut.image_count=3;
- dut.nav_pending=0;dut.display_pending=0;dut.cache_valid=7;
+ dut.nav_pending=0;dut.display_pending=0;dut.cache_valid=3;
  dut.cache_id[0]=0;dut.cache_id[1]=1;dut.cache_id[2]=2;
  settle();if(!valid || slot!=1)$fatal(1,"next image not selected");
  // End-of-list wraps to image zero, using its actual cache slot.
@@ -23,7 +23,7 @@ initial begin
  if(valid)$fatal(1,"queued navigation left the previous preview visible");
  // Failed transport never publishes its partially generated thumbnail.
  dut.state_flags=16'd128;dut.nav_pending=0;dut.display_pending=0;
- dut.cache_valid=5;dut.receive_slot=1;dut.target=1;dut.done_seen=1;dut.end_seen=1;
+ dut.cache_valid=1;dut.receive_slot=1;dut.target=1;dut.done_seen=1;dut.end_seen=1;
  dut.expected_crc=32'h11111111;dut.received_crc=32'h22222222;
  @(negedge clk);
  if(dut.error!=4 || dut.cache_valid[1] || valid)$fatal(1,"bad CRC published next thumbnail");

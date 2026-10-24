@@ -1,5 +1,5 @@
 {
-  "original_normalized_sha256": "0be13211bc5792f703977b32c737337ca79b58d4605fbb0fb9c491a399ad4bbc",
+  "original_normalized_sha256": "6a980e7ddf1f253d3912cbaaf3d742722ec4c64a41fe61b6575488be60b35f8c",
   "decoder": "// begin REGISTERED_PACKET_KIND\n// PULSE_PAYLOAD settles throughout both CRC bytes before got is published.\nreg [18:0] kind_match_q;\nalways @(posedge clk or posedge rst)\n if(rst)kind_match_q<=0;\n else kind_match_q<={kind==8'd18,kind==8'd17,kind==8'd16,kind==8'd15,kind==8'd14,kind==8'd13,kind==8'd12,kind==8'd11,kind==8'd10,kind==8'd9,kind==8'd8,kind==8'd7,kind==8'd6,kind==8'd5,kind==8'd4,kind==8'd3,kind==8'd2,kind==8'd1,kind==8'd0};\n// end REGISTERED_PACKET_KIND\n",
   "registered_kinds": [
     2,
@@ -11,5 +11,7 @@
     15,
     17,
     18
-  ]
+  ],
+  "integration_rebase": "Native id7 length and two-slot cache; the original timer/packet-kind logic is preserved.",
+  "native_slot_policy_rebase": "Apply the separately tested two-slot prefetch protection policy to both sides; the timer/kind comparison itself remains unchanged."
 }

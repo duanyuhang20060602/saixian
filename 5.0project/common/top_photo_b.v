@@ -73,14 +73,17 @@ photo_audio_processing_b #(.PAGE_CUE(1),.TYPED_PAGE(1),.SHARED_SCALE(1),.EXTERNA
  .request_volume(audio_request_volume),.request_cue(audio_request_cue),.raw_pcm(pitched_audio),
  .processed_pcm(processed_audio),.bg_enabled(audio_bg_enabled));
 wire req,ack,we,full,finish,read_req,read_ack,read_en,empty,read_finish,mem_init;
-wire write_top_down,write_award;
+wire write_top_down,write_award,write_relief;
 wire [31:0] packed_data,read_data,processed_data;wire processed_empty,source_read,processed_source_read;
 wire [18:0] settings_state;wire [1:0] media_gain;
 wire [1:0] write_slot,ready_slot,transmit_slot;wire [2:0] count;
 wire display_pin_valid,prefetch_pause;wire [2:0] display_pin_image;
 
 wire media_ready,request,release_slot,cancel,directory_ready;
-wire [2:0] target;wire [3:0] media_error,control_error;
+wire [2:0] target;
+(* async_reg="true" *)reg relief_meta,relief_sync;
+always @(posedge link_clk or posedge rst_link)if(rst_link)begin relief_meta<=0;relief_sync<=0;end else begin relief_meta<=target==7;relief_sync<=relief_meta;end
+wire [3:0] media_error,control_error;
 // Cache consumes media_request on the following edge. Mask stale ready/error
 // while the new request clears the previous result.
 reg [2:0] media_request_settle;
@@ -97,11 +100,11 @@ photo_sd_cache #(.FORWARD_ONLY(1),.DISPLAY_PIN(1),.EARLY_PREFETCH(1)) media(.aud
  .active_audio_epoch(active_audio_epoch),.active_audio_track(active_audio_track),.audio_count(audio_count),.audio_switching(audio_switching),
  .audio_scan_state(audio_scan_state),.audio_fifo_used(audio_fifo_used),.audio_fifo_data(audio_fifo_data),.audio_fifo_read(audio_raw_read),.display_valid(display_pin_valid),.display_image(display_pin_image),.prefetch_pause(prefetch_pause),.clk(sd_clk),.rst(rst_sd),.request(request),.target(target),.release_slot(release_slot),.cancel(cancel),
  .relief_available(relief_available),.award_available(award_available),.award_scan_complete(award_scan_complete),.award_decode_error(award_decode_error),
- .ready_gain(media_gain),.ready(media_ready),.ready_slot(ready_slot),.image_count(count),.error(media_error),.directory_ready(directory_ready),
+ .write_relief(write_relief),.ready_gain(media_gain),.ready(media_ready),.ready_slot(ready_slot),.image_count(count),.error(media_error),.directory_ready(directory_ready),
  .ready_source_width(media_source_width),.ready_source_height(media_source_height),
  .write_award(write_award),.write_slot(write_slot),.write_req(req),.write_top_down(write_top_down),.write_ack(ack),.full(full),.write_en(we),.write_data(packed_data),.finish_toggle(finish_toggle),
  .sd_ncs(sd_ncs),.sd_dclk(sd_dclk),.sd_mosi(sd_mosi),.sd_miso(sd_miso));
-frame_store #(.FLIP(1),.ENABLE_TOP_DOWN(1)) store(.write_award(write_award),.read_award(award_sync),.write_top_down(write_top_down),.write_slot(write_slot),.read_slot(transmit_slot),.new_slot(2'd0),
+frame_store #(.FLIP(1),.ENABLE_TOP_DOWN(1)) store(.write_relief(write_relief),.read_relief(relief_sync),.write_award(write_award),.read_award(award_sync),.write_top_down(write_top_down),.write_slot(write_slot),.read_slot(transmit_slot),.new_slot(2'd0),
  .slide_active(1'b0),.slide_right(1'b0),.slide_offset(11'd0),.transition_mode(3'd0),
  .mem_clk(mem_clk),.mem_clk_sft(mem_clk_sft),.rst(rst_mem),
  .write_clk(sd_clk),.write_req(req),.write_en(we && !full),.write_data(packed_data),.write_ack(ack),.write_finish(finish),.write_full(full),
@@ -127,7 +130,7 @@ assign source_read=transmit_award ? read_en:processed_source_read;
 photo_b_processing processing(.clk(link_clk),.rst(rst_link),.start((start && !award_sync) || plane_start),.abort(abort),.effect_plane(effect_plane),.read_req(read_req && !transmit_award),
  .source_ack(read_ack),.source_empty(empty),.source_data(read_data),.source_read(processed_source_read),
  .settings_state(settings_sync),.image_gain(gain_sync),.read_en(read_en),.empty(processed_empty),.data(processed_data));
-photo_link_sender #(.ENABLE_CRC(1),.LEGACY_TIMING(1),.AWARD_TAIL(1),.PREFETCH_WORD(1)) tx(.award_frame(award_sync),.extended_frame(!award_sync),.plane_start(plane_start),.effect_plane(effect_plane),.clk(link_clk),.rst(rst_link),.start(start),.abort(abort),.data(transmit_award ? read_data:processed_data),.empty(transmit_award ? empty:processed_empty),
+photo_link_sender #(.ENABLE_CRC(1),.LEGACY_TIMING(1),.AWARD_TAIL(1),.PREFETCH_WORD(1)) tx(.relief_frame(relief_sync),.award_frame(award_sync),.extended_frame(!award_sync),.plane_start(plane_start),.effect_plane(effect_plane),.clk(link_clk),.rst(rst_link),.start(start),.abort(abort),.data(transmit_award ? read_data:processed_data),.empty(transmit_award ? empty:processed_empty),
  .read_ack(read_ack),.link_ready(link_ready),.read_req(read_req),.read_en(read_en),
  .link_data(link_data),.link_valid(link_valid),.link_sof(link_sof),.link_eof(link_eof),.done(sent),.busy(tx_busy),.frame_crc(tx_crc));
 reg sent_toggle;

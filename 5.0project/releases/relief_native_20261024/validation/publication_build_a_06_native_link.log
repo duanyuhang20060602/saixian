@@ -1,0 +1,6 @@
+PASS native/legacy/photo production link kind=0 words=691200: exact payload, independent CRC, full backpressure, complete native EOF and latched mode despite mid-packet changes
+E:\Codex\Work\saixian-relief-native-20261024\candidate\5.0project\tests\tb_native_relief_link.v:36: $finish called at 95568080000 (1ps)
+PASS native/legacy/photo production link kind=1 words=691200: exact payload, independent CRC, full backpressure, complete native EOF and latched mode despite mid-packet changes
+E:\Codex\Work\saixian-relief-native-20261024\candidate\5.0project\tests\tb_native_relief_link.v:36: $finish called at 95567560000 (1ps)
+PASS native/legacy/photo production link kind=2 words=985088: exact payload, independent CRC, full backpressure, complete native EOF and latched mode despite mid-packet changes
+E:\Codex\Work\saixian-relief-native-20261024\candidate\5.0project\tests\tb_native_relief_link.v:36: $finish called at 136200880000 (1ps)

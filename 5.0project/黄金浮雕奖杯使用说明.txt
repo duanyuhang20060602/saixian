@@ -1,8 +1,8 @@
-黄金浮雕奖杯 / 5.0 / gold-relief-20261023
+黄金浮雕奖杯 / 5.0 / gold-relief-native-bright-20261024
 
 烧录与素材
 1. A 板使用 releases/PHOTO_BOARD_A_5_0.bit，B 板使用 releases/PHOTO_BOARD_B_5_0.bit。
-2. 把 examples/TF卡素材/RELIEF720.DLT 复制到 B 板现有 TF 卡，保留原 AWARD720.DLT、照片和音频。
+2. 把本次 examples/TF卡素材/RELIEF720.DLT 覆盖到 B 板现有 TF 卡，保留原 AWARD720.DLT、照片和音频。高清修订使用 SXDLT008，必须同时更新两板固件和这个素材；旧 SXDLT006/007 素材不能搭配新固件。
 3. 使用原有的 TF 卡制作/格式及两板连接方式。文件必须作为完整文件写入，不能只重命名其他格式。
 4. 两板重新上电，等待目录扫描。新旧奖杯是两个独立素材，可以同时放在一张卡上。
 
@@ -21,15 +21,17 @@ K4 长按仍沿用原有比赛启动功能。设置界面的按键含义沿用�
 这些是新增可用指令，现有串口屏无需重做即可使用实体 K4。
 
 实现边界
-HDMI 输出沿用 1280×720。奖杯旋转素材含 24 个角度，每个角度 192×192 索引像素，放大到 576×576；默认每 5 个显示帧换角度，约 2 秒一圈。
+HDMI 输出沿用 1280×720，奖杯显示区域仍为 576×576。杯身源素材从上一版 384×384 提高到原生 576×576，不再做 1.5 倍近邻放大，源像素为上一版的 2.25 倍；24 个角度各有独立的 256 项颜色/法线调色板。默认每 10 个显示帧换角度，按 60 Hz 约 4 秒一圈，是上一版转速的两倍。
 背景保留全分辨率表面方向。FPGA 在显示流水线上逐像素计算方向光和高光，触摸可实时改变光照。
 旋转视角预先制作，FPGA 承担视角调度、实时表面光照及显示合成；这是有实时交互的素材渲染，不是完整三维几何渲染器。
-调色板把颜色与表面方向联合编码；只缓存调色板和两条奖杯扫描行，沿用原有 SDRAM 和链路，不增加第二张 TF 卡。
-新旧奖杯互斥播放，共用一份 512×32 位缓存：原彩带模式用作扫描行，新浮雕模式用作材质调色板。A 板因此释放两块 9K RAM，由 64/64 降到 62/64。
-背景已去掉外框和放射装饰线，奖杯无宝石，以黄金为主体。
+调色板把颜色与表面方向联合编码。采用逐行 PackBits 和 256 字节读取对齐，材质尾部实际使用 1978126 字节，保留 2097152 字节容量；传输帧由原来的 691200 增至 985088 个 32 位字。素材文件共 3942400 字节。
+两板外部 SDRAM 改为两个 4MiB 槽，字基址为 0 和 1048576。A 板原来的三个小槽改为两个大槽，仍能保留当前与下一张照片；第三张照片由预取补充。B 板仍为两个槽。
+新旧奖杯互斥播放，沿用共享的 512×32 位缓存。播放器另用三块 9K RAM 保存四条 576 像素扫描行；另设四行目录缓存。压缩数据使用 64 字连续读取，目录及旧动画仍用 4 字读取；显示流水线仍是 12 个时钟。
+仅奖杯场景在最终合成阶段应用两倍曝光曲线 round(510*c/(255+c))，杯身、背景和台面一起提亮，照片、菜单和原彩带不受影响。高光使用压缩保护，因此不是把每一个 RGB 数字机械翻倍，也不是实测屏幕亮度增加一倍。
+背景数据与上一版逐字节一致。杯身增加由表面法线决定的漫反射明暗，减少大块高光泛白；仍以黄金为主体，无宝石。清晰度比较和光照预览属于软件参考，实际屏幕拍摄效果需本次上板复验。
 
 验证与源码
-本次固件的电脑编译、资源、时序和仿真记录见 releases/relief_20261023/validation.json。
+本次固件的电脑编译、资源、时序和仿真记录见 releases/relief_native_20261024/validation.json。
 本次新增固件仍需上板复验；此前 5.0 实板通过是原有版本的验收结果。
 新素材完整读取、逐像素显示及 SDRAM 仲裁测试：python -B tools/test_relief_bus.py --out E:/Codex/Work/relief-bus-check
 控制、串口屏和新旧素材目录测试：python -B tools/test_relief_controls.py --out E:/Codex/Work/relief-control-check
@@ -37,4 +39,8 @@ HDMI 输出沿用 1280×720。奖杯旋转素材含 24 个角度，每个角度 
 共享缓存六帧逐点对比：python -B tools/test_relief_shared_cache.py --asset award_media/RELIEF720.DLT --out E:/Codex/Work/relief-shared-check
 原彩带全部 120 帧行解码验证：python -B tools/test_relief_shared_rows.py --out E:/Codex/Work/relief-old-rows
 重新编译：沿用 build_saixian.ps1 -Board Both。
-离线美术源文件保留在 E:/Codex/Work/saixian-relief-integration-20261023，打包入口 tools/prepare_relief.py（额外依赖 OpenEXR）。
+离线美术源文件保留在 E:/Codex/Work/saixian-relief-integration-20261023/artwork；本次工作记录在 E:/Codex/Work/saixian-relief-native-20261024，打包入口 tools/prepare_relief.py（额外依赖 OpenEXR）。
+
+模型连接修订 / joined-model-20261024
+修复四根杯颈支撑杆、两侧把手及金色背脊、八条装饰肋线的连接。全部 24 个角度重新渲染并打包。此修订只更新 RELIEF720.DLT，搭配 gold-relief-native-bright-20261024 固件使用；已烧录该新版的两块板无需再次烧录。
+模型 32 个端点实体连接检查、材质轮廓及显示/读取回归见 releases/relief_joinfix_20261024/validation.json；本修订仍需实板观察确认。

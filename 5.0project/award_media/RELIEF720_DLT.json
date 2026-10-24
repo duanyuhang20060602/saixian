@@ -1,24 +1,35 @@
 {
-  "format": "SXDLT006",
-  "bytes": 2766848,
-  "sha256": "e58864ac709e555e48b78a8f30b8a6ea0166300be3b78fa74344a9c528c246f6",
+  "format": "SXDLT008",
+  "bytes": 3942400,
+  "sha256": "0513e891be150866f5ff5d26ec37ca1bb11b09c636a73eb04440b6d5ee8db025",
   "frame_count": 24,
   "sprite_resolution": [
-    192,
-    192
+    576,
+    576
   ],
-  "display_scale": 3,
   "display_origin": [
     352,
     48
   ],
-  "palette": "256 x (RGB565 color + signed XY/positive Z surface direction)",
-  "background": "full-resolution per-pixel surface normals; untagged floor pixels are RGB565",
+  "display_resolution": [
+    576,
+    576
+  ],
+  "scale": "1/1",
+  "palette": "24 independent 256-entry RGB565 + surface-normal palettes",
+  "codec": "Per-row PackBits with implicit trailing transparency; 21-bit byte offset and 11-bit byte length",
   "tail_offset_words": 461312,
-  "tail_words": 230400,
-  "used_tail_bytes": 885760,
-  "transport_words": 691200,
-  "color_quantization_psnr_db": 29.208889359945275,
-  "preview_scope": "Indexed color/rotation only. The interactive FPGA shader is not simulated in this preview.",
-  "hardware_validation": "pending"
+  "tail_words": 524288,
+  "used_tail_bytes": 1978126,
+  "transport_words": 985088,
+  "color_quantization_psnr_db": 32.083265156207325,
+  "normal_mean_error_degrees": 8.440942507840907,
+  "brightness_exposure": 2,
+  "brightness_curve": "round(510*c/(255+c)); highlight protection",
+  "hold_frames": 10,
+  "hardware_validation": "pending",
+  "asset_revision": "joined-model-20261024",
+  "geometry_fix": "Four stem brackets, both handle centerlines and spines, and eight wing ribs now embed their endpoints in supporting geometry; capped tubes.",
+  "modified_model_objects": 16,
+  "row_layout": "Rows <=256 encoded bytes never cross a 64-word burst; longer rows start on a 256-byte boundary"
 }

@@ -125,9 +125,9 @@ module photo_control_b #(parameter CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=18
 wire tx_busy,got,bad;wire [159:0] incoming;
 wire has_relief=RELIEF_CONTROL && relief_available;
 wire fluid_frame=FLUID && media_target<6;
-wire [31:0] frame_bytes=(AWARD_LIGHTS && media_target>=6) || fluid_frame ? 32'd2764800:FRAME_BYTES;
+wire [31:0] frame_bytes=(AWARD_LIGHTS && RELIEF_CONTROL && media_target==7) ? 32'd3940352:(AWARD_LIGHTS && media_target>=6) || fluid_frame ? 32'd2764800:FRAME_BYTES;
 wire request_fluid=FLUID && incoming[98:96]<6;
-wire [31:0] request_bytes=(AWARD_LIGHTS && incoming[98:96]>=6) || request_fluid ? 32'd2764800:FRAME_BYTES;
+wire [31:0] request_bytes=(AWARD_LIGHTS && RELIEF_CONTROL && incoming[103:96]==7) ? 32'd3940352:(AWARD_LIGHTS && incoming[98:96]>=6) || request_fluid ? 32'd2764800:FRAME_BYTES;
 localparam TIME_HZ=CLK_HZ/TIMER_SCALE;
 function [159:0] packet;
  input [7:0] kind;input [31:0] session;input [15:0] request_seq;

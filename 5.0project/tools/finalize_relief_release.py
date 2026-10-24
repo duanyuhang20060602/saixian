@@ -87,7 +87,7 @@ def main():
             log = Path(record.get('log', report.parent/(record['test']+'.log')))
             assert log.is_file() and sha(log) == record['log_sha256'], str(log)
             fresh.append((record, log, report.parent.name))
-    required = set(CONTROL_TESTS) | set(DISPLAY_TESTS) | {'render_cdc'}
+    required = set(CONTROL_TESTS) | set(DISPLAY_TESTS) | {'render_cdc','native_materials','native_link','native_slots','native_cache','touch'}
     if 'module photo_relief_product' in (ROOT/'common/photo_relief_player.v').read_text(encoding='utf-8'):
         required |= {'product_native', 'player_native', 'bus_native'}
     if 'result_select_blue_q' in (ROOT/'common/top_photo_a.v').read_text(encoding='utf-8'):
@@ -103,25 +103,31 @@ def main():
     if 'DISPLAY_CONTROL_STAGE' in (ROOT/'common/top_photo_a.v').read_text(encoding='utf-8'):
         required.add('display_controls')
     assert required <= {r['test'] for r, _, _ in fresh}, 'Missing required relief regressions'
-    destination = ROOT/'releases/relief_20261023'
+    destination = ROOT/'releases/relief_native_20261024'
     destination.mkdir(parents=True, exist_ok=True)
     logs = destination/'validation'
     logs.mkdir(exist_ok=True)
     tests = []
     for record, log, suite in fresh:
-        r = dict(record, suite=suite, reexecuted=True)
+        r = dict(record, suite=suite, reexecuted=record.get('reexecuted',True))
         saved = logs/(suite+'_'+record['test']+'.log')
         copy(log, saved)
         r['saved_log'] = saved.relative_to(ROOT).as_posix()
         tests.append(r)
-    prior = read(ROOT/'releases/thumbnail_hq_20261023/validation.json')
+    prior = read(ROOT/'releases/relief_hq_20261024/validation.json')
     unchanged, historical = [], []
+    test_key=lambda r:(r['test'],json.dumps(r['inputs_sha256'],sort_keys=True))
+    seen={test_key(r) for r in tests}
     for record in prior['tests']:
         if fingerprints_match(record):
-            unchanged.append(dict(record, reexecuted=False, unchanged_reverified=True))
+            key=test_key(record)
+            if key not in seen:
+                unchanged.append(dict(record, reexecuted=False, unchanged_reverified=True));seen.add(key)
         else:
             historical.append({'test': record['test'], 'suite': record.get('suite'),
                                'reason': 'Historical input hashes no longer match current project; excluded from current pass count.'})
+    executed_count=sum(bool(r.get('reexecuted')) for r in tests)
+    verified_count=len(tests)+len(unchanged)-executed_count
     releases = {}
     release_builds = []
     for record, log in boards:
@@ -145,28 +151,31 @@ def main():
     preview = args.work/'preview/rtl_reference_0.png'
     if preview.is_file():
         copy(preview, destination/'rtl_reference_0.png')
-    validation = {'version': '5.0', 'build_id': 'gold-relief-20261023', 'hardware_validation': 'pending',
+    for name in ['cup_body_comparison.png','cup_light_comparison.png']:
+        picture=args.work/'preview'/name
+        if picture.is_file():copy(picture,destination/name)
+    validation = {'version': '5.0', 'build_id': 'gold-relief-native-bright-20261024', 'hardware_validation': 'pending',
                   'baseline_hardware_validation': 'Previous 5.0 passed on hardware according to user; new images require a new board check.',
                   'boards': release_builds, 'asset': read(asset.with_suffix('.json')),
-                  'reexecuted': len(tests), 'unchanged_reverified': len(unchanged),
+                  'reexecuted': executed_count, 'unchanged_reverified': verified_count,
                   'current_passed_records': len(tests)+len(unchanged),
                   'tests': tests+unchanged, 'excluded_historical_records': historical,
                   'files_sha256': releases,
-                  'rendering': '24 precomputed indexed rotation views with FPGA per-pixel interactive directional lighting; 720p output.'}
+                  'rendering': '24 native 576x576 indexed views with per-view material palettes, aligned PackBits and FPGA interactive lighting; 720p output; 10 display frames per view, twice previous speed; scene-only twofold exposure curve with highlight protection; two 4MiB SDRAM slots.'}
     write(destination/'validation.json', validation)
     remember(ROOT/'VERSION')
-    (ROOT/'VERSION').write_text('5.0\nbuild_id=gold-relief-20261023\npublic_version_policy=fixed\n', encoding='utf-8')
+    (ROOT/'VERSION').write_text('5.0\nbuild_id=gold-relief-native-bright-20261024\npublic_version_policy=fixed\n', encoding='utf-8')
     manifest.update(saved_at=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).isoformat(),
-                    source_release='releases/relief_20261023', build_id='gold-relief-20261023',
-                    change_scope='Add separately selectable golden rotating trophy, per-pixel normal lighting and touch-controlled light; retain legacy confetti and photo/audio paths. Fix paused catalog discovery and relief-only boot.',
+                    source_release='releases/relief_native_20261024', build_id='gold-relief-native-bright-20261024',
+                    change_scope='Increase trophy source from 384x384 to native 576x576, double default rotation speed, apply scene-only 2x exposure with highlight protection, and use aligned PackBits, four-row directory caching, two 4MiB SDRAM slots and adaptive 4/64-word bursts. Preserve approved background, original confetti, photo/audio and controls.',
                     source_state='Current 5.0 source fingerprint matches both freshly rebuilt release images.',
                     hardware_validation='pending', release_builds=release_builds, release_files=releases,
                     current_recorded_test_count=len(tests)+len(unchanged),
-                    regression_accounting={'current_passed': len(tests)+len(unchanged), 'reexecuted': len(tests),
-                                           'unchanged_reverified': len(unchanged), 'excluded_historical': historical},
-                    backup_directory=str(args.work/'baseline_5_0'), relief_validation='releases/relief_20261023/validation.json')
+                    regression_accounting={'current_passed': len(tests)+len(unchanged), 'reexecuted': executed_count,
+                                           'unchanged_reverified': verified_count, 'excluded_historical': historical},
+                    backup_directory=str(args.work/'baseline/5.0project'), relief_validation='releases/relief_native_20261024/validation.json')
     manifest['package_checks'].update(both_boards_recompiled=True, A_recompiled=True,
-                                     B_qualified_firmware_reused=False, current_regressions='See releases/relief_20261023/validation.json; current fingerprints checked.')
+                                     B_qualified_firmware_reused=False, current_regressions='See releases/relief_native_20261024/validation.json; current fingerprints checked.')
     manifest['saved_rtl_files'] = len(list((ROOT/'common').rglob('*.v')))
     # TD GUI locks and active GUI logs are runtime state, not source artifacts.
     files = [p for p in ROOT.rglob('*') if p.is_file() and p.name != 'package_manifest.json'

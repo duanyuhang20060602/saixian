@@ -8,14 +8,14 @@ IO Statistics
   #inout                    1
 
 Utilization Statistics
-#lut                    17439   out of  19600   88.97%
-#reg                    12235   out of  19600   62.42%
-#le                     18463
-  #lut only              6228   out of  18463   33.73%
-  #reg only              1024   out of  18463    5.55%
-  #lut&reg              11211   out of  18463   60.72%
-#bram                      62   out of     64   96.88%
-  #bram9k                  62
+#lut                    18049   out of  19600   92.09%
+#reg                    12363   out of  19600   63.08%
+#le                     18076
+  #lut only              5713   out of  18076   31.61%
+  #reg only                27   out of  18076    0.15%
+  #lut&reg              12336   out of  18076   68.25%
+#bram                      64   out of     64  100.00%
+  #bram9k                  64
   #fifo9k                   0
 #bram32k                   16   out of     16  100.00%
 #dsp                       29   out of     29  100.00%
@@ -150,21 +150,21 @@ Report Clock Domain Luts:
 ----------------------------------------------------------------------------------------------------------------------
   Index   |  Name             |  Frequency   |  LUT As Logic   |  LUT As Shifter   |  LUT As Dram   |  BRAM   |  DSP
 ----------------------------------------------------------------------------------------------------------------------
-  #1      |  board_pixel_clk  |  75MHz       |  5713           |  0                |  47            |  58     |  15
-  #2      |  clk              |  50MHz       |  44             |  0                |  0             |  0      |  0
-  #3      |  ext_mem_clk      |  50MHz       |  2299           |  0                |  52            |  35     |  14
+  #1      |  board_pixel_clk  |  75MHz       |  5695           |  0                |  47            |  60     |  15
+  #2      |  clk              |  50MHz       |  32             |  0                |  0             |  0      |  0
+  #3      |  ext_mem_clk      |  50MHz       |  2387           |  0                |  212           |  37     |  14
   #4      |  ext_mem_clk_sft  |  50MHz       |  1              |  0                |  0             |  0      |  0
-  #5      |  hdmi_5x_clk      |  375MHz      |  31             |  0                |  0             |  0      |  0
+  #5      |  hdmi_5x_clk      |  375MHz      |  38             |  0                |  0             |  0      |  0
   #6      |  link_clk         |  25MHz       |  115            |  0                |  0             |  2      |  0
 ----------------------------------------------------------------------------------------------------------------------
 
 Clock Resource Statistics
 Index     ClockNet                                    Type               DriverType         Driver                        Fanout
-#1        u_video_pll/clk0_buf                        Global             pll                u_video_pll/pll_inst.clkc0    4847
-#2        award_render/lights/mem_clk                 Global             pll                u_sys_pll/pll_inst.clkc1      2533
-#3        store/rw/write_buf/clkw                     Global             io                 link_clk_syn_3.di             127
-#4        clk_dup_1                                   Global             io                 clk_syn_2.di                  96
-#5        u_hdmi_phy/u0_lane_lvds_8_1/I_serial_clk    Global             pll                u_video_pll/pll_inst.clkc1    47
+#1        u_video_pll/clk0_buf                        Global             pll                u_video_pll/pll_inst.clkc0    4779
+#2        award_render/gold$player/mem_clk            Global             pll                u_sys_pll/pll_inst.clkc1      2506
+#3        store/rw/write_buf/clkw                     Global             io                 link_clk_syn_3.di             118
+#4        clk_dup_1                                   Global             io                 clk_syn_2.di                  97
+#5        u_hdmi_phy/u0_lane_lvds_8_1/I_serial_clk    Global             pll                u_video_pll/pll_inst.clkc1    42
 #6        store/ram/u2_ram/SDRAM_CLK                  Global             pll                u_sys_pll/pll_inst.clkc2      0
 #7        u_sys_pll/clk0_buf                          Global             pll                u_sys_pll/pll_inst.clkc0      0
 
@@ -172,159 +172,165 @@ Report Hierarchy Area:
 +---------------------------------------------------------------------------------------------------------------------------------------------------+
 |Instance                                  |Module                                            |le      |lut     |ripple  |seq     |bram    |dsp     |
 +---------------------------------------------------------------------------------------------------------------------------------------------------+
-|top                                       |top_photo_a                                       |18463   |15245   |2194    |12253   |78      |29      |
-|  acr                                     |audio_arc_calculate                               |64      |39      |10      |48      |0       |0       |
-|  audio_hdmi                              |hdmi_1_4b_transmitter_core_wrapper                |1613    |1340    |75      |1501    |16      |0       |
-|    u0_reset_sync                         |hdmi_1_4b_tx_reset_sync                           |9       |1       |0       |9       |0       |0       |
-|    u_hdmi_edid_wrapper                   |hdmi_edid_wrapper                                 |197     |164     |26      |160     |2       |0       |
+|top                                       |top_photo_a                                       |18076   |15785   |2264    |12381   |80      |29      |
+|  acr                                     |audio_arc_calculate                               |63      |53      |10      |45      |0       |0       |
+|  audio_hdmi                              |hdmi_1_4b_transmitter_core_wrapper                |1642    |1559    |75      |1503    |16      |0       |
+|    u0_reset_sync                         |hdmi_1_4b_tx_reset_sync                           |18      |16      |0       |8       |0       |0       |
+|    u_hdmi_edid_wrapper                   |hdmi_edid_wrapper                                 |195     |168     |26      |160     |2       |0       |
 |      u_hdmi_edid_read_controller         |hdmi_edid_read_controller                         |13      |7       |6       |10      |0       |0       |
-|      u_iic_master_wrapper                |iic_master_wrapper                                |184     |157     |20      |150     |2       |0       |
-|        u_iic_bit_transmitter             |iic_bit_transmitter                               |51      |41      |10      |34      |0       |0       |
-|        u_iic_transmitter_controller      |iic_transmitter_controller                        |133     |116     |10      |116     |2       |0       |
-|          u_iic_w11_d1024_fifo            |iic_w11_d1024_fifo                                |55      |55      |0       |55      |2       |0       |
-|    u_hdmi_tx_controller_wrapper          |hdmi_tx_controller_wrapper                        |1407    |1175    |49      |1332    |14      |0       |
-|      u0_hdmi_tmds_encode                 |hdmi_tmds_encode                                  |173     |112     |12      |157     |0       |0       |
-|      u1_hdmi_tmds_encode                 |hdmi_tmds_encode                                  |130     |96      |12      |114     |0       |0       |
-|      u2_hdmi_tmds_encode                 |hdmi_tmds_encode                                  |121     |93      |12      |105     |0       |0       |
-|      u_hdmi_data_distribution            |hdmi_data_distribution                            |34      |22      |0       |34      |0       |0       |
-|      u_hdmi_island_data_assemble         |hdmi_island_data_assemble                         |408     |354     |0       |407     |0       |0       |
-|      u_hdmi_island_data_gen              |hdmi_island_data_gen                              |388     |356     |5       |380     |11      |0       |
-|        U_audio_sample_packet_2_channel   |audio_sample_packet_2_channel                     |195     |175     |5       |187     |11      |0       |
-|          u_w96_d1024_fifo                |w96_d1024_fifo                                    |57      |57      |0       |57      |11      |0       |
+|      u_iic_master_wrapper                |iic_master_wrapper                                |182     |161     |20      |150     |2       |0       |
+|        u_iic_bit_transmitter             |iic_bit_transmitter                               |51      |41      |10      |35      |0       |0       |
+|        u_iic_transmitter_controller      |iic_transmitter_controller                        |131     |120     |10      |115     |2       |0       |
+|          u_iic_w11_d1024_fifo            |iic_w11_d1024_fifo                                |54      |54      |0       |54      |2       |0       |
+|    u_hdmi_tx_controller_wrapper          |hdmi_tx_controller_wrapper                        |1429    |1375    |49      |1335    |14      |0       |
+|      u0_hdmi_tmds_encode                 |hdmi_tmds_encode                                  |172     |160     |12      |154     |0       |0       |
+|      u1_hdmi_tmds_encode                 |hdmi_tmds_encode                                  |142     |130     |12      |116     |0       |0       |
+|      u2_hdmi_tmds_encode                 |hdmi_tmds_encode                                  |118     |106     |12      |99      |0       |0       |
+|      u_hdmi_data_distribution            |hdmi_data_distribution                            |44      |44      |0       |44      |0       |0       |
+|      u_hdmi_island_data_assemble         |hdmi_island_data_assemble                         |412     |407     |0       |404     |0       |0       |
+|      u_hdmi_island_data_gen              |hdmi_island_data_gen                              |404     |399     |5       |395     |11      |0       |
+|        U_audio_sample_packet_2_channel   |audio_sample_packet_2_channel                     |206     |201     |5       |198     |11      |0       |
+|          u_w96_d1024_fifo                |w96_d1024_fifo                                    |50      |50      |0       |50      |11      |0       |
 |          u_BCH_32_24_encode              |BCH_32_24_encode                                  |1       |1       |0       |1       |0       |0       |
-|          u_BCH_64_56_encode              |BCH_64_56_encode                                  |12      |12      |0       |12      |0       |0       |
-|        u_audio_clock_regeneration_packet |audio_clock_regeneration_packet                   |58      |46      |0       |58      |0       |0       |
-|          u_BCH_64_56_encode              |BCH_64_56_encode                                  |8       |8       |0       |8       |0       |0       |
-|      u_hdmi_video_data_assemble          |hdmi_video_data_assemble                          |36      |33      |0       |36      |0       |0       |
-|      u_hdmi_video_source                 |hdmi_video_source                                 |62      |54      |8       |44      |0       |0       |
-|      u_video_axi_stream_receiver         |video_axi_stream_receiver                         |55      |55      |0       |55      |3       |0       |
-|        u_w24_d1024_fifo                  |w24_d1024_fifo                                    |53      |53      |0       |53      |3       |0       |
-|  audio_link                              |photo_audio_spi_a                                 |549     |460     |51      |447     |2       |0       |
-|    fifo                                  |photo_audio_fifo                                  |55      |45      |10      |36      |2       |0       |
+|          u_BCH_64_56_encode              |BCH_64_56_encode                                  |14      |14      |0       |11      |0       |0       |
+|        u_audio_clock_regeneration_packet |audio_clock_regeneration_packet                   |59      |59      |0       |58      |0       |0       |
+|          u_BCH_64_56_encode              |BCH_64_56_encode                                  |10      |10      |0       |9       |0       |0       |
+|      u_hdmi_video_data_assemble          |hdmi_video_data_assemble                          |30      |30      |0       |30      |0       |0       |
+|      u_hdmi_video_source                 |hdmi_video_source                                 |56      |48      |8       |42      |0       |0       |
+|      u_video_axi_stream_receiver         |video_axi_stream_receiver                         |51      |51      |0       |51      |3       |0       |
+|        u_w24_d1024_fifo                  |w24_d1024_fifo                                    |49      |49      |0       |49      |3       |0       |
+|  audio_link                              |photo_audio_spi_a                                 |521     |469     |51      |447     |2       |0       |
+|    fifo                                  |photo_audio_fifo                                  |52      |42      |10      |38      |2       |0       |
 |      all_ram32$memory                    |photo_audio_word_ram                              |0       |0       |0       |0       |2       |0       |
-|    outgoing_pages                        |photo_page_type_queue                             |32      |32      |0       |27      |0       |0       |
-|  auto_advance                            |photo_auto_advance                                |140     |133     |7       |70      |0       |0       |
-|  award_notice_osd                        |photo_award_notice                                |16      |12      |4       |6       |0       |0       |
-|  award_render                            |photo_award_render                                |2437    |1876    |419     |1693    |8       |11      |
-|    effect                                |award_fx                                          |605     |373     |190     |351     |2       |6       |
-|      sprites                             |award_sprite_rom                                  |19      |19      |0       |18      |2       |0       |
-|    gold$player                           |photo_relief_player                               |671     |572     |83      |518     |1       |2       |
-|      motion                              |photo_relief_motion                               |53      |44      |9       |35      |0       |0       |
+|    outgoing_pages                        |photo_page_type_queue                             |22      |22      |0       |22      |0       |0       |
+|  auto_advance                            |photo_auto_advance                                |88      |81      |7       |54      |0       |0       |
+|  award_notice_osd                        |photo_award_notice                                |14      |10      |4       |8       |0       |0       |
+|  award_render                            |photo_award_render                                |2891    |2387    |504     |1838    |10      |11      |
+|    effect                                |award_fx                                          |567     |377     |190     |339     |2       |6       |
+|      sprites                             |award_sprite_rom                                  |16      |16      |0       |16      |2       |0       |
+|    gold$player                           |photo_relief_player                               |1272    |1101    |171     |693     |3       |2       |
+|      burst_cache                         |photo_relief_burst_cache                          |192     |192     |0       |0       |0       |0       |
+|      dir_cache                           |photo_relief_directory_cache                      |48      |48      |0       |0       |0       |0       |
+|      motion                              |photo_relief_motion                               |43      |34      |9       |34      |0       |0       |
 |      product_x                           |photo_relief_product                              |0       |0       |0       |0       |0       |1       |
 |      product_y                           |photo_relief_product                              |0       |0       |0       |0       |0       |1       |
-|      rows                                |photo_relief_ram                                  |0       |0       |0       |0       |1       |0       |
-|    lights                                |photo_spotlight_player                            |1140    |911     |146     |804     |0       |3       |
+|      rows                                |photo_relief_row_cache                            |0       |0       |0       |0       |3       |0       |
+|        b0                                |photo_relief_ram                                  |0       |0       |0       |0       |1       |0       |
+|        b1                                |photo_relief_ram                                  |0       |0       |0       |0       |1       |0       |
+|        b2                                |photo_relief_ram                                  |0       |0       |0       |0       |1       |0       |
+|    lights                                |photo_spotlight_player                            |1032    |889     |143     |787     |0       |3       |
 |      tiles                               |photo_award_tile_cache                            |36      |36      |0       |22      |0       |0       |
-|    shared_award_cache$memory             |photo_relief_ram                                  |2       |2       |0       |1       |2       |0       |
-|    video_delay                           |photo_award_delay                                 |8       |8       |0       |8       |3       |0       |
+|    shared_award_cache$memory             |photo_relief_ram                                  |0       |0       |0       |0       |2       |0       |
+|    video_delay                           |photo_award_delay                                 |6       |6       |0       |5       |3       |0       |
 |      pixels                              |photo_video_eram                                  |0       |0       |0       |0       |3       |0       |
-|  boot_screen                             |photo_boot_screen                                 |321     |289     |22      |217     |0       |0       |
-|  ctrl                                    |photo_cached_control_a                            |1166    |1077    |47      |887     |0       |0       |
-|    port                                  |photo_uart                                        |445     |429     |16      |342     |0       |0       |
-|  display_fade                            |photo_display_fade                                |70      |55      |15      |54      |0       |3       |
-|  dwell_water                             |water_scene                                       |147     |105     |25      |105     |0       |0       |
-|  event_controller                        |saixian_event_controller                          |115     |100     |15      |81      |0       |0       |
-|  key4_hold                               |photo_key_hold                                    |95      |82      |13      |61      |0       |0       |
-|  keys[0]$button                          |saixian_key_debounce                              |37      |30      |6       |25      |0       |0       |
-|  keys[1]$button                          |saixian_key_debounce                              |40      |34      |6       |23      |0       |0       |
-|  keys[2]$button                          |saixian_key_debounce                              |44      |37      |6       |24      |0       |0       |
-|  menu_overlay                            |photo_settings_overlay                            |236     |218     |8       |203     |2       |0       |
+|  boot_screen                             |photo_boot_screen                                 |269     |247     |22      |221     |0       |0       |
+|  ctrl                                    |photo_cached_control_a                            |1112    |1067    |45      |888     |0       |0       |
+|    port                                  |photo_uart                                        |408     |392     |16      |340     |0       |0       |
+|  display_fade                            |photo_display_fade                                |52      |37      |15      |46      |0       |3       |
+|  dwell_water                             |water_scene                                       |138     |113     |25      |104     |0       |0       |
+|  event_controller                        |saixian_event_controller                          |108     |93      |15      |69      |0       |0       |
+|  key4_hold                               |photo_key_hold                                    |89      |76      |13      |57      |0       |0       |
+|  keys[0]$button                          |saixian_key_debounce                              |37      |31      |6       |25      |0       |0       |
+|  keys[1]$button                          |saixian_key_debounce                              |32      |26      |6       |22      |0       |0       |
+|  keys[2]$button                          |saixian_key_debounce                              |35      |29      |6       |25      |0       |0       |
+|  menu_overlay                            |photo_settings_overlay                            |219     |211     |8       |212     |2       |0       |
 |    font                                  |photo_menu_font                                   |0       |0       |0       |0       |1       |0       |
 |    text_rom_stage$text_lookup            |photo_menu_text_lookup                            |0       |0       |0       |0       |1       |0       |
-|  music_edge                              |water_edge                                        |237     |168     |39      |163     |1       |1       |
-|  music_event_ui                          |saixian_osd_overlay                               |548     |483     |65      |253     |0       |0       |
-|  neutral                                 |photo_neutral_delay                               |41      |41      |0       |28      |0       |0       |
-|  pixels                                  |frame_pixels                                      |38      |26      |0       |35      |0       |0       |
-|  pointer                                 |photo_touchpad                                    |182     |125     |40      |117     |0       |0       |
-|  pointer_osd                             |photo_pointer_overlay                             |50      |43      |7       |30      |0       |0       |
-|  preview                                 |photo_thumbnail_overlay                           |91      |72      |19      |41      |0       |0       |
-|  raster21                                |photo_raster_delay                                |73      |59      |14      |43      |0       |0       |
-|  raster26                                |photo_raster_delay                                |45      |36      |9       |28      |0       |0       |
-|  raster34                                |photo_raster_delay                                |54      |41      |13      |31      |0       |0       |
-|  rx                                      |photo_link_receiver                               |213     |194     |6       |134     |0       |0       |
-|  sa                                      |photo_event_sync                                  |1       |1       |0       |1       |0       |0       |
-|  screen_rx                               |saixian_hmi_uart                                  |244     |230     |14      |156     |0       |0       |
-|  screen_tx                               |saixian_hmi_status_tx                             |303     |275     |28      |165     |1       |0       |
-|  settings                                |photo_unified_settings_controller                 |181     |166     |15      |97      |0       |0       |
-|  status                                  |photo_status                                      |76      |67      |9       |51      |0       |0       |
-|  store                                   |frame_store                                       |5498    |4352    |773     |3632    |32      |13      |
-|    light_memory                          |photo_award_memory                                |77      |72      |5       |67      |0       |0       |
-|    ram                                   |sdram                                             |436     |338     |9       |398     |0       |0       |
-|      u2_ram                              |sdr_as_ram                                        |436     |338     |9       |398     |0       |0       |
-|        u1_init_ref                       |sdr_init_ref                                      |107     |63      |9       |89      |0       |0       |
-|        u2_wrrd                           |sdr_wrrd                                          |329     |275     |0       |309     |0       |0       |
-|    rw                                    |frame_read_write                                  |4804    |3788    |740     |3038    |24      |13      |
-|      fluid_reader                        |water_reader                                      |4434    |3495    |674     |2764    |18      |13      |
-|        mapping                           |water_effect_map                                  |1996    |1577    |379     |931     |1       |2       |
-|          base                            |water_base_effect_map                             |455     |365     |82      |224     |0       |0       |
-|          extra                           |water_extra_effect_map                            |1479    |1171    |297     |648     |1       |1       |
-|            coefficient                   |water_effect_recip_rom                            |74      |74      |0       |6       |1       |0       |
+|  music_edge                              |water_edge                                        |208     |169     |39      |161     |1       |1       |
+|  music_event_ui                          |saixian_osd_overlay                               |364     |299     |65      |218     |0       |0       |
+|  neutral                                 |photo_neutral_delay                               |38      |38      |0       |26      |0       |0       |
+|  page_feedback                           |photo_transition_page_event                       |7       |7       |0       |6       |0       |0       |
+|  pixels                                  |frame_pixels                                      |39      |39      |0       |39      |0       |0       |
+|  pointer                                 |photo_touchpad                                    |196     |156     |40      |123     |0       |0       |
+|  pointer_osd                             |photo_pointer_overlay                             |58      |51      |7       |44      |0       |0       |
+|  preview                                 |photo_thumbnail_overlay                           |90      |71      |19      |47      |0       |0       |
+|  raster21                                |photo_raster_delay                                |65      |51      |14      |41      |0       |0       |
+|  raster26                                |photo_raster_delay                                |49      |40      |9       |30      |0       |0       |
+|  raster34                                |photo_raster_delay                                |49      |36      |13      |32      |0       |0       |
+|  rx                                      |photo_link_receiver                               |208     |202     |6       |140     |0       |0       |
+|  sa                                      |photo_event_sync                                  |2       |2       |0       |2       |0       |0       |
+|  sb                                      |photo_event_sync                                  |2       |2       |0       |2       |0       |0       |
+|  screen_rx                               |saixian_hmi_uart                                  |215     |201     |14      |150     |0       |0       |
+|  screen_tx                               |saixian_hmi_status_tx                             |218     |190     |28      |157     |1       |0       |
+|  sd                                      |photo_event_sync                                  |5       |5       |0       |5       |0       |0       |
+|  settings                                |photo_unified_settings_controller                 |151     |136     |15      |99      |0       |0       |
+|  status                                  |photo_status                                      |89      |80      |9       |58      |0       |0       |
+|  store                                   |frame_store                                       |5289    |4517    |760     |3632    |32      |13      |
+|    light_memory                          |photo_award_memory                                |102     |89      |13      |81      |0       |0       |
+|    ram                                   |sdram                                             |480     |469     |9       |440     |0       |0       |
+|      u2_ram                              |sdr_as_ram                                        |480     |469     |9       |440     |0       |0       |
+|        u1_init_ref                       |sdr_init_ref                                      |113     |103     |9       |98      |0       |0       |
+|        u2_wrrd                           |sdr_wrrd                                          |367     |366     |0       |342     |0       |0       |
+|    rw                                    |frame_read_write                                  |4545    |3819    |719     |2990    |24      |13      |
+|      fluid_reader                        |water_reader                                      |4173    |3517    |653     |2709    |18      |13      |
+|        mapping                           |water_effect_map                                  |1841    |1483    |358     |929     |1       |2       |
+|          base                            |water_base_effect_map                             |436     |360     |76      |205     |0       |0       |
+|          extra                           |water_extra_effect_map                            |1352    |1070    |282     |672     |1       |1       |
+|            coefficient                   |water_effect_recip_rom                            |60      |60      |0       |4       |1       |0       |
 |            small_wave                    |water_wave_multiply                               |0       |0       |0       |0       |0       |1       |
-|        mixer                             |water_blend                                       |163     |134     |24      |136     |0       |3       |
-|        native_cache                      |water_native_cache                                |136     |131     |0       |112     |6       |0       |
-|        old_cache                         |water_cache                                       |14      |10      |4       |13      |8       |0       |
-|        reconstruct                       |water_reconstruct                                 |245     |196     |24      |169     |0       |0       |
-|        surface                           |water_surface_light                               |113     |92      |21      |74      |0       |3       |
-|          scalar                          |water_effect_light                                |44      |23      |21      |9       |0       |3       |
-|            p[0]$lb                       |water_light_channel                               |16      |9       |7       |2       |0       |1       |
-|            p[0]$lg                       |water_light_channel                               |14      |7       |7       |3       |0       |1       |
-|            p[0]$lr                       |water_light_channel                               |14      |7       |7       |4       |0       |1       |
-|        warp                              |water_warp                                        |890     |679     |160     |569     |3       |5       |
-|          engine                          |water_drop_vector                                 |783     |588     |144     |490     |3       |5       |
-|            inverse_rom                   |water_inverse_rom                                 |12      |12      |0       |10      |2       |0       |
-|            sq                            |water_sqrt                                        |411     |316     |52      |328     |0       |0       |
-|      frame_fifo_write_m0                 |frame_fifo_write                                  |118     |96      |22      |76      |0       |0       |
-|      read_buf                            |rfifo_32_32_512                                   |128     |97      |24      |99      |4       |0       |
+|        mixer                             |water_blend                                       |171     |147     |24      |140     |0       |3       |
+|        native_cache                      |water_native_cache                                |119     |118     |0       |111     |6       |0       |
+|        old_cache                         |water_cache                                       |18      |14      |4       |17      |8       |0       |
+|        reconstruct                       |water_reconstruct                                 |220     |195     |24      |162     |0       |0       |
+|        surface                           |water_surface_light                               |104     |83      |21      |73      |0       |3       |
+|          scalar                          |water_effect_light                                |42      |21      |21      |11      |0       |3       |
+|            p[0]$lb                       |water_light_channel                               |14      |7       |7       |4       |0       |1       |
+|            p[0]$lg                       |water_light_channel                               |14      |7       |7       |4       |0       |1       |
+|            p[0]$lr                       |water_light_channel                               |14      |7       |7       |3       |0       |1       |
+|        warp                              |water_warp                                        |883     |723     |160     |546     |3       |5       |
+|          engine                          |water_drop_vector                                 |789     |645     |144     |476     |3       |5       |
+|            inverse_rom                   |water_inverse_rom                                 |13      |13      |0       |9       |2       |0       |
+|            sq                            |water_sqrt                                        |409     |357     |52      |326     |0       |0       |
+|      frame_fifo_write_m0                 |frame_fifo_write                                  |122     |100     |22      |82      |0       |0       |
+|      read_buf                            |rfifo_32_32_512                                   |131     |103     |24      |103     |4       |0       |
 |        ram_inst                          |ram_infer_rfifo_32_32_512                         |0       |0       |0       |0       |4       |0       |
-|        rd_to_wr_cross_inst               |fifo_cross_domain_addr_process_al_rfifo_32_32_512 |35      |33      |0       |35      |0       |0       |
-|        wr_to_rd_cross_inst               |fifo_cross_domain_addr_process_al_rfifo_32_32_512 |37      |37      |0       |37      |0       |0       |
-|      write_buf                           |wfifo_32_32_512                                   |118     |94      |20      |94      |2       |0       |
+|        rd_to_wr_cross_inst               |fifo_cross_domain_addr_process_al_rfifo_32_32_512 |35      |35      |0       |35      |0       |0       |
+|        wr_to_rd_cross_inst               |fifo_cross_domain_addr_process_al_rfifo_32_32_512 |40      |40      |0       |40      |0       |0       |
+|      write_buf                           |wfifo_32_32_512                                   |112     |92      |20      |89      |2       |0       |
 |        ram_inst                          |ram_infer_wfifo_32_32_512                         |0       |0       |0       |0       |2       |0       |
-|        rd_to_wr_cross_inst               |fifo_cross_domain_addr_process_al_wfifo_32_32_512 |33      |32      |0       |33      |0       |0       |
-|        wr_to_rd_cross_inst               |fifo_cross_domain_addr_process_al_wfifo_32_32_512 |35      |35      |0       |35      |0       |0       |
-|    thumbnails                            |photo_thumbnail_memory                            |143     |124     |19      |91      |8       |0       |
-|      cache                               |photo_thumbnail_cache                             |28      |27      |1       |13      |8       |0       |
-|    align_read                            |photo_sdram_read_align                            |32      |24      |0       |32      |0       |0       |
-|  timing_display                          |photo_switch_timing_display                       |84      |72      |12      |63      |0       |0       |
-|  timing_probe                            |photo_switch_timing                               |162     |152     |5       |138     |0       |0       |
-|  transition                              |saixian_transition                                |67      |63      |4       |45      |0       |0       |
-|  u_hdmi_phy                              |hdmi_phy_wrapper                                  |35      |35      |0       |35      |0       |0       |
-|    u0_lane_lvds_8_1                      |lane_lvds_10_1                                    |13      |13      |0       |13      |0       |0       |
-|    u1_lane_lvds_8_1                      |lane_lvds_10_1                                    |8       |8       |0       |8       |0       |0       |
+|        rd_to_wr_cross_inst               |fifo_cross_domain_addr_process_al_wfifo_32_32_512 |29      |29      |0       |29      |0       |0       |
+|        wr_to_rd_cross_inst               |fifo_cross_domain_addr_process_al_wfifo_32_32_512 |36      |36      |0       |36      |0       |0       |
+|    thumbnails                            |photo_thumbnail_memory                            |118     |99      |19      |82      |8       |0       |
+|      cache                               |photo_thumbnail_cache                             |5       |4       |1       |4       |8       |0       |
+|    align_read                            |photo_sdram_read_align                            |34      |31      |0       |29      |0       |0       |
+|  timing_display                          |photo_switch_timing_display                       |87      |75      |12      |65      |0       |0       |
+|  timing_probe                            |photo_switch_timing                               |164     |159     |5       |114     |0       |0       |
+|  transition                              |saixian_transition                                |47      |43      |4       |40      |0       |0       |
+|  u_hdmi_phy                              |hdmi_phy_wrapper                                  |47      |47      |0       |44      |0       |0       |
+|    u0_lane_lvds_8_1                      |lane_lvds_10_1                                    |18      |18      |0       |16      |0       |0       |
+|    u1_lane_lvds_8_1                      |lane_lvds_10_1                                    |15      |15      |0       |15      |0       |0       |
 |    u2_lane_lvds_8_1                      |lane_lvds_10_1                                    |9       |9       |0       |9       |0       |0       |
-|    u3_lane_lvds_8_1                      |lane_lvds_10_1                                    |5       |5       |0       |5       |0       |0       |
-|  u_result_animation                      |saixian_battle_result_fx                          |2010    |1680    |289     |761     |11      |1       |
+|    u3_lane_lvds_8_1                      |lane_lvds_10_1                                    |5       |5       |0       |4       |0       |0       |
+|  u_result_animation                      |saixian_battle_result_fx                          |1992    |1703    |289     |770     |11      |1       |
 |    red_patch                             |saixian_red_victory_atlas                         |0       |0       |0       |0       |1       |0       |
-|    u_sprint_atlas                        |saixian_sprint_atlas                              |26      |26      |0       |9       |5       |0       |
-|      u_dictionary                        |saixian_dictionary_atlas                          |26      |26      |0       |9       |5       |0       |
-|    winner_atlas                          |saixian_victory_atlas                             |10      |10      |0       |2       |3       |0       |
-|      u_dictionary                        |saixian_dictionary_atlas                          |10      |10      |0       |2       |3       |0       |
+|    u_sprint_atlas                        |saixian_sprint_atlas                              |27      |27      |0       |7       |5       |0       |
+|      u_dictionary                        |saixian_dictionary_atlas                          |27      |27      |0       |7       |5       |0       |
+|    winner_atlas                          |saixian_victory_atlas                             |14      |14      |0       |7       |3       |0       |
+|      u_dictionary                        |saixian_dictionary_atlas                          |14      |14      |0       |7       |3       |0       |
 |  u_sys_pll                               |sys_pll                                           |0       |0       |0       |0       |0       |0       |
-|  u_tx                                    |hdmi_minimal_tx                                   |47      |37      |10      |25      |0       |0       |
-|    ch0                                   |hdmi_minimal_channel                              |2       |2       |0       |1       |0       |0       |
+|  u_tx                                    |hdmi_minimal_tx                                   |48      |38      |10      |28      |0       |0       |
 |    ch1                                   |hdmi_minimal_channel                              |2       |2       |0       |1       |0       |0       |
-|    ch2                                   |hdmi_minimal_channel                              |4       |4       |0       |2       |0       |0       |
+|    ch2                                   |hdmi_minimal_channel                              |6       |6       |0       |2       |0       |0       |
 |  u_video_pll                             |video_pll                                         |0       |0       |0       |0       |0       |0       |
 |  ui_font                                 |saixian_font_rom                                  |0       |0       |0       |0       |1       |0       |
-|  visual_cache                            |photo_av_metadata_a                               |370     |258     |80      |234     |4       |0       |
-|  page_feedback                           |photo_transition_page_event                       |10      |10      |0       |7       |0       |0       |
-|  rh                                      |dual_still_reset_sync                             |5       |5       |0       |4       |0       |0       |
-|  rl                                      |dual_still_reset_sync                             |3       |2       |0       |3       |0       |0       |
-|  rm                                      |dual_still_reset_sync                             |7       |3       |0       |7       |0       |0       |
-|  rp                                      |dual_still_reset_sync                             |41      |39      |0       |26      |0       |0       |
-|  rr                                      |dual_still_reset_sync                             |6       |6       |0       |6       |0       |0       |
+|  visual_cache                            |photo_av_metadata_a                               |352     |272     |80      |220     |4       |0       |
+|  rh                                      |dual_still_reset_sync                             |8       |8       |0       |4       |0       |0       |
+|  rl                                      |dual_still_reset_sync                             |6       |6       |0       |5       |0       |0       |
+|  rm                                      |dual_still_reset_sync                             |12      |8       |0       |11      |0       |0       |
+|  rp                                      |dual_still_reset_sync                             |74      |73      |0       |48      |0       |0       |
+|  rr                                      |dual_still_reset_sync                             |4       |4       |0       |4       |0       |0       |
 +---------------------------------------------------------------------------------------------------------------------------------------------------+
 
 
 DataNet Average Fanout:
 
    Index     Fanout     Nets   
-    #1          1       17135  
-    #2          2       4345   
-    #3          3       1732   
-    #4          4        955   
-    #5        5-10      1787   
-    #6        11-50      945   
-    #7       51-100      60    
-    #8       101-500      8    
-  Average     2.61             
+    #1          1       17735  
+    #2          2       4711   
+    #3          3       1759   
+    #4          4        953   
+    #5        5-10      1794   
+    #6        11-50      941   
+    #7       51-100      57    
+    #8       101-500     14    
+  Average     2.63             

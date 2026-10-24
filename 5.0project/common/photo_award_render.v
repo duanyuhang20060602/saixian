@@ -3,7 +3,7 @@
 module photo_award_render #(parameter RELIEF_ENABLE=0,SHARED_ENABLE=1)(
  input relief_mode,touch_contact,input [10:0] cursor_x,input [9:0] cursor_y,
  input mem_clk,mem_rst,input [20:0] light_base,
- output light_request,output [20:0] light_address,input light_ack,input [31:0] light_data,input light_valid,
+ output light_wide,output light_request,output [20:0] light_address,input light_ack,input [31:0] light_data,input light_valid,
  input de_in,input clk,rst,enable,pause,frame_tick,
  input [10:0] x,input [9:0] y,input [23:0] tagged_rgb,
  output [23:0] rgb,output [23:0] menu_rgb,
@@ -23,7 +23,8 @@ always @(posedge mem_clk or posedge mem_rst)
   if(light_ack)burst_relief<=route_d;
  end
 wire old_request;wire [20:0] old_address;wire [3:0] old_error;wire [6:0] old_frame;
-wire new_request;wire [20:0] new_address;wire [3:0] new_error;wire [4:0] new_frame;wire [23:0] new_rgb;
+wire new_request,new_wide;wire [20:0] new_address;wire [3:0] new_error;wire [4:0] new_frame;wire [23:0] new_rgb;
+assign light_wide=relief_mem && new_wide;
 assign light_request=relief_mem ? new_request:old_request;
 assign light_address=relief_mem ? new_address:old_address;
 assign light_error=relief ? new_error:old_error;
@@ -42,14 +43,14 @@ end else begin
 end endgenerate
 generate if(RELIEF_ENABLE)begin:gold
  photo_relief_player #(.SHARED_PALETTE(SHARED_ENABLE)) player(.mem_clk(mem_clk),.mem_rst(mem_rst),.enable(enable && relief),.base(light_base),
- .request(new_request),.address(new_address),.ack(light_ack && route_d),.data(light_data),.valid(light_valid && burst_relief),
+ .wide_request(new_wide),.request(new_request),.address(new_address),.ack(light_ack && route_d),.data(light_data),.valid(light_valid && burst_relief),
  .clk(clk),.rst(rst),.pause(pause),.frame_tick(frame_tick),.de(de_in),.x(x),.y(y),.rgb_in(tagged_rgb),
  .touch_contact(touch_contact),.cursor_x(cursor_x),.cursor_y(cursor_y),.rgb_out(new_rgb),.error(new_error),.angle(new_frame),
  .cache_write_en(new_cache_we),.cache_write_address(new_cache_wa),.cache_write_data(new_cache_wd),
  .cache_read_address(new_cache_ra),.cache_read_data(shared_cache_data));
 end else begin
  assign new_cache_we=0;assign new_cache_wa=0;assign new_cache_wd=0;assign new_cache_ra=0;
- assign new_request=0;assign new_address=0;assign new_error=0;assign new_frame=0;assign new_rgb=0;
+ assign new_wide=0;assign new_request=0;assign new_address=0;assign new_error=0;assign new_frame=0;assign new_rgb=0;
 end endgenerate
 wire [15:0] pixel={tagged_rgb[23:19],tagged_rgb[15:10],tagged_rgb[7:3]};
 wire [4:0] blue=pixel[0] ? {1'b0,pixel[10:7]} : {pixel[4:1],1'b0};

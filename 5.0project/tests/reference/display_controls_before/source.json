@@ -1,5 +1,5 @@
 {
-  "original_normalized_sha256": "3d1d1acdb088d527f01becff0b523df67771e485d3e2bb1f088d404697f2a55a",
+  "original_normalized_sha256": "38a27d87c3d83edeb1fb726d01320840cded2508f57ea46d947ddb4553438ac2",
   "replacements": [
     [
       ".rgb_in(award_active ? award_menu_rgb:range_rgb)",
@@ -18,5 +18,7 @@
       ".enable(pointer_enabled),.navigation_enable(pointer_nav_display_q),.de(raster_de21)"
     ]
   ],
-  "scope": "Only four scene-selection controls gain one register. All other top wiring and all RGB/DE/coordinate data paths remain byte-identical."
+  "scope": "Only four scene-selection controls gain one register. All other top wiring and all RGB/DE/coordinate data paths remain byte-identical.",
+  "interface_rebase": "Only the independent light_wide wire/ports were added for HQ burst selection; original scene selector expressions are unchanged.",
+  "native_interface_rebase": "Native relief length selection CDC and store/link ports; original scene-selection conditions preserved."
 }

@@ -24,7 +24,7 @@ endfunction
 function [31:0] source;
  input [20:0] a;integer s,w,x,y;reg [23:0] p0,p1,p2,p3;
  begin
-  s=a/691200;w=a%691200;
+  s=a/1048576;w=a%1048576;
   if(1'b0)begin
    y=w/960;x=(w%960)/3*4;
    p0=pixel(x,y,s);p1=pixel(x+1,y,s);p2=pixel(x+2,y,s);p3=pixel(x+3,y,s);
@@ -37,7 +37,7 @@ always @(posedge clk)begin
  cycles<=cycles+1;previous_claim<=claim;
  responses<={responses[8:0],rd};
  if(rd)begin
-  if(address>=2073600)$fatal(1,"read outside photo slots %d",address);
+  if(address>=2097152)$fatal(1,"read outside photo slots %d",address);
   if(!claim || refresh)$fatal(1,"unowned or refresh command");
   pipe[0]<=source(address);reads<=reads+1;
  end
@@ -76,14 +76,14 @@ initial begin
  if(claim)$fatal(1,"in-flight turn did not drain after vertical blank");
  before_reads=reads;repeat(100)@(negedge clk);
  if(reads!=before_reads)$fatal(1,"sampling continued in active video");
- blank=1;finish_check(1);start(2,0);finish_check(2);
+ blank=1;finish_check(1);start(1,0);finish_check(1);
  start(0,0);wait(rd);@(negedge vc);cancel=1;
  wait(done==job);if(claim)$fatal(1,"cancellation acknowledged before bus release");
- repeat(5)@(negedge vc);start(2,0);finish_check(2);
+ repeat(5)@(negedge vc);start(1,0);finish_check(1);
  start(1,0);wait(dut.row==32 && dut.column==5 && rd);
  @(negedge vc);cancel=1;wait(done==job);repeat(5)@(negedge vc);
  start(0,0);finish_check(0);
- $display("PASS whole-cache CDC, RGB565, three slots, refresh, priority, cancellation and restart");$finish;
+ $display("PASS whole-cache CDC, RGB565, both native 4MiB slots, refresh, priority, cancellation and restart");$finish;
 end
 initial begin #100000000;$fatal(1,"memory timeout reads=%d",reads);end
 endmodule
