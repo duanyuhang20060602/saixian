@@ -49,13 +49,14 @@ for role,top in [('board_a','top_photo_a'),('board_b','top_photo_b')]:
     for e in list(verilog):verilog.remove(e)
     paths=[p for p in paths if Path(p).name not in excluded | replacements]
     shared=['photo_color_format.v','photo_uart.v','photo_link.v','photo_control.v','photo_status.v',top+'.v']
-    if role=='board_a':shared+=['photo_audio_link.v','photo_audio_features.v','audio_ui/photo_audio_cue_samples.v','audio_ui/saixian_event_controller.v','audio_ui/saixian_osd_overlay.v','audio_ui/saixian_font_rom.v','audio_vendor/audio_arc_calculate.v','audio_vendor/hdmi_1_4b_transmitter_core_wrapper.enc.v','photo_resolution_overlay.v','photo_settings_overlay.v','photo_unified_settings_controller.v','photo_menu_font.v','photo_cached_control_a.v','saixian_transition.v','photo_processing.v','photo_display_pipe.v','saixian_hmi_uart.v','saixian_key_debounce.v','photo_auto_advance.v']
+    if role=='board_a':shared+=['photo_audio_link.v','photo_audio_features.v','audio_ui/photo_audio_cue_samples.v','audio_ui/saixian_event_controller.v','audio_ui/saixian_osd_overlay.v','audio_ui/saixian_font_rom.v','audio_vendor/audio_arc_calculate.v','audio_vendor/hdmi_1_4b_transmitter_core_wrapper.enc.v','photo_settings_overlay.v','photo_unified_settings_controller.v','photo_menu_font.v','photo_cached_control_a.v','saixian_transition.v','photo_processing.v','photo_display_pipe.v','saixian_hmi_uart.v','saixian_key_debounce.v','photo_auto_advance.v']
     else:shared+=['photo_audio_link.v','photo_audio_features.v','audio_ui/photo_audio_cue_samples.v','photo_sd_audio_stream.v','photo_sd_cache.v','photo_processing.v','photo_b_processing.v']
     shared+=['photo_av_receiver.v' if role=='board_a' else 'photo_av_metadata.v']
     shared+=['fluid/'+p.name for p in sorted((ROOT/'common/fluid').glob('*.v')) if p.name!='water_pack.v'] if role=='board_a' else ['fluid/water_pack.v']
     if role=='board_b':shared+=['audio_ui/saixian_audio_visualizer.v','audio_ui/saixian_audio_repair.v']
     if role=='board_a':shared+=['award_fx.v','award_sprite_rom.v','photo_award_render.v','photo_boot_screen.v','saixian_battle_result_fx_pipelined.v']
     paths+=['../../../common/'+p for p in shared]
+    if role=='board_a':paths+=['../../../common/photo_thumbnail.v']
     if role=='board_b':paths+=['../../../common/photo_sd/'+p.name for p in (ROOT/'common/photo_sd').glob('*.v')]
     # Imported B al may already list saixian_media_header under SD.
     paths=list(dict.fromkeys(paths))

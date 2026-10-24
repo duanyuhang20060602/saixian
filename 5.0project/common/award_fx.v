@@ -210,19 +210,90 @@ function [6:0] wave_curve;input [5:0] q;begin case(q)
  6'd63:wave_curve=7'd0;
  default:wave_curve=0;endcase end endfunction
 
+// Direct phase lookup preserves the signed-distance curve exactly while
+// avoiding the nine-bit absolute-value carry chain before the wave register.
+function [6:0] phase_curve;input [8:0] p;begin case(p[8:3])
+ 6'd0:phase_curve=7'd64;
+ 6'd1:phase_curve=7'd63;
+ 6'd2:phase_curve=7'd60;
+ 6'd3:phase_curve=7'd56;
+ 6'd4:phase_curve=7'd50;
+ 6'd5:phase_curve=7'd44;
+ 6'd6:phase_curve=7'd37;
+ 6'd7:phase_curve=7'd31;
+ 6'd8:phase_curve=7'd24;
+ 6'd9:phase_curve=7'd19;
+ 6'd10:phase_curve=7'd14;
+ 6'd11:phase_curve=7'd10;
+ 6'd12:phase_curve=7'd7;
+ 6'd13:phase_curve=7'd5;
+ 6'd14:phase_curve=7'd3;
+ 6'd15:phase_curve=7'd2;
+ 6'd16:phase_curve=7'd1;
+ 6'd17:phase_curve=7'd1;
+ 6'd18:phase_curve=7'd0;
+ 6'd19:phase_curve=7'd0;
+ 6'd20:phase_curve=7'd0;
+ 6'd21:phase_curve=7'd0;
+ 6'd22:phase_curve=7'd0;
+ 6'd23:phase_curve=7'd0;
+ 6'd24:phase_curve=7'd0;
+ 6'd25:phase_curve=7'd0;
+ 6'd26:phase_curve=7'd0;
+ 6'd27:phase_curve=7'd0;
+ 6'd28:phase_curve=7'd0;
+ 6'd29:phase_curve=7'd0;
+ 6'd30:phase_curve=7'd0;
+ 6'd31:phase_curve=7'd0;
+ 6'd32:phase_curve=7'd0;
+ 6'd33:phase_curve=7'd0;
+ 6'd34:phase_curve=7'd0;
+ 6'd35:phase_curve=7'd0;
+ 6'd36:phase_curve=7'd0;
+ 6'd37:phase_curve=7'd0;
+ 6'd38:phase_curve=7'd0;
+ 6'd39:phase_curve=7'd0;
+ 6'd40:phase_curve=7'd0;
+ 6'd41:phase_curve=7'd0;
+ 6'd42:phase_curve=7'd0;
+ 6'd43:phase_curve=7'd0;
+ 6'd44:phase_curve=7'd0;
+ 6'd45:phase_curve=7'd0;
+ 6'd46:phase_curve=p[2:0]==0 ? 7'd0:7'd1;
+ 6'd47:phase_curve=7'd1;
+ 6'd48:phase_curve=p[2:0]==0 ? 7'd1:7'd2;
+ 6'd49:phase_curve=p[2:0]==0 ? 7'd2:7'd3;
+ 6'd50:phase_curve=p[2:0]==0 ? 7'd3:7'd5;
+ 6'd51:phase_curve=p[2:0]==0 ? 7'd5:7'd7;
+ 6'd52:phase_curve=p[2:0]==0 ? 7'd7:7'd10;
+ 6'd53:phase_curve=p[2:0]==0 ? 7'd10:7'd14;
+ 6'd54:phase_curve=p[2:0]==0 ? 7'd14:7'd19;
+ 6'd55:phase_curve=p[2:0]==0 ? 7'd19:7'd24;
+ 6'd56:phase_curve=p[2:0]==0 ? 7'd24:7'd31;
+ 6'd57:phase_curve=p[2:0]==0 ? 7'd31:7'd37;
+ 6'd58:phase_curve=p[2:0]==0 ? 7'd37:7'd44;
+ 6'd59:phase_curve=p[2:0]==0 ? 7'd44:7'd50;
+ 6'd60:phase_curve=p[2:0]==0 ? 7'd50:7'd56;
+ 6'd61:phase_curve=p[2:0]==0 ? 7'd56:7'd60;
+ 6'd62:phase_curve=p[2:0]==0 ? 7'd60:7'd63;
+ 6'd63:phase_curve=p[2:0]==0 ? 7'd63:7'd64;
+ default:phase_curve=0;endcase end endfunction
+
 wire live=enable && initial_frames>=INITIAL_HOLD_FRAMES;
 wire [8:0] phase=motion[8:0]+y[8:0]+bend(x[10:5]);
-reg [6:0] wave0,breath0;reg [10:0] x0;reg [9:0] y0,motion0;
-reg [15:0] seed0;reg [23:0] base0;reg [5:0] tag0;reg live0;
+reg [6:0] wave0,breath0;reg [10:0] x0;reg [9:0] y0;
+reg [23:0] base0;reg [5:0] tag0;reg live0;
 wire [8:0] distance=phase[8] ? (~phase+9'd1) : phase;
 // Both effects have a dark phase: the plate highlights must not hide the sweep.
 wire signed [7:0] intensity=tag0[5] ? $signed({1'b0,breath0})-8'sd32 : $signed({1'b0,wave0})-8'sd32;
 wire signed [12:0] weighted=$signed({1'b0,tag0[4:1]})*intensity;
 wire [15:0] seed=seed_for_column(x[10:5]);
-function [13:0] sprite_address;
- input [1:0] layer;input [10:0] px;input [9:0] py,clock_phase;input [15:0] random_seed;
- reg [9:0] center_y;reg [4:0] sway_phase;reg signed [6:0] sway;
- reg [6:0] center_x;reg [10:0] dx,dy;reg [3:0] orientation;
+// Compute centers alongside the original input capture. The following
+// stage only measures pixel offsets; the five-clock shader latency stays fixed.
+function [18:0] sprite_components;
+ input [1:0] layer;input [9:0] clock_phase;input [15:0] random_seed;
+ reg [9:0] center_y;reg [4:0] sway_phase;reg [1:0] sway_step;
+ reg [4:0] center_x;reg [3:0] orientation;
  begin
   case(layer)
    0:center_y=clock_phase+random_seed[9:0];
@@ -231,13 +302,28 @@ function [13:0] sprite_address;
    3:center_y=clock_phase+{clock_phase[8:0],1'b0}+random_seed[9:0]+10'd173;
   endcase
   sway_phase=clock_phase[8:4]+random_seed[4:0]+{3'd0,layer};
-  sway=sway_phase[4] ? 7'sd15-$signed({3'd0,sway_phase[3:0]}) : $signed({3'd0,sway_phase[3:0]});
-  center_x=7'd8+{3'd0,random_seed[14:11]}+(sway>>>2);
-  dx={6'd0,px[4:0]}+11'd16-center_x;dy={1'b0,py}+11'd16-center_y;
+  sway_step=sway_phase[3:2] ^ {2{sway_phase[4]}};
+  center_x=5'd8+{1'b0,random_seed[14:11]}+{3'd0,sway_step};
   orientation=clock_phase[6:3]+random_seed[15:12]+{layer,2'b0};
-  sprite_address=px<1280 && py<548 && dx<32 && dy<32 ? {orientation,dy[4:0],dx[4:0]} : 14'd0;
+  sprite_components={orientation,center_y,center_x};
  end
 endfunction
+function [13:0] sprite_from_components;
+ input [10:0] px;input [9:0] py;input [18:0] components;
+ reg [5:0] dx;reg [10:0] dy;
+ begin
+  dx={1'b0,px[4:0]}+6'd16-{1'b0,components[4:0]};
+  dy={1'b0,py}+11'd16-{1'b0,components[14:5]};
+  sprite_from_components=px<1280 && py<548 && !dx[5] && dy<32 ? {components[18:15],dy[4:0],dx[4:0]}:14'd0;
+ end
+endfunction
+// Unregistered composition is retained for direct differential assertions.
+function [13:0] sprite_address;
+ input [1:0] layer;input [10:0] px;input [9:0] py,clock_phase;input [15:0] random_seed;
+ begin sprite_address=sprite_from_components(px,py,sprite_components(layer,clock_phase,random_seed));end
+endfunction
+reg [18:0] components0,components1,components2,components3;
+
 reg [13:0] address0,address1,address2,address3;
 reg [23:0] base1,flow2;reg signed [9:0] gain1;
 wire [7:0] sprite0,sprite1,sprite2,sprite3;
@@ -275,14 +361,14 @@ function [7:0] blend;
  end
 endfunction
 always @(posedge clk)begin
- if(rst)begin base0<=0;tag0<=0;live0<=0;wave0<=0;breath0<=0;x0<=0;y0<=0;motion0<=0;seed0<=0;selected3<=0;flow3<=0;base1<=0;gain1<=0;flow2<=0;rgb<=0;address0<=0;address1<=0;address2<=0;address3<=0;end
+ if(rst)begin base0<=0;tag0<=0;live0<=0;wave0<=0;breath0<=0;x0<=0;y0<=0;components0<=0;components1<=0;components2<=0;components3<=0;selected3<=0;flow3<=0;base1<=0;gain1<=0;flow2<=0;rgb<=0;address0<=0;address1<=0;address2<=0;address3<=0;end
  else begin
-  base0<=base_rgb;tag0<=tag;live0<=live;wave0<=wave_curve(distance[8:3]);breath0<=breath(motion[9:4]);x0<=x;y0<=y;motion0<=motion;seed0<=seed;
+  base0<=base_rgb;tag0<=tag;live0<=live;wave0<=phase_curve(phase);breath0<=breath(motion[9:4]);x0<=x;y0<=y;components0<=sprite_components(0,motion,seed);components1<=sprite_components(1,motion,seed^16'h5429);components2<=sprite_components(2,motion,seed^16'h9561);components3<=sprite_components(3,motion,seed^16'h39ac);
   base1<=base0;gain1<=live0 && tag0[0] ? ((weighted>>>2)+(tag0[5] ? 10'sd0 : 10'sd88)) : 10'sd0;
-  address0<=live0 ? sprite_address(0,x0,y0,motion0,seed0) : 0;
-  address1<=live0 ? sprite_address(1,x0,y0,motion0,seed0^16'h5429) : 0;
-  address2<=live0 ? sprite_address(2,x0,y0,motion0,seed0^16'h9561) : 0;
-  address3<=live0 ? sprite_address(3,x0,y0,motion0,seed0^16'h39ac) : 0;
+  address0<=live0 ? sprite_from_components(x0,y0,components0) : 0;
+  address1<=live0 ? sprite_from_components(x0,y0,components1) : 0;
+  address2<=live0 ? sprite_from_components(x0,y0,components2) : 0;
+  address3<=live0 ? sprite_from_components(x0,y0,components3) : 0;
   flow2<=lit;
   flow3<=flow2;selected3<=selected;
   rgb<={blend(flow3[23:16],foil_r,selected3[7:4]),blend(flow3[15:8],foil_g,selected3[7:4]),blend(flow3[7:0],foil_b,selected3[7:4])};

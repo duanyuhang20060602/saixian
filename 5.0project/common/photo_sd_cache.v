@@ -1,15 +1,14 @@
 `timescale 1ns/1ps
-// Six-entry directory, three SDRAM slots. A locked transmit slot is never a
+// Six-entry directory, two external SDRAM slots. A locked transmit slot is never a
 // load destination. Neighbour prefetch runs while the link consumes its slot.
-module photo_sd_cache #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=1048575,FRAME_WORDS=460800,FORWARD_ONLY=0,DISPLAY_PIN=0)(
- input requested_high_color,output reg high_color,
+module photo_sd_cache #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=1048575,FRAME_WORDS=460800,FORWARD_ONLY=0,DISPLAY_PIN=0,EARLY_PREFETCH=0)(
  input display_valid,input [2:0] display_image,input prefetch_pause,
  input audio_packet_active,input audio_request_valid,input [7:0] requested_audio_epoch,input [2:0] requested_audio_track,
  output reg [7:0] active_audio_epoch,output reg [2:0] active_audio_track,audio_count,
- output [3:0] audio_scan_state,output audio_switching,output [13:0] audio_fifo_used,output [31:0] audio_fifo_data,input audio_fifo_read,
+ output [3:0] audio_scan_state,output audio_switching,output audio_stream_reset,output [13:0] audio_fifo_used,output [31:0] audio_fifo_data,input audio_fifo_read,
  input clk,rst,request,input [2:0] target,input release_slot,cancel,
  output reg [1:0] ready_gain,output reg ready,output reg [1:0] ready_slot,output reg [2:0] image_count,
- output reg [3:0] error,output directory_ready,output reg award_available,output award_scan_complete,
+ output reg [3:0] error,output directory_ready,output reg award_available,relief_available,output award_scan_complete,
  output reg [3:0] award_decode_error,
  output reg [15:0] ready_source_width,ready_source_height,
  output write_award,output [1:0] write_slot,output write_req,output write_top_down,input write_ack,full,
@@ -21,7 +20,7 @@ reg demand,scanned,scanning,loading,load_started;
 wire initialized,bmp_ready,scan_done,scan_exhausted,found,scaler_pixel;
 wire [31:0] sector;wire [15:0] width,height;wire [23:0] pixel,bmp_pixel;
 wire found_dlt,bmp_pixel_valid,bmp_write_req,bmp_fault;
-reg [6:0] directory_dlt;reg load_is_dlt;
+reg [7:0] directory_dlt;reg load_is_dlt;
 wire dlt_ready,dlt_done,dlt_pixel_valid,dlt_req,dlt_write_req;wire [23:0] dlt_pixel;
 wire [31:0] dlt_sector;wire [3:0] dlt_error;
 assign scaler_pixel=load_is_dlt ? dlt_pixel_valid:bmp_pixel_valid;
@@ -33,12 +32,12 @@ wire [3:0] bmp_state;wire [31:0] bmp_read_addr;wire bmp_read_req;
 wire sector_end,byte_valid,scaler_fault;wire [7:0] byte_data;
 assign scaler_fault=load_is_dlt ? dlt_error!=0:bmp_fault;
 reg scan_start,scan_resume,scan_complete,scan_yield;reg load_start,load_launch,abort_op;reg [31:0] load_sector;
-reg [31:0] directory[0:6];reg [2:0] cache_id[0:2];reg [2:0] cache_valid;
-reg [15:0] directory_width[0:6],directory_height[0:6];
+reg [31:0] directory[0:7];reg [2:0] cache_id[0:1];reg [1:0] cache_valid;
+reg [15:0] directory_width[0:7],directory_height[0:7];
 reg [1:0] load_slot;reg [2:0] load_image,current_image,wanted,playback_image;
 
 reg [31:0] timer,init_timer;reg fin_meta,fin_sync,fin_seen;
-reg [1:0] cache_gain[0:2];
+reg [1:0] cache_gain[0:1];
 reg [10:0] stat_x;reg [9:0] stat_y;reg [20:0] stat_sum;reg [12:0] stat_count;
 wire [20:0] count_ext={8'd0,stat_count};
 wire [9:0] raw_luma={2'd0,pixel[23:16]}+{1'b0,pixel[15:8],1'b0}+{2'd0,pixel[7:0]};
@@ -46,14 +45,14 @@ wire [1:0] loaded_gain=stat_sum<(count_ext<<6) ? 2'd3:
  stat_sum<((count_ext<<6)+(count_ext<<5)) ? 2'd2:
  stat_sum<((count_ext<<7)+(count_ext<<4)) ? 2'd1:2'd0;
 reg [20:0] words;
-wire pack_aligned;wire format_dirty=requested_high_color!=high_color;
-wire [20:0] frame_words=high_color ? 21'd691200:FRAME_WORDS;
-photo_color_pack packing(.clk(clk),.rst(rst),.clear(load_start || write_req),.high_color(high_color && !load_is_dlt),
+wire pack_aligned;
+wire [20:0] frame_words=FRAME_WORDS;
+photo_color_pack packing(.clk(clk),.rst(rst),.clear(load_start || write_req),
  .valid(scaler_pixel && loading),.rgb(pixel),.word_valid(write_en),.word_data(write_data),.aligned(pack_aligned));
 reg [1:0] read_owner;reg read_settle;reg [31:0] read_address;
 assign write_slot=load_slot;
 assign write_award=load_is_dlt;
-assign directory_ready=scanned && (image_count!=0 || award_available);
+assign directory_ready=scanned && (image_count!=0 || award_available || relief_available);
 assign award_scan_complete=scan_complete;
 function [15:0] rgb565;
  input [23:0] rgb;begin rgb565={rgb[23:19],rgb[15:10],rgb[7:3]};end
@@ -64,31 +63,29 @@ endfunction
 function [2:0] prev_id;
  input [2:0] id,count;begin prev_id=id==0 ? count-1:id-1'b1;end
 endfunction
-wire [2:0] second_prefetch=high_color ? next_id(current_image,image_count):FORWARD_ONLY ? next_id(next_id(current_image,image_count),image_count):prev_id(current_image,image_count);
-// Pin only while adjusting settings. Playback retains all three slots for
-// the last transmitted image and its two forward neighbours.
+// Pin only while adjusting settings. Playback keeps current and next;
+// never replace the locked transmit slot or the actual HDMI settings image.
 wire pin_active=DISPLAY_PIN && display_valid && prefetch_pause;
 reg pin_hit,current_hit;
-reg hit,next_hit,prev_hit;reg [1:0] hit_slot,victim;
+reg hit,next_hit;reg [1:0] hit_slot,victim;
 reg victim_ok;integer i;
 always @*begin
- current_hit=0;pin_hit=0;hit=0;hit_slot=0;next_hit=0;prev_hit=0;victim=0;victim_ok=0;
- for(i=0;i<3;i=i+1)begin
-  if((!high_color || i<2) && cache_valid[i] && cache_id[i]==display_image)pin_hit=1;
-  if((!high_color || i<2) && cache_valid[i] && cache_id[i]==current_image)current_hit=1;
-  if((!high_color || i<2) && cache_valid[i] && (!loading || load_slot!=i) && cache_id[i]==wanted)begin hit=1;hit_slot=i;end
-  if((!high_color || i<2) && cache_valid[i] && cache_id[i]==next_id(current_image,image_count))next_hit=1;
-  if((!high_color || i<2) && cache_valid[i] && cache_id[i]==second_prefetch)prev_hit=1;
+ current_hit=0;pin_hit=0;hit=0;hit_slot=0;next_hit=0;victim=0;victim_ok=0;
+ for(i=0;i<2;i=i+1)begin
+  if(cache_valid[i] && cache_id[i]==display_image)pin_hit=1;
+  if(cache_valid[i] && cache_id[i]==current_image)current_hit=1;
+  if(cache_valid[i] && (!loading || load_slot!=i) && cache_id[i]==wanted)begin hit=1;hit_slot=i;end
+  if(cache_valid[i] && cache_id[i]==next_id(current_image,image_count))next_hit=1;
  end
  // Prefer invalid slots; otherwise evict a non-current, non-locked slot
  // which is not the other neighbour we intend to preserve.
- for(i=2;i>=0;i=i-1)begin
-  if((!high_color || i<2) && (!pin_active || !cache_valid[i] || cache_id[i]!=display_image) && (!ready || ready_slot!=i) && (!loading || load_slot!=i) && (!demand || !hit || hit_slot!=i) &&
+ for(i=1;i>=0;i=i-1)begin
+  if((!pin_active || !cache_valid[i] || cache_id[i]!=display_image) && (!ready || ready_slot!=i) && (!loading || load_slot!=i) && (!demand || !hit || hit_slot!=i) &&
     (!cache_valid[i] || (cache_id[i]!=current_image &&
      (demand || cache_id[i]!=next_id(current_image,image_count)))))begin victim=i;victim_ok=1;end
  end
- for(i=2;i>=0;i=i-1)
-  if((!high_color || i<2) && !cache_valid[i] && (!ready || ready_slot!=i) && (!loading || load_slot!=i))begin victim=i;victim_ok=1;end
+ for(i=1;i>=0;i=i-1)
+  if(!cache_valid[i] && (!ready || ready_slot!=i) && (!loading || load_slot!=i))begin victim=i;victim_ok=1;end
 end
 wire audio_sd_req,audio_pcm_we,audio_found;
 wire [31:0] audio_sd_addr,audio_pcm_word,audio_found_sector,audio_found_bytes;
@@ -98,8 +95,13 @@ wire audio_empty,audio_full;
 assign audio_switching=change_pending || flush_count!=0;
 assign audio_scan_state=!initialized ? 4'd1:scanning ? 4'd2:!scan_complete ? 4'd6:audio_count==0 ? 4'd3:audio_fifo_used<128 ? 4'd4:4'd5;
 wire audio_reset=rst || abort_op || flush_count!=0 || scan_start;
+assign audio_stream_reset=audio_reset;
 wire audio_enable=initialized && audio_count!=0 && active_audio_track<audio_count && !audio_switching;
-photo_audio_fifo #(.RAM32_HEAD(8192)) audio_fifo(.clk(clk),.rst(audio_reset),.write_en(audio_pcm_we && !audio_switching),.write_data(audio_pcm_word),
+// Refill starts at <=4096 frames and one sector adds <=128 frames.
+// One registered PCM write may still be pending: legal occupancy <=4225.
+// Keep the same refill waterline with a 4352-frame physical ring, including
+// 127 frames of extra headroom. The upper 3968 old slots were unreachable.
+photo_audio_fifo_compact audio_fifo(.clk(clk),.rst(audio_reset),.write_en(audio_pcm_we && !audio_switching),.write_data(audio_pcm_word),
  .read_en(audio_fifo_read && !audio_switching),.data(audio_fifo_data),.used(audio_fifo_used),.empty(audio_empty),.full(audio_full));
 photo_sd_audio_stream audio_stream(.clk(clk),.rst(audio_reset),.enable(audio_enable),
  .start_sector(audio_sectors[active_audio_track]),.data_bytes(audio_lengths[active_audio_track]),.fifo_wrusedw(audio_fifo_used),
@@ -142,9 +144,9 @@ photo_dlt_reader dlt(.clk(clk),.rst(rst || abort_op),.start(load_launch && direc
  .start_sector(load_sector),.ready(dlt_ready),.done(dlt_done),.error(dlt_error),
  .write_req(dlt_write_req),.write_ack(write_ack),.full(full),.pixel_valid(dlt_pixel_valid),.pixel(dlt_pixel),
  .req(dlt_req),.sector(dlt_sector),.byte_valid(byte_valid && read_owner==3),.byte_data(byte_data),.block_end(sector_end && read_owner==3));
-bmp_read bmp(.high_color(high_color),.clk(clk),.rst(rst),.op_abort(abort_op),.ready(bmp_ready),
+bmp_read bmp(.clk(clk),.rst(rst),.op_abort(abort_op),.ready(bmp_ready),
  .scan_start(scan_start),.scan_resume(scan_resume),.scan_exhausted(scan_exhausted),
- .scan_stop((image_count!=0 || award_available) && (!scanned || scan_yield || format_dirty || (image_count==6 && audio_count==5 && award_available))),.scan_start_sector(32'd0),.scan_max_sector(SCAN_MAX_SECTOR),
+ .scan_stop((image_count!=0 || award_available || relief_available) && (!scanned || scan_yield || (image_count==6 && audio_count==5 && award_available && relief_available))),.scan_start_sector(32'd0),.scan_max_sector(SCAN_MAX_SECTOR),
  .scan_target_count(3'd6),.scan_done(scan_done),.scan_found_valid(found),.scan_found_sector(sector),
  .scan_found_total(),.scan_found_width(width),.scan_found_height(height),.scan_found_sprint(),.scan_found_dlt(found_dlt),
  .audio_found_valid(audio_found),.audio_found_index(),.audio_found_sector(audio_found_sector),.audio_found_bytes(audio_found_bytes),
@@ -169,10 +171,10 @@ always @(posedge clk or posedge rst)begin
 end
 always @(posedge clk or posedge rst)begin
  if(rst)begin
-  high_color<=0;ready_gain<=1;stat_x<=0;stat_y<=0;stat_sum<=0;stat_count<=0;
+  ready_gain<=1;stat_x<=0;stat_y<=0;stat_sum<=0;stat_count<=0;
   ready<=0;ready_slot<=0;image_count<=0;error<=0;cache_valid<=0;load_slot<=0;load_image<=0;
   ready_source_width<=0;ready_source_height<=0;
-  directory_dlt<=0;load_is_dlt<=0;award_available<=0;award_decode_error<=0;
+  directory_dlt<=0;load_is_dlt<=0;award_available<=0;relief_available<=0;award_decode_error<=0;
   current_image<=0;playback_image<=0;wanted<=0;demand<=0;scanned<=0;scanning<=0;loading<=0;load_started<=0;
   scan_start<=0;scan_resume<=0;scan_complete<=0;scan_yield<=0;load_start<=0;abort_op<=0;load_sector<=0;timer<=0;init_timer<=0;fin_seen<=0;
  end else begin
@@ -185,9 +187,13 @@ always @(posedge clk or posedge rst)begin
   if(scanning)begin
    timer<=timer+1'b1;
    if(audio_found || sector_end)timer<=0;
-   if(found && found_dlt && !award_available)begin
+   if(found && found_dlt && !width[14] && !award_available)begin
     directory[6]<=sector;directory_width[6]<=16'h8500;directory_height[6]<=720;
     directory_dlt[6]<=1;award_available<=1;timer<=0;
+   end
+   if(found && found_dlt && width[14] && !relief_available)begin
+    directory[7]<=sector;directory_width[7]<=16'hc500;directory_height[7]<=720;
+    directory_dlt[7]<=1;relief_available<=1;timer<=0;
    end
    if(found && !found_dlt && image_count<6)begin
     directory[image_count]<=sector;directory_width[image_count]<=width;directory_height[image_count]<=height;
@@ -196,15 +202,15 @@ always @(posedge clk or posedge rst)begin
    end
    if(scan_done && !scan_start && !scan_resume)begin
     scanning<=0;scanned<=1;scan_yield<=0;
-    scan_complete<=scan_exhausted || (image_count==6 && audio_count==5 && award_available);
-    if(image_count==0 && !award_available && !found)error<=1;
+    scan_complete<=scan_exhausted || (image_count==6 && audio_count==5 && award_available && relief_available);
+    if(image_count==0 && !award_available && !relief_available && !found)error<=1;
    end
-   if(scanned && (request || demand || release_slot || prefetch_pause || found || format_dirty))scan_yield<=1;
+   if(scanned && (request || demand || release_slot || found))scan_yield<=1;
    // Watchdog measures absence of SD progress, not absence of new headers.
    // Search the configured sector range even after six photos are found.
-   if(timer>=CLK_HZ*20)begin scanning<=0;scanned<=1;scan_complete<=1;abort_op<=1;if(image_count==0 && !award_available)error<=1;end
+   if(timer>=CLK_HZ*20)begin scanning<=0;scanned<=1;scan_complete<=1;abort_op<=1;if(image_count==0 && !award_available && !relief_available)error<=1;end
   end
-  if(request && scanned && (target<image_count || (target==6 && award_available)))begin wanted<=target;demand<=1;ready<=0;error<=0;end
+  if(request && scanned && (target<image_count || (target==6 && award_available) || (target==7 && relief_available)))begin wanted<=target;demand<=1;ready<=0;error<=0;end
   if(release_slot)begin ready<=0;playback_image<=cache_id[ready_slot];
    if(!pin_active)current_image<=cache_id[ready_slot];
   end
@@ -215,10 +221,16 @@ always @(posedge clk or posedge rst)begin
   // Deliver a complete cached image even while BMP/SD is loading another
   // slot. ready locks hit_slot until release_slot; load_slot stays separate.
   // Control pulses win over the previous cycle's pending demand.
-  if(!format_dirty && !request && !release_slot && !cancel && scanned && error==0)begin
+  if(!request && !release_slot && !cancel && scanned && error==0)begin
    if(demand && hit && !ready)begin
     ready<=1;ready_slot<=hit_slot;ready_gain<=cache_gain[hit_slot];demand<=0;
     ready_source_width<=directory_width[wanted];ready_source_height<=directory_height[wanted];
+    // A owns the displayed copy. Once the complete sender slot is locked,
+    // its predecessor may be replaced while the link reads the locked slot.
+    // Advance the raw prefetch window now instead of waiting for link COMMIT.
+    // Settings pin/pause and award transfers retain the original policy.
+    if(EARLY_PREFETCH && !pin_active && !prefetch_pause && wanted<image_count)
+     playback_image<=wanted;
    end
    else if(!loading && !scanning && bmp_ready && (!DISPLAY_PIN || current_image==(pin_active ? display_image:playback_image)))begin
    if(demand && !hit && victim_ok)begin
@@ -228,25 +240,17 @@ always @(posedge clk or posedge rst)begin
     // Restore the actual HDMI image before any speculative SD read.
     load_slot<=victim;load_image<=display_image;load_start<=1;loading<=1;
     cache_valid[victim]<=0;load_started<=0;fin_seen<=fin_sync;timer<=0;
-   end else if(!demand && (!DISPLAY_PIN || !prefetch_pause) && current_image!=6 && image_count>1 && !next_hit && victim_ok)begin
+   end else if(!demand && (!DISPLAY_PIN || !prefetch_pause) && current_image<6 && image_count>1 && !next_hit && victim_ok)begin
     load_slot<=victim;load_image<=next_id(current_image,image_count);
     load_start<=1;loading<=1;
     cache_valid[victim]<=0;load_started<=0;fin_seen<=fin_sync;timer<=0;
-   end else if(!demand && (!DISPLAY_PIN || !prefetch_pause) && current_image!=6 && image_count>1 && next_hit && !prev_hit && victim_ok)begin
-    load_slot<=victim;load_image<=second_prefetch;
-    load_start<=1;loading<=1;
-    cache_valid[victim]<=0;load_started<=0;fin_seen<=fin_sync;timer<=0;
-   end else if(!scan_complete && !demand && !ready && !prefetch_pause && current_hit &&
-               (current_image==6 || image_count<=1 || (next_hit && prev_hit)))begin
-    // The raw window is ready: use only idle TF time for directory discovery.
+   end else if(!scan_complete && !demand && !ready && current_hit &&
+               (prefetch_pause || current_image>=6 || image_count<=1 || next_hit))begin
+    // Continue directory discovery while a selection waits for its header.
+    // prefetch_pause still blocks speculative photo loading above.
     scan_resume<=1;scanning<=1;scan_yield<=0;timer<=0;
    end
    end
-  end
-  // Format changes never abort an in-flight TF/audio operation. Complete the
-  // old photo write, yield directory scan, invalidate raw slots, then switch.
-  if(format_dirty && !loading && !scanning && bmp_ready && !load_start && !write_en)begin
-   high_color<=requested_high_color;cache_valid<=0;ready<=0;demand<=0;
   end
   if(load_start)load_sector<=directory[load_image];
   if(load_start)award_decode_error<=0;
@@ -271,4 +275,38 @@ always @(posedge clk or posedge rst)begin
   end
  end
 end
+endmodule
+
+// Specialized ring: 2048 frames in RAM32K, 2304 in spare RAM9K.
+// Two large macros are released as well as the unreachable upper capacity. The generic FIFO and every A-board/transport queue stay unchanged.
+module photo_audio_fifo_compact(input clk,rst,write_en,input[31:0] write_data,
+ input read_en,output[31:0] data,output empty,full,output reg[13:0] used);
+reg[12:0] wp,rp;reg[1:0] read_bank;
+wire push=write_en && !full,pop=read_en && !empty;
+wire[31:0] head_q,middle_q,tail_q;
+assign empty=used==0;assign full=used==14'd4352;
+photo_audio_word_ram #(.ADDR(11),.IMPLEMENT("32K")) head(
+ .clk(clk),.we(push && wp[12:11]==0),.wa(wp[10:0]),.wd(write_data),
+ .re(pop && rp[12:11]==0),.ra(rp[10:0]),.rd(head_q));
+photo_audio_word_ram #(.ADDR(11),.IMPLEMENT("9K")) middle(
+ .clk(clk),.we(push && wp[12:11]==1),.wa(wp[10:0]),.wd(write_data),
+ .re(pop && rp[12:11]==1),.ra(rp[10:0]),.rd(middle_q));
+photo_audio_word_ram #(.ADDR(8),.IMPLEMENT("9K")) tail(
+ .clk(clk),.we(push && wp[12]),.wa(wp[7:0]),.wd(write_data),
+ .re(pop && rp[12]),.ra(rp[7:0]),.rd(tail_q));
+assign data=read_bank==0 ? head_q:read_bank==1 ? middle_q:tail_q;
+always @(posedge clk or posedge rst)begin
+ if(rst)begin wp<=0;rp<=0;used<=0;read_bank<=0;end
+ else begin
+  if(push)wp<=wp==13'd4351 ? 13'd0:wp+1'b1;
+  if(pop)begin rp<=rp==13'd4351 ? 13'd0:rp+1'b1;read_bank<=rp[12:11];end
+  case({push,pop})2'b10:used<=used+1'b1;2'b01:used<=used-1'b1;default:;endcase
+ end
+end
+// synthesis translate_off
+always @(posedge clk)if(!rst)begin
+ if(write_en && full)$fatal(1,"compact raw PCM overflow");
+ if(wp>=4352 || rp>=4352)$fatal(1,"compact raw PCM pointer out of range");
+end
+// synthesis translate_on
 endmodule

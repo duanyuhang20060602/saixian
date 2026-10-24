@@ -325,8 +325,32 @@
                     <Attr Name="CompileOrder" Val="39"/>
                 </FileInfo>
             </File>
+            <File Path="../../../common/audio_ui/saixian_audio_pitch.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="40"/>
+                </FileInfo>
+            </File>
+            <File Path="../../../common/photo_audio_pitch_b.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="41"/>
+                </FileInfo>
+            </File>
+            <File Path="../../../common/photo_switch_timing.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="42"/>
+                </FileInfo>
+            </File>
         </Verilog>
-    </Source_Files>
+</Source_Files>
     <FileSets>
         <FileSet Name="design_1" Type="DesignFiles">
         </FileSet>

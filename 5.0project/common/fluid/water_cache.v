@@ -20,7 +20,9 @@ generate for(b=0;b<BANKS;b=b+1)begin:bank
   EG_LOGIC_BRAM #(.DATA_WIDTH_A(32),.ADDR_WIDTH_A(10),.DATA_DEPTH_A(1024),
    .DATA_WIDTH_B(32),.ADDR_WIDTH_B(10),.DATA_DEPTH_B(1024),.BYTE_ENABLE(0),
    .MODE("PDPW"),.REGMODE_A("NOREG"),.REGMODE_B("NOREG"),
-   .WRITEMODE_A("NORMAL"),.WRITEMODE_B("NORMAL"),.RESETMODE("SYNC"),.IMPLEMENT("32K")) ram(
+   // A 1024x32 tail costs two half-used RAM32Ks. Four fully used
+   // RAM9Ks preserve both simultaneous 32-bit ports and their latency.
+   .WRITEMODE_A("NORMAL"),.WRITEMODE_B("NORMAL"),.RESETMODE("SYNC"),.IMPLEMENT("9K")) ram(
    .clka(clk),.rsta(1'b0),.cea(1'b1),.wea(we_q&&wa_q[13:11]==b),.ocea(1'b1),.bea(1'b0),
    .addra(wa_q[9:0]),.dia(wd_q),.doa(),
    .clkb(clk),.rstb(1'b0),.ceb(1'b1),.web(1'b0),.oceb(1'b1),.beb(1'b0),

@@ -6,7 +6,7 @@ reg clk=0;always #10 clk=~clk;
 reg rst=1,req=0,hc=0,td=0;wire ack,finish,we;wire [20:0] addr;
 integer mode,count=0,width,expected,total;
 frame_fifo_write #(.BURST_SIZE(128),.FRAME_WIDTH(640),.FRAME_HEIGHT(720)) dut(
- .write_top_down(td),.high_color(hc),.rst(rst),.mem_clk(clk),.Sdr_init_done(1'b1),.Sdr_init_ref_vld(1'b0),
+ .write_top_down(td),.rst(rst),.mem_clk(clk),.Sdr_init_done(1'b1),.Sdr_init_ref_vld(1'b0),
  .Sdr_busy(1'b0),.App_rd_busy(1'b0),.App_wr_en(we),.App_wr_addr(addr),.write_req(req),.write_req_ack(ack),
  .write_finish(finish),.write_addr_0(21'd0),.write_addr_1(21'd0),.write_addr_2(21'd0),.write_addr_3(21'd0),
  .write_addr_index(2'd0),.write_len(hc ? 21'd691200:21'd460800),.write_vga(1'b0),.rdusedw(9'd511));

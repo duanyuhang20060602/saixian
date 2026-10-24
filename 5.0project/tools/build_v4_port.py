@@ -40,7 +40,9 @@ def inputs(role):
     paths += list((ROOT/'common').rglob('*.hex'))
     return {p.relative_to(ROOT).as_posix(): digest(p) for p in sorted(set(paths)) if p.is_file()}
 
-def build(board, work, mapped_from=None):
+def build(board, work, mapped_from=None, checkpoint_stage='gate'):
+    assert checkpoint_stage in ('gate', 'place')
+    assert mapped_from or checkpoint_stage == 'gate'
     role = 'board_'+board
     out = work/'builds'/role
     project = out/'project'
@@ -81,42 +83,56 @@ def build(board, work, mapped_from=None):
         origin = json.loads(origin_path.read_text())
         assert origin['inputs_unchanged'] and origin['toolchain_unchanged']
         assert origin['inputs_sha256'] == before, 'Mapped source/constraints are stale'
-        checkpoint = Path(origin['work_project'])/f'src/{role}/td_project'/f'{name}_gate.db'
+        checkpoint = Path(origin['work_project'])/f'src/{role}/td_project'/f'{name}_{checkpoint_stage}.db'
         record['mapped_origin'] = {'result': str(origin_path), 'result_sha256': digest(origin_path),
-                                   'checkpoint': str(checkpoint), 'checkpoint_sha256': digest(checkpoint)}
+                                   'checkpoint': str(checkpoint), 'checkpoint_sha256': digest(checkpoint),
+                                   'checkpoint_stage': checkpoint_stage}
         shutil.copy2(checkpoint, td/checkpoint.name)
         flow = td/'build_board.tcl'
         recipe = flow.read_text(encoding='utf-8')
         assert recipe.count('set start_step read_design') == 1
-        recipe = recipe.replace('set start_step read_design', 'set parent .\nset start_step opt_place')
+        next_step = 'opt_place' if checkpoint_stage == 'gate' else 'opt_route'
+        recipe = recipe.replace('set start_step read_design', 'set parent .\nset start_step '+next_step)
         flow.write_text(recipe, encoding='utf-8', newline='\n')
         record['local_physical_recipe_sha256'] = digest(flow)
     environment = os.environ.copy()
     if not environment.get('SAIXIAN_PLACE_SEED'):
         environment['SAIXIAN_PLACE_SEED'] = '19' if board == 'b' else '17'
     record['place_seed_override'] = environment.get('SAIXIAN_PLACE_SEED')
-    temp = Path('E:/Codex/Temp/cooperate-v4-port')
+    temp = Path(os.environ.get('SAIXIAN_TEMP_ROOT', 'E:/Codex/Temp/cooperate-v4-port'))
     temp.mkdir(parents=True, exist_ok=True)
     environment.update(TEMP=str(temp), TMP=str(temp), TMPDIR=str(temp))
     td_root = Path(environment.get('SAIXIAN_TD_ROOT', 'C:/Anlogic/TD_6.2.1_Engineer_6.2.168.116'))
     tool = td_root/'bin/td_commands_prompt.exe'
     environment['SAIXIAN_TD_ROOT'] = td_root.as_posix()
     physical_strategy = environment.get('SAIXIAN_PHYSICAL_STRATEGY')
+    if mapped_from and checkpoint_stage == 'place':
+        assert physical_strategy, 'Placed retry requires an explicit routing profile'
     if physical_strategy:
         catalog = td_root/'doc/strategies/official_strategy_ph1.json'
         strategies = json.loads(catalog.read_text(encoding='utf-8'))
-        strategy_base = {'MacroTimingExtra':'MacroTiming','TimingUltraNoPadSplit':'TimingUltra','TimingUltraEmbedded':'TimingUltra'}.get(physical_strategy,physical_strategy)
+        strategy_base = {'MacroTimingExtra':'MacroTiming','MacroTimingEmbedded':'MacroTiming','TimingUltraNoPadSplit':'TimingUltra','TimingUltraEmbedded':'TimingUltra','TimingUltraEmbeddedExtra':'TimingUltra','TimingUltraEmbeddedNoSwap':'TimingUltra','TimingMediumEmbedded':'TimingMedium','TimingMediumEmbeddedReset':'TimingMedium','CongestionEmbedded':'CongestionHigh'}.get(physical_strategy,physical_strategy)
         strategy = dict(strategies[strategy_base])
         strategy['params'] = list(strategy['params'])
-        if physical_strategy in ('TimingUltraNoPadSplit','TimingUltraEmbedded'):
+        if physical_strategy in ('TimingUltraNoPadSplit','TimingUltraEmbedded','TimingUltraEmbeddedExtra','TimingUltraEmbeddedNoSwap','TimingMediumEmbedded','TimingMediumEmbeddedReset','MacroTimingEmbedded','CongestionEmbedded'):
             strategy['params'] += [{'step':'place','param':'split_data_from_clock','val':'off'}]
-        if physical_strategy == 'TimingUltraEmbedded':
+        if physical_strategy in ('TimingUltraEmbedded','TimingUltraEmbeddedExtra','TimingUltraEmbeddedNoSwap','TimingMediumEmbedded','TimingMediumEmbeddedReset','MacroTimingEmbedded','CongestionEmbedded'):
             # The post-place crit_path_opt zigzag pass queries external-pad
             # coordinates on embedded SDRAM pads (ARC-8011/PHY-8105).
             strategy['params'] += [{'step':'place','param':'crit_path_opt','val':'off'},
                                    {'step':'place','param':'aggressive_opt','val':'20'}]
         if physical_strategy == 'MacroTimingExtra':
             strategy['params'] += [p for p in strategies['TimingUltra']['params'] if p['param']=='postrt_opt_extra_round']
+        if physical_strategy in ('CongestionEmbedded','MacroTimingEmbedded','TimingMediumEmbedded','TimingMediumEmbeddedReset'):
+            strategy['params'] += [p for p in strategies['TimingUltra']['params'] if p['param']=='postrt_opt_extra_round']
+        if physical_strategy in ('TimingUltraEmbeddedExtra', 'TimingUltraEmbeddedNoSwap'):
+            strategy['params'] += [{'step':'route','param':'postrt_opt_extra_round','val':'8'}]
+        if physical_strategy == 'TimingUltraEmbeddedNoSwap':
+            strategy['params'] += [{'step':'route','param':'swap_pin','val':'off'}]
+        if mapped_from and checkpoint_stage == 'place':
+            assert record['place_seed_override'] == origin['place_seed_override'], 'Keep the accepted placement seed'
+            original_place = [p for p in origin['physical_strategy']['parameters'] if p['step'] == 'place']
+            assert [p for p in strategy['params'] if p['step'] == 'place'] == original_place, 'Placed retry may change routing parameters only'
         assert strategy['is_syn'] == 'phy', 'Only physical strategy overrides may reuse mapping'
         assert all(p['step'] in ('place', 'route') for p in strategy['params'])
         flow = td/'build_board.tcl'
@@ -130,6 +146,24 @@ def build(board, work, mapped_from=None):
         record['physical_strategy'] = {'name': physical_strategy, 'base': strategy_base, 'catalog': str(catalog),
                                        'catalog_sha256': digest(catalog), 'parameters': strategy['params']}
         record['local_physical_recipe_sha256'] = digest(flow)
+        if physical_strategy == 'TimingMediumEmbeddedReset':
+            # import_db restores options from the checkpoint. A partial
+            # strategy must start from defaults, then apply this build's
+            # explicit recipe. Keep the installed TD flow untouched.
+            original_flow = td_root/'doc/scripts/DefaultFlow.tcl'
+            derived = original_flow.read_text(encoding='utf-8')
+            assert derived.count('  set wildParams ""') == 1
+            derived = derived.replace('  set wildParams ""', '  clear_param\n  set wildParams ""', 1)
+            local_flow = td/'physical_flow.tcl'
+            local_flow.write_text(derived, encoding='utf-8', newline='\n')
+            record['local_flow'] = {'path': str(local_flow), 'sha256': digest(local_flow),
+                                    'base': str(original_flow), 'base_sha256': digest(original_flow),
+                                    'change': 'Clear checkpoint parameter inheritance before applying the explicit recipe.'}
+            recipe = flow.read_text(encoding='utf-8')
+            marker = 'source [file join $tdRoot doc scripts DefaultFlow.tcl]'
+            assert recipe.count(marker) == 1
+            flow.write_text(recipe.replace(marker, 'source ./physical_flow.tcl'), encoding='utf-8', newline='\n')
+            record['local_physical_recipe_sha256'] = digest(flow)
     synthesis_strategy = environment.get('SAIXIAN_SYNTHESIS_STRATEGY')
     if mapped_from:
         if synthesis_strategy:
@@ -139,15 +173,21 @@ def build(board, work, mapped_from=None):
             assert digest(Path(record['synthesis_strategy']['catalog'])) == record['synthesis_strategy']['catalog_sha256']
     elif synthesis_strategy:
         catalog = td_root/'doc/strategies/official_strategy_ph1.json'
-        strategy = json.loads(catalog.read_text(encoding='utf-8'))[synthesis_strategy]
+        synthesis_base = {'AreaOptimizeSparseCE': 'AreaOptimizeHigh', 'AreaOptimizeGlobalHFN': 'AreaOptimizeHigh'}.get(synthesis_strategy, synthesis_strategy)
+        strategy = dict(json.loads(catalog.read_text(encoding='utf-8'))[synthesis_base])
+        strategy['params'] = list(strategy['params'])
+        if synthesis_strategy == 'AreaOptimizeSparseCE':
+            strategy['params'].append({'step': 'rtl', 'param': 'min_ce_fanout', 'val': '64'})
+        if synthesis_strategy == 'AreaOptimizeGlobalHFN':
+            strategy['params'].append({'step': 'flow', 'param': 'hfn_to_clock', 'val': '1000'})
         assert strategy['is_syn'] == 'syn'
-        assert all(p['step'] in ('rtl', 'gate') for p in strategy['params'])
+        assert all(p['step'] in ('rtl', 'gate') or (p['step'],p['param']) == ('flow','hfn_to_clock') for p in strategy['params'])
         flow = td/'build_board.tcl'
         recipe = flow.read_text(encoding='utf-8')
         position = recipe.index('set tdRoot ')
         parameters = ''.join('lappend phyWildParams {'+p['step']+'} {'+p['param']+'} {'+p['val']+'}\n' for p in strategy['params'])
         flow.write_text(recipe[:position]+parameters+recipe[position:], encoding='utf-8', newline='\n')
-        record['synthesis_strategy'] = {'name': synthesis_strategy, 'catalog': str(catalog),
+        record['synthesis_strategy'] = {'name': synthesis_strategy, 'base': synthesis_base, 'catalog': str(catalog),
                                       'catalog_sha256': digest(catalog), 'parameters': strategy['params']}
         record['local_physical_recipe_sha256'] = digest(flow)
     tool_files = [tool, *(td_root/'doc/scripts').glob('*.tcl')]
@@ -164,6 +204,8 @@ def build(board, work, mapped_from=None):
     record.update(returncode=run.returncode, seconds=round(time.time()-started, 1),
                   inputs_unchanged=before == inputs(role),
                   toolchain_unchanged=all(digest(Path(p)) == h for p, h in tool_hashes.items()))
+    if record.get('local_flow'):
+        record['local_flow_unchanged'] = digest(Path(record['local_flow']['path'])) == record['local_flow']['sha256']
     if mapped_from:
         record['mapped_origin_unchanged'] = digest(checkpoint) == record['mapped_origin']['checkpoint_sha256']
     timing = td/(name+'_pr.timing')
@@ -181,6 +223,7 @@ def build(board, work, mapped_from=None):
     clean_log = not re.search(r'(?im)^.*(?:ERROR:|ERROR \[)', log_text)
     passed = (run.returncode == 0 and fresh and clean_log and record['inputs_unchanged']
               and record['toolchain_unchanged'] and record.get('mapped_origin_unchanged', True) and len(values) == 4
+              and record.get('local_flow_unchanged', True)
               and values['SWNS'] >= 0 and values['HWNS'] >= 0
               and values['STNS'] == 0 and values['HTNS'] == 0
               and all(k in usage and usage[k] <= v for k, v in LIMITS.items()))
@@ -237,8 +280,9 @@ if __name__ == '__main__':
     parser.add_argument('--work', type=Path, default=DEFAULT_WORK)
     parser.add_argument('--b-work', type=Path, help='Use a separately recorded B layout retry when staging')
     parser.add_argument('--mapped-from', type=Path, help='Reuse a verified identical mapped checkpoint for a physical-only retry')
+    parser.add_argument('--checkpoint-stage', choices=('gate','place'), default='gate', help='Reuse mapping or placement; placement reuse retains its placement parameters')
     args = parser.parse_args()
     if args.action == 'stage':
         stage(args.work.resolve(), args.b_work.resolve() if args.b_work else None)
     else:
-        build(args.action, args.work.resolve(), args.mapped_from.resolve() if args.mapped_from else None)
+        build(args.action, args.work.resolve(), args.mapped_from.resolve() if args.mapped_from else None, args.checkpoint_stage)

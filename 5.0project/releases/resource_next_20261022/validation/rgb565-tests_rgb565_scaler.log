@@ -1,0 +1,2 @@
+PASS scaler SW=640 SH=360 pace=1 rows=360 output=921600 golden bilinear
+E:\Codex\Downloads\qiansai\5.3project\tests\tb_ip_scaler.v:60: $finish called at 27674041000 (1ps)

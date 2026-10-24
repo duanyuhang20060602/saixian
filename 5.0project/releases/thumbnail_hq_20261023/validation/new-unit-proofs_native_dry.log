@@ -1,0 +1,18 @@
+E:\Codex\Work\resource-next-20261022-221039\project\common\audio_ui\saixian_audio_pitch.v:6: warning: timescale for saixian_audio_pitch inherited from another file.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_dry.v:1: ...: The inherited timescale is here.
+E:\Codex\Work\resource-next-20261022-221039\project\common\audio_ui\saixian_audio_pitch.v:672: warning: timescale for saixian_pitch_dry_delay inherited from another file.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_dry.v:1: ...: The inherited timescale is here.
+E:\Codex\Work\resource-next-20261022-221039\project\common\audio_ui\saixian_audio_pitch.v:731: warning: timescale for saixian_pitch_ram inherited from another file.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_dry.v:1: ...: The inherited timescale is here.
+E:\Codex\Work\resource-next-20261022-221039\project\common\audio_ui\saixian_audio_pitch.v:768: warning: timescale for saixian_pitch_points inherited from another file.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_dry.v:1: ...: The inherited timescale is here.
+E:\Codex\Work\resource-next-20261022-221039\project\common\audio_ui\saixian_audio_pitch.v:783: warning: timescale for saixian_pitch_fir_ram inherited from another file.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_dry.v:1: ...: The inherited timescale is here.
+E:\Codex\Work\resource-next-20261022-221039\project\common\audio_ui\saixian_audio_pitch.v:807: warning: timescale for saixian_pitch_coeff inherited from another file.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_dry.v:1: ...: The inherited timescale is here.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\ip_vendor_ram_adapter.v:3: warning: timescale for EG_LOGIC_BRAM inherited from another file.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_dry.v:1: ...: The inherited timescale is here.
+C:\Anlogic\TD_6.2.1_Engineer_6.2.168.116\ip\depot\AXI_Ethernet_Lite_1.0\AXI_Ethernet_Lite\RTL\ram_infer.v:2: warning: timescale for ram_infer inherited from another file.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_dry.v:1: ...: The inherited timescale is here.
+PASS 9696 exact stereo frames delayed 1152 samples, 10 full wraps, 8664 head/1032 tail reads, changing write data, randomized idle spacing and reset during tail write
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_dry.v:33: $finish called at 2896330000 (1ps)

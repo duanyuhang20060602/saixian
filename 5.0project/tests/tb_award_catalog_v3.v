@@ -4,7 +4,7 @@ reg clk=0;always #5 clk=~clk;
 reg rst=1,scan=0,valid=0,last=0;reg [7:0] data=0;
 wire req,done,found,dlt,audio;wire [31:0] address;wire [2:0] total;
 integer n,j,photos=0,awards=0,songs=0;reg [7:0] fixture[0:511];
-bmp_read dut(.high_color(1'b0),.clk(clk),.rst(rst),.op_abort(1'b0),.scan_start(scan),.scan_stop(1'b0),.scan_resume(1'b0),
+bmp_read dut(.clk(clk),.rst(rst),.op_abort(1'b0),.scan_start(scan),.scan_stop(1'b0),.scan_resume(1'b0),
  .scan_start_sector(32'd0),.scan_max_sector(32'd21),.scan_target_count(3'd6),.scan_done(done),
  .scan_found_valid(found),.scan_found_dlt(dlt),.scan_found_total(total),.audio_found_valid(audio),
  .load_start(1'b0),.load_sector(32'd0),.sd_init_done(1'b1),.bmp_width(16'd1280),.bmp_height(16'd720),.write_req_ack(1'b0),

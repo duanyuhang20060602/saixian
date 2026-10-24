@@ -1,0 +1,2 @@
+PASS packed native cache: 5440 atomic 64-bit reads, every entry, opposite-row simultaneous writes, invalid-coordinate changes and half-plane ownership
+E:\Codex\Work\resource-next-20261022-221039\project\tests\fx11_water\tb_cache.v:44: $finish called at 129200000 (1ps)

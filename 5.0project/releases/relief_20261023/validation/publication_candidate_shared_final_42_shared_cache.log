@@ -1,0 +1,2 @@
+PASS shared award cache: old-new-old, 6 full 720p frames, 5529600 visible pixels, 7573563 same-cycle RGB/menu/control comparisons, 8940 stalled four-word bursts, pause and touch, zero underflow
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_dsp\5.0project\tests\tb_relief_shared_cache.v:73: $finish called at 100985995714 (1ps)

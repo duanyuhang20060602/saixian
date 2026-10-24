@@ -219,28 +219,55 @@ always @(posedge clk)begin
 end
 endmodule
 
-// The reciprocal has exactly one seventeenth bit (distance == 1).
-// Store the remaining 2048 x 16 bits in four RAM9K blocks. The dual-board
-// design reserves RAM32K for the concurrent display caches and scene atlases.
+// Exact split reciprocal: the low nine bits occupy two RAM9Ks. Only
+// distances 1..128 have nonzero upper bits; their small decoder is logic.
+// The original one-clock lookup and out-of-range zero behavior are retained.
 module water_inverse_rom(input clk,input[11:0] address,output[16:0] value);
-reg valid_q,one_q;
-always @(posedge clk)begin valid_q<=address<2048;one_q<=address==1;end
-wire[15:0] low;
+reg valid_q;reg[7:0] high_q;
+function[7:0] upper;input[11:0] index;begin
+ upper=0;
+ case(index)
+  12'd1:upper=8'd128;
+  12'd2:upper=8'd64;
+  12'd3:upper=8'd42;
+  12'd4:upper=8'd32;
+  12'd5:upper=8'd25;
+  12'd6:upper=8'd21;
+  12'd7:upper=8'd18;
+  12'd8:upper=8'd16;
+  12'd9:upper=8'd14;
+  12'd10:upper=8'd12;
+  12'd11:upper=8'd11;
+  12'd12:upper=8'd10;
+  12'd13,12'd14:upper=8'd9;
+  12'd15,12'd16:upper=8'd8;
+  12'd17,12'd18:upper=8'd7;
+  12'd19,12'd20,12'd21:upper=8'd6;
+  12'd22,12'd23,12'd24,12'd25:upper=8'd5;
+  12'd26,12'd27,12'd28,12'd29,12'd30,12'd31,12'd32:upper=8'd4;
+  12'd33,12'd34,12'd35,12'd36,12'd37,12'd38,12'd39,12'd40,12'd41,12'd42:upper=8'd3;
+  12'd43,12'd44,12'd45,12'd46,12'd47,12'd48,12'd49,12'd50,12'd51,12'd52,12'd53,12'd54,12'd55,12'd56,12'd57,12'd58,12'd59,12'd60,12'd61,12'd62,12'd63,12'd64:upper=8'd2;
+  12'd65,12'd66,12'd67,12'd68,12'd69,12'd70,12'd71,12'd72,12'd73,12'd74,12'd75,12'd76,12'd77,12'd78,12'd79,12'd80,12'd81,12'd82,12'd83,12'd84,12'd85,12'd86,12'd87,12'd88,12'd89,12'd90,12'd91,12'd92,12'd93,12'd94,12'd95,12'd96,12'd97,12'd98,12'd99,12'd100,12'd101,12'd102,12'd103,12'd104,12'd105,12'd106,12'd107,12'd108,12'd109,12'd110,12'd111,12'd112,12'd113,12'd114,12'd115,12'd116,12'd117,12'd118,12'd119,12'd120,12'd121,12'd122,12'd123,12'd124,12'd125,12'd126,12'd127,12'd128:upper=8'd1;
+  default:upper=0;
+ endcase
+end endfunction
+always @(posedge clk)begin valid_q<=address<2048;high_q<=upper(address);end
+wire[8:0] low;
 `ifdef WATER_SIM
-reg[16:0] memory[0:2047];reg[15:0] data_q;
-initial $readmemh({`FX11_ROM_ROOT,"water_inverse.hex"},memory);
-always @(posedge clk)data_q<=memory[address[10:0]][15:0];
+reg[8:0] memory[0:2047];reg[8:0] data_q;
+initial $readmemh({`FX11_ROM_ROOT,"water_inverse_low9.hex"},memory);
+always @(posedge clk)data_q<=memory[address[10:0]];
 assign low=data_q;
 `else
-EG_LOGIC_BRAM #(.DATA_WIDTH_A(16),.ADDR_WIDTH_A(11),.DATA_DEPTH_A(2048),
- .DATA_WIDTH_B(16),.ADDR_WIDTH_B(11),.DATA_DEPTH_B(2048),.BYTE_ENABLE(0),
+EG_LOGIC_BRAM #(.DATA_WIDTH_A(9),.ADDR_WIDTH_A(11),.DATA_DEPTH_A(2048),
+ .DATA_WIDTH_B(9),.ADDR_WIDTH_B(11),.DATA_DEPTH_B(2048),.BYTE_ENABLE(0),
  .MODE("SP"),.REGMODE_A("NOREG"),.REGMODE_B("NOREG"),
  .WRITEMODE_A("NORMAL"),.WRITEMODE_B("NORMAL"),.RESETMODE("SYNC"),
- .IMPLEMENT("9K"),.INIT_FILE("water_inverse16.mif")) rom(
+ .IMPLEMENT("9K"),.INIT_FILE("water_inverse_low9.mif")) rom(
  .clka(clk),.rsta(1'b0),.cea(1'b1),.wea(1'b0),.ocea(1'b1),.bea(1'b0),
- .addra(address[10:0]),.dia(16'd0),.doa(low),
+ .addra(address[10:0]),.dia(9'd0),.doa(low),
  .clkb(clk),.rstb(1'b0),.ceb(1'b0),.web(1'b0),.oceb(1'b0),.beb(1'b0),
- .addrb(11'd0),.dib(16'd0),.dob());
+ .addrb(11'd0),.dib(9'd0),.dob());
 `endif
-assign value=valid_q ? {one_q,low}:17'd0;
+assign value=valid_q ? {high_q,low}:17'd0;
 endmodule

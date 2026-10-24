@@ -1,0 +1,8 @@
+{
+  "original_source": "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\award_fx.v",
+  "original_source_sha256": "f4e31098dcc4a2c38ecd1c0eae01fe2989814fa61bb95c10d529e6f153c05482",
+  "candidate_sha256": "7a8d850f27931635e997df6db0de880486e1da0a04ee58be8cb37be63f430ed6",
+  "structural_change": "Only wave0 expression replaced by phase_curve(phase); a 64-way constant case function is added, no arrays, memories, DSPs or registers.",
+  "original_normalized_sha256": "609f26854f0ab52fb53d874dcc64d0b6bd42025fcfc34e35c21ac1d3566c49b3",
+  "reference_module_only_renamed": true
+}

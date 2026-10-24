@@ -1,0 +1,22 @@
+{
+  "unchanged_optimized_files": {
+    "common/fluid/water_cache.v": "1634fa246c169facdba844c5e255efed7363a5bceb1954bd45ef5db851fce33a",
+    "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+    "common/fluid/water_priority_map.v": "8a1680b4734b41dc00f92c7721931381925b3526dcf87b00a3d63999c83a8e8b",
+    "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+    "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+    "common/audio_ui/saixian_audio_pitch.v": "dd1cdedcc9c1309023a3f56f807e5f3e5bed3aa85d3f9f68cf4746e4e3cf611d",
+    "common/audio_ui/saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+    "common/audio_ui/saixian_pitch_coeff.hex": "56cf1e157030bece90ac1ae77d657b4240d89c70a8cf1a6997fa307b0fb634f9",
+    "common/photo_sd/photo_dlt_header.v": "a6c6f7cbbaf0ef7a4bdb8c8e4ca928e39cd63025acec79ceba61816b8ba8f009",
+    "common/photo_b_processing.v": "cfa81c7f137b4ceae49e05cf11fa6ec21c0b4192bb9e68a1754d0acaf95e7404",
+    "common/photo_audio_pitch_b.v": "9fe035e6fc6b9c29da6abaa640261bd84eb5d1fcc8876fb0b0ba2af024b1cb5f",
+    "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649"
+  },
+  "compact_pcm_module_unchanged": true,
+  "cache_delta": "One parameter and one guarded prefetch-window advance only.",
+  "storage_format": "RGB565",
+  "A_image_slots": 3,
+  "B_image_slots": 2,
+  "pixel_processing_width": "Existing 24-bit internal arithmetic/HDMI interfaces retained; no RGB888 storage or transport restored."
+}

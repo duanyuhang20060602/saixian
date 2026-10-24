@@ -10,7 +10,7 @@ photo_unified_settings_controller #(.CLK_FREQ_HZ(1152000)) settings(.clk(clk),.r
  .key_next_item(next),.key_decrease(down),.key_enter_exit(enter),.key_increase(up),
  .hmi_setting_valid(1'b0),.hmi_setting_id(3'd0),.hmi_setting_value(8'd0),.hmi_reset_defaults(1'b0),
  .effect_valid(effect_valid),.effect_value(effect_value),.auto_valid(1'b0),.auto_value(1'b0),
- .audio_view_valid(1'b0),.audio_view_value(1'b0),.color_mode_valid(1'b0),.color_mode_value(1'b0),
+ .audio_view_valid(1'b0),.audio_view_value(1'b0),
  .edge_valid(1'b0),.edge_value(1'b0),.settings_mode(mode),.setting_item(item),.effect_select(effect));
 always @(posedge clk)if(effect_valid)begin
  if(effect_value!==expected)$fatal(1,"HMI lost five-bit effect selection");received=received+1;

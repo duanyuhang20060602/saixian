@@ -1,0 +1,2 @@
+PASS overlap A/B scheduler comparison: baseline_wait=2857 optimized_wait=1497 cycles, baseline_overlap=0 optimized_overlap=18, 18 switches and wraps, locked slots and pixel payload checked
+E:\Codex\Work\merge-5_6-5fac-20261023-150502\project\tests\tb_prefetch_overlap.v:64: $finish called at 51180000 (1ps)

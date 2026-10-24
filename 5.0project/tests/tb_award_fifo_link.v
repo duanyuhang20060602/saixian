@@ -16,10 +16,10 @@ rfifo_32_32_512 source_fifo(.rst(rst || read_req),.clkw(mem_clk),.clkr(link_clk)
  .valid(),.afull(),.aempty(),.wrusedw(),.rdusedw());
 wire [15:0] data;wire valid,sof,eof,ready,sent,done,fault,req,we,full,empty;
 wire [31:0] packed_word,mem_data;reg [2:0] write_ack_pipe=0;reg finish=0;
-photo_link_sender #(.FRAME_PIXELS(PIXELS)) tx(.high_color(1'b0),.clk(link_clk),.rst(rst),.start(start),.abort(1'b0),
+photo_link_sender #(.FRAME_PIXELS(PIXELS)) tx(.clk(link_clk),.rst(rst),.start(start),.abort(1'b0),
  .data(read_data),.empty(read_empty),.read_ack(read_ack_pipe[2]),.link_ready(ready),.read_req(read_req),.read_en(read_en),
  .link_data(data),.link_valid(valid),.link_sof(sof),.link_eof(eof),.done(sent),.busy(),.frame_crc());
-photo_link_receiver #(.FRAME_PIXELS(PIXELS)) rx(.high_color(1'b0),.clk(link_clk),.rst(rst),.arm(arm),.abort(1'b0),
+photo_link_receiver #(.FRAME_PIXELS(PIXELS)) rx(.clk(link_clk),.rst(rst),.arm(arm),.abort(1'b0),
  .data(data),.valid(valid),.sof(sof),.eof(eof),.ready(ready),.armed(),.busy(),
  .write_req(req),.write_ack(write_ack_pipe[2]),.full(full),.write_en(we),.write_data(packed_word),
  .finish_toggle(finish),.done(done),.fault(fault),.frame_crc());

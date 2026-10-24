@@ -5,7 +5,7 @@ import numpy as np
 from prepare_award_v5 import prepare,ACCEPTED
 ROOT=Path(__file__).resolve().parents[1]
 GEOMETRY=['common/fluid/'+n for n in ['water_drop_small.v','water_reader.v','water_effect_map_base.v','water_priority_map.v','water_surface.v','water_blend.v','water_cache.v','water_reconstruct.v']]
-FRAMEBUFFER=['src/board_a/user_source/hdl_source/'+n for n in ['SD/frame_read_write.v','SD/frame_fifo_read.v','SD/frame_fifo_write.v','IP/afifo_32_16_256.v','IP/afifo_16_32_256.v']]
+FRAMEBUFFER=['src/board_a/user_source/hdl_source/'+n for n in ['SD/frame_read_write.v','SD/frame_fifo_write.v','IP/afifo_32_16_256.v','IP/afifo_16_32_256.v']]
 JOBS={
  'reader':['tests/tb_award_v5_reader.v','common/photo_sd/photo_dlt_reader.v','common/photo_sd/photo_dlt_header.v','common/photo_color_format.v'],
  'rows':['tests/tb_award_v5_rows.v','common/photo_spotlight_player.v','common/photo_award_memory.v'],

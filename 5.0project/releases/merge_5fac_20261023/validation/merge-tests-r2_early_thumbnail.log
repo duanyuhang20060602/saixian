@@ -1,0 +1,2 @@
+PASS early preview: real 2304-pixel memory completes during hidden transition; same identity survives commit without reread; source-slot victim lock
+E:\Codex\Work\merge-5_6-5fac-20261023-150502\project\tests\tb_thumbnail_early.v:62: $finish called at 7700238000 (1ps)

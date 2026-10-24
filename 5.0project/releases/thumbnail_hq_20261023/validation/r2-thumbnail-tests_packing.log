@@ -1,0 +1,2 @@
+PASS banked RGB565 RAM: 8 replacement passes, all 7056 pixels in shuffled order, all four banks, incomplete images discarded, one-clock reads, invalid addresses blanked
+E:\Codex\Work\thumbnail-hq-20261023-155328\project\tests\tb_thumbnail_packing.v:40: $finish called at 2575798000 (1ps)

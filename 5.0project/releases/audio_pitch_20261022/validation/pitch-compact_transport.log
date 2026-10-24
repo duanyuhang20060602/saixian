@@ -1,0 +1,2 @@
+PASS dual 75/100MHz SPI 9049 exact payloads, 5230 playback ticks, 9790 effect frames; five modes, typed cues, mute, boost, repair, background restart; zero underflows
+E:\Codex\Downloads\qiansai\5.4project\tests\tb_pitch_transport.v:90: $finish called at 140894250000 (1ps)

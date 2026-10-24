@@ -3,11 +3,11 @@
 
 // smoothed at frame boundaries and never drives the water-wave scheduler.
 
-module water_edge(input clk,rst,frame_tick,music_drive,pcm_valid,
+module water_edge #(parameter EXTERNAL_ENVELOPE=0)(input clk,rst,frame_tick,music_drive,pcm_valid,
 
  input signed[15:0] pcm_left,pcm_right,input[10:0] x,input[9:0] y,
 
- input de,sof,eol,input[23:0] rgb,input[5:0] darkness,
+ input de,sof,eol,input[23:0] rgb,input[5:0] darkness,input[7:0] external_target,
 
  output reg de_out,sof_out,eol_out,output reg[23:0] rgb_out,output reg[7:0] level);
 
@@ -17,7 +17,7 @@ wire signed[16:0] mono=sum>>>1;wire[16:0] magnitude=mono<0 ? -mono:mono;
 
 reg[15:0] breathe;
 
-wire[7:0] target=envelope>8191 ? 8'd255:envelope[12:5];
+wire[7:0] target=EXTERNAL_ENVELOPE ? external_target:(envelope>8191 ? 8'd255:envelope[12:5]);
 
 always @(posedge clk)begin
 
@@ -25,7 +25,7 @@ always @(posedge clk)begin
 
  else begin
 
-  if(pcm_valid)begin
+  if(!EXTERNAL_ENVELOPE && pcm_valid)begin
 
    if(magnitude>envelope)envelope<=envelope+((magnitude-envelope)>>6);
 
@@ -57,6 +57,9 @@ wire[10:0] yd={1'b0,y}<bottom_dist ? {1'b0,y}:{1'b0,bottom_dist};
 
 wire[10:0] distance=xd<yd ? xd:yd;
 
+// Use the original synchronous LUT model for legacy simulator-only builds.
+// Production uses a native eRAM read in the same single-clock stage.
+`ifdef WATER_SIM
 reg[7:0] edge_rom[0:127];initial begin
  edge_rom[0]=8'h60;
  edge_rom[1]=8'h5d;
@@ -187,8 +190,21 @@ reg[7:0] edge_rom[0:127];initial begin
  edge_rom[126]=8'h00;
  edge_rom[127]=8'h00;
 end
+reg [7:0] weight;
+always @(posedge clk)weight<=distance<76 ? edge_rom[distance[6:0]]:8'd0;
+`else
+wire [7:0] rom_weight;
+reg inside_edge;
+wire [7:0] weight=inside_edge ? rom_weight:8'd0;
+EG_LOGIC_BRAM #(.DATA_WIDTH_A(8),.ADDR_WIDTH_A(7),.DATA_DEPTH_A(128),
+ .DATA_WIDTH_B(8),.ADDR_WIDTH_B(7),.DATA_DEPTH_B(128),.BYTE_ENABLE(0),
+ .MODE("SP"),.REGMODE_A("NOREG"),.REGMODE_B("NOREG"),.WRITEMODE_A("NORMAL"),.WRITEMODE_B("NORMAL"),
+ .RESETMODE("SYNC"),.INIT_FILE("../../src/board_a/user_source/hdl_source/IP/water_edge_weights.mif"),.IMPLEMENT("9K")) weights(
+ .clka(clk),.rsta(1'b0),.cea(1'b1),.wea(1'b0),.ocea(1'b1),.bea(1'b0),.addra(distance[6:0]),.dia(8'd0),.doa(rom_weight),
+ .clkb(1'b0),.rstb(1'b0),.ceb(1'b0),.web(1'b0),.oceb(1'b0),.beb(1'b0),.addrb(7'd0),.dib(8'd0),.dob());
+`endif
 
-reg[7:0] weight;reg[23:0] rgb0,rgb1,rgb2;reg[5:0] dark0,dark1,dark2;
+reg[23:0] rgb0,rgb1,rgb2;reg[5:0] dark0,dark1,dark2;
 
 reg[15:0] energy;reg[3:0] dq,sq,lq;reg[8:0] red,green,blue;
 
@@ -224,7 +240,7 @@ endfunction
 
 always @(posedge clk)begin
 
- weight<=distance<76 ? edge_rom[distance[6:0]]:8'd0;rgb0<=rgb;dark0<=darkness;
+ inside_edge<=distance<76;rgb0<=rgb;dark0<=darkness;
 
  energy<=edge_product($signed({1'b0,weight}),level);rgb1<=rgb0;dark1<=dark0;
 

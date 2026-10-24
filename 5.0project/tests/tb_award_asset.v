@@ -7,7 +7,7 @@ reg rst=1,scan=0,load=0;wire ready,scan_done,found,req,sec_req,ov,fault;
 wire [31:0] sec_addr;wire [15:0] found_width,found_height;wire [23:0] rgb;
 reg [7:0] bytes[0:2765311];reg [23:0] expected[0:921599];
 reg [7:0] data=0;reg valid=0,sec_end=0;
-bmp_read dut(.high_color(1'b0),.clk(clk),.rst(rst),.op_abort(1'b0),.ready(ready),
+bmp_read dut(.clk(clk),.rst(rst),.op_abort(1'b0),.ready(ready),
  .scan_start(scan),.scan_stop(1'b0),.scan_resume(1'b0),.scan_start_sector(32'd0),.scan_max_sector(32'd0),.scan_target_count(3'd1),
  .scan_done(scan_done),.scan_found_valid(found),.scan_found_width(found_width),.scan_found_height(found_height),
  .load_start(load),.load_sector(32'd0),.sd_init_done(1'b1),.bmp_width(16'd1280),.bmp_height(16'd720),

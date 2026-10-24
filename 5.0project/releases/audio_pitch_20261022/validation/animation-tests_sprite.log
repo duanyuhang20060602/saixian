@@ -1,0 +1,2 @@
+PASS lossless sprite compression: all 16384 addresses twice on four simultaneous ports, all 16 poses, clipping, original metallic shades and exact one-clock latency
+E:\Codex\Downloads\qiansai\5.3project\tests\tb_compact_sprite.v:13: $finish called at 327686000 (1ps)

@@ -1,0 +1,2259 @@
+{
+  "version": "5.6-resource-next-20261022",
+  "hardware_validation": "pending",
+  "resources_before": {
+    "a": {
+      "lut": 16459,
+      "reg": 11427,
+      "bram": 58,
+      "bram32k": 16,
+      "dsp": 27
+    },
+    "b": {
+      "lut": 14811,
+      "reg": 10152,
+      "bram": 43,
+      "bram32k": 13,
+      "dsp": 14
+    }
+  },
+  "resources_after": {
+    "a": {
+      "lut": 16441,
+      "reg": 11425,
+      "bram": 60,
+      "bram32k": 14,
+      "dsp": 27
+    },
+    "b": {
+      "lut": 14761,
+      "reg": 9768,
+      "bram": 44,
+      "bram32k": 12,
+      "dsp": 14
+    }
+  },
+  "timing_ns": {
+    "a": {
+      "SWNS": 0.171,
+      "STNS": 0.0,
+      "HWNS": 0.022,
+      "HTNS": 0.0
+    },
+    "b": {
+      "SWNS": 0.107,
+      "STNS": 0.0,
+      "HWNS": 0.021,
+      "HTNS": 0.0
+    }
+  },
+  "current_tests": 59,
+  "reexecuted": 23,
+  "unchanged_reverified": 36,
+  "stale_cases_replaced": 17,
+  "preserved_5_5": true,
+  "baseline_manifest_sha256": "63f7df05f6a095ca32c044cb01ccf5fe3851784c321d87c606380b84236e875f",
+  "mslices_after": {
+    "a": 4550,
+    "b": 4123
+  },
+  "regression_accounting": {
+    "current_passed": 59,
+    "reexecuted": 23,
+    "unchanged_reverified": 36,
+    "baseline_cases_superseded": [
+      {
+        "suite": "geometry-tests-r5",
+        "test": "effects",
+        "changed_inputs": [
+          "common/fluid/water_priority_map.v"
+        ]
+      },
+      {
+        "suite": "geometry-tests-r5",
+        "test": "dsp_effects",
+        "changed_inputs": [
+          "common/fluid/water_priority_map.v"
+        ]
+      },
+      {
+        "suite": "geometry-tests-r5",
+        "test": "bandwidth_water",
+        "changed_inputs": [
+          "common/fluid/water_cache.v",
+          "common/fluid/water_drop_small.v",
+          "common/fluid/water_priority_map.v"
+        ]
+      },
+      {
+        "suite": "geometry-tests-r5",
+        "test": "bandwidth_metal",
+        "changed_inputs": [
+          "common/fluid/water_cache.v",
+          "common/fluid/water_drop_small.v",
+          "common/fluid/water_priority_map.v"
+        ]
+      },
+      {
+        "suite": "geometry-tests-r5",
+        "test": "bandwidth_tunnel",
+        "changed_inputs": [
+          "common/fluid/water_cache.v",
+          "common/fluid/water_drop_small.v",
+          "common/fluid/water_priority_map.v"
+        ]
+      },
+      {
+        "suite": "geometry-tests-r5-scanout",
+        "test": "scanout_native",
+        "changed_inputs": [
+          "common/fluid/water_cache.v",
+          "common/fluid/water_drop_small.v",
+          "common/fluid/water_priority_map.v"
+        ]
+      },
+      {
+        "suite": "audio-tests-r4",
+        "test": "native_model",
+        "changed_inputs": [
+          "common/audio_ui/saixian_audio_pitch.v"
+        ]
+      },
+      {
+        "suite": "audio-tests-r4",
+        "test": "flow",
+        "changed_inputs": [
+          "common/audio_ui/saixian_audio_pitch.v"
+        ]
+      },
+      {
+        "suite": "audio-tests-r4-transport",
+        "test": "transport",
+        "changed_inputs": [
+          "common/audio_ui/saixian_audio_pitch.v"
+        ]
+      },
+      {
+        "suite": "cache-tests-r7",
+        "test": "two_slot_cache",
+        "changed_inputs": [
+          "common/photo_sd/photo_dlt_header.v"
+        ]
+      },
+      {
+        "suite": "delivery-control-proofs",
+        "test": "keys",
+        "changed_inputs": [
+          "common/audio_ui/saixian_audio_pitch.v"
+        ]
+      },
+      {
+        "suite": "delivery-control-proofs",
+        "test": "volume",
+        "changed_inputs": [
+          "common/audio_ui/saixian_audio_pitch.v"
+        ]
+      },
+      {
+        "suite": "delivery-audio-proofs",
+        "test": "transport_compact",
+        "changed_inputs": [
+          "common/audio_ui/saixian_audio_pitch.v"
+        ]
+      },
+      {
+        "suite": "fx-tests",
+        "test": "cache",
+        "changed_inputs": [
+          "common/fluid/water_cache.v"
+        ]
+      },
+      {
+        "suite": "fx-tests",
+        "test": "math",
+        "changed_inputs": [
+          "common/fluid/water_drop_small.v"
+        ]
+      },
+      {
+        "suite": "dlt-tests",
+        "test": "guard",
+        "changed_inputs": [
+          "common/photo_sd/photo_dlt_header.v"
+        ]
+      },
+      {
+        "suite": "dlt-tests",
+        "test": "reader",
+        "changed_inputs": [
+          "common/photo_sd/photo_dlt_header.v"
+        ]
+      }
+    ]
+  },
+  "tests": [
+    {
+      "test": "effects",
+      "passed": true,
+      "seconds": 34.7,
+      "inputs_sha256": {
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+        "common/fluid/water_priority_map.v": "8a1680b4734b41dc00f92c7721931381925b3526dcf87b00a3d63999c83a8e8b",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "tests/fx11_water/tb_effects.v": "ee55448f8dceb5b634a1a2b29ecfddeb743b34dad4688b1d795e0884af5bad4e",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "b53986eea8b73c8c44ab930bc866e8afce79a183a6a5336902ea6dffa83fc5b6",
+      "suite": "a-tests-r1",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\a-tests-r1\\effects.log",
+      "saved_log": "releases/resource_next_20261022/validation/a-tests-r1_effects.log"
+    },
+    {
+      "test": "dsp_effects",
+      "passed": true,
+      "seconds": 46.27,
+      "inputs_sha256": {
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+        "common/fluid/water_priority_map.v": "8a1680b4734b41dc00f92c7721931381925b3526dcf87b00a3d63999c83a8e8b",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "tests/fx11_water/glbl.v": "2a063611f37926861bb60704f5407c8b569d29b8c3c3171424a2d971240d846f",
+        "tests/fx11_water/tb_effects.v": "ee55448f8dceb5b634a1a2b29ecfddeb743b34dad4688b1d795e0884af5bad4e",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\sim_release\\eg4\\eg_phy_mult18.v": "25ca8de5e98253510d0417d6710046c107064b0decc952a602667117bdd6fbdc"
+      },
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd",
+        "vendor_mult18_functional.v": "3027bc66b99df04b17c595b455fca09a336d6b01831528a7232787dc2acb88df"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "9f3794ffbe5b19ec3263627395113d4d4f1c5434824b5abe6ac8fa05bb3e095b",
+      "suite": "a-tests-r1",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\a-tests-r1\\dsp_effects.log",
+      "saved_log": "releases/resource_next_20261022/validation/a-tests-r1_dsp_effects.log"
+    },
+    {
+      "test": "math",
+      "passed": true,
+      "seconds": 8.61,
+      "inputs_sha256": {
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "tests/fx11_water/tb_math.v": "152a5b3df66bba6d67aae5e9d1b3cab46841f1c4f53d850546e47f0e32d38476",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "fd061a05f3a061d504e8cd476a45c4271367362b81d0b0f68233733851e7d1ca",
+      "suite": "a-tests-r1",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\a-tests-r1\\math.log",
+      "saved_log": "releases/resource_next_20261022/validation/a-tests-r1_math.log"
+    },
+    {
+      "test": "dsp_math",
+      "passed": true,
+      "seconds": 23.67,
+      "inputs_sha256": {
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "tests/fx11_water/glbl.v": "2a063611f37926861bb60704f5407c8b569d29b8c3c3171424a2d971240d846f",
+        "tests/fx11_water/tb_math.v": "152a5b3df66bba6d67aae5e9d1b3cab46841f1c4f53d850546e47f0e32d38476",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\sim_release\\eg4\\eg_phy_mult18.v": "25ca8de5e98253510d0417d6710046c107064b0decc952a602667117bdd6fbdc"
+      },
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd",
+        "vendor_mult18_functional.v": "3027bc66b99df04b17c595b455fca09a336d6b01831528a7232787dc2acb88df"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "50a5be709dd02a8c42f06f4dd614021838230dffd947baa6574a94140fb98e79",
+      "suite": "a-tests-r1",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\a-tests-r1\\dsp_math.log",
+      "saved_log": "releases/resource_next_20261022/validation/a-tests-r1_dsp_math.log"
+    },
+    {
+      "test": "compact",
+      "passed": true,
+      "seconds": 0.42,
+      "inputs_sha256": {
+        "common/fluid/water_cache.v": "1634fa246c169facdba844c5e255efed7363a5bceb1954bd45ef5db851fce33a",
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "tests/fx11_water/tb_compact.v": "b4688e85fd56db838e9fc635b881076483f4debb410079bc77c5b499dd9ccbf3",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "135890e8853e2ccea06af0120d6764f2cafcc5e00a19efae90bcc4d3db77d6e1",
+      "suite": "a-tests-r1",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\a-tests-r1\\compact.log",
+      "saved_log": "releases/resource_next_20261022/validation/a-tests-r1_compact.log"
+    },
+    {
+      "test": "cache",
+      "passed": true,
+      "seconds": 0.34,
+      "inputs_sha256": {
+        "common/fluid/water_cache.v": "1634fa246c169facdba844c5e255efed7363a5bceb1954bd45ef5db851fce33a",
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "tests/fx11_water/tb_cache.v": "49114dd61d5a2ed8aa60a39227cbb73e6a3a2055306101c1bbe0737a3873e5d6",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "1c484ff8846f9390380dec65c772ca920a7b9edcfcc6489e71822dd7cb6aee16",
+      "suite": "a-tests-r1",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\a-tests-r1\\cache.log",
+      "saved_log": "releases/resource_next_20261022/validation/a-tests-r1_cache.log"
+    },
+    {
+      "test": "bandwidth_water",
+      "passed": true,
+      "seconds": 180.31,
+      "inputs_sha256": {
+        "common/fluid/water_blend.v": "02b9ac8df414a7252263e6dc4f863bbc801e09dd793f7e85dd3282b8bc41b3d7",
+        "common/fluid/water_cache.v": "1634fa246c169facdba844c5e255efed7363a5bceb1954bd45ef5db851fce33a",
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+        "common/fluid/water_priority_map.v": "8a1680b4734b41dc00f92c7721931381925b3526dcf87b00a3d63999c83a8e8b",
+        "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+        "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "src/board_a/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "tests/fx11_water/sdram_contract.v": "87fffbfb31d081a35e76eddeb169aff6f420b726c63879198da8e2c17ba9ea3b",
+        "tests/fx11_water/tb_bandwidth.v": "8d3920d614ba4d55e4894b37a6ea504b4713cb48e89fd17a7d93a29416e390a4",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tests/reference/fx11_water/water_expand.v": "bdf8c0e9f4c9052f5331362b25bf07db8878b5ee7976e7e65ed1b7bc54fdc44b",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "15e4a35116f3b0b40640cf2ebb39c5e4b65f9e330ea4c3abc9b0ac5d5e8cdd08",
+      "suite": "a-tests-r1",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\a-tests-r1\\bandwidth_water.log",
+      "saved_log": "releases/resource_next_20261022/validation/a-tests-r1_bandwidth_water.log"
+    },
+    {
+      "test": "bandwidth_metal",
+      "passed": true,
+      "seconds": 174.41,
+      "inputs_sha256": {
+        "common/fluid/water_blend.v": "02b9ac8df414a7252263e6dc4f863bbc801e09dd793f7e85dd3282b8bc41b3d7",
+        "common/fluid/water_cache.v": "1634fa246c169facdba844c5e255efed7363a5bceb1954bd45ef5db851fce33a",
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+        "common/fluid/water_priority_map.v": "8a1680b4734b41dc00f92c7721931381925b3526dcf87b00a3d63999c83a8e8b",
+        "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+        "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "src/board_a/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "tests/fx11_water/sdram_contract.v": "87fffbfb31d081a35e76eddeb169aff6f420b726c63879198da8e2c17ba9ea3b",
+        "tests/fx11_water/tb_bandwidth.v": "8d3920d614ba4d55e4894b37a6ea504b4713cb48e89fd17a7d93a29416e390a4",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tests/reference/fx11_water/water_expand.v": "bdf8c0e9f4c9052f5331362b25bf07db8878b5ee7976e7e65ed1b7bc54fdc44b",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "b741b097b5b26466938afe990ba6291a571bfb26930fe94ad25c6f28447c3802",
+      "suite": "a-tests-r1",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\a-tests-r1\\bandwidth_metal.log",
+      "saved_log": "releases/resource_next_20261022/validation/a-tests-r1_bandwidth_metal.log"
+    },
+    {
+      "test": "bandwidth_tunnel",
+      "passed": true,
+      "seconds": 187.27,
+      "inputs_sha256": {
+        "common/fluid/water_blend.v": "02b9ac8df414a7252263e6dc4f863bbc801e09dd793f7e85dd3282b8bc41b3d7",
+        "common/fluid/water_cache.v": "1634fa246c169facdba844c5e255efed7363a5bceb1954bd45ef5db851fce33a",
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+        "common/fluid/water_priority_map.v": "8a1680b4734b41dc00f92c7721931381925b3526dcf87b00a3d63999c83a8e8b",
+        "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+        "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "src/board_a/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "tests/fx11_water/sdram_contract.v": "87fffbfb31d081a35e76eddeb169aff6f420b726c63879198da8e2c17ba9ea3b",
+        "tests/fx11_water/tb_bandwidth.v": "8d3920d614ba4d55e4894b37a6ea504b4713cb48e89fd17a7d93a29416e390a4",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tests/reference/fx11_water/water_expand.v": "bdf8c0e9f4c9052f5331362b25bf07db8878b5ee7976e7e65ed1b7bc54fdc44b",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "c1e5b631ad84684c23c137680a065fe723eb80be5b0df29654a00c545a28c630",
+      "suite": "a-tests-r1",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\a-tests-r1\\bandwidth_tunnel.log",
+      "saved_log": "releases/resource_next_20261022/validation/a-tests-r1_bandwidth_tunnel.log"
+    },
+    {
+      "test": "scanout_native",
+      "passed": true,
+      "seconds": 175.94,
+      "inputs_sha256": {
+        "common/fluid/water_blend.v": "02b9ac8df414a7252263e6dc4f863bbc801e09dd793f7e85dd3282b8bc41b3d7",
+        "common/fluid/water_cache.v": "1634fa246c169facdba844c5e255efed7363a5bceb1954bd45ef5db851fce33a",
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34",
+        "common/fluid/water_priority_map.v": "8a1680b4734b41dc00f92c7721931381925b3526dcf87b00a3d63999c83a8e8b",
+        "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+        "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "src/board_a/user_source/hdl_source/frame_pixels.v": "0b45d4a61c0eac7cdff33fa0d84f8670fe1dc732fedf44a4baa16e022eed369e",
+        "src/board_a/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "src/board_a/user_source/hdl_source/SD/frame_fifo_write.v": "2d77247259a858f1a752748d721c3db422b0be5c1d70a2ce6dc828a7dfa6a020",
+        "tests/fx11_water/sdram_contract.v": "87fffbfb31d081a35e76eddeb169aff6f420b726c63879198da8e2c17ba9ea3b",
+        "tests/fx11_water/tb_cooperate_scanout.v": "db81f5b1d8c4b3957e403df4c01ee7f13687f224869bcc6e52bcde1bc798731f",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tests/reference/fx11_water/water_expand.v": "bdf8c0e9f4c9052f5331362b25bf07db8878b5ee7976e7e65ed1b7bc54fdc44b",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "61a694b68247116a492fab24f632996f2f6f5ee3e3550bac6f03bfc9938c14bd",
+      "suite": "a-tests-r1",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\a-tests-r1\\scanout_native.log",
+      "saved_log": "releases/resource_next_20261022/validation/a-tests-r1_scanout_native.log"
+    },
+    {
+      "test": "native_geometry_memory",
+      "passed": true,
+      "seconds": 0.58,
+      "inputs_sha256": {
+        "tests/tb_resource_next_memory.v": "cb0b6fe170cf6807eabef43962267fd9b803a68f3e27b2f18d0c6c4cabfea4f6",
+        "common/fluid/water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "common/fluid/water_cache.v": "1634fa246c169facdba844c5e255efed7363a5bceb1954bd45ef5db851fce33a",
+        "tools/test_resource_next.py": "6c6f13f4588ee4838961771683483937ddda9378f2a3380cb37c8052459018df",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Work\\resource-next-20261022-221039\\new-unit-proofs\\native_geometry_memory\\ip_init_map.vh": "03c1127fce8aaa13d4d18c1ae3a67b3654dcbde029bfcf32ae50675188619853",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "common/fluid/water_inverse_low9.mif": "41aebb3cf730eb24af4dbab53c44cb524a90ec7553afbe41f3f2540d64ac3c34"
+      },
+      "inputs_unchanged": true,
+      "measurements": {
+        "exact_low9_rom_words": 2048,
+        "high_bits_nonzero_only_at": "1..128",
+        "inverse_ram9k_before": 4,
+        "inverse_ram9k_expected": 2,
+        "cache_tail_ram32k_before": 2,
+        "cache_tail_ram9k_expected": 4
+      },
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\new-unit-proofs\\native_geometry_memory\\result.log",
+      "log_sha256": "eb6786a1c45dd587bbeda93859edb784894286b61cdef92973c7671d159df132",
+      "suite": "new-unit-proofs",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "saved_log": "releases/resource_next_20261022/validation/new-unit-proofs_native_geometry_memory.log"
+    },
+    {
+      "test": "header",
+      "passed": true,
+      "seconds": 0.56,
+      "inputs_sha256": {
+        "tests/tb_resource_next_header.v": "fda61440de405068f7cf5823ffa48eb9aaccb8eae60a05d73c0530592821ec85",
+        "common/photo_sd/photo_dlt_header.v": "a6c6f7cbbaf0ef7a4bdb8c8e4ca928e39cd63025acec79ceba61816b8ba8f009",
+        "tests/reference/resource_next/photo_dlt_header_5_5.v": "f35060085543a244a0ab057a5779763ee217cc729d55977c36e4f16b076ac078",
+        "tools/test_resource_next.py": "6c6f13f4588ee4838961771683483937ddda9378f2a3380cb37c8052459018df"
+      },
+      "inputs_unchanged": true,
+      "measurements": {},
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\new-unit-proofs\\header\\result.log",
+      "log_sha256": "b18dc9e1ff356eaa6e95e246a1ee0a78ec592ce2d0fec7331158ba1d80390288",
+      "suite": "new-unit-proofs",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "saved_log": "releases/resource_next_20261022/validation/new-unit-proofs_header.log"
+    },
+    {
+      "test": "native_dry",
+      "passed": true,
+      "seconds": 4.75,
+      "inputs_sha256": {
+        "tests/tb_resource_next_dry.v": "ab5187553914dff867aa441576c29f15d688cc80f32ee8ee65e6eceb505205e0",
+        "common/audio_ui/saixian_audio_pitch.v": "8619848ac7f88dbb556bc6dceb9e66b3ffd3742a3c13eae38b04fb4f35957952",
+        "tools/test_resource_next.py": "6c6f13f4588ee4838961771683483937ddda9378f2a3380cb37c8052459018df",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Work\\resource-next-20261022-221039\\new-unit-proofs\\native_dry\\ip_init_map.vh": "03c1127fce8aaa13d4d18c1ae3a67b3654dcbde029bfcf32ae50675188619853"
+      },
+      "inputs_unchanged": true,
+      "measurements": {},
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\new-unit-proofs\\native_dry\\result.log",
+      "log_sha256": "74864010dac63dad007160f92cf988cc29165141845ad63b2fc92efea8a57816",
+      "suite": "new-unit-proofs",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "saved_log": "releases/resource_next_20261022/validation/new-unit-proofs_native_dry.log",
+      "packaged_input_comment_normalization": {
+        "common/audio_ui/saixian_audio_pitch.v": {
+          "build_sha256": "8619848ac7f88dbb556bc6dceb9e66b3ffd3742a3c13eae38b04fb4f35957952",
+          "packaged_sha256": "dd1cdedcc9c1309023a3f56f807e5f3e5bed3aa85d3f9f68cf4746e4e3cf611d",
+          "scope": "Exactly one whole-line comment replacement; all functional RTL bytes unchanged.",
+          "original_comment": "// Filtered stereo retains 4096 frames; fixed 1152-frame dry delay needs 2048.",
+          "packaged_comment": "// Filtered stereo retains 4096 frames; the compact 1152-frame dry delay retains 1153."
+        }
+      }
+    },
+    {
+      "test": "behavioral_dry",
+      "passed": true,
+      "seconds": 0.8,
+      "inputs_sha256": {
+        "tests/tb_resource_next_dry.v": "ab5187553914dff867aa441576c29f15d688cc80f32ee8ee65e6eceb505205e0",
+        "common/audio_ui/saixian_audio_pitch.v": "8619848ac7f88dbb556bc6dceb9e66b3ffd3742a3c13eae38b04fb4f35957952",
+        "tools/test_resource_next.py": "6c6f13f4588ee4838961771683483937ddda9378f2a3380cb37c8052459018df"
+      },
+      "inputs_unchanged": true,
+      "measurements": {},
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\new-unit-proofs\\behavioral_dry\\result.log",
+      "log_sha256": "1444d1fbf7ca37af48a6a90a42f39195069cba0aee83fcecf3c97e7d0a640223",
+      "suite": "new-unit-proofs",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "saved_log": "releases/resource_next_20261022/validation/new-unit-proofs_behavioral_dry.log",
+      "packaged_input_comment_normalization": {
+        "common/audio_ui/saixian_audio_pitch.v": {
+          "build_sha256": "8619848ac7f88dbb556bc6dceb9e66b3ffd3742a3c13eae38b04fb4f35957952",
+          "packaged_sha256": "dd1cdedcc9c1309023a3f56f807e5f3e5bed3aa85d3f9f68cf4746e4e3cf611d",
+          "scope": "Exactly one whole-line comment replacement; all functional RTL bytes unchanged.",
+          "original_comment": "// Filtered stereo retains 4096 frames; fixed 1152-frame dry delay needs 2048.",
+          "packaged_comment": "// Filtered stereo retains 4096 frames; the compact 1152-frame dry delay retains 1153."
+        }
+      }
+    },
+    {
+      "test": "keys",
+      "passed": true,
+      "seconds": 0.11,
+      "inputs_sha256": {
+        "tests/tb_pitch_keys.v": "18c155d851e80efa811b7de93ee0b00909877e878c4f7d1dca6121f04e453552",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "common/photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
+        "common/photo_audio_pitch_b.v": "9fe035e6fc6b9c29da6abaa640261bd84eb5d1fcc8876fb0b0ba2af024b1cb5f",
+        "common/audio_ui/saixian_audio_pitch.v": "8619848ac7f88dbb556bc6dceb9e66b3ffd3742a3c13eae38b04fb4f35957952",
+        "common/audio_ui/saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+        "common/audio_ui/photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1",
+        "tools/test_audio_pitch_b.py": "fa7c1f9c6d504c785bdd87d7b4dd252744abeacb88527781d7a818babc61b1e4"
+      },
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\control-tests-r2\\keys.log",
+      "log_sha256": "2d4a2169489d8930b51b2886306d081d9d639e27ff7fa2f1312d7510577f7477",
+      "measurements": {},
+      "suite": "control-tests-r2",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "saved_log": "releases/resource_next_20261022/validation/control-tests-r2_keys.log",
+      "packaged_input_comment_normalization": {
+        "common/audio_ui/saixian_audio_pitch.v": {
+          "build_sha256": "8619848ac7f88dbb556bc6dceb9e66b3ffd3742a3c13eae38b04fb4f35957952",
+          "packaged_sha256": "dd1cdedcc9c1309023a3f56f807e5f3e5bed3aa85d3f9f68cf4746e4e3cf611d",
+          "scope": "Exactly one whole-line comment replacement; all functional RTL bytes unchanged.",
+          "original_comment": "// Filtered stereo retains 4096 frames; fixed 1152-frame dry delay needs 2048.",
+          "packaged_comment": "// Filtered stereo retains 4096 frames; the compact 1152-frame dry delay retains 1153."
+        }
+      }
+    },
+    {
+      "test": "volume",
+      "passed": true,
+      "seconds": 2.36,
+      "inputs_sha256": {
+        "tests/tb_pitch_volume.v": "f5433367da81932f5a83a5911b112bd2787d27cc5378faf5d849ed7c562ac8fc",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "common/photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
+        "common/photo_audio_pitch_b.v": "9fe035e6fc6b9c29da6abaa640261bd84eb5d1fcc8876fb0b0ba2af024b1cb5f",
+        "common/audio_ui/saixian_audio_pitch.v": "8619848ac7f88dbb556bc6dceb9e66b3ffd3742a3c13eae38b04fb4f35957952",
+        "common/audio_ui/saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+        "common/audio_ui/photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1",
+        "tools/test_audio_pitch_b.py": "fa7c1f9c6d504c785bdd87d7b4dd252744abeacb88527781d7a818babc61b1e4"
+      },
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\control-tests-r2\\volume.log",
+      "log_sha256": "dc506b9d4445397e95b7161bb913ac25fcbf074a4c6e85c58b1b8de917d548bd",
+      "measurements": {},
+      "suite": "control-tests-r2",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "saved_log": "releases/resource_next_20261022/validation/control-tests-r2_volume.log",
+      "packaged_input_comment_normalization": {
+        "common/audio_ui/saixian_audio_pitch.v": {
+          "build_sha256": "8619848ac7f88dbb556bc6dceb9e66b3ffd3742a3c13eae38b04fb4f35957952",
+          "packaged_sha256": "dd1cdedcc9c1309023a3f56f807e5f3e5bed3aa85d3f9f68cf4746e4e3cf611d",
+          "scope": "Exactly one whole-line comment replacement; all functional RTL bytes unchanged.",
+          "original_comment": "// Filtered stereo retains 4096 frames; fixed 1152-frame dry delay needs 2048.",
+          "packaged_comment": "// Filtered stereo retains 4096 frames; the compact 1152-frame dry delay retains 1153."
+        }
+      }
+    },
+    {
+      "test": "two_slot_cache",
+      "passed": true,
+      "seconds": 0.31,
+      "inputs_sha256": {
+        "tests/tb_two_slot_cache.v": "a3dc849e0c8982dea90a827e15e58f9b2fddf81b61de12db43401149df5f116a",
+        "common/photo_sd_cache.v": "67b5c4ea4f61ceb625899d8a3b078892da4cce304861ed66fd0ab9bd720f4299",
+        "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "common/photo_sd_audio_stream.v": "5c1c0196bed7661ba9fdf2edab80630f3860223e6a8858935012083738c95a7a",
+        "common/photo_sd/photo_dlt_reader.v": "ce7901c7ea929c599a1016fd20b9eb744a69f8c788760388ff055101f8199fd4",
+        "common/photo_sd/photo_dlt_header.v": "a6c6f7cbbaf0ef7a4bdb8c8e4ca928e39cd63025acec79ceba61816b8ba8f009",
+        "tools/test_animation_cache.py": "40de88ebd3a90888b0b83f135dd302b070eaeed8a6ce3e39a1f1a620c5655c34",
+        "E:\\Codex\\Work\\resource-next-20261022-221039\\cache-tests-r2\\two_slot_cache\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\cache-tests-r2\\two_slot_cache.log",
+      "log_sha256": "db3e715333fc4282cb3e77e185bb389a58f3334e6dd9638e4788afa28e67c399",
+      "suite": "cache-tests-r2",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "saved_log": "releases/resource_next_20261022/validation/cache-tests-r2_two_slot_cache.log"
+    },
+    {
+      "test": "guard",
+      "passed": true,
+      "seconds": 0.7,
+      "inputs_sha256": {
+        "tests/tb_dlt_guard.v": "8cf3eb1dbb7b7425fac76a6d620830e53d45ac5cef6d333e9b64061d3be3b8da",
+        "tests/dlt_guard_equivalence.v": "e3e0829ed439849c4b0a2473b1adadf1c16771de432f4f80ac60e71557e8d965",
+        "common/photo_sd/photo_dlt_reader.v": "ce7901c7ea929c599a1016fd20b9eb744a69f8c788760388ff055101f8199fd4",
+        "common/photo_sd/photo_dlt_header.v": "a6c6f7cbbaf0ef7a4bdb8c8e4ca928e39cd63025acec79ceba61816b8ba8f009",
+        "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+        "E:\\Codex\\Work\\resource-next-20261022-221039\\dlt-tests-r2\\reference_reader.v": "679403f3a2e3fcdfed018f60c45c7a08d301081aad3044afbb4636f989d54e58",
+        "tests/reference/audio_pitch/photo_dlt_reader.v": "ec84458bc7160f3ad1031925c9e5ce7f748b6df95e46c465578b1af5296e2411",
+        "award_media/AWARD720.DLT": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5",
+        "tests/vectors/award_v5/award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+        "tools/test_audio_dlt_guard.py": "464de252266f13d80ed8a108b264b307af56678154ed1710e52b2859740b466b"
+      },
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\dlt-tests-r2\\guard.log",
+      "log_sha256": "9642d4e8323cab345e388def1946dd2e01abb2cbf2f2d4c323e743b13db96ea2",
+      "stimuli_sha256": {
+        "E:\\Codex\\Work\\resource-next-20261022-221039\\dlt-tests-r2\\award_file.hex": "055731d3803478b8955b4ab76cc11b447aad47ac67d908f47a0a06b40fb41077",
+        "E:\\Codex\\Work\\resource-next-20261022-221039\\dlt-tests-r2\\award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4"
+      },
+      "suite": "dlt-tests-r2",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "saved_log": "releases/resource_next_20261022/validation/dlt-tests-r2_guard.log"
+    },
+    {
+      "test": "reader",
+      "passed": true,
+      "seconds": 607.55,
+      "inputs_sha256": {
+        "tests/tb_award_v5_reader.v": "36fec2c55fc5ae98f72defefa698693547efee23288a9d8a7b90960444ef5994",
+        "tests/dlt_guard_equivalence.v": "e3e0829ed439849c4b0a2473b1adadf1c16771de432f4f80ac60e71557e8d965",
+        "common/photo_sd/photo_dlt_reader.v": "ce7901c7ea929c599a1016fd20b9eb744a69f8c788760388ff055101f8199fd4",
+        "common/photo_sd/photo_dlt_header.v": "a6c6f7cbbaf0ef7a4bdb8c8e4ca928e39cd63025acec79ceba61816b8ba8f009",
+        "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+        "E:\\Codex\\Work\\resource-next-20261022-221039\\dlt-tests-r2\\reference_reader.v": "679403f3a2e3fcdfed018f60c45c7a08d301081aad3044afbb4636f989d54e58",
+        "tests/reference/audio_pitch/photo_dlt_reader.v": "ec84458bc7160f3ad1031925c9e5ce7f748b6df95e46c465578b1af5296e2411",
+        "award_media/AWARD720.DLT": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5",
+        "tests/vectors/award_v5/award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+        "tools/test_audio_dlt_guard.py": "464de252266f13d80ed8a108b264b307af56678154ed1710e52b2859740b466b"
+      },
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\dlt-tests-r2\\reader.log",
+      "log_sha256": "787a52752ea839d43daab251bd4cc976cd306b471b5c066850f31fee99371f4e",
+      "stimuli_sha256": {
+        "E:\\Codex\\Work\\resource-next-20261022-221039\\dlt-tests-r2\\award_file.hex": "055731d3803478b8955b4ab76cc11b447aad47ac67d908f47a0a06b40fb41077",
+        "E:\\Codex\\Work\\resource-next-20261022-221039\\dlt-tests-r2\\award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4"
+      },
+      "suite": "dlt-tests-r2",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "saved_log": "releases/resource_next_20261022/validation/dlt-tests-r2_reader.log"
+    },
+    {
+      "test": "native_model",
+      "passed": true,
+      "seconds": 625.25,
+      "inputs_sha256": {
+        "E:\\Codex\\Work\\resource-next-20261022-221039\\b-tests-r2\\pitch\\native_model\\tb_pitch.v": "b57b3110a4c989148bbc38b76b143ec19cf4ee53ce05df93528397371fe69ef1",
+        "common/audio_ui/saixian_audio_pitch.v": "8619848ac7f88dbb556bc6dceb9e66b3ffd3742a3c13eae38b04fb4f35957952",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Work\\resource-next-20261022-221039\\b-tests-r2\\pitch\\native_model\\vendor_dram.v": "955bb95168b4cf8a5f34c89b8f270719f50a7528fbf2e7a3d03bce07e0f43162",
+        "tests/reference/audio_pitch/tb_pitch.v": "e646e175bfbecf6b2a64e24214d4ee27bdc00a7604f7efabfce9a32be064dc38",
+        "tests/reference/audio_pitch/quality_model.py": "5067601e91e6d28af1bec4a185ce560ffa676eebec3cdad6709e0b1844a600f3",
+        "tools/test_audio_pitch_b.py": "fa7c1f9c6d504c785bdd87d7b4dd252744abeacb88527781d7a818babc61b1e4",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\sim_release\\eg4\\eg_logic_dram.v": "b620cebfe67f8829df3b737d1f75072b5f42bae7a2396b36616e85aa3cc9ea1e"
+      },
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\b-tests-r2\\pitch\\native_model.log",
+      "log_sha256": "17e5216bcd679ea7f40d56c1e3f20e7dc2f739fc9ec3aecdd29addf0276c8653",
+      "measurements": {
+        "exact_stereo_frames": 10000,
+        "max_integer_error": 0,
+        "modes": 5,
+        "reference_commit": "c2d2df8008c93f9a89308007c882d9093a808e06",
+        "filtered_history_frames": 4096,
+        "native_vendor_ram": true,
+        "clear_zero_frames": 2400,
+        "expected_pitch_history_ram32k": 5,
+        "expected_dry_tail_ram9k": 1,
+        "dry_delay_frames": 1152,
+        "dry_retained_frames": 1153,
+        "allocation_note": "Structural expectations; use routed build reports for actual device allocation."
+      },
+      "suite": "b-tests-r2",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "saved_log": "releases/resource_next_20261022/validation/b-tests-r2_native_model.log",
+      "packaged_input_comment_normalization": {
+        "common/audio_ui/saixian_audio_pitch.v": {
+          "build_sha256": "8619848ac7f88dbb556bc6dceb9e66b3ffd3742a3c13eae38b04fb4f35957952",
+          "packaged_sha256": "dd1cdedcc9c1309023a3f56f807e5f3e5bed3aa85d3f9f68cf4746e4e3cf611d",
+          "scope": "Exactly one whole-line comment replacement; all functional RTL bytes unchanged.",
+          "original_comment": "// Filtered stereo retains 4096 frames; fixed 1152-frame dry delay needs 2048.",
+          "packaged_comment": "// Filtered stereo retains 4096 frames; the compact 1152-frame dry delay retains 1153."
+        }
+      }
+    },
+    {
+      "test": "transport",
+      "passed": true,
+      "seconds": 495.41,
+      "inputs_sha256": {
+        "tests/tb_pitch_transport.v": "56dcfaef2c77ad76465b62f2fef9c33d728914044830a0c8d00122a42c58bd49",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "common/photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
+        "common/photo_audio_pitch_b.v": "9fe035e6fc6b9c29da6abaa640261bd84eb5d1fcc8876fb0b0ba2af024b1cb5f",
+        "common/audio_ui/saixian_audio_pitch.v": "8619848ac7f88dbb556bc6dceb9e66b3ffd3742a3c13eae38b04fb4f35957952",
+        "common/audio_ui/saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+        "common/audio_ui/photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1",
+        "tools/test_audio_pitch_b.py": "fa7c1f9c6d504c785bdd87d7b4dd252744abeacb88527781d7a818babc61b1e4"
+      },
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\b-tests-r2\\pitch\\transport.log",
+      "log_sha256": "4a3737018ce0ef526dccfa47d095b9ef502696df086a6d028ba1945dd22a9d1e",
+      "measurements": {},
+      "suite": "b-tests-r2",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "saved_log": "releases/resource_next_20261022/validation/b-tests-r2_transport.log",
+      "packaged_input_comment_normalization": {
+        "common/audio_ui/saixian_audio_pitch.v": {
+          "build_sha256": "8619848ac7f88dbb556bc6dceb9e66b3ffd3742a3c13eae38b04fb4f35957952",
+          "packaged_sha256": "dd1cdedcc9c1309023a3f56f807e5f3e5bed3aa85d3f9f68cf4746e4e3cf611d",
+          "scope": "Exactly one whole-line comment replacement; all functional RTL bytes unchanged.",
+          "original_comment": "// Filtered stereo retains 4096 frames; fixed 1152-frame dry delay needs 2048.",
+          "packaged_comment": "// Filtered stereo retains 4096 frames; the compact 1152-frame dry delay retains 1153."
+        }
+      }
+    },
+    {
+      "test": "flow",
+      "passed": true,
+      "seconds": 221.88,
+      "inputs_sha256": {
+        "tests/tb_pitch_flow.v": "25f99cce0a5a82b3079a448879758bd7857dfadc44e35751738a4ed797225eb6",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "common/photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
+        "common/photo_audio_pitch_b.v": "9fe035e6fc6b9c29da6abaa640261bd84eb5d1fcc8876fb0b0ba2af024b1cb5f",
+        "common/audio_ui/saixian_audio_pitch.v": "8619848ac7f88dbb556bc6dceb9e66b3ffd3742a3c13eae38b04fb4f35957952",
+        "common/audio_ui/saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+        "common/audio_ui/photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1",
+        "tools/test_audio_pitch_b.py": "fa7c1f9c6d504c785bdd87d7b4dd252744abeacb88527781d7a818babc61b1e4"
+      },
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\b-tests-r2\\pitch\\flow.log",
+      "log_sha256": "db0df48e465ef716c06316bb4b53feceed10f93e80d152d51c4fb13fc7c4006b",
+      "measurements": {},
+      "suite": "b-tests-r2",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "saved_log": "releases/resource_next_20261022/validation/b-tests-r2_flow.log",
+      "packaged_input_comment_normalization": {
+        "common/audio_ui/saixian_audio_pitch.v": {
+          "build_sha256": "8619848ac7f88dbb556bc6dceb9e66b3ffd3742a3c13eae38b04fb4f35957952",
+          "packaged_sha256": "dd1cdedcc9c1309023a3f56f807e5f3e5bed3aa85d3f9f68cf4746e4e3cf611d",
+          "scope": "Exactly one whole-line comment replacement; all functional RTL bytes unchanged.",
+          "original_comment": "// Filtered stereo retains 4096 frames; fixed 1152-frame dry delay needs 2048.",
+          "packaged_comment": "// Filtered stereo retains 4096 frames; the compact 1152-frame dry delay retains 1153."
+        }
+      }
+    },
+    {
+      "test": "transport_compact",
+      "passed": true,
+      "seconds": 407.81,
+      "inputs_sha256": {
+        "tests/tb_pitch_transport_compact.v": "707dd4ac32b44ac89ff751f8520830fd7d72de9ad2a996487fd916f5e3840104",
+        "common/photo_sd_cache.v": "67b5c4ea4f61ceb625899d8a3b078892da4cce304861ed66fd0ab9bd720f4299",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "common/photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
+        "common/photo_audio_pitch_b.v": "9fe035e6fc6b9c29da6abaa640261bd84eb5d1fcc8876fb0b0ba2af024b1cb5f",
+        "common/audio_ui/saixian_audio_pitch.v": "8619848ac7f88dbb556bc6dceb9e66b3ffd3742a3c13eae38b04fb4f35957952",
+        "common/audio_ui/saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+        "common/audio_ui/photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Work\\resource-next-20261022-221039\\b-tests-r2\\transport_compact\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d",
+        "tools/test_resource_research.py": "c48fb9f01541051a86780b168f76edfa41a35957f31ef70d0072ab907362acd5"
+      },
+      "log": "E:\\Codex\\Work\\resource-next-20261022-221039\\b-tests-r2\\transport_compact\\result.log",
+      "log_sha256": "1778e6ffda7a21e6e66339cea8a529c40db4a2522bc5c33182503030cba669c4",
+      "suite": "b-tests-r2",
+      "current_verification": "Reexecuted against current functional RTL.",
+      "saved_log": "releases/resource_next_20261022/validation/b-tests-r2_transport_compact.log",
+      "packaged_input_comment_normalization": {
+        "common/audio_ui/saixian_audio_pitch.v": {
+          "build_sha256": "8619848ac7f88dbb556bc6dceb9e66b3ffd3742a3c13eae38b04fb4f35957952",
+          "packaged_sha256": "dd1cdedcc9c1309023a3f56f807e5f3e5bed3aa85d3f9f68cf4746e4e3cf611d",
+          "scope": "Exactly one whole-line comment replacement; all functional RTL bytes unchanged.",
+          "original_comment": "// Filtered stereo retains 4096 frames; fixed 1152-frame dry delay needs 2048.",
+          "packaged_comment": "// Filtered stereo retains 4096 frames; the compact 1152-frame dry delay retains 1153."
+        }
+      }
+    },
+    {
+      "test": "compact_pcm_native",
+      "passed": true,
+      "seconds": 4.62,
+      "inputs_sha256": {
+        "tests/tb_compact_pcm_fifo.v": "69f0f572272f74769133a0ba13ab769de9ef857b8627d5a64c7bf4162ba27f16",
+        "common/photo_sd_cache.v": "67b5c4ea4f61ceb625899d8a3b078892da4cce304861ed66fd0ab9bd720f4299",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "common/photo_sd_audio_stream.v": "5c1c0196bed7661ba9fdf2edab80630f3860223e6a8858935012083738c95a7a",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Work\\resource-research-20261022-203734\\delivery-audio-proofs\\compact_pcm_native\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d",
+        "tools/test_resource_research.py": "c48fb9f01541051a86780b168f76edfa41a35957f31ef70d0072ab907362acd5"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\delivery-audio-proofs_compact_pcm_native.log",
+      "log_sha256": "2e89a71f682f5d89f54465f712316128b1c5e7ca5fdcca5f66a891626bc47a71",
+      "suite": "delivery-audio-proofs",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "saved_log": "releases/resource_next_20261022/validation/delivery-audio-proofs_compact_pcm_native.log",
+      "stimuli_base_dir": "E:\\Codex\\Work\\resource-research-20261022-203734\\delivery-audio-proofs\\compact_pcm_native"
+    },
+    {
+      "test": "repair_native",
+      "passed": true,
+      "seconds": 145.8,
+      "inputs_sha256": {
+        "tests/tb_repair_packed8.v": "ce456487bebcf9fa8bef791171508c924a3900f8c704885f2c6e162e9989689b",
+        "tests/reference/resource_research/audio_repair_5_4.v": "5683df8b1cde36d41353e3c93421cc3d43916147adc684321dcafd654dc5ccf9",
+        "common/audio_ui/saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Work\\resource-research-20261022-203734\\delivery-audio-proofs\\repair_native\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d",
+        "tools/test_resource_research.py": "c48fb9f01541051a86780b168f76edfa41a35957f31ef70d0072ab907362acd5"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\delivery-audio-proofs_repair_native.log",
+      "log_sha256": "c769d8ad7808603cfa5ea51fb2542051c10a0e42b65fad3e51e2eefcd71cef32",
+      "suite": "delivery-audio-proofs",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "saved_log": "releases/resource_next_20261022/validation/delivery-audio-proofs_repair_native.log",
+      "stimuli_base_dir": "E:\\Codex\\Work\\resource-research-20261022-203734\\delivery-audio-proofs\\repair_native"
+    },
+    {
+      "test": "award_control",
+      "passed": true,
+      "seconds": 2.52,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_award_v5_control.v": "6c64225eee8e1a71de1b3277184c0e8fb2123873e4903069a02d2c27d18dc1c9",
+        "common/photo_cached_control_a.v": "c4f471603979aac9dadb5901da15ed8c00a684e27e1e28c89d821c0a481263b2",
+        "common/photo_control.v": "ae23329605f7f53bc02aa86acfa3d3c45ac9b54a93ccb53db88f4fb8bd635957",
+        "common/photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df",
+        "common/photo_link.v": "6ca5781c2c9916c9445ba6d7c682a1f06b56b327d0f8ea5e166cd9f338fed118"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\thumbnail-tests_award_control.log",
+      "log_sha256": "f10b7ac2f0e3315356c738e89033cfb64c5b2d9c9afa8b5de40862ddb7ff8f84",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\thumbnail-tests_award_control.log",
+        "saved_log_sha256": "f10b7ac2f0e3315356c738e89033cfb64c5b2d9c9afa8b5de40862ddb7ff8f84"
+      },
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/resource_next_20261022/validation/thumbnail-tests_award_control.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "award_width",
+      "passed": true,
+      "seconds": 25.64,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_award_width.v": "de8b840f4d14f81416081b53b0d76026a5d37fcb7e335a393818a8e01cf2d89a",
+        "common/award_fx.v": "f4e31098dcc4a2c38ecd1c0eae01fe2989814fa61bb95c10d529e6f153c05482",
+        "common/award_sprite_rom.v": "f92edd17e605ded17d834eb408475ac66f061f99c7b94edfdad9d4997242f768",
+        "tests/reference/thumbnail/award_fx.v": "7d510d609d423b81c20d153bb31374bbef9d264685a8cf836685c75b10eb7d26"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\thumbnail-tests_award_width.log",
+      "log_sha256": "26be63e0594e2a8d2bc8dcc11925b796900b2c703ad647f7f39bbfad04876691",
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/resource_next_20261022/validation/thumbnail-tests_award_width.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\thumbnail-tests_award_width.log",
+        "saved_log_sha256": "26be63e0594e2a8d2bc8dcc11925b796900b2c703ad647f7f39bbfad04876691"
+      },
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "blanking",
+      "passed": true,
+      "seconds": 20.7,
+      "defines": [
+        "THUMBNAIL_SIM"
+      ],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_blanking.v": "e02d1c3b190e7f91a89122e7541a473bdf8a31aae5261226883ca15feaf3dd16",
+        "common/photo_thumbnail.v": "6b45b0675ef4c0a7e3777d4fea264ae5f4b08c52d3da67b7c74c557f57d7ef35",
+        "common/photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\thumbnail-tests_blanking.log",
+      "log_sha256": "71efd7bd2fbacd41869aadf07f58e97c9216d67378636e25210387081fae10ee",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\thumbnail-tests_blanking.log",
+        "saved_log_sha256": "71efd7bd2fbacd41869aadf07f58e97c9216d67378636e25210387081fae10ee"
+      },
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/resource_next_20261022/validation/thumbnail-tests_blanking.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "control",
+      "passed": true,
+      "seconds": 0.27,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_control.v": "87b28af4133ea1d8decab661b8278fd9d2a62c4bae18d1c56e06b11ac511c68b",
+        "common/photo_cached_control_a.v": "c4f471603979aac9dadb5901da15ed8c00a684e27e1e28c89d821c0a481263b2",
+        "common/photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\thumbnail-tests_control.log",
+      "log_sha256": "8c2d737de37ea6900534109d42accb2879394f0adfc98ac0e507ae4e7e1a1ab8",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\thumbnail-tests_control.log",
+        "saved_log_sha256": "8c2d737de37ea6900534109d42accb2879394f0adfc98ac0e507ae4e7e1a1ab8"
+      },
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/resource_next_20261022/validation/thumbnail-tests_control.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "edge_eram",
+      "passed": true,
+      "seconds": 115.08,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_edge_equivalence.v": "69abe992a7f1a7839552459c4e8eb96801f64a081584c1957098029e838b089b",
+        "common/fluid/water_edge.v": "e710bbd4e90cada1011848b4429f40629cc8c4bfc14ecee5bd643de5cf1c5f79",
+        "tests/reference/thumbnail/water_edge.v": "05f9facc4c643b0a652b20402034f48891bc985f956228ad3f2cd77ee77c85b8",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "src/board_a/user_source/hdl_source/IP/water_edge_weights.mif": "1ba4dae4767feaeef087e147b6342e9e0a856f160cf06d9186948f6a272a12fc",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\edge_weights.hex": "ae5e6ea212b2fc2a0f85a6873afef3ab93d7323acd223f6cfa88993268a35b2c",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\edge_eram_include\\ip_init_map.vh": "51bebcf03d44d5fa8e30e769f4708d069946fb46bb3cc411424d9407269ed850"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\thumbnail-tests_edge_eram.log",
+      "log_sha256": "441ac52d4eea4c0b0e2fa2af67c223b6dcbc561ebe8b8462c33b2e0ea84d5ed7",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\thumbnail-tests_edge_eram.log",
+        "saved_log_sha256": "441ac52d4eea4c0b0e2fa2af67c223b6dcbc561ebe8b8462c33b2e0ea84d5ed7"
+      },
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/resource_next_20261022/validation/thumbnail-tests_edge_eram.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "memory",
+      "passed": true,
+      "seconds": 2.42,
+      "defines": [
+        "THUMBNAIL_SIM"
+      ],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_memory.v": "8187d9a545b6151db23183866d7bfa77a0d9dec48dc96c89c0c49514a4a4bac1",
+        "common/photo_thumbnail.v": "6b45b0675ef4c0a7e3777d4fea264ae5f4b08c52d3da67b7c74c557f57d7ef35"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\thumbnail-tests_memory.log",
+      "log_sha256": "5854278c9ba4c01d2a1df08ad0bdf7dc2956532e99d906f68eadbf74903c896a",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\thumbnail-tests_memory.log",
+        "saved_log_sha256": "5854278c9ba4c01d2a1df08ad0bdf7dc2956532e99d906f68eadbf74903c896a"
+      },
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/resource_next_20261022/validation/thumbnail-tests_memory.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "menu_geometry",
+      "passed": true,
+      "seconds": 239.2,
+      "defines": [
+        "TOUCHSCREEN_SIM"
+      ],
+      "inputs_sha256": {
+        "tests/tb_menu_geometry.v": "0e1cb53bcddcff650bc9be24695c9fc4810015078603f7abb4693d272c8cebad",
+        "common/photo_settings_overlay.v": "28e19071deea442b93102d7d4aa839ba93b252b757ae853e5ebd7c83df3707f8",
+        "tests/reference/thumbnail/photo_settings_overlay.v": "242c6c8b6ac6e0b85fb1efe032159f07c013a7679f4feccb0a69a1d65bc1b9b9",
+        "tests/touchscreen_menu_font.v": "12fda21482b92b9b53b2db223dfd64334b6ec345a9345944381ffa64f7fd80bf",
+        "common/photo_menu_font.mif": "2bc93d7d132dcd858edf436d5c55e73896996cf89a2d224cbd8f78bf337d4c5d",
+        "tests/touchscreen_results/menu_font.hex": "ba163be9b68bed0aa7c67eaaf81c5806136eba6c20b8efa27cf19495bdb94858",
+        "src/board_a/user_source/hdl_source/photo_menu_text_lookup.mif": "6bd358ea5b82f7a65629595a1f4415d67d02936c2e7ecb704e6166dbfc6441b1",
+        "src/board_a/user_source/hdl_source/photo_menu_text_lookup.hex": "754b5d6f555a8118b10d149314378f63d485fa63d13c0c3c8f6a2b9eb94864b9"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\thumbnail-tests_menu_geometry.log",
+      "log_sha256": "f845bf1ae310dd533d4dd5baf969cfa972390edcbfaa0a12e61d64ad84bbd5b6",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\thumbnail-tests_menu_geometry.log",
+        "saved_log_sha256": "f845bf1ae310dd533d4dd5baf969cfa972390edcbfaa0a12e61d64ad84bbd5b6"
+      },
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/resource_next_20261022/validation/thumbnail-tests_menu_geometry.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "overlay",
+      "passed": true,
+      "seconds": 0.08,
+      "defines": [
+        "THUMBNAIL_SIM"
+      ],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_overlay.v": "832c6bcab7377a984cf0235e87839d1dba015538907b393f4e3d0e41442275b0",
+        "common/photo_thumbnail.v": "6b45b0675ef4c0a7e3777d4fea264ae5f4b08c52d3da67b7c74c557f57d7ef35"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\thumbnail-tests_overlay.log",
+      "log_sha256": "63eb1e4b1b6de6d2419a69b15fc41a449ad4bffd3da90031cbbbc9793d837460",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\thumbnail-tests_overlay.log",
+        "saved_log_sha256": "63eb1e4b1b6de6d2419a69b15fc41a449ad4bffd3da90031cbbbc9793d837460"
+      },
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/resource_next_20261022/validation/thumbnail-tests_overlay.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "phase",
+      "passed": true,
+      "seconds": 0.91,
+      "defines": [
+        "THUMBNAIL_SIM"
+      ],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_phase.v": "4fbc19c6a9d11d3121f6c7b8535bc56d43b30f150d82fca2bc90bc5271966635",
+        "common/photo_thumbnail.v": "6b45b0675ef4c0a7e3777d4fea264ae5f4b08c52d3da67b7c74c557f57d7ef35",
+        "common/photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\thumbnail-tests_phase.log",
+      "log_sha256": "e0788c0982dd79c8e41077a9e78ce630d19daea097116088127229b1794b3ea5",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\thumbnail-tests_phase.log",
+        "saved_log_sha256": "e0788c0982dd79c8e41077a9e78ce630d19daea097116088127229b1794b3ea5"
+      },
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/resource_next_20261022/validation/thumbnail-tests_phase.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "touch",
+      "passed": true,
+      "seconds": 17.08,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_touch.v": "bfa7b1b822ede3b15da5b82b54f534ef934b249ee4758719c6d779f9e4fe8b31",
+        "common/top_photo_a.v": "f66e916589c37df9d244cdf9af32c0e6792534372ec592748373d45b4da9b1ba",
+        "common/saixian_hmi_uart.v": "cd27507bad545dc4ae0f04b275e78af524ce4200e216f311f8564f81f400a219",
+        "common/photo_touchpad.v": "3cc8c9b46b9b206b0c37353823ca9635cbde5cd9f77058a9a45664061bfdb956",
+        "common/photo_unified_settings_controller.v": "a2b7444b42f071dc800ea8927dfe6d7d45abcb71b7d23e16f1bdcd03b179938b",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\hardware_shells.v": "c4ac4199b3b1c528c4640f6ec077b90ac474782e4a751ee1ecd33e2f7dbfb279"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\thumbnail-tests_touch.log",
+      "log_sha256": "dd56642c64f8d853443cffd0267b48b9f7e7a311f02ab3f07e780b786a0d2451",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\thumbnail-tests_touch.log",
+        "saved_log_sha256": "dd56642c64f8d853443cffd0267b48b9f7e7a311f02ab3f07e780b786a0d2451"
+      },
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/resource_next_20261022/validation/thumbnail-tests_touch.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "vendor",
+      "passed": true,
+      "seconds": 4.98,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_memory.v": "8187d9a545b6151db23183866d7bfa77a0d9dec48dc96c89c0c49514a4a4bac1",
+        "common/photo_thumbnail.v": "6b45b0675ef4c0a7e3777d4fea264ae5f4b08c52d3da67b7c74c557f57d7ef35",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\vendor_include\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\thumbnail-tests_vendor.log",
+      "log_sha256": "5854278c9ba4c01d2a1df08ad0bdf7dc2956532e99d906f68eadbf74903c896a",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\thumbnail-tests_vendor.log",
+        "saved_log_sha256": "5854278c9ba4c01d2a1df08ad0bdf7dc2956532e99d906f68eadbf74903c896a"
+      },
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/resource_next_20261022/validation/thumbnail-tests_vendor.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "av_link",
+      "passed": true,
+      "seconds": 53.52,
+      "inputs_sha256": {
+        "tests/tb_resource_av_link.v": "4ab5bca95df9a02663b6fe721367e04692e32a93ea7bb9d51b12c56f1a7f094d",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "common/photo_av_metadata.v": "ac49f27edce4408f9fee0da1aa67bf60b76bde19790a7e8aea1337faafd236ad",
+        "common/photo_av_receiver.v": "2fd185ece16d7569545eceb4b94d575b560e5288c9a2b4b6683ecb98af3fede7",
+        "tests/resource_av_analysis_stub.v": "c5ab247d2c3563db343b7567e216a54549e1a7b8ddbc4381d10ccc3d6480d89a",
+        "tests/av_bram_model.v": "b18886a5c572acf0aabfcb37cc7aab704c15526cd79193fb0b5b1fa49b7540a6",
+        "tools/test_resource_allocation.py": "e48f2ef26548bdacdcde8ea216c80ce8b33c1ca321adbb04492397af33367ace"
+      },
+      "defines": [],
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\resource-tests_av_link.log",
+      "log_sha256": "c149958009e1a1616408da7320682bf1717b63a1452fe7dba6f41c4efc516a6a",
+      "inputs_unchanged": true,
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\resource-tests_av_link.log",
+        "saved_log_sha256": "c149958009e1a1616408da7320682bf1717b63a1452fe7dba6f41c4efc516a6a"
+      },
+      "suite": "resource-tests",
+      "saved_log": "releases/resource_next_20261022/validation/resource-tests_av_link.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "delay",
+      "passed": true,
+      "seconds": 36.89,
+      "inputs_sha256": {
+        "tests/tb_eram_video_delay.v": "5aa6f8565e66556eb4915bf81bd3e46c00bfdb8213c1fb0065c151f253c6509a",
+        "common/photo_display_pipe.v": "e6ba29eb4142b690a5abb9be5b07c0b880040736485cdbeb1013f040559718c3",
+        "tests/reference/award_v5/photo_display_pipe.v": "4cd9c09a2f814c7abfd3b86b30b6996b8cf23f53ba46dafc850fc4e438b00700",
+        "tools/test_resource_allocation.py": "e48f2ef26548bdacdcde8ea216c80ce8b33c1ca321adbb04492397af33367ace"
+      },
+      "defines": [
+        "ERAM_SIM"
+      ],
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\resource-tests_delay.log",
+      "log_sha256": "966c5768dc2e830417ec5b013b4ee773daf617b6ec76f6545585552060236106",
+      "inputs_unchanged": true,
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\resource-tests_delay.log",
+        "saved_log_sha256": "966c5768dc2e830417ec5b013b4ee773daf617b6ec76f6545585552060236106"
+      },
+      "suite": "resource-tests",
+      "saved_log": "releases/resource_next_20261022/validation/resource-tests_delay.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "delay_vendor",
+      "passed": true,
+      "seconds": 55.59,
+      "inputs_sha256": {
+        "tests/tb_eram_video_delay.v": "5aa6f8565e66556eb4915bf81bd3e46c00bfdb8213c1fb0065c151f253c6509a",
+        "common/photo_display_pipe.v": "e6ba29eb4142b690a5abb9be5b07c0b880040736485cdbeb1013f040559718c3",
+        "tests/reference/award_v5/photo_display_pipe.v": "4cd9c09a2f814c7abfd3b86b30b6996b8cf23f53ba46dafc850fc4e438b00700",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\resource-tests\\vendor_dram_plain.v": "32d2eab62e3c1e3685da9153140d7c49de35d26c456010708444576754491ae0",
+        "tools/test_resource_allocation.py": "e48f2ef26548bdacdcde8ea216c80ce8b33c1ca321adbb04492397af33367ace",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\sim_release\\eg4\\eg_logic_dram.v": "b620cebfe67f8829df3b737d1f75072b5f42bae7a2396b36616e85aa3cc9ea1e"
+      },
+      "defines": [],
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\resource-tests_delay_vendor.log",
+      "log_sha256": "966c5768dc2e830417ec5b013b4ee773daf617b6ec76f6545585552060236106",
+      "inputs_unchanged": true,
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\resource-tests_delay_vendor.log",
+        "saved_log_sha256": "966c5768dc2e830417ec5b013b4ee773daf617b6ec76f6545585552060236106"
+      },
+      "suite": "resource-tests",
+      "saved_log": "releases/resource_next_20261022/validation/resource-tests_delay_vendor.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "hybrid_fifo",
+      "passed": true,
+      "seconds": 5.33,
+      "inputs_sha256": {
+        "tests/tb_ip_audio_fifo.v": "727f62143901ed4c21a1406abf7b1955f0662f44cdf4e6482394546c512f423a",
+        "tests/reference/award_v5/photo_audio_fifo.v": "a81b1c7522511965092ffd63ff95c1534801b9b35b658930d10d2b0d334f71fa",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "tools/test_resource_allocation.py": "e48f2ef26548bdacdcde8ea216c80ce8b33c1ca321adbb04492397af33367ace"
+      },
+      "defines": [],
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\resource-tests_hybrid_fifo.log",
+      "log_sha256": "b52f914685cee49017c549152468361fbf501f3b0d8e6946139c4e4f23f6298b",
+      "inputs_unchanged": true,
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\resource-tests_hybrid_fifo.log",
+        "saved_log_sha256": "b52f914685cee49017c549152468361fbf501f3b0d8e6946139c4e4f23f6298b"
+      },
+      "suite": "resource-tests",
+      "saved_log": "releases/resource_next_20261022/validation/resource-tests_hybrid_fifo.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "metadata",
+      "passed": true,
+      "seconds": 1.06,
+      "inputs_sha256": {
+        "tests/tb_resource_metadata.v": "dbb5393c89f91df66889a66b4610c04b183edf0515d0845182f4b1d64552864a",
+        "common/photo_av_metadata.v": "ac49f27edce4408f9fee0da1aa67bf60b76bde19790a7e8aea1337faafd236ad",
+        "common/photo_av_receiver.v": "2fd185ece16d7569545eceb4b94d575b560e5288c9a2b4b6683ecb98af3fede7",
+        "common/audio_ui/saixian_audio_visualizer.v": "7563a700a7cc89c04351d9fb55049c77adcf78e0807133ef501a51e6d041894d",
+        "tests/av_bram_model.v": "b18886a5c572acf0aabfcb37cc7aab704c15526cd79193fb0b5b1fa49b7540a6",
+        "tools/test_resource_allocation.py": "e48f2ef26548bdacdcde8ea216c80ce8b33c1ca321adbb04492397af33367ace",
+        "common/audio_ui/saixian_av_hann_half.hex": "fc9247268b83a9aca0d5f6022efa586c98c9102fa304ffec024f4cd562375081",
+        "common/audio_ui/saixian_av_twiddle_serial.hex": "dc321b9f2e3779a52b27467170a829039be71b054742e259beb53ffa3c5782f0"
+      },
+      "defines": [],
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\resource-tests_metadata.log",
+      "log_sha256": "36e6ca8d7a699011c79f8e89800a8b6c6d832a084c79bf7ff366bf3520106aa1",
+      "inputs_unchanged": true,
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\resource-tests_metadata.log",
+        "saved_log_sha256": "36e6ca8d7a699011c79f8e89800a8b6c6d832a084c79bf7ff366bf3520106aa1"
+      },
+      "suite": "resource-tests",
+      "saved_log": "releases/resource_next_20261022/validation/resource-tests_metadata.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "typed_protocol",
+      "passed": true,
+      "seconds": 0.61,
+      "inputs_sha256": {
+        "tests/tb_fx_protocol.v": "9d891960c9d0fdaf50f9def9221ee189617c07ad7f056775abe29c9d4f09077d",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "tools/test_resource_allocation.py": "e48f2ef26548bdacdcde8ea216c80ce8b33c1ca321adbb04492397af33367ace"
+      },
+      "defines": [
+        "VICTORY_SIM"
+      ],
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\resource-tests_typed_protocol.log",
+      "log_sha256": "51ebdbe696cf4272707f0d03de99677470687711b506bf0f1168f184c74935de",
+      "inputs_unchanged": true,
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\resource-tests_typed_protocol.log",
+        "saved_log_sha256": "51ebdbe696cf4272707f0d03de99677470687711b506bf0f1168f184c74935de"
+      },
+      "suite": "resource-tests",
+      "saved_log": "releases/resource_next_20261022/validation/resource-tests_typed_protocol.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "rgb565_award_link",
+      "passed": true,
+      "seconds": 60.28,
+      "inputs_sha256": {
+        "tests/tb_award_v5_link.v": "ad01e3559b0bb676699c19b6a3e3682b4375018fbbaa4a087c50bcc84a1bfed6",
+        "common/photo_link.v": "6ca5781c2c9916c9445ba6d7c682a1f06b56b327d0f8ea5e166cd9f338fed118",
+        "tools/test_rgb565.py": "aaf198936d566e2473c2cb2e4e8e821c1ff3285d61a2efc799994572b3bc5709",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_award_link\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\rgb565-tests_rgb565_award_link.log",
+      "log_sha256": "7a8be9e3ac0d5ac9fd7692d390d3053dcdc7be7e810226979a16b9a408bf870f",
+      "suite": "rgb565-tests",
+      "saved_log": "releases/resource_next_20261022/validation/rgb565-tests_rgb565_award_link.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\rgb565-tests_rgb565_award_link.log",
+        "saved_log_sha256": "7a8be9e3ac0d5ac9fd7692d390d3053dcdc7be7e810226979a16b9a408bf870f"
+      },
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "rgb565_award_sdram",
+      "passed": true,
+      "seconds": 408.06,
+      "inputs_sha256": {
+        "tests/tb_award_v5_sdram_link.v": "157b0d1cc4319673e99b3c5881a0f81b1200d588b4d61bb1ff194c8236a8a679",
+        "src/board_b/user_source/hdl_source/frame_store.v": "ae0841b1294b2cd1b3ee783dd4a53afadbe06e25478aa5118ee5ceafb5adca8a",
+        "src/board_b/user_source/hdl_source/SD/frame_read_write.v": "1f3cf38e143c20906064a359da4a7738bc5aea5eec392c2329a761e218105a34",
+        "src/board_b/user_source/hdl_source/SD/frame_fifo_read.v": "d963d4c6101eae2ee7ee5c119da783ac1508d9e5fc4b13df5c5fc232319000d0",
+        "src/board_b/user_source/hdl_source/SD/frame_fifo_write.v": "17e09f2f5ef05210fbea011b447fea269d5e3896edbde84bb39e945be13ce6d6",
+        "src/board_b/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "src/board_b/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+        "common/photo_link.v": "6ca5781c2c9916c9445ba6d7c682a1f06b56b327d0f8ea5e166cd9f338fed118",
+        "common/photo_spotlight_player.v": "7c7bdefb355098208883a71d2eb1138c0e67f3d28a68eb2a5c4a2dae3bac6152",
+        "common/photo_award_memory.v": "0421eb047bc5a1654f78c3670b75f6f2d0931fe3832d18a2c8c72d0c4d87ce91",
+        "tools/test_rgb565.py": "aaf198936d566e2473c2cb2e4e8e821c1ff3285d61a2efc799994572b3bc5709",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_award_sdram\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_award_sdram\\award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_award_sdram\\award_file.hex": "055731d3803478b8955b4ab76cc11b447aad47ac67d908f47a0a06b40fb41077",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_award_sdram\\light_golden.hex": "41fabdd702bd9435ebaad67b28c18365cfe29442e4df925fe5a6e9e50296bacc",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_award_sdram\\light_raw.hex": "f9306eb3216a0986b05e5151c1a2a16a9a2abc51058e336295ff2ec06f0a77d5",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_award_sdram\\light_tail.hex": "17aa3ee96bbb2b71e19be2bc3d388870d59ad6ea1d8808e100bcf9f936156dbd",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_award_sdram\\water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_award_sdram\\water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_award_sdram\\water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_award_sdram\\water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_award_sdram\\water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_award_sdram\\water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_award_sdram\\water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_award_sdram\\water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_award_sdram\\water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_award_sdram\\water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\rgb565-tests_rgb565_award_sdram.log",
+      "log_sha256": "d3feecbdb1d159751fc282f1e1a2d53788017ca2cb5d92c9a0644ef90dfe4449",
+      "suite": "rgb565-tests",
+      "saved_log": "releases/resource_next_20261022/validation/rgb565-tests_rgb565_award_sdram.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\rgb565-tests_rgb565_award_sdram.log",
+        "saved_log_sha256": "d3feecbdb1d159751fc282f1e1a2d53788017ca2cb5d92c9a0644ef90dfe4449"
+      },
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "rgb565_equivalence",
+      "passed": true,
+      "seconds": 2.17,
+      "inputs_sha256": {
+        "tests/tb_rgb565_equivalence.v": "e7f79fbd67619e09562c85bdc350cdcb24d15f55eaa6b45076811fdc99386f0a",
+        "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+        "tests/reference/rgb565/photo_color_format.v": "7ca4743317914328da696154ed48157b3333cee777ceb21e0d06fc8be47ec1b8",
+        "src/board_a/user_source/hdl_source/frame_pixels.v": "0b45d4a61c0eac7cdff33fa0d84f8670fe1dc732fedf44a4baa16e022eed369e",
+        "tests/reference/rgb565/frame_pixels.v": "25f2cbe7ad71cbbdca10ac86ec0bb7657561eb2b805f576c5346325cedbbcbc4",
+        "tools/test_rgb565.py": "aaf198936d566e2473c2cb2e4e8e821c1ff3285d61a2efc799994572b3bc5709",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_equivalence\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\rgb565-tests_rgb565_equivalence.log",
+      "log_sha256": "1ddb3f8b7b4fe29dcdfe8992f7fff7393b28bae351e261c872e4a518bbe9432b",
+      "suite": "rgb565-tests",
+      "saved_log": "releases/resource_next_20261022/validation/rgb565-tests_rgb565_equivalence.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\rgb565-tests_rgb565_equivalence.log",
+        "saved_log_sha256": "1ddb3f8b7b4fe29dcdfe8992f7fff7393b28bae351e261c872e4a518bbe9432b"
+      },
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "rgb565_link_abort",
+      "passed": true,
+      "seconds": 0.16,
+      "inputs_sha256": {
+        "tests/tb_research_link_abort.v": "1a1587611a60f3b0331a19d9e5a3efb6a78d3a5967963a6ea1a2271907257190",
+        "common/photo_link.v": "6ca5781c2c9916c9445ba6d7c682a1f06b56b327d0f8ea5e166cd9f338fed118",
+        "tools/test_rgb565.py": "aaf198936d566e2473c2cb2e4e8e821c1ff3285d61a2efc799994572b3bc5709",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_link_abort\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\rgb565-tests_rgb565_link_abort.log",
+      "log_sha256": "34d31f65405d4432de60282ab8c38d7d3d558fbf0d399b9e8c991fc59d721095",
+      "suite": "rgb565-tests",
+      "saved_log": "releases/resource_next_20261022/validation/rgb565-tests_rgb565_link_abort.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\rgb565-tests_rgb565_link_abort.log",
+        "saved_log_sha256": "34d31f65405d4432de60282ab8c38d7d3d558fbf0d399b9e8c991fc59d721095"
+      },
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "rgb565_scaler",
+      "passed": true,
+      "seconds": 102.5,
+      "inputs_sha256": {
+        "tests/tb_ip_scaler.v": "ba455c8654eff93f31daeb05ddfcfdfdb3980595118ec97d9dc9f96a69f1e879",
+        "common/photo_sd/bmp_read.v": "5b058f84a66e355fc1c03d1b7145d7d8f4a320801e2391f4bf1ef1ef3925c7c8",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "tools/test_rgb565.py": "aaf198936d566e2473c2cb2e4e8e821c1ff3285d61a2efc799994572b3bc5709",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_scaler\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\rgb565-tests_rgb565_scaler.log",
+      "log_sha256": "7faa7e7b1e77fc34ecd4e929dd4ae3f7465510c0aa4197bbf21e8f45fcdcfde3",
+      "suite": "rgb565-tests",
+      "saved_log": "releases/resource_next_20261022/validation/rgb565-tests_rgb565_scaler.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\rgb565-tests_rgb565_scaler.log",
+        "saved_log_sha256": "7faa7e7b1e77fc34ecd4e929dd4ae3f7465510c0aa4197bbf21e8f45fcdcfde3"
+      },
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "rgb565_settings",
+      "passed": true,
+      "seconds": 0.06,
+      "inputs_sha256": {
+        "tests/tb_rgb565_settings.v": "296eddc80868b580b72f0759c1a67e4a29ae558dce77016b276f9233e5dafe86",
+        "common/photo_unified_settings_controller.v": "a2b7444b42f071dc800ea8927dfe6d7d45abcb71b7d23e16f1bdcd03b179938b",
+        "tools/test_rgb565.py": "aaf198936d566e2473c2cb2e4e8e821c1ff3285d61a2efc799994572b3bc5709",
+        "E:\\Codex\\Work\\animation-cache-20261022\\rgb565-tests\\rgb565_settings\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\rgb565-tests_rgb565_settings.log",
+      "log_sha256": "9530cc0c5a820bfe6c0975be820afb2a5e3d0b824854927290c08ec155199c80",
+      "suite": "rgb565-tests",
+      "saved_log": "releases/resource_next_20261022/validation/rgb565-tests_rgb565_settings.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\rgb565-tests_rgb565_settings.log",
+        "saved_log_sha256": "9530cc0c5a820bfe6c0975be820afb2a5e3d0b824854927290c08ec155199c80"
+      },
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "tb_v4_audio_rate",
+      "passed": true,
+      "seconds": 4.08,
+      "inputs_unchanged": true,
+      "inputs_sha256": {
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "tests/tb_v4_audio_rate.v": "f080ab87c10d3a59093966dabb592779a82f356f52776a71261ab3cb16dd4ee9"
+      },
+      "log_sha256": "5afee3da9e89834b5bd08df93c17df0a05d0c2b6812f9ad4fadaab8cfc9b3630",
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\uart-tests_tb_v4_audio_rate.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\uart-tests_tb_v4_audio_rate.log",
+        "saved_log_sha256": "5afee3da9e89834b5bd08df93c17df0a05d0c2b6812f9ad4fadaab8cfc9b3630"
+      },
+      "suite": "uart-tests",
+      "saved_log": "releases/resource_next_20261022/validation/uart-tests_tb_v4_audio_rate.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "tb_v4_uart_equivalence",
+      "passed": true,
+      "seconds": 39.2,
+      "inputs_unchanged": true,
+      "inputs_sha256": {
+        "common/photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df",
+        "tests/reference/v4_port/photo_uart.v": "8ab6334a3af1f5015c4dccad344f05c6a5f8f7d6d8da7727aed64f6ae2f7badd",
+        "tests/tb_v4_uart_equivalence.v": "740d73e9b84fea9453e53fdba1c6953a1f628e1c2f3a5e19299a6e251537077c"
+      },
+      "log_sha256": "2687b99b8d9783cce6c17047b29c7b1d5df5d7a207c27393689999d5f46122c6",
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\uart-tests_tb_v4_uart_equivalence.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\uart-tests_tb_v4_uart_equivalence.log",
+        "saved_log_sha256": "2687b99b8d9783cce6c17047b29c7b1d5df5d7a207c27393689999d5f46122c6"
+      },
+      "suite": "uart-tests",
+      "saved_log": "releases/resource_next_20261022/validation/uart-tests_tb_v4_uart_equivalence.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "controls",
+      "passed": true,
+      "seconds": 0.17,
+      "inputs_sha256": {
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "common/photo_unified_settings_controller.v": "a2b7444b42f071dc800ea8927dfe6d7d45abcb71b7d23e16f1bdcd03b179938b",
+        "common/saixian_hmi_uart.v": "cd27507bad545dc4ae0f04b275e78af524ce4200e216f311f8564f81f400a219",
+        "tests/fx11_water/tb_controls.v": "a60881f6651d7b5f0347abbdf83ff8d0dc1c07fb696c7678a96acaaeca01bdff",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "47cb58b03b02be48e0961132a01cd9a55912d04b0de32496dc473dad75ad9007",
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\fx-tests_controls.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\fx-tests_controls.log",
+        "saved_log_sha256": "47cb58b03b02be48e0961132a01cd9a55912d04b0de32496dc473dad75ad9007"
+      },
+      "suite": "fx-tests",
+      "saved_log": "releases/resource_next_20261022/validation/fx-tests_controls.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "scene",
+      "passed": true,
+      "seconds": 0.12,
+      "inputs_sha256": {
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_scene.v": "ea6c180517f8c8916884f74f23c1db5a2005bc2cd9373dfcfe4e0faf1c590330",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "tests/fx11_water/tb_scene.v": "d5d5b9629cdc109a2e40635e146d087c971de40fffd00a67fdec2fec909c0d5a",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "8c7befb85f79b3fb5147f17a7650175dd032f182261f4b87d71c8266ae06de6b",
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\fx-tests_scene.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\fx-tests_scene.log",
+        "saved_log_sha256": "8c7befb85f79b3fb5147f17a7650175dd032f182261f4b87d71c8266ae06de6b"
+      },
+      "suite": "fx-tests",
+      "saved_log": "releases/resource_next_20261022/validation/fx-tests_scene.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "transition",
+      "passed": true,
+      "seconds": 0.24,
+      "inputs_sha256": {
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "common/saixian_transition.v": "0db761825a5ca1a810f64b10757b83ba7e3cb4f371a9785441c2a477af321227",
+        "tests/fx11_water/tb_transition.v": "9b036b10466e213a53806633ee29145d94c2888641bf97e9a0b6d4da746cd09b",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "721dd0ff949b767fc27e7427f781f4e2276957eedd6a45efd08a5495299dd46c",
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\fx-tests_transition.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\fx-tests_transition.log",
+        "saved_log_sha256": "721dd0ff949b767fc27e7427f781f4e2276957eedd6a45efd08a5495299dd46c"
+      },
+      "suite": "fx-tests",
+      "saved_log": "releases/resource_next_20261022/validation/fx-tests_transition.log",
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "blend",
+      "passed": true,
+      "seconds": 4.17,
+      "inputs_sha256": {
+        "tests/tb_blend_native.v": "55a5a8830f65ecbc3bde39ab70d2aabf19e1de03528b3a1a2367542b24dd44bc",
+        "common/fluid/water_blend.v": "02b9ac8df414a7252263e6dc4f863bbc801e09dd793f7e85dd3282b8bc41b3d7",
+        "tests/reference/animation_cache/water_blend.v": "3ff4ba7695dd45ad7b96d29047d1850ff2ca852d3dbfaa0fe9fea73e2c6edbaa",
+        "tools/test_animation_cache.py": "40de88ebd3a90888b0b83f135dd302b070eaeed8a6ce3e39a1f1a620c5655c34",
+        "E:\\Codex\\Work\\animation-cache-20261022\\animation-tests\\blend\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\animation-tests_blend.log",
+      "log_sha256": "61336d2465929e59f67d52a77c4dab6840f327b2f5163207b8a97a870e85d610",
+      "suite": "animation-tests",
+      "saved_log": "releases/resource_next_20261022/validation/animation-tests_blend.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\animation-tests_blend.log",
+        "saved_log_sha256": "61336d2465929e59f67d52a77c4dab6840f327b2f5163207b8a97a870e85d610"
+      },
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "blend_dsp",
+      "passed": true,
+      "seconds": 8.76,
+      "inputs_sha256": {
+        "tests/tb_blend_native.v": "55a5a8830f65ecbc3bde39ab70d2aabf19e1de03528b3a1a2367542b24dd44bc",
+        "common/fluid/water_blend.v": "02b9ac8df414a7252263e6dc4f863bbc801e09dd793f7e85dd3282b8bc41b3d7",
+        "tests/reference/animation_cache/water_blend.v": "3ff4ba7695dd45ad7b96d29047d1850ff2ca852d3dbfaa0fe9fea73e2c6edbaa",
+        "tests/fx11_water/glbl.v": "2a063611f37926861bb60704f5407c8b569d29b8c3c3171424a2d971240d846f",
+        "E:\\Codex\\Work\\animation-cache-20261022\\animation-tests\\vendor_mult18_functional.v": "3027bc66b99df04b17c595b455fca09a336d6b01831528a7232787dc2acb88df",
+        "tools/test_animation_cache.py": "40de88ebd3a90888b0b83f135dd302b070eaeed8a6ce3e39a1f1a620c5655c34",
+        "E:\\Codex\\Work\\animation-cache-20261022\\animation-tests\\blend_dsp\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\sim_release\\eg4\\eg_phy_mult18.v": "25ca8de5e98253510d0417d6710046c107064b0decc952a602667117bdd6fbdc"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\animation-tests_blend_dsp.log",
+      "log_sha256": "eb10567fb299560d764b7f43cc8e9f92956f03044ee2766001c46148922d988b",
+      "suite": "animation-tests",
+      "saved_log": "releases/resource_next_20261022/validation/animation-tests_blend_dsp.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\animation-tests_blend_dsp.log",
+        "saved_log_sha256": "eb10567fb299560d764b7f43cc8e9f92956f03044ee2766001c46148922d988b"
+      },
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "fast_processing",
+      "passed": true,
+      "seconds": 13.66,
+      "inputs_sha256": {
+        "tests/tb_fast_processing.v": "a2714b08f84dc08847c0a121dff958a277fa4596278831580a88144694cdaebe",
+        "common/photo_b_processing.v": "cfa81c7f137b4ceae49e05cf11fa6ec21c0b4192bb9e68a1754d0acaf95e7404",
+        "tests/reference/animation_cache/photo_b_processing.v": "f2be3eda2935133a676fa3f075f3a47fce989d2300e67a4fb8fbb8a0551a7cb3",
+        "common/photo_processing.v": "fa835d951d02eedce197444ef59bcad4a578ad1b7ca1739f77b41a2af171ea38",
+        "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+        "common/fluid/water_pack.v": "27e4478f5b79973a01697cde029955b7bff6b7b5fb038bc2e8cf25e54c497960",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "tools/test_animation_cache.py": "40de88ebd3a90888b0b83f135dd302b070eaeed8a6ce3e39a1f1a620c5655c34",
+        "E:\\Codex\\Work\\animation-cache-20261022\\animation-tests\\fast_processing\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\animation-tests_fast_processing.log",
+      "log_sha256": "ce902baae46679e3cc72e40496dccb54fc720da4a732d3cefb7ac23b8aac2027",
+      "suite": "animation-tests",
+      "saved_log": "releases/resource_next_20261022/validation/animation-tests_fast_processing.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\animation-tests_fast_processing.log",
+        "saved_log_sha256": "ce902baae46679e3cc72e40496dccb54fc720da4a732d3cefb7ac23b8aac2027"
+      },
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "page_link",
+      "passed": true,
+      "seconds": 470.25,
+      "inputs_sha256": {
+        "tests/tb_fast_page_link.v": "91c5c779335e634cbaf43eddbd330559abf77e8b435af4b0f7da57f952cd2760",
+        "common/photo_b_processing.v": "cfa81c7f137b4ceae49e05cf11fa6ec21c0b4192bb9e68a1754d0acaf95e7404",
+        "tests/reference/animation_cache/photo_b_processing.v": "f2be3eda2935133a676fa3f075f3a47fce989d2300e67a4fb8fbb8a0551a7cb3",
+        "common/photo_processing.v": "fa835d951d02eedce197444ef59bcad4a578ad1b7ca1739f77b41a2af171ea38",
+        "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+        "common/fluid/water_pack.v": "27e4478f5b79973a01697cde029955b7bff6b7b5fb038bc2e8cf25e54c497960",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "common/photo_link.v": "6ca5781c2c9916c9445ba6d7c682a1f06b56b327d0f8ea5e166cd9f338fed118",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "tools/test_animation_cache.py": "40de88ebd3a90888b0b83f135dd302b070eaeed8a6ce3e39a1f1a620c5655c34",
+        "E:\\Codex\\Work\\animation-cache-20261022\\animation-tests\\page_link\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\animation-tests_page_link.log",
+      "log_sha256": "e84a68f8263341627fd48d65379846edc80fdf6a4010e2d75eaddd00c919896b",
+      "suite": "animation-tests",
+      "saved_log": "releases/resource_next_20261022/validation/animation-tests_page_link.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\animation-tests_page_link.log",
+        "saved_log_sha256": "e84a68f8263341627fd48d65379846edc80fdf6a4010e2d75eaddd00c919896b"
+      },
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "spi_contract",
+      "passed": true,
+      "seconds": 0.12,
+      "inputs_sha256": {
+        "tests/tb_spi_read_speed.v": "4145d657af19aceb6efcf3bb29f47eb8150828ebe05dc0afd86b7bb575a4987c",
+        "common/photo_sd/spi_master.v": "f3f04df5bc162fba03beff74fc506bace4038d2667505e498731a06f6b5a27e9",
+        "tools/test_animation_cache.py": "40de88ebd3a90888b0b83f135dd302b070eaeed8a6ce3e39a1f1a620c5655c34",
+        "E:\\Codex\\Work\\animation-cache-20261022\\animation-tests\\spi_contract\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\animation-tests_spi_contract.log",
+      "log_sha256": "b8cca9c6963ca4cd32e32b2de08dbb4f89102f794ffab6e20480f89859594d1c",
+      "suite": "animation-tests",
+      "saved_log": "releases/resource_next_20261022/validation/animation-tests_spi_contract.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\animation-tests_spi_contract.log",
+        "saved_log_sha256": "b8cca9c6963ca4cd32e32b2de08dbb4f89102f794ffab6e20480f89859594d1c"
+      },
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    },
+    {
+      "test": "sprite",
+      "passed": true,
+      "seconds": 1.44,
+      "inputs_sha256": {
+        "tests/tb_compact_sprite.v": "8d134a9f99ca5912b9581aa8d74d941987a4c7039ff907be10613a3a623013af",
+        "common/award_sprite_rom.v": "f92edd17e605ded17d834eb408475ac66f061f99c7b94edfdad9d4997242f768",
+        "tests/reference/animation_cache/award_sprite_rom.v": "3834698ce2cfac348491492344f2d73678315b9bec0a32792ae423b22f14def1",
+        "tools/test_animation_cache.py": "40de88ebd3a90888b0b83f135dd302b070eaeed8a6ce3e39a1f1a620c5655c34",
+        "E:\\Codex\\Work\\animation-cache-20261022\\animation-tests\\sprite\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Downloads\\qiansai\\5.5project\\releases\\resource_research_20261022\\validation\\animation-tests_sprite.log",
+      "log_sha256": "baf11bd3c30ac0b281c9accb893a6292e66fc2a49dfa7949894a59f87e358e0e",
+      "suite": "animation-tests",
+      "saved_log": "releases/resource_next_20261022/validation/animation-tests_sprite.log",
+      "reused_from": {
+        "version": "5.3",
+        "validation": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation.json",
+        "saved_log": "E:\\Codex\\Work\\publish-5.3-20261022-183718\\repository\\5.3project\\releases\\animation_cache_20261022\\validation\\animation-tests_sprite.log",
+        "saved_log_sha256": "baf11bd3c30ac0b281c9accb893a6292e66fc2a49dfa7949894a59f87e358e0e"
+      },
+      "current_verification": "Unchanged source/input and saved-log SHA256 reverified; not reexecuted.",
+      "stimuli_base_dir": "E:\\Codex\\Downloads\\qiansai\\5.4project\\releases\\audio_pitch_20261022\\validation"
+    }
+  ],
+  "physical_trials": [
+    {
+      "record": "E:\\Codex\\Work\\resource-next-20261022-221039\\build-a-r1\\builds\\board_a\\result.json",
+      "sha256": "5d78f6d533064b27231e0c1eb6b4b24ca75a40c65bb0bae57e32104524a125a5",
+      "board": "a",
+      "status": "passed",
+      "resources": {
+        "lut": 16441,
+        "reg": 11425,
+        "bram": 60,
+        "bram32k": 14,
+        "dsp": 27
+      },
+      "timing_ns": {
+        "SWNS": 0.171,
+        "STNS": 0.0,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      },
+      "seed": "31"
+    },
+    {
+      "record": "E:\\Codex\\Work\\resource-next-20261022-221039\\build-b-r2\\builds\\board_b\\result.json",
+      "sha256": "d0ff0764b0fa31c695704a8ae238889ba821b580ef320036c9cd6c45b993edb4",
+      "board": "b",
+      "status": "failed",
+      "resources": {
+        "lut": 14738,
+        "reg": 9758,
+        "bram": 44,
+        "bram32k": 12,
+        "dsp": 14
+      },
+      "timing_ns": {
+        "SWNS": -0.278,
+        "STNS": -0.509,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      },
+      "seed": "29"
+    },
+    {
+      "record": "E:\\Codex\\Work\\resource-next-20261022-221039\\build-b-r2-seed23\\builds\\board_b\\result.json",
+      "sha256": "20634f75749fab1eab1cdb3fff3d2ee0ef420bdaee74f9e834c5bb3a237c7a0c",
+      "board": "b",
+      "status": "passed",
+      "resources": {
+        "lut": 14761,
+        "reg": 9768,
+        "bram": 44,
+        "bram32k": 12,
+        "dsp": 14
+      },
+      "timing_ns": {
+        "SWNS": 0.107,
+        "STNS": 0.0,
+        "HWNS": 0.021,
+        "HTNS": 0.0
+      },
+      "seed": "23"
+    },
+    {
+      "record": "E:\\Codex\\Work\\resource-next-20261022-221039\\build-b-r2-seed31\\builds\\board_b\\result.json",
+      "sha256": "f904b68e3404ba9a06f89aaa698046301b7a3e118fac34beac5ef692d615766b",
+      "board": "b",
+      "status": "passed",
+      "resources": {
+        "lut": 14818,
+        "reg": 9773,
+        "bram": 44,
+        "bram32k": 12,
+        "dsp": 14
+      },
+      "timing_ns": {
+        "SWNS": 0.112,
+        "STNS": 0.0,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      },
+      "seed": "31"
+    }
+  ],
+  "package_relocation": {
+    "a": {
+      "file": "src/board_a/td_project/PHOTO_BOARD_A.al",
+      "build_sha256": "7cde756e86a490a808cf76313a306c486a18340482f285847e158d7c3f81f9e3",
+      "packaged_sha256": "badc7052ab80e108cdd714be9be4b100726383a2c8d8a76871c95982e5174464",
+      "scope": "Project Path attribute relocation and line-ending normalization only."
+    },
+    "b": {
+      "file": "src/board_b/td_project/PHOTO_BOARD_B.al",
+      "build_sha256": "7a00e4a0f88b858b478d0a7214a76a3c34b7a2c7198acab4a5b111b3fe7b74aa",
+      "packaged_sha256": "e669396a7f90e8c29351e0808009c20c0ea04526136dafc683ce14fd4f9b95ed",
+      "scope": "Project Path attribute relocation and line-ending normalization only."
+    }
+  },
+  "nonfunctional_source_changes": {
+    "common/audio_ui/saixian_audio_pitch.v": {
+      "build_sha256": "8619848ac7f88dbb556bc6dceb9e66b3ffd3742a3c13eae38b04fb4f35957952",
+      "packaged_sha256": "dd1cdedcc9c1309023a3f56f807e5f3e5bed3aa85d3f9f68cf4746e4e3cf611d",
+      "scope": "Exactly one whole-line comment replacement; all functional RTL bytes unchanged.",
+      "original_comment": "// Filtered stereo retains 4096 frames; fixed 1152-frame dry delay needs 2048.",
+      "packaged_comment": "// Filtered stereo retains 4096 frames; the compact 1152-frame dry delay retains 1153."
+    }
+  },
+  "model_stimuli_sha256": {
+    "releases/resource_next_20261022/validation/native_pitch_stimuli/input.hex": "35b579eaf625dc2058450c34e57062381ef0a71ab336f932f6d089e95471f4de",
+    "releases/resource_next_20261022/validation/native_pitch_stimuli/modes.hex": "2dd06909d4239bae4f30d85aa97a1652e8338165cd8959046211a4019bad8fa3",
+    "releases/resource_next_20261022/validation/native_pitch_stimuli/fir_q15.npy": "d88eccf61a8da0b06be5c52a69fd9642bd8929b55a40c4c71112ed85a94f12b6",
+    "releases/resource_next_20261022/validation/native_pitch_stimuli/rtl_output.txt": "56e59e2bac567aace16a446405fba51296e8eb8b9a45037dcd54f0ec136634b9"
+  },
+  "architecture": {
+    "graphics": "Exact nine-bit-low reciprocal ROM plus sparse upper-bit decoder. Full-rate 1024x32 cache tail uses four RAM9Ks instead of two half-used RAM32Ks. Saturating alpha uses exact bounded codes.",
+    "audio": "Exact 1152-frame dry delay retains 1153 stereo frames in one native true-dual RAM32K head and one byte-wide true-dual RAM9K tail. One shared post-selection MAC subtractor; unreachable old linear-interpolation operations removed.",
+    "file_header": "One equality bit per fixed DLT header byte; file length and payload CRC remain full 32-bit fields. Exact reset/partial/out-of-order-write behavior retained.",
+    "A_external_image_slots": 3,
+    "B_external_image_slots": 2,
+    "RGB_format": "RGB565",
+    "HDMI_on": "A",
+    "touchscreen_on": "A",
+    "pinout_changed": false,
+    "SPI_wire_format_changed": false,
+    "TF_driver_changed": false,
+    "precision_reduced": false
+  },
+  "research_sources": [
+    {
+      "url": "https://anlogic.oss-cn-shanghai.aliyuncs.com/web_doc/%E5%B7%A5%E5%85%B7%E4%B8%8E%E8%B5%84%E6%96%99%E4%B8%8B%E8%BD%BD/%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/EG4/%E6%95%B0%E6%8D%AE%E6%89%8B%E5%86%8C/DS301_EG4S20_Datasheet_en.pdf",
+      "use": "Device block-memory capacities/modes; confirm actual port mapping using local vendor models and routed reports. No borrowed savings claim."
+    }
+  ],
+  "firmware_layout": "canonical_only",
+  "firmware_files": {
+    "A": {
+      "path": "../PHOTO_BOARD_A_5_6.bit",
+      "sha256": "e50b9a2093b9f90d20c53c788146a00a05322c8b015b59a39ba110a4bde37056"
+    },
+    "B": {
+      "path": "../PHOTO_BOARD_B_5_6.bit",
+      "sha256": "c01c21c29c979be425378c03d9560e5aed64b300c9f02e59c664c9875a7d717c"
+    }
+  },
+  "files_sha256": {
+    "arithmetic_and_capacity_proof.json": "156670eee6b7a19a4c52115eca769fd72b34749cc561ecc84c1068f484ad017b",
+    "board_a_build.json": "09699bf31bd50372e7052235057dc734b6f9f7ec5a3af54c4d572a57fa5da1bd",
+    "board_b_build.json": "11edb9ab32b61d1738a1071e83f0ff05b6df50d55bb3374dd5f5d53d1eeb5a82",
+    "PHOTO_BOARD_A_gate.area": "4e74ac138751cb771451db3a9dfc53f7a2940f310b9aca87d7199c072b170df8",
+    "PHOTO_BOARD_A_phy.area": "66551e9ff39066fc9ee376b7e86be68233e199ac4afab496d1b29ae7831703a2",
+    "PHOTO_BOARD_A_pr.timing": "2a87594f6abe668a9f629dc3bbd99624fffeb9a3140661918ef4e3d0498ac09c",
+    "PHOTO_BOARD_B_gate.area": "5f50717526e87cf1cc90c587bce81185f177d5d77a63cb8fc1c070013cddf323",
+    "PHOTO_BOARD_B_phy.area": "f756cfdc35ef9b353fec98c92e3d00c86b76b21965c378bf6a4022533ff1c7d9",
+    "PHOTO_BOARD_B_pr.timing": "9688d179d783d3ad623a33f8e9bef18ffd3baa8dc54b9acc2fe573c143fb75a0",
+    "validation/a-tests-r1_bandwidth_metal.log": "b741b097b5b26466938afe990ba6291a571bfb26930fe94ad25c6f28447c3802",
+    "validation/a-tests-r1_bandwidth_tunnel.log": "c1e5b631ad84684c23c137680a065fe723eb80be5b0df29654a00c545a28c630",
+    "validation/a-tests-r1_bandwidth_water.log": "15e4a35116f3b0b40640cf2ebb39c5e4b65f9e330ea4c3abc9b0ac5d5e8cdd08",
+    "validation/a-tests-r1_cache.log": "1c484ff8846f9390380dec65c772ca920a7b9edcfcc6489e71822dd7cb6aee16",
+    "validation/a-tests-r1_compact.log": "135890e8853e2ccea06af0120d6764f2cafcc5e00a19efae90bcc4d3db77d6e1",
+    "validation/a-tests-r1_dsp_effects.log": "9f3794ffbe5b19ec3263627395113d4d4f1c5434824b5abe6ac8fa05bb3e095b",
+    "validation/a-tests-r1_dsp_math.log": "50a5be709dd02a8c42f06f4dd614021838230dffd947baa6574a94140fb98e79",
+    "validation/a-tests-r1_effects.log": "b53986eea8b73c8c44ab930bc866e8afce79a183a6a5336902ea6dffa83fc5b6",
+    "validation/a-tests-r1_math.log": "fd061a05f3a061d504e8cd476a45c4271367362b81d0b0f68233733851e7d1ca",
+    "validation/a-tests-r1_scanout_native.log": "61a694b68247116a492fab24f632996f2f6f5ee3e3550bac6f03bfc9938c14bd",
+    "validation/animation-tests_blend.log": "61336d2465929e59f67d52a77c4dab6840f327b2f5163207b8a97a870e85d610",
+    "validation/animation-tests_blend_dsp.log": "eb10567fb299560d764b7f43cc8e9f92956f03044ee2766001c46148922d988b",
+    "validation/animation-tests_fast_processing.log": "ce902baae46679e3cc72e40496dccb54fc720da4a732d3cefb7ac23b8aac2027",
+    "validation/animation-tests_page_link.log": "e84a68f8263341627fd48d65379846edc80fdf6a4010e2d75eaddd00c919896b",
+    "validation/animation-tests_spi_contract.log": "b8cca9c6963ca4cd32e32b2de08dbb4f89102f794ffab6e20480f89859594d1c",
+    "validation/animation-tests_sprite.log": "baf11bd3c30ac0b281c9accb893a6292e66fc2a49dfa7949894a59f87e358e0e",
+    "validation/b-tests-r2_flow.log": "db0df48e465ef716c06316bb4b53feceed10f93e80d152d51c4fb13fc7c4006b",
+    "validation/b-tests-r2_native_model.log": "17e5216bcd679ea7f40d56c1e3f20e7dc2f739fc9ec3aecdd29addf0276c8653",
+    "validation/b-tests-r2_transport.log": "4a3737018ce0ef526dccfa47d095b9ef502696df086a6d028ba1945dd22a9d1e",
+    "validation/b-tests-r2_transport_compact.log": "1778e6ffda7a21e6e66339cea8a529c40db4a2522bc5c33182503030cba669c4",
+    "validation/cache-tests-r2_two_slot_cache.log": "db3e715333fc4282cb3e77e185bb389a58f3334e6dd9638e4788afa28e67c399",
+    "validation/control-tests-r2_keys.log": "2d4a2169489d8930b51b2886306d081d9d639e27ff7fa2f1312d7510577f7477",
+    "validation/control-tests-r2_volume.log": "dc506b9d4445397e95b7161bb913ac25fcbf074a4c6e85c58b1b8de917d548bd",
+    "validation/delivery-audio-proofs_compact_pcm_native.log": "2e89a71f682f5d89f54465f712316128b1c5e7ca5fdcca5f66a891626bc47a71",
+    "validation/delivery-audio-proofs_repair_native.log": "c769d8ad7808603cfa5ea51fb2542051c10a0e42b65fad3e51e2eefcd71cef32",
+    "validation/dlt-tests-r2_guard.log": "9642d4e8323cab345e388def1946dd2e01abb2cbf2f2d4c323e743b13db96ea2",
+    "validation/dlt-tests-r2_reader.log": "787a52752ea839d43daab251bd4cc976cd306b471b5c066850f31fee99371f4e",
+    "validation/fx-tests_controls.log": "47cb58b03b02be48e0961132a01cd9a55912d04b0de32496dc473dad75ad9007",
+    "validation/fx-tests_scene.log": "8c7befb85f79b3fb5147f17a7650175dd032f182261f4b87d71c8266ae06de6b",
+    "validation/fx-tests_transition.log": "721dd0ff949b767fc27e7427f781f4e2276957eedd6a45efd08a5495299dd46c",
+    "validation/new-unit-proofs_behavioral_dry.log": "1444d1fbf7ca37af48a6a90a42f39195069cba0aee83fcecf3c97e7d0a640223",
+    "validation/new-unit-proofs_header.log": "b18dc9e1ff356eaa6e95e246a1ee0a78ec592ce2d0fec7331158ba1d80390288",
+    "validation/new-unit-proofs_native_dry.log": "74864010dac63dad007160f92cf988cc29165141845ad63b2fc92efea8a57816",
+    "validation/new-unit-proofs_native_geometry_memory.log": "eb6786a1c45dd587bbeda93859edb784894286b61cdef92973c7671d159df132",
+    "validation/resource-tests_av_link.log": "c149958009e1a1616408da7320682bf1717b63a1452fe7dba6f41c4efc516a6a",
+    "validation/resource-tests_delay.log": "966c5768dc2e830417ec5b013b4ee773daf617b6ec76f6545585552060236106",
+    "validation/resource-tests_delay_vendor.log": "966c5768dc2e830417ec5b013b4ee773daf617b6ec76f6545585552060236106",
+    "validation/resource-tests_hybrid_fifo.log": "b52f914685cee49017c549152468361fbf501f3b0d8e6946139c4e4f23f6298b",
+    "validation/resource-tests_metadata.log": "36e6ca8d7a699011c79f8e89800a8b6c6d832a084c79bf7ff366bf3520106aa1",
+    "validation/resource-tests_typed_protocol.log": "51ebdbe696cf4272707f0d03de99677470687711b506bf0f1168f184c74935de",
+    "validation/rgb565-tests_rgb565_award_link.log": "7a8be9e3ac0d5ac9fd7692d390d3053dcdc7be7e810226979a16b9a408bf870f",
+    "validation/rgb565-tests_rgb565_award_sdram.log": "d3feecbdb1d159751fc282f1e1a2d53788017ca2cb5d92c9a0644ef90dfe4449",
+    "validation/rgb565-tests_rgb565_equivalence.log": "1ddb3f8b7b4fe29dcdfe8992f7fff7393b28bae351e261c872e4a518bbe9432b",
+    "validation/rgb565-tests_rgb565_link_abort.log": "34d31f65405d4432de60282ab8c38d7d3d558fbf0d399b9e8c991fc59d721095",
+    "validation/rgb565-tests_rgb565_scaler.log": "7faa7e7b1e77fc34ecd4e929dd4ae3f7465510c0aa4197bbf21e8f45fcdcfde3",
+    "validation/rgb565-tests_rgb565_settings.log": "9530cc0c5a820bfe6c0975be820afb2a5e3d0b824854927290c08ec155199c80",
+    "validation/thumbnail-tests_award_control.log": "f10b7ac2f0e3315356c738e89033cfb64c5b2d9c9afa8b5de40862ddb7ff8f84",
+    "validation/thumbnail-tests_award_width.log": "26be63e0594e2a8d2bc8dcc11925b796900b2c703ad647f7f39bbfad04876691",
+    "validation/thumbnail-tests_blanking.log": "71efd7bd2fbacd41869aadf07f58e97c9216d67378636e25210387081fae10ee",
+    "validation/thumbnail-tests_control.log": "8c2d737de37ea6900534109d42accb2879394f0adfc98ac0e507ae4e7e1a1ab8",
+    "validation/thumbnail-tests_edge_eram.log": "441ac52d4eea4c0b0e2fa2af67c223b6dcbc561ebe8b8462c33b2e0ea84d5ed7",
+    "validation/thumbnail-tests_memory.log": "5854278c9ba4c01d2a1df08ad0bdf7dc2956532e99d906f68eadbf74903c896a",
+    "validation/thumbnail-tests_menu_geometry.log": "f845bf1ae310dd533d4dd5baf969cfa972390edcbfaa0a12e61d64ad84bbd5b6",
+    "validation/thumbnail-tests_overlay.log": "63eb1e4b1b6de6d2419a69b15fc41a449ad4bffd3da90031cbbbc9793d837460",
+    "validation/thumbnail-tests_phase.log": "e0788c0982dd79c8e41077a9e78ce630d19daea097116088127229b1794b3ea5",
+    "validation/thumbnail-tests_touch.log": "dd56642c64f8d853443cffd0267b48b9f7e7a311f02ab3f07e780b786a0d2451",
+    "validation/thumbnail-tests_vendor.log": "5854278c9ba4c01d2a1df08ad0bdf7dc2956532e99d906f68eadbf74903c896a",
+    "validation/uart-tests_tb_v4_audio_rate.log": "5afee3da9e89834b5bd08df93c17df0a05d0c2b6812f9ad4fadaab8cfc9b3630",
+    "validation/uart-tests_tb_v4_uart_equivalence.log": "2687b99b8d9783cce6c17047b29c7b1d5df5d7a207c27393689999d5f46122c6",
+    "validation/native_pitch_stimuli/fir_q15.npy": "d88eccf61a8da0b06be5c52a69fd9642bd8929b55a40c4c71112ed85a94f12b6",
+    "validation/native_pitch_stimuli/input.hex": "35b579eaf625dc2058450c34e57062381ef0a71ab336f932f6d089e95471f4de",
+    "validation/native_pitch_stimuli/modes.hex": "2dd06909d4239bae4f30d85aa97a1652e8338165cd8959046211a4019bad8fa3",
+    "validation/native_pitch_stimuli/rtl_output.txt": "56e59e2bac567aace16a446405fba51296e8eb8b9a45037dcd54f0ec136634b9"
+  }
+}

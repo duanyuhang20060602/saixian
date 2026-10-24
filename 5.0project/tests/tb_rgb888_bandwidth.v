@@ -45,7 +45,7 @@ always @(posedge pixel_clk)if(running)begin
  if(need)begin if(empty)misses=misses+1;else pops=pops+1;end
  if(x==1649)begin x=0;if(y==749)begin y=0;frames=frames+1;end else y=y+1;end else x=x+1;
 end
-frame_read_write dut(.high_color(1'b1),.rst(rst),.mem_clk(mem_clk),.Sdr_init_done(1'b1),.Sdr_init_ref_vld(refresh_active),.Sdr_busy(1'b0),
+frame_read_write dut(.rst(rst),.mem_clk(mem_clk),.Sdr_init_done(1'b1),.Sdr_init_ref_vld(refresh_active),.Sdr_busy(1'b0),
  .App_rd_en(rd),.App_rd_addr(ra),.Sdr_rd_en(pipe_valid[11]),.Sdr_rd_dout(pipe_data[11]),
  .read_clk(pixel_clk),.read_req(read_req),.read_req_ack(ack),.read_finish(finish),
  .read_addr_0(21'd0),.read_addr_1(21'd691200),.read_addr_2(21'd0),.read_addr_3(21'd0),.read_addr_index(2'd0),.read_len(21'd691200),

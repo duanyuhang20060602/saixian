@@ -3,7 +3,7 @@ module ip_scaler_case #(parameter SW=64,SH=32,PACE=1,PIXEL_PERIOD=600,ROWS=SH,HI
  reg clk=0;always #5 clk=~clk;
  reg rst=1,start=0,valid=0;reg [23:0] rgb=0;wire ov,busy,fault;wire [23:0] pixel;
  saixian_load_scaler #(.OUT_WIDTH(1280),.OUT_HEIGHT(720),.VERTICAL_PERIOD(PACE)) dut(
-  .clk(clk),.rst(rst),.start(start),.high_color(HIGH!=0),.source_width(16'(SW)),.source_height(16'(SH)),
+  .clk(clk),.rst(rst),.start(start),.source_width(16'(SW)),.source_height(16'(SH)),
   .pixel_valid(valid),.pixel_in(rgb),.pixel_out_valid(ov),.pixel_out(pixel),.busy(busy),.fault(fault));
  function [23:0] source_rgb;
   input integer x,y;integer r,g,b;
@@ -18,7 +18,7 @@ module ip_scaler_case #(parameter SW=64,SH=32,PACE=1,PIXEL_PERIOD=600,ROWS=SH,HI
    c0=l[15:8];c1=h[15:8];g=c0+(((c1-c0)*w)>>>8);
    c0=l[7:0];c1=h[7:0];b=c0+(((c1-c0)*w)>>>8);
    p565={5'(r>>3),6'(g>>2),5'(b>>3)};
-   horizontal=HIGH ? {r[7:0],g[7:0],b[7:0]}:{p565[15:11],p565[15:13],p565[10:5],p565[10:9],p565[4:0],p565[4:2]};
+   horizontal={p565[15:11],p565[15:13],p565[10:5],p565[10:9],p565[4:0],p565[4:2]};
   end
  endfunction
  function [23:0] expected;
@@ -54,9 +54,9 @@ module ip_scaler_case #(parameter SW=64,SH=32,PACE=1,PIXEL_PERIOD=600,ROWS=SH,HI
  end
 endmodule
 module tb;
-wire a,b;
+wire a;
 ip_scaler_case #(.SW(640),.SH(360),.PACE(1),.PIXEL_PERIOD(12),.ROWS(360),.HIGH(0)) low(a);
-ip_scaler_case #(.SW(640),.SH(360),.PACE(1),.PIXEL_PERIOD(12),.ROWS(360),.HIGH(1)) high(b);
-initial begin wait(a && b);$finish;end
+
+initial begin wait(a);$finish;end
 initial begin #100000000;$fatal(1,"IP scaler timeout");end
 endmodule

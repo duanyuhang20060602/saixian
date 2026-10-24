@@ -37,5 +37,8 @@
   "../../../common/photo_sd/spi_master.v",
   "../../../common/audio_ui/saixian_audio_visualizer.v",
   "../../../common/photo_av_metadata.v",
-  "../../../common/fluid/water_pack.v"
+  "../../../common/fluid/water_pack.v",
+  "../../../common/audio_ui/saixian_audio_pitch.v",
+  "../../../common/photo_audio_pitch_b.v",
+  "../../../common/photo_switch_timing.v"
 ]

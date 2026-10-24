@@ -39,10 +39,10 @@ wire [31:0] tx_crc,rx_crc;
 wire [15:0] #3 data_at_a=link_data;
 wire #3 valid_at_a=valid,sof_at_a=sof,eof_at_a=eof;
 wire #(READY_DELAY) ready_at_b=ready;
-photo_link_sender #(.FRAME_PIXELS(PIXELS),.ENABLE_CRC(1)) tx(.high_color(HC!=0),.clk(lc),.rst(rst),.start(start),.abort(1'b0),
+photo_link_sender #(.FRAME_PIXELS(PIXELS),.ENABLE_CRC(1)) tx(.clk(lc),.rst(rst),.start(start),.abort(1'b0),
  .data(processed_data),.empty(processed_empty),.read_ack(rack_pipe[2]),.link_ready(ready_at_b),.read_req(rreq),.read_en(re),
  .link_data(link_data),.link_valid(valid),.link_sof(sof),.link_eof(eof),.done(sent),.frame_crc(tx_crc));
-photo_link_receiver #(.FRAME_PIXELS(PIXELS),.ENABLE_CRC(1)) rx(.high_color(HC!=0),.clk(ac),.rst(rst),.arm(arm),.abort(1'b0),
+photo_link_receiver #(.FRAME_PIXELS(PIXELS),.ENABLE_CRC(1)) rx(.clk(ac),.rst(rst),.arm(arm),.abort(1'b0),
  .data(data_at_a),.valid(valid_at_a),.sof(sof_at_a),.eof(eof_at_a),.ready(ready),
  .write_req(wreq),.write_ack(wack_pipe[2]),.full(full),.write_en(we),.write_data(packed_word),
  .finish_toggle(finish),.done(complete),.fault(fault),.frame_crc(rx_crc));

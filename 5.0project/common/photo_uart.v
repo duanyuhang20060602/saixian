@@ -1,9 +1,9 @@
 `timescale 1ns/1ps
 // 24-byte frame: A5 5A, 20-byte big-endian payload, CRC16-CCITT.
 // All messages use the same layout; receivers discard bad CRC/framing/timeout.
-module photo_uart #(parameter CLK_HZ=75000000, BAUD=115200)(
+module photo_uart #(parameter CLK_HZ=75000000, BAUD=115200,PULSE_PAYLOAD=0)(
  input clk,rst,rx, output tx, input send,input [159:0] message,
- output busy,output reg received,output reg [159:0] received_message,
+ output busy,output reg received,output [159:0] received_message,
  output reg bad_packet
 );
 localparam DIV=(CLK_HZ+BAUD/2)/BAUD;
@@ -19,14 +19,35 @@ reg [4:0] tx_pos;reg [159:0] tx_payload;reg [15:0] tx_crc;
 reg tx_active;
 assign busy=tx_active;
 assign tx=tx_active ? tx_bits[0] : 1'b1;
-function [7:0] get_byte;
- input [4:0] pos;input [159:0] payload;input [15:0] check;
- begin
-  if(pos==0)get_byte=8'ha5;else if(pos==1)get_byte=8'h5a;
-  else if(pos==22)get_byte=check[15:8];else if(pos==23)get_byte=check[7:0];
-  else get_byte=payload[159-(pos-2)*8 -:8];
- end
-endfunction
+// Fixed byte slices preserve constant packet fields and share TX/CRC selection.
+reg [7:0] next_byte;
+always @* begin
+ case(tx_pos)
+  0:next_byte=8'h5a;
+  1:next_byte=tx_payload[159:152];
+  2:next_byte=tx_payload[151:144];
+  3:next_byte=tx_payload[143:136];
+  4:next_byte=tx_payload[135:128];
+  5:next_byte=tx_payload[127:120];
+  6:next_byte=tx_payload[119:112];
+  7:next_byte=tx_payload[111:104];
+  8:next_byte=tx_payload[103:96];
+  9:next_byte=tx_payload[95:88];
+  10:next_byte=tx_payload[87:80];
+  11:next_byte=tx_payload[79:72];
+  12:next_byte=tx_payload[71:64];
+  13:next_byte=tx_payload[63:56];
+  14:next_byte=tx_payload[55:48];
+  15:next_byte=tx_payload[47:40];
+  16:next_byte=tx_payload[39:32];
+  17:next_byte=tx_payload[31:24];
+  18:next_byte=tx_payload[23:16];
+  19:next_byte=tx_payload[15:8];
+  20:next_byte=tx_payload[7:0];
+  21:next_byte=tx_crc[15:8];
+  default:next_byte=tx_crc[7:0];
+ endcase
+end
 always @(posedge clk or posedge rst)begin
  if(rst)begin tx_bits<=10'h3ff;tx_count<=0;tx_bit<=0;tx_pos<=0;tx_payload<=0;tx_crc<=16'hffff;tx_active<=0;end
  else if(!tx_active)begin
@@ -39,9 +60,9 @@ always @(posedge clk or posedge rst)begin
    else begin
     tx_pos<=tx_pos+1'b1;
     if(tx_pos>=1 && tx_pos<21)begin
-     tx_crc<=crc_byte(tx_crc,get_byte(tx_pos+1'b1,tx_payload,tx_crc));
+     tx_crc<=crc_byte(tx_crc,next_byte);
     end
-    tx_bits<={1'b1,get_byte(tx_pos+1'b1,tx_payload,tx_crc),1'b0};
+    tx_bits<={1'b1,next_byte,1'b0};
    end
   end else begin tx_bit<=tx_bit+1'b1;tx_bits<={1'b1,tx_bits[9:1]};end
  end else tx_count<=tx_count+1'b1;
@@ -63,9 +84,13 @@ always @(posedge clk or posedge rst)begin
  end
 end
 reg [4:0] rx_pos;reg [159:0] rx_payload;reg [15:0] rx_crc;reg [7:0] check_hi;
+// Control consumers read only on the verified received pulse. Removing
+// the second packet bank preserves CRC gating and full-duplex UART timing.
+reg [159:0] published_message;
+assign received_message=PULSE_PAYLOAD ? rx_payload:published_message;
 reg [TIMEOUT_BITS-1:0] timeout;
 always @(posedge clk or posedge rst)begin
- if(rst)begin received<=0;received_message<=0;bad_packet<=0;rx_pos<=0;rx_payload<=0;rx_crc<=16'hffff;check_hi<=0;timeout<=0;end
+ if(rst)begin received<=0;published_message<=0;bad_packet<=0;rx_pos<=0;rx_payload<=0;rx_crc<=16'hffff;check_hi<=0;timeout<=0;end
  else begin
   received<=0;bad_packet<=0;
   if(rx_pos==0 || byte_valid)timeout<=0;else timeout<=timeout+1'b1;
@@ -79,7 +104,7 @@ always @(posedge clk or posedge rst)begin
    else if(rx_pos==22)begin check_hi<=rx_byte;rx_pos<=23;end
    else begin
     rx_pos<=0;
-    if({check_hi,rx_byte}==rx_crc)begin received<=1;received_message<=rx_payload;end
+    if({check_hi,rx_byte}==rx_crc)begin received<=1;if(!PULSE_PAYLOAD)published_message<=rx_payload;end
     else bad_packet<=1;
    end
   end

@@ -45,7 +45,7 @@ assign packed_output=effect_plane ? aux_output:native_output;
 water_pack auxiliary(.clk(clk),.rst(rst || start || abort),.write_req(1'b0),
  .pixel_valid(adjusted_valid[7] && !high_color),.pixel(styled),.full(1'b0),
  .valid(),.data(),.overflow(),.small_valid(aux_push),.small_data(aux_output));
-photo_color_pack packing(.clk(clk),.rst(rst),.clear(start || abort),.high_color(high_color),
+photo_color_pack_frozen packing(.clk(clk),.rst(rst),.clear(start || abort),.high_color(high_color),
  .valid(adjusted_valid[7]),.rgb(styled),.word_valid(native_push),.word_data(native_output),.aligned());
 always @(posedge clk or posedge rst)begin
  if(rst)begin ack_meta<=0;ack_sync<=0;end

@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
-module fifo_pair #(parameter DEPTH=2048,AW=11)(input clk,rst,we,re,input [31:0] wd,output reg done=0);
+module fifo_pair #(parameter DEPTH=2048,AW=11,RAM_HEAD=DEPTH)(input clk,rst,we,re,input [31:0] wd,output reg done=0);
 wire [31:0] data,ref_data;wire empty,full,ref_empty,ref_full;wire [AW:0] used,ref_used;
-photo_audio_fifo #(.DEPTH(DEPTH),.AW(AW),.RAM32_HEAD(DEPTH)) dut(clk,rst,we,wd,re,data,empty,full,used);
+photo_audio_fifo #(.DEPTH(DEPTH),.AW(AW),.RAM32_HEAD(RAM_HEAD)) dut(clk,rst,we,wd,re,data,empty,full,used);
 photo_audio_fifo_ref #(.DEPTH(DEPTH),.AW(AW)) ref_dut(clk,rst,we,wd,re,ref_data,ref_empty,ref_full,ref_used);
 integer reads=0,checks=0;
 always @(posedge clk)begin
@@ -18,9 +18,10 @@ end
 endmodule
 module tb;
 reg clk=0,rst=1,we=0,re=0;always #5 clk=~clk;
-reg [31:0] random_state=32'h8c59d317;wire a_done,b_done;
+reg [31:0] random_state=32'h8c59d317;wire a_done,b_done,c_done;
 fifo_pair a(clk,rst,we,re,random_state,a_done);
 fifo_pair #(.DEPTH(8192),.AW(13)) b(clk,rst,we,re,random_state,b_done);
+fifo_pair #(.DEPTH(8192),.AW(13),.RAM_HEAD(4096)) c(clk,rst,we,re,random_state,c_done);
 integer n;
 initial begin
  repeat(4)@(negedge clk);rst=0;
@@ -30,6 +31,6 @@ initial begin
   re=n<10000 ? 0:n<20000 ? 1:random_state[4];
   rst=n>20000 && n%30017==7;
  end
- wait(a_done && b_done);$finish;
+ wait(a_done && b_done && c_done);$finish;
 end
 endmodule

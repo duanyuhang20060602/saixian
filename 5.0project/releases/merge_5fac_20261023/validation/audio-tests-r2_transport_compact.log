@@ -1,0 +1,2 @@
+PASS dual 75/100MHz SPI 9101 exact payloads, 5252 playback ticks, 9798 effect frames; five modes, typed cues, mute, boost, repair, background restart; zero underflows
+E:\Codex\Work\merge-5_6-5fac-20261023-150502\project\tests\tb_pitch_transport_compact.v:90: $finish called at 142554840000 (1ps)

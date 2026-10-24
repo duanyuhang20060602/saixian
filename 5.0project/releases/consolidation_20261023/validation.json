@@ -1,0 +1,51 @@
+{
+  "public_version": "5.0",
+  "build_id": "thumbnail-hq-20261023",
+  "operation": "Consolidate the saved current design under one fixed public label.",
+  "original_snapshot": "E:\\Codex\\Work\\project-consolidation-20261023-165325\\saved_current",
+  "original_snapshot_files": 1187,
+  "functional_files_verified": 493,
+  "functional_design_changed": false,
+  "firmware_bytes_changed": false,
+  "recompiled": false,
+  "source_snapshot_manifest_sha256": "3faad0a5323a4686c65ccc45d3f39fde414cf45704edc25298286020ff3d148b",
+  "canonical_firmware": {
+    "releases/PHOTO_BOARD_A_5_0.bit": "fb725dc65ab7fe5d06d744e5d4aa7a673d36b3383c7177599947a32f4712114c",
+    "releases/PHOTO_BOARD_B_5_0.bit": "d91a108e2cfab9cd17ac5c5ddc699f8c70697a4281b32d1acc34b3d41c8bbe25"
+  },
+  "package_relocation": {
+    "a": {
+      "file": "src/board_a/td_project/PHOTO_BOARD_A.al",
+      "source_snapshot_sha256": "1d93bfe1112c05d70fae9457b599462982b04060bacbce785a155ebe38cdf967",
+      "packaged_sha256": "0e69338b2a6565a34d2c6b3ec7872ef7bf5eed37a4ed8bcca875bdb52cb2fa6f",
+      "scope": "Project Path attribute and line endings only."
+    },
+    "b": {
+      "file": "src/board_b/td_project/PHOTO_BOARD_B.al",
+      "source_snapshot_sha256": "8294ba052b1387bccb1f8bced6861f877b5ae4f0554e9075016fa036513ba976",
+      "packaged_sha256": "f4dbd41aaf6ed767b5e071d72cb12137959340559c2f5caaecead2a66c4aea8e",
+      "scope": "Project Path attribute and line endings only."
+    }
+  },
+  "metadata_or_packaging_changes": [
+    "VERSION",
+    "build_saixian.ps1",
+    "releases/thumbnail_hq_20261023/board_a_build.json",
+    "releases/thumbnail_hq_20261023/board_b_build.json",
+    "releases/thumbnail_hq_20261023/validation.json",
+    "src/board_a/td_project/PHOTO_BOARD_A.al",
+    "src/board_b/td_project/PHOTO_BOARD_B.al",
+    "tools/stage_animation_cache.py",
+    "tools/stage_audio_pitch.py",
+    "tools/stage_resource_allocation.py",
+    "tools/stage_rgb565.py",
+    "tools/verify_saved_project.py"
+  ],
+  "disabled_historical_packagers": [
+    "stage_resource_allocation.py",
+    "stage_rgb565.py",
+    "stage_animation_cache.py",
+    "stage_audio_pitch.py"
+  ],
+  "hardware_validation": "pending, unchanged from the qualified source project"
+}

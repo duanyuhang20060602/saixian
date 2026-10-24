@@ -1,0 +1,40 @@
+黄金浮雕奖杯 / 5.0 / gold-relief-20261023
+
+烧录与素材
+1. A 板使用 releases/PHOTO_BOARD_A_5_0.bit，B 板使用 releases/PHOTO_BOARD_B_5_0.bit。
+2. 把 examples/TF卡素材/RELIEF720.DLT 复制到 B 板现有 TF 卡，保留原 AWARD720.DLT、照片和音频。
+3. 使用原有的 TF 卡制作/格式及两板连接方式。文件必须作为完整文件写入，不能只重命名其他格式。
+4. 两板重新上电，等待目录扫描。新旧奖杯是两个独立素材，可以同时放在一张卡上。
+
+操作（照片轮播界面）
+短按 K4：照片 → 黄金浮雕奖杯 → 原彩带奖杯 → 照片。
+进入黄金浮雕奖杯后默认自动旋转，自动光源左右移动。
+K2 或原有串口屏暂停/继续：暂停旋转和自动光源。
+串口屏触摸板：按住并移动可改变光源方向；暂停时仍可调整光源。
+K1：返回照片并前进到下一张。
+K4 长按仍沿用原有比赛启动功能。设置界面的按键含义沿用原设计。
+仅保留原彩带奖杯时，目录扫描完成后 K4 会直接进入原彩带奖杯；主动请求不存在的奖杯素材会提示未找到。
+
+可选串口屏按钮指令（原 115200 / 8N1 协议）
+黄金浮雕奖杯切换：55 32 01 00 FF FF FF
+原彩带奖杯切换：55 32 00 00 FF FF FF
+这些是新增可用指令，现有串口屏无需重做即可使用实体 K4。
+
+实现边界
+HDMI 输出沿用 1280×720。奖杯旋转素材含 24 个角度，每个角度 192×192 索引像素，放大到 576×576；默认每 5 个显示帧换角度，约 2 秒一圈。
+背景保留全分辨率表面方向。FPGA 在显示流水线上逐像素计算方向光和高光，触摸可实时改变光照。
+旋转视角预先制作，FPGA 承担视角调度、实时表面光照及显示合成；这是有实时交互的素材渲染，不是完整三维几何渲染器。
+调色板把颜色与表面方向联合编码；只缓存调色板和两条奖杯扫描行，沿用原有 SDRAM 和链路，不增加第二张 TF 卡。
+新旧奖杯互斥播放，共用一份 512×32 位缓存：原彩带模式用作扫描行，新浮雕模式用作材质调色板。A 板因此释放两块 9K RAM，由 64/64 降到 62/64。
+背景已去掉外框和放射装饰线，奖杯无宝石，以黄金为主体。
+
+验证与源码
+本次固件的电脑编译、资源、时序和仿真记录见 releases/relief_20261023/validation.json。
+本次新增固件仍需上板复验；此前 5.0 实板通过是原有版本的验收结果。
+新素材完整读取、逐像素显示及 SDRAM 仲裁测试：python -B tools/test_relief_bus.py --out E:/Codex/Work/relief-bus-check
+控制、串口屏和新旧素材目录测试：python -B tools/test_relief_controls.py --out E:/Codex/Work/relief-control-check
+新旧播放器跨时钟切换与读取归属测试：python -B tools/test_relief_render.py --out E:/Codex/Work/relief-render-check
+共享缓存六帧逐点对比：python -B tools/test_relief_shared_cache.py --asset award_media/RELIEF720.DLT --out E:/Codex/Work/relief-shared-check
+原彩带全部 120 帧行解码验证：python -B tools/test_relief_shared_rows.py --out E:/Codex/Work/relief-old-rows
+重新编译：沿用 build_saixian.ps1 -Board Both。
+离线美术源文件保留在 E:/Codex/Work/saixian-relief-integration-20261023，打包入口 tools/prepare_relief.py（额外依赖 OpenEXR）。

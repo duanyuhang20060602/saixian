@@ -36,12 +36,12 @@ always @(posedge ac)begin
 end
 photo_cached_control_a #(.CLK_HZ(806400),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.CHECK_FRAME_CRC(1)) a(
  .receive_award(receive_award),.receive_fluid(fluid),.settings_mode(1'b1),.settings_state(settings),.settings_updating(updating),
- .high_color(high_color),.format_changed(format_changed),.award_toggle(award_toggle),.clk(ac),.rst(rst),.uart_rx(bt),.uart_tx(at),.previous(1'b0),.next(1'b0),
+ .award_toggle(award_toggle),.clk(ac),.rst(rst),.uart_rx(bt),.uart_tx(at),.previous(1'b0),.next(1'b0),
  .active_slot(active_slot),.new_slot(2'd0),.transition_active(1'b0),.commit_toggle(commit),.receive_slot(receive_slot),.arm_toggle(arm_t),.abort_toggle(abort_t),
  .rx_armed(1'b1),.rx_done(rx_done),.rx_fault(1'b0),.rx_crc(32'hacbd1234),.ready_immediate(immediate),.ready_toggle(ready_t),.ready_slot(ready_slot),
  .image_count(count),.current_image(current),.busy(abusy),.error(ae),.current_source_width(width),.current_source_height(height));
 photo_control_b #(.CLK_HZ(1152000),.SETTINGS_LINK(1),.SEND_SOURCE_SIZE(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.CHECK_FRAME_CRC(1)) b(
- .high_color(b_settings[18]),.award_available(1'b1),.award_scan_complete(1'b1),.clk(bc),.rst(rst),.uart_rx(at),.uart_tx(bt),.image_count(3'd1),.media_ready(media_ready),
+ .award_available(1'b1),.award_scan_complete(1'b1),.clk(bc),.rst(rst),.uart_rx(at),.uart_tx(bt),.image_count(3'd1),.media_ready(media_ready),
  .media_slot(2'd0),.media_error(4'd0),.media_source_width(locked==6 ? 16'h8500:16'd1280),.media_source_height(16'd720),
  .media_request(request),.media_target(target),.media_release(release_media),.media_cancel(cancel),.transmit_slot(transmit_slot),.start_toggle(start_t),
  .abort_toggle(abort_b),.settings_state(b_settings),.tx_done(tx_done),.tx_crc(32'hacbd1234),.busy(bbusy),.error(be));
@@ -50,14 +50,17 @@ initial begin
  repeat(20)@(negedge ac);rst=0;
  wait(a.have_current && current==0 && !abusy && !bbusy);toggle_award;
  wait(current==6 && !abusy && !bbusy);if(!width[15] || !immediate || fluid)$fatal(1,"normal-mode award entry");
- settings[18]=1;
- wait(high_color && a.have_current && current==6 && !updating && !abusy && !bbusy);
- if(!width[15] || fluid || !receive_award)$fatal(1,"RGB888-mode award must retain tagged 565 payload");
+ // Refresh picture settings while retaining the fixed RGB565 award payload.
+ settings[14]=!settings[14];
+ wait(updating);wait(transfers>=3 && !updating && !abusy && !bbusy);
+ wait(a.have_current && current==6 && !updating && !abusy && !bbusy);
+ if(!width[15] || fluid || !receive_award)$fatal(1,"refreshed award lost 565 metadata");
  toggle_award;wait(current==0 && !abusy && !bbusy);
- if(width!=1280 || !high_color)$fatal(1,"photo mode not restored after award");
- settings[18]=0;wait(!high_color && a.have_current && current==0 && !updating && !abusy && !bbusy);
- if(ae || be || award_requests<2 || begins<2 || transfers<5)$fatal(1,"incomplete award control coverage %0d/%0d/%0d errors=%0d/%0d",award_requests,begins,transfers,ae,be);
- $display("PASS real A/B UART: extended award length, both colour settings, tagged metadata, immediate entry/exit, settings refresh, CRC and photo restoration");$finish;
+ if(width!=1280)$fatal(1,"photo not restored after award");
+ toggle_award;wait(current==6 && !abusy && !bbusy);
+ toggle_award;wait(current==0 && !abusy && !bbusy);
+ if(ae || be || award_requests<2 || begins<2 || transfers!=4)$fatal(1,"incomplete award control coverage %0d/%0d/%0d errors=%0d/%0d",award_requests,begins,transfers,ae,be);
+ $display("PASS real A/B UART: extended award length, RGB565 and settings refresh, tagged metadata, immediate entry/exit, settings refresh, CRC and cache-hit photo/award restoration");$finish;
 end
 initial begin #50000000;$fatal(1,"award control timeout current=%0d state=%0d/%0d err=%0d/%0d",current,a.state,b.state,ae,be);end
 endmodule

@@ -1,0 +1,13 @@
+{
+  "fixed_public_version": "5.0",
+  "active_project_directory": "5.0project",
+  "increment_minor_version": false,
+  "canonical_firmware": [
+    "releases/PHOTO_BOARD_A_5_0.bit",
+    "releases/PHOTO_BOARD_B_5_0.bit"
+  ],
+  "change_tracking": "Use dated build IDs and Git commits; keep the public project and firmware names fixed.",
+  "backups_root": "E:/Codex/Work",
+  "backup_policy": "Dated working backups outside the active project directory.",
+  "new_markdown_or_zip": false
+}

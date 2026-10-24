@@ -1,10 +1,16 @@
-"""Read-only integrity and TD path check for the saved 5.0 project."""
+"""Read-only integrity and TD path check for the saved project version."""
 from pathlib import Path
 import argparse,hashlib,json,re
 ROOT=Path(__file__).resolve().parents[1]
 def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 def verify(strict=True):
     record=json.loads((ROOT/'package_manifest.json').read_text(encoding='utf-8'))
+    policy_path=ROOT/'project_policy.json'
+    if policy_path.is_file():
+        policy=json.loads(policy_path.read_text(encoding='utf-8'))
+        assert record['version']==policy['fixed_public_version']=='5.0','Public version is fixed at 5.0'
+        assert ROOT.name.lower()==policy['active_project_directory'].lower(),'Use the fixed 5.0project directory'
+        assert set(record['release_files'])==set(policy['canonical_firmware']),'Use the two fixed 5.0 firmware names'
     for relative,expected in (record['files_sha256'].items() if strict else ()):
         path=(ROOT/relative).resolve()
         assert path.is_relative_to(ROOT) and path.is_file(),relative
@@ -21,17 +27,30 @@ def verify(strict=True):
         flow=(td/'build_board.tcl').read_text(encoding="utf-8-sig")
         for relative in re.findall(r'\.\./user_source/[A-Za-z0-9_./-]+',flow):assert (td/relative).is_file(),relative
         assert (td/'../user_source/hdl_source/include/global_def.v').is_file()
-        saved=ROOT/f'releases/PHOTO_BOARD_{board.upper()}_5_0.bit'
-        if strict:assert digest(td/(name+'.bit'))==digest(saved)==record['release_files'][saved.relative_to(ROOT).as_posix()]
+        candidates=[ROOT/p for p in record['release_files'] if Path(p).name.startswith('PHOTO_BOARD_'+board.upper()+'_')]
+        assert len(candidates)==1,'Ambiguous canonical firmware: '+board
+        saved=candidates[0]
+        if strict:
+            assert digest(saved)==record['release_files'][saved.relative_to(ROOT).as_posix()]
+            if record.get('firmware_layout')!='canonical_only':assert digest(td/(name+'.bit'))==digest(saved)
         boards[board]={'project':str(td/(name+'.al')),'source_count':len(paths),'bit_sha256':digest(saved)}
     origin=json.loads((ROOT/'releases/origin_validation.json').read_text(encoding="utf-8-sig"))
     if strict:
         assert origin['test_count']==65 and all(r['passed'] for rs in origin['tests'].values() for r in rs)
         assert digest(ROOT/'examples/TF卡素材/AWARD720.DLT')==digest(ROOT/'award_media/AWARD720.DLT')==origin['files_sha256']['AWARD720.DLT']
-    assert not any(p.suffix.lower() in ('.md','.zip') for p in ROOT.rglob('*') if p.is_file())
+    if strict:
+        if record.get('firmware_layout')=='canonical_only':
+            allowed={ROOT/p for p in record['release_files']}
+            actual={p for p in ROOT.rglob('*') if p.is_file() and p.suffix.lower()=='.bit'}
+            assert actual==allowed,'Only the two current release bitstreams may be included'
+            version=record['version'].replace('.','_')
+            assert {p.relative_to(ROOT).as_posix() for p in allowed}=={
+                f'releases/PHOTO_BOARD_A_{version}.bit',f'releases/PHOTO_BOARD_B_{version}.bit'}
+        assert not any(p.suffix.lower() in ('.md','.zip') for p in ROOT.rglob('*') if p.is_file())
     return {'passed':True,'saved_files_checked':len(record['files_sha256']),'saved_rtl_files':record['saved_rtl_files'],
             'boards':boards,'origin_test_count':65,'origin_hardware_validation':origin['hardware_validation'],
-            'scope':'File integrity, exact firmware/media hashes, preserved RTL behavior and independent TD input paths; no FPGA rebuild performed.'}
+            'local_regression_count':record.get('current_recorded_test_count',0),
+            'scope':'Saved file SHA256, exact firmware/media hashes and independent TD input paths; build and regression provenance is recorded in package_manifest.json.'}
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('--report',type=Path);args=parser.parse_args()
     result=verify()

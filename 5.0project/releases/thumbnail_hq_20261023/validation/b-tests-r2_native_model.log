@@ -1,0 +1,4 @@
+WARNING: E:\Codex\Work\resource-next-20261022-221039\project\tests\ip_vendor_ram_adapter.v:27: $readmemh: The behaviour for reg[...] mem[N:0]; $readmemh("...", mem); changed in the 1364-2005 standard. To avoid ambiguity, use mem[0:N] or explicit range parameters $readmemh("...", mem, start, stop);. Defaulting to 1364-2005 behavior.
+PASS 10000 stereo pitch samples, all five modes, clear removes stale RAM; output 473 clocks, total work 617 clocks/sample
+E:\Codex\Work\resource-next-20261022-221039\b-tests-r2\pitch\native_model\tb_pitch.v:55: $finish called at 86800060000 (1ps)
+PASS exact independent release fixed-point model, all PCM/mode/ramp/phase/ready fields

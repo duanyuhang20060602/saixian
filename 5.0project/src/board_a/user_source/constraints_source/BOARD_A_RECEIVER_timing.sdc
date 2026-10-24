@@ -53,3 +53,11 @@ set_false_path -from [get_regs -nowarn {store/rw/fluid_reader/fifo_aclr*}] -to [
 # Trophy-v5: only the first sampler of each toggle or held data bundle is
 # asynchronous. The following synchronizers, RAM ports and consumers stay timed.
 set_false_path -to [get_regs -nowarn {*award_link_meta* store/award_w0* store/award_r0* store/light_en0* store/slot_m0* award_render/lights/enable_meta* award_render/lights/request_sync[0]* award_render/lights/request_frame_meta* award_render/lights/request_row_meta* award_render/lights/request_initial_meta* award_render/lights/done_sync[0]* award_render/lights/startup_sync[0]* award_render/lights/video_error_sync[0]*}]
+
+# Thumbnail toggles and held row/slot bundles: only the first sampler is
+# asynchronous. The next synchronizer stages and both eRAM ports stay timed.
+set_false_path -to [get_regs -nowarn {store/display_meta* store/thumbnails/job_sync[0]* store/thumbnails/slot_meta* store/thumbnails/cancel_meta* store/thumbnails/blank_meta* preview/done_sync[0]*}]
+
+# Relief player: only first-stage CDC samplers are asynchronous. Requested
+# angle/row stay stable until the return toggle; both RAM clock ports are timed.
+set_false_path -to [get_regs -nowarn {award_render/relief_meta* award_render/gold/player/enable_meta* award_render/gold/player/request_sync[0]* award_render/gold/player/angle_meta* award_render/gold/player/row_meta* award_render/gold/player/done_sync[0]* award_render/gold/player/ready_sync[0]*}]

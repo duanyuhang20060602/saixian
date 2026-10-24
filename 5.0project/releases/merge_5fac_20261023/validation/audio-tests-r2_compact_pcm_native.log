@@ -1,0 +1,2 @@
+PASS 30059 cycle-exact raw PCM frames vs 8192 baseline; max occupancy 4224 <=4225; 4352 pointer/head-tail wraps, concurrent reads/writes, refill pauses, last-byte/end overlap and in-flight reset
+E:\Codex\Work\merge-5_6-5fac-20261023-150502\project\tests\tb_compact_pcm_fifo.v:59: $finish called at 1791660000 (1ps)

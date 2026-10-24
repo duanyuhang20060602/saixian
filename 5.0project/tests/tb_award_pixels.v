@@ -6,7 +6,7 @@ reg clk=0;always #5 clk=~clk;
 reg rst=1,de=0,hc=0;reg [11:0] x=0;reg [10:0] y=720;
 wire req,re,armed,underflow;reg ack=0;reg [31:0] data=0;integer pointer=0;
 wire [23:0] raw,rgb;reg [10:0] x0=0,x1=0;reg [9:0] y0=0,y1=0;
-frame_pixels pixels(.clk(clk),.rst(rst),.de(de),.high_color(hc),.x(x),.y(y),.image_valid(1'b1),
+frame_pixels pixels(.clk(clk),.rst(rst),.de(de),.x(x),.y(y),.image_valid(1'b1),
  .read_ack(ack),.empty(1'b0),.data(data),.read_req(req),.read_en(re),.rgb(raw),.armed(armed),.underflow(underflow));
 photo_award_render render(.clk(clk),.rst(rst),.enable(1'b0),.pause(1'b0),.frame_tick(1'b0),
  .x(x1),.y(y1),.tagged_rgb(raw),.rgb(rgb));

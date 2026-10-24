@@ -8,11 +8,11 @@ integer ticks=0,producer=0,consumer=0,planes=0,begun=0;reg pending=0;
 wire full=STRESS && (ticks%53<11 || ticks%997>=915);
 wire empty=STRESS && (ticks%37<9 || ticks%1301>=1243);
 photo_link_sender #(.ENABLE_CRC(1),.AWARD_TAIL(1),.PREFETCH_WORD(FAST)) tx(
- .award_frame(MODE==3),.clk(clk),.rst(rst),.start(start),.abort(1'b0),.high_color(MODE==1),.extended_frame(MODE==2),
+ .award_frame(MODE==3),.clk(clk),.rst(rst),.start(start),.abort(1'b0),.extended_frame(MODE==2),
  .plane_start(plane_start),.effect_plane(effect_plane),.data(source_data),.empty(empty),.read_ack(ack),.link_ready(ready),
  .read_req(req),.read_en(read_en),.link_data(data),.link_valid(valid),.link_sof(sof),.link_eof(eof),.done(tx_done),.frame_crc(tx_crc));
 photo_link_receiver #(.ENABLE_CRC(1),.AWARD_TAIL(1)) rx(
- .award_frame(MODE==3),.clk(clk),.rst(rst),.arm(arm),.abort(1'b0),.high_color(MODE==1),.extended_frame(MODE==2),
+ .award_frame(MODE==3),.clk(clk),.rst(rst),.arm(arm),.abort(1'b0),.extended_frame(MODE==2),
  .data(data),.valid(valid),.sof(sof),.eof(eof),.ready(ready),.armed(armed),.write_req(write_req),.write_ack(write_req),
  .full(full),.write_en(write_en),.write_data(stored),.finish_toggle(finish_toggle),.done(rx_done),.fault(fault),.frame_crc(rx_crc));
 function [31:0] pattern;input integer n;begin pattern=(n*32'h01020305)^32'h97a46b5d;end endfunction

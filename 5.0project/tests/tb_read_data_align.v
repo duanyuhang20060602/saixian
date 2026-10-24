@@ -25,6 +25,7 @@ photo_readback_monitor wm(.clk(mc),.rst(rst),.req(wc_clear),.pop(mw),.data(wsamp
 photo_readback_monitor rm(.clk(mc),.rst(rst),.req(rc_clear),.pop(rv[9]),.data(rsample),.bad(rb),.address(ra_bad),.expected(rx),.actual(ry));
 photo_local_frame_writer #(.GAP_CYCLES(1),.FRAME_WORDS(4096)) gen(.clk(wc),.rst(rst),.init_done(1'b1),.ack(wa),.full(full),.finish_toggle(ft),.req(wreq),.we(we),.data(source),.done(local_done));
 frame_read_write #(.WRITE_V_FLIP(0),.FRAME_WIDTH(640),.FRAME_HEIGHT(720),.BURST_SIZE(256)) dut(
+ .external_request(1'b0),.external_busy(1'b0),.display_active(1'b0),.water_cfg(77'd0),.fluid_progress(9'd0),
  .rst(rst),.mem_clk(mc),.Sdr_init_done(1'b1),.Sdr_init_ref_vld(1'b0),.Sdr_busy(1'b0),
  .App_rd_en(mr),.App_rd_addr(raddr),.Sdr_rd_en(rv[9]),.Sdr_rd_dout(corrected_data),
  .read_clk(pc),.read_req(rreq),.read_req_ack(ra),.read_finish(),.read_addr_0(21'd0),.read_addr_1(21'd0),.read_addr_2(21'd0),.read_addr_3(21'd0),.read_addr_index(2'd0),.read_len(21'd4096),.read_en(ren),.read_data(data),.read_fifo_empty(empty),

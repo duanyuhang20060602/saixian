@@ -7,11 +7,11 @@ wire [15:0] data;wire valid,sof,eof;wire [31:0] stored,tx_crc,rx_crc;
 integer ticks=0,producer=0,consumer=0,completed=0;
 wire full=hold_full || ticks%17<3;
 photo_link_sender #(.FRAME_PIXELS(256),.ENABLE_CRC(1),.PREFETCH_WORD(1)) tx(
- .award_frame(1'b0),.clk(clk),.rst(rst),.start(start),.abort(abort),.high_color(1'b0),.extended_frame(1'b0),
+ .award_frame(1'b0),.clk(clk),.rst(rst),.start(start),.abort(abort),.extended_frame(1'b0),
  .data(source_data),.empty(1'b0),.read_ack(ack),.link_ready(ready),.read_req(req),.read_en(read_en),
  .link_data(data),.link_valid(valid),.link_sof(sof),.link_eof(eof),.busy(busy),.frame_crc(tx_crc));
 photo_link_receiver #(.FRAME_PIXELS(256),.ENABLE_CRC(1)) rx(
- .award_frame(1'b0),.clk(clk),.rst(rst),.arm(arm),.abort(abort),.high_color(1'b0),.extended_frame(1'b0),
+ .award_frame(1'b0),.clk(clk),.rst(rst),.arm(arm),.abort(abort),.extended_frame(1'b0),
  .data(data),.valid(valid),.sof(sof),.eof(eof),.ready(ready),.armed(armed),.write_req(write_req),.write_ack(write_req),
  .full(full),.write_en(write_en),.write_data(stored),.finish_toggle(finish_toggle),.done(rx_done),.fault(fault),.frame_crc(rx_crc));
 function [31:0] pattern;input integer n;begin pattern=(n*32'h07030119)^32'hc6b347e2;end endfunction

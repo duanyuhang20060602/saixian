@@ -12,7 +12,7 @@ module photo_dlt_reader #(parameter PIXEL_GAP=16)(
 );
 localparam IDLE=0,HEADER=1,HEADER_CHECK=2,VERIFY=3,VERIFY_CHECK=4,
  INDEX_CHECK=5,WRITE=6,DATA=7,DATA_CHECK=8,CMD=9,LITERAL=10,
- FILL_WORD=11,LOW=12,HIGH=13,FINISH=14,DONE=15,FAILED=16,FETCH=17,WORD_CHECK=18,TAIL=19,TAIL_LOW=20,TAIL_HIGH=21;
+FILL_WORD=11,LOW=12,HIGH=13,FINISH=14,DONE=15,FAILED=16,FETCH=17,WORD_CHECK=18,TAIL=19,TAIL_LOW=20,TAIL_HIGH=21,TAIL_SETTLE=22;
 reg [4:0] state,return_state,word_state;
 reg [31:0] tail_offset;reg [20:0] tail_left;reg [159:0] light_header;
 reg [31:0] base,total_bytes;
@@ -23,9 +23,10 @@ reg [31:0] buffer[0:127];reg [7:0] read_index;reg [31:0] word_data;
 reg [20:0] encoded_left,cursor,run;reg fill;
 reg [31:0] pair;reg [3:0] pace;reg ack_meta,ack_sync;
 reg input_valid,input_end;reg [7:0] input_data;
-wire header_ok;wire [31:0] header_bytes,header_crc;
+reg block_size_ok;
+wire header_ok,header_relief;wire [31:0] header_bytes,header_crc;
 photo_dlt_header header(.clk(clk),.rst(rst),.valid(state==HEADER && input_valid && count<64),
- .index(count[5:0]),.data(input_data),.header_ok(header_ok),.file_bytes(header_bytes),.payload_crc(header_crc));
+ .index(count[5:0]),.data(input_data),.header_ok(header_ok),.file_bytes(header_bytes),.payload_crc(header_crc),.is_relief(header_relief));
 assign ready=state==IDLE || state==DONE || state==FAILED;
 assign done=state==DONE;
 assign req=state==HEADER || state==VERIFY || state==DATA || state==TAIL;
@@ -34,17 +35,21 @@ wire [31:0] offset=descriptor[31:0],length=descriptor[63:32];
 wire [1:0] kind=word_data[31:30];wire [29:0] amount=word_data[29:0];
 reg [20:0] remaining_frame,available_encoded;reg [4:0] command_checks;
 reg [32:0] descriptor_end;reg [6:0] index_checks;
+reg light_tail_invalid;
 // Register the SD input before CRC/header/index enables. Keep async RAM
 // lookup and command validation out of the same 100 MHz transition path.
 always @(posedge clk or posedge rst)begin
  if(rst)begin input_valid<=0;input_end<=0;input_data<=0;word_data<=0;
-  remaining_frame<=0;available_encoded<=0;command_checks<=0;descriptor_end<=0;index_checks<=0;
+  remaining_frame<=0;available_encoded<=0;command_checks<=0;descriptor_end<=0;index_checks<=0;light_tail_invalid<=0;
   header_sector<=0;frame_sector<=0;tail_sector<=0;end
  else begin
   input_valid<=byte_valid;input_end<=block_end;input_data<=byte_data;
   word_data<=buffer[read_index[6:0]];
   remaining_frame<=460800-cursor;available_encoded<=encoded_left-1'b1;
   descriptor_end<={1'b0,offset}+{1'b0,length};
+  // The light header ends at byte 275, long before HEADER_CHECK after byte 511.
+  // Precompute its bounds check outside the 100 MHz state transition path.
+  light_tail_invalid<=({1'b0,light_header[63:32]}+33'd230400>{3'd0,header_bytes[31:2]});
   // Sector bases settle hundreds of SD clocks before their consuming states.
   // Keep the 32-bit adders ahead of the state-selected request register.
   header_sector<=base+1'b1;frame_sector<=base+(offset>>7);tail_sector<=base+(tail_offset>>7);
@@ -72,13 +77,13 @@ always @(posedge clk or posedge rst)begin
   state<=IDLE;return_state<=FETCH;word_state<=CMD;error<=0;sector<=0;base<=0;total_bytes<=0;
   count<=0;
   low_bytes<=0;descriptor<=0;read_index<=0;encoded_left<=0;cursor<=0;run<=0;fill<=0;pair<=0;
-  pace<=0;pixel_valid<=0;pixel<=0;tail_offset<=0;tail_left<=0;light_header<=0;ack_meta<=0;ack_sync<=0;
+  pace<=0;pixel_valid<=0;pixel<=0;tail_offset<=0;tail_left<=0;light_header<=0;ack_meta<=0;ack_sync<=0;block_size_ok<=0;
  end else begin
   pixel_valid<=0;ack_meta<=write_ack;ack_sync<=ack_meta;
   if(pace!=0)pace<=pace-1'b1;
   if(start && ready)begin
    state<=HEADER;sector<=start_sector;base<=start_sector;count<=0;error<=0;
-   descriptor<=0;cursor<=0;read_index<=0;pace<=0;
+   descriptor<=0;cursor<=0;read_index<=0;pace<=0;block_size_ok<=0;
   end else case(state)
    HEADER,VERIFY,DATA,TAIL:begin
     if(input_valid)begin
@@ -95,17 +100,23 @@ always @(posedge clk or posedge rst)begin
       end
      end
     end
-    if(input_end)state<=state==HEADER ? HEADER_CHECK:state==VERIFY ? VERIFY_CHECK:DATA_CHECK;
+    // Latch the post-edge count predicate at the sector boundary. CHECK
+    // states see exactly the same count, without a wide decoder in their
+    // register-enable path. Include a final valid byte on the end edge.
+    if(input_end)begin
+     block_size_ok<=count==512 || (input_valid && count==511);
+     state<=state==HEADER ? HEADER_CHECK:state==VERIFY ? VERIFY_CHECK:DATA_CHECK;
+    end
    end
    HEADER_CHECK:begin
-    if(count!=512)begin error<=2;state<=FAILED;end
-    else if(!header_ok || light_header[31:0]!=120 || light_header[95:64]!=230400 || light_header[127:96]!=32'h53505835 || light_header[159:128]!=6 || light_header[38:32]!=0)begin error<=1;state<=FAILED;end
-    else if({1'b0,light_header[63:32]}+33'd230400>{3'd0,header_bytes[31:2]})begin error<=1;state<=FAILED;end
+    if(!block_size_ok)begin error<=2;state<=FAILED;end
+    else if(!header_ok || light_header[31:0]!=(header_relief ? 24:120) || light_header[95:64]!=230400 || light_header[127:96]!=(header_relief ? 32'h524c4636:32'h53505835) || light_header[159:128]!=6 || light_header[38:32]!=0)begin error<=1;state<=FAILED;end
+    else if(light_tail_invalid)begin error<=1;state<=FAILED;end
     else begin total_bytes<=header_bytes;tail_offset<=light_header[63:32];
      sector<=header_sector;count<=0;state<=VERIFY;end
    end
    VERIFY_CHECK:begin
-    if(count!=512)begin error<=2;state<=FAILED;end
+    if(!block_size_ok)begin error<=2;state<=FAILED;end
     else state<=INDEX_CHECK;
    end
    INDEX_CHECK:begin
@@ -114,9 +125,12 @@ always @(posedge clk or posedge rst)begin
    end
    WRITE:if(ack_sync)begin count<=0;return_state<=FETCH;word_state<=CMD;state<=DATA;end
    DATA_CHECK:begin
-    if(count!=512)begin error<=2;state<=FAILED;end
-    else begin read_index<=0;state<=return_state;end
+    if(!block_size_ok)begin error<=2;state<=FAILED;end
+    else begin read_index<=0;state<=return_state==TAIL_LOW ? TAIL_SETTLE:return_state;end
    end
+   // word_data is a registered RAM read. After resetting the sector index,
+   // wait for buffer[0] before emitting the first tail halfword.
+   TAIL_SETTLE:state<=TAIL_LOW;
    FETCH:begin
     if(encoded_left==0)begin
      if(word_state==CMD && cursor==460800)state<=FINISH;

@@ -1,6 +1,5 @@
 [
   "../user_source/hdl_source/SD/frame_read_write.v",
-  "../user_source/hdl_source/SD/frame_fifo_read.v",
   "../user_source/hdl_source/SD/frame_fifo_write.v",
   "../user_source/hdl_source/SD/sdram.v",
   "../user_source/hdl_source/IP/sys_pll.v",
@@ -28,7 +27,6 @@
   "../../../common/saixian_key_debounce.v",
   "../../../common/photo_auto_advance.v",
   "../../../common/photo_cached_control_a.v",
-  "../../../common/photo_resolution_overlay.v",
   "../../../common/photo_settings_overlay.v",
   "../../../common/photo_menu_font.v",
   "../../../common/photo_audio_link.v",
@@ -61,5 +59,10 @@
   "../../../common/fluid/water_scene.v",
   "../../../common/photo_spotlight_player.v",
   "../../../common/photo_award_memory.v",
-  "../../../common/photo_raster_delay.v"
+  "../../../common/photo_raster_delay.v",
+  "../../../common/photo_touchpad.v",
+  "../../../common/photo_thumbnail.v",
+  "../../../common/photo_switch_timing.v",
+  "../../../common/photo_relief_player.v",
+  "../../../common/photo_relief_motion.v"
 ]

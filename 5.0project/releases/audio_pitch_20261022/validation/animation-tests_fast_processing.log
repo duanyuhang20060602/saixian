@@ -1,0 +1,6 @@
+PASS B processing plane=0 stalls=0: 6400 identical words, cycles=12830 vs baseline=19229
+PASS B processing plane=1 stalls=0: 3200 identical words, cycles=12830 vs baseline=19229
+PASS B processing plane=0 stalls=1: 6400 identical words, cycles=20654 vs baseline=27681
+PASS B processing plane=1 stalls=1: 3200 identical words, cycles=20688 vs baseline=27753
+PASS B pipeline overlap: 19200 exact words, settings/gain, full pressure, abort/restart; queue capacity and latency contract preserved
+E:\Codex\Downloads\qiansai\5.3project\tests\tb_fast_processing.v:53: $finish called at 942270000 (1ps)

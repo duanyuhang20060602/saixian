@@ -1,0 +1,6 @@
+E:\Codex\Work\resource-next-20261022-221039\project\common\photo_sd\photo_dlt_header.v:4: warning: timescale for photo_dlt_header inherited from another file.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_header.v:1: ...: The inherited timescale is here.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\reference\resource_next\photo_dlt_header_5_5.v:4: warning: timescale for photo_dlt_header_5_5 inherited from another file.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_header.v:1: ...: The inherited timescale is here.
+PASS 45803 cycle-exact header checks: reverse/partial/repeated writes, every corrupted constant byte, file-size bounds/alignment, CRC payload, ignored indexes and resets
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_header.v:37: $finish called at 458030000 (1ps)

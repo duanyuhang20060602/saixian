@@ -44,9 +44,9 @@ initial begin
  begin_frame(19'h0b6d3,0);complete_frame(6400);
  gain=2;begin_frame(19'h123ac,1);complete_frame(3200);
  begin_frame(19'h0f3c5,0);wait(index==100);@(negedge clk);abort=1;@(negedge clk);abort=0;
- gain=3;begin_frame(19'h40000|19'h0d52e,0);complete_frame(691200);
+ gain=3;begin_frame(19'h0d52e,0);complete_frame(6400);
  if(maximum<20)$fatal(1,"queue backpressure insufficient");
- $display("PASS B eRAM pixel queue: RGB565/effect plane/full RGB888, 700800 exact output words, backpressure, settings, abort/restart; %0d clocks",checks);$finish;
+ $display("PASS B eRAM pixel queue: RGB565/effect plane/565 restart, 16000 exact output words, backpressure, settings, abort/restart; %0d clocks",checks);$finish;
 end
 initial begin #300000000;$fatal(1,"processing test timeout state=%0d issued=%0d outputs=%0d credits=%0d",dut.state,dut.issued,outputs,dut.credits);end
 endmodule

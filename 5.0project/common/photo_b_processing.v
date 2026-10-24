@@ -6,24 +6,20 @@ module photo_b_processing #(parameter FRAME_WORDS=460800)(
  input [31:0] source_data,input [18:0] settings_state,input [1:0] image_gain,
  output source_read,input read_en,output empty,output [31:0] data
 );
-localparam WAIT_ACK=0,WAIT_LOW=1,SETTLE=2,FETCH=3,HIGH=4,LOW=5,FINISH=6,COLOR0=7,COLOR1=8,COLOR2=9,COLOR3=10;
-reg [3:0] state;reg [2:0] settle;
+localparam WAIT_ACK=0,WAIT_LOW=1,SETTLE=2,FETCH=3,HIGH=4,LOW=5,FINISH=6;
+reg [2:0] state;reg [2:0] settle;
 reg ack_meta,ack_sync,running;
 reg [18:0] frame_settings;reg [1:0] frame_gain;
 reg [19:0] issued;reg [5:0] credits,queued;
 reg [4:0] wp,rp;
 reg [15:0] low_pixel,first_pixel;reg half;
 reg [10:0] x;reg [9:0] y;
-wire high_color=frame_settings[18];
-reg [1:0] color_phase;reg [15:0] color_tail;reg [23:0] color_last;
-wire [20:0] frame_words=high_color ? 21'd691200:FRAME_WORDS;
-wire input_valid=running && (state==HIGH || state==LOW || state==COLOR0 || state==COLOR1 || state==COLOR2 || state==COLOR3);
+wire [20:0] frame_words=FRAME_WORDS;
+wire input_valid=running && (state==HIGH || state==LOW);
 wire [15:0] pixel=state==HIGH ? source_data[31:16]:low_pixel;
 wire [23:0] rgb565_expanded={pixel[15:11],pixel[15:13],pixel[10:5],pixel[10:9],pixel[4:0],pixel[4:2]};
-wire [23:0] rgb=high_color ?
- (state==COLOR0 ? source_data[31:8]:state==COLOR1 ? {color_tail[7:0],source_data[31:16]}:
-  state==COLOR2 ? {color_tail,source_data[31:24]}:color_last):rgb565_expanded;
-assign source_read=running && state==FETCH && !source_empty && credits<32 && issued<frame_words;
+wire [23:0] rgb=rgb565_expanded;
+assign source_read=running && (state==FETCH || state==LOW) && !source_empty && credits<32 && issued<frame_words;
 assign empty=queued==0;
 wire pop=read_en && !empty;
 wire [23:0] enhanced,adjusted,styled;
@@ -43,9 +39,9 @@ wire native_push,aux_push,push;wire [31:0] native_output,aux_output,packed_outpu
 assign push=effect_plane ? aux_push:native_push;
 assign packed_output=effect_plane ? aux_output:native_output;
 water_pack auxiliary(.clk(clk),.rst(rst || start || abort),.write_req(1'b0),
- .pixel_valid(adjusted_valid[7] && !high_color),.pixel(styled),.full(1'b0),
+ .pixel_valid(adjusted_valid[7]),.pixel(styled),.full(1'b0),
  .valid(),.data(),.overflow(),.small_valid(aux_push),.small_data(aux_output));
-photo_color_pack packing(.clk(clk),.rst(rst),.clear(start || abort),.high_color(high_color),
+photo_color_pack packing(.clk(clk),.rst(rst),.clear(start || abort),
  .valid(adjusted_valid[7]),.rgb(styled),.word_valid(native_push),.word_data(native_output),.aligned());
 // The queue's existing registered pop maps directly to the eRAM read port.
 // Reset only publication validity, rather than clearing the pixel memory.
@@ -68,12 +64,12 @@ always @(posedge clk or posedge rst)begin
  if(rst)begin
   state<=FINISH;settle<=0;running<=0;frame_settings<=0;frame_gain<=1;
   issued<=0;credits<=0;queued<=0;wp<=0;rp<=0;
-  low_pixel<=0;first_pixel<=0;half<=0;color_phase<=0;color_tail<=0;color_last<=0;x<=0;y<=0;adjusted_valid<=0;
+  low_pixel<=0;first_pixel<=0;half<=0;x<=0;y<=0;adjusted_valid<=0;
  end else if(start || abort)begin
   state<=start ? WAIT_ACK:FINISH;settle<=0;running<=0;
   frame_settings<=settings_state;frame_gain<=image_gain;
   issued<=0;credits<=0;queued<=0;wp<=0;rp<=0;
-  half<=0;color_phase<=0;color_tail<=0;color_last<=0;x<=0;y<=0;adjusted_valid<=0;
+  half<=0;x<=0;y<=0;adjusted_valid<=0;
  end else begin
   adjusted_valid<=running ? {adjusted_valid[6:0],enhanced_de}:8'd0;
   case(state)
@@ -82,16 +78,14 @@ always @(posedge clk or posedge rst)begin
    WAIT_ACK:if(read_req)state<=WAIT_LOW;
    WAIT_LOW:if(!ack_sync && !read_req)begin state<=SETTLE;settle<=0;end
    SETTLE:if(settle==4)begin state<=FETCH;running<=1;end else settle<=settle+1'b1;
-   FETCH:if(source_read)begin issued<=issued+1'b1;state<=high_color ? (color_phase==0 ? COLOR0:color_phase==1 ? COLOR1:COLOR2):HIGH;end
+   FETCH:if(source_read)state<=HIGH;
          else if(issued==frame_words)state<=FINISH;
    HIGH:begin low_pixel<=source_data[15:0];state<=LOW;end
-   LOW:state<=FETCH;
-   COLOR0:begin color_tail<={8'd0,source_data[7:0]};color_phase<=1;state<=FETCH;end
-   COLOR1:begin color_tail<=source_data[15:0];color_phase<=2;state<=FETCH;end
-   COLOR2:begin color_last<=source_data[23:0];state<=COLOR3;end
-   COLOR3:begin color_phase<=0;state<=FETCH;end
+   // The FIFO updates source_data after this edge; HIGH uses it next edge.
+   LOW:state<=source_read ? HIGH:FETCH;
    default:;
   endcase
+  if(source_read)issued<=issued+1'b1;
   if(input_valid)begin
    if(x==1279)begin x<=0;y<=y+1'b1;end else x<=x+1'b1;
   end

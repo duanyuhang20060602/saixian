@@ -6,10 +6,10 @@ reg ack=0;reg [31:0] data=0;wire [31:0] stored,tx_crc,rx_crc;wire [15:0] link_da
 wire valid,sof,eof,fault;reg finish_toggle=0;integer producer=0,consumer=0,ticks=0;
 wire full=ticks%53<9;
 photo_link_sender #(.ENABLE_CRC(1),.AWARD_TAIL(1),.PREFETCH_WORD(1)) tx(.award_frame(1'b1),.clk(clk),.rst(rst),.start(start),.abort(1'b0),
- .high_color(1'b0),.extended_frame(1'b0),.plane_start(plane_start),.data(data),.empty(1'b0),.read_ack(ack),.link_ready(ready),
+ .extended_frame(1'b0),.plane_start(plane_start),.data(data),.empty(1'b0),.read_ack(ack),.link_ready(ready),
  .read_req(req),.read_en(read_en),.link_data(link_data),.link_valid(valid),.link_sof(sof),.link_eof(eof),.done(tdone),.frame_crc(tx_crc));
 photo_link_receiver #(.ENABLE_CRC(1),.AWARD_TAIL(1)) rx(.award_frame(1'b1),.clk(clk),.rst(rst),.arm(arm),.abort(1'b0),
- .high_color(1'b0),.extended_frame(1'b0),.data(link_data),.valid(valid),.sof(sof),.eof(eof),.ready(ready),.armed(armed),
+ .extended_frame(1'b0),.data(link_data),.valid(valid),.sof(sof),.eof(eof),.ready(ready),.armed(armed),
  .write_req(write_req),.write_ack(rack),.full(full),.write_en(write_en),.write_data(stored),.finish_toggle(finish_toggle),.done(rdone),.fault(fault),.frame_crc(rx_crc));
 assign rack=write_req;
 function [31:0] pattern;input integer n;begin pattern=(n*32'h1020305)^32'h97a46b5d;end endfunction

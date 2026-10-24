@@ -13,7 +13,7 @@ module frame_read_write
 	parameter FRAME_HEIGHT           = 480
 ) 
 (
-	input write_top_down,high_color,
+	input write_top_down,
 	input                            rst,                  
 	input                            mem_clk,                    // external memory controller user interface clock
 	input							 Sdr_init_done,
@@ -130,7 +130,7 @@ frame_fifo_write
 frame_fifo_write_m0              
 (
     .write_top_down(write_top_down),  
- .high_color(high_color),
+ 
 	.rst                        (rst                      ),
 	.mem_clk                    (mem_clk                  ),
     .Sdr_init_done				(Sdr_init_done),
@@ -182,7 +182,7 @@ frame_fifo_read
 )
 frame_fifo_read_m0
 (
- .high_color(high_color),
+ 
 	.rst                        (rst                      ),
 	.mem_clk                    (mem_clk                  ),
     .Sdr_init_done				(Sdr_init_done),

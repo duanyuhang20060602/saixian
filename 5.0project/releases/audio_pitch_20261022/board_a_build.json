@@ -1,0 +1,244 @@
+{
+  "board": "a",
+  "status": "passed",
+  "hardware_validation": "pending",
+  "started_utc": "2026-10-22T10:57:59.341910+00:00",
+  "inputs_sha256": {
+    "common/audio_ui/photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1",
+    "common/audio_ui/saixian_av_hann_half.hex": "fc9247268b83a9aca0d5f6022efa586c98c9102fa304ffec024f4cd562375081",
+    "common/audio_ui/saixian_av_hann_half.hex_0_0.mif": "cc3a6188d466e04e600e9c960ca6cb6861f5489619b26a16135d6d1155376c72",
+    "common/audio_ui/saixian_av_twiddle_serial.hex": "dc321b9f2e3779a52b27467170a829039be71b054742e259beb53ffa3c5782f0",
+    "common/audio_ui/saixian_av_twiddle_serial.hex_0_0.mif": "3a8f16aa903cdec0694a435544827c1303f7f60f97c92a37900e3166f4a1c8cf",
+    "common/audio_ui/saixian_event_controller.v": "c27a9a51687b5ad7b45e9fa7a17a20b259cfe84cbd950efaf3a4a5e0dd6bb5c2",
+    "common/audio_ui/saixian_font_rom.mif": "ca162d9ef72efee747c5b83cb09a145e15bc03bb19766655790aa78227717f7a",
+    "common/audio_ui/saixian_font_rom.v": "eceaa5ddb65042aff7a507b8ca410d901f70b17f2d081689da2bea831b7aed8b",
+    "common/audio_ui/saixian_osd_overlay.v": "6c889c7d6da3adc00b41d7a29dac35de4c32b60717e7e93b9f3b36a4667d2598",
+    "common/audio_vendor/audio_arc_calculate.v": "b3b55c90ad7ba679b0f4cb550cdf656230d15a3facab00ce7f561f32bd63eb0d",
+    "common/audio_vendor/hdmi_1_4b_transmitter_core_wrapper.enc.v": "25a28679c51d779a1c811772cf83e3092a3106b25e2e21f1560ba624ebd72bd0",
+    "common/award_fx.v": "f4e31098dcc4a2c38ecd1c0eae01fe2989814fa61bb95c10d529e6f153c05482",
+    "common/award_sprite_packed.hex": "9d0d1416efc92fbc13ce8e7635bf7fa0b52fb11ed4c146c8f75e91ea9c511d17",
+    "common/award_sprite_packed.mif": "de8843e74205a9f7c176ad514e7fdc5061c626f4e04835c2a60d7e5111d3e60c",
+    "common/award_sprite_rom.v": "f92edd17e605ded17d834eb408475ac66f061f99c7b94edfdad9d4997242f768",
+    "common/fluid/water_blend.v": "02b9ac8df414a7252263e6dc4f863bbc801e09dd793f7e85dd3282b8bc41b3d7",
+    "common/fluid/water_cache.v": "162653dbe2c0ead67ca65fe689bfa3b21e711dd6d5556de698c758a2ac7afafe",
+    "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+    "common/fluid/water_drop_small.v": "256019f9db84e617f6acbb2d60efcba636d2949343115e510c68be4d00bacea0",
+    "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+    "common/fluid/water_edge.v": "e710bbd4e90cada1011848b4429f40629cc8c4bfc14ecee5bd643de5cf1c5f79",
+    "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+    "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+    "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+    "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+    "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+    "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+    "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+    "common/fluid/water_priority_map.v": "f646b1f41b25eddaec072533e1dffd4d1ced9738fd51121c1baec7861f31c100",
+    "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+    "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb",
+    "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+    "common/fluid/water_scene.v": "ea6c180517f8c8916884f74f23c1db5a2005bc2cd9373dfcfe4e0faf1c590330",
+    "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+    "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+    "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+    "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+    "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+    "common/photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
+    "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+    "common/photo_auto_advance.v": "f9a152567fa93f8a376879aba4678a45c3d1c7db07ec6b7cf38f21b71585dbb0",
+    "common/photo_av_receiver.v": "2fd185ece16d7569545eceb4b94d575b560e5288c9a2b4b6683ecb98af3fede7",
+    "common/photo_award_memory.v": "0421eb047bc5a1654f78c3670b75f6f2d0931fe3832d18a2c8c72d0c4d87ce91",
+    "common/photo_award_render.v": "ccfabc867794a10488a5eaff9ffed86c03d9b0933f7138e975122186d03b7bce",
+    "common/photo_boot_screen.v": "394fee66adf031a9dc2bc65233181765058e631e7456171500546fdeafa10d14",
+    "common/photo_cached_control_a.v": "c4f471603979aac9dadb5901da15ed8c00a684e27e1e28c89d821c0a481263b2",
+    "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+    "common/photo_control.v": "ae23329605f7f53bc02aa86acfa3d3c45ac9b54a93ccb53db88f4fb8bd635957",
+    "common/photo_display_pipe.v": "e6ba29eb4142b690a5abb9be5b07c0b880040736485cdbeb1013f040559718c3",
+    "common/photo_link.v": "6ca5781c2c9916c9445ba6d7c682a1f06b56b327d0f8ea5e166cd9f338fed118",
+    "common/photo_menu_font.mif": "2bc93d7d132dcd858edf436d5c55e73896996cf89a2d224cbd8f78bf337d4c5d",
+    "common/photo_menu_font.v": "1016a06667d94531745b5d80b0eecb17285f41d8bd17900ed75ec6c190f228db",
+    "common/photo_processing.v": "fa835d951d02eedce197444ef59bcad4a578ad1b7ca1739f77b41a2af171ea38",
+    "common/photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795",
+    "common/photo_settings_overlay.v": "28e19071deea442b93102d7d4aa839ba93b252b757ae853e5ebd7c83df3707f8",
+    "common/photo_spotlight_player.v": "7c7bdefb355098208883a71d2eb1138c0e67f3d28a68eb2a5c4a2dae3bac6152",
+    "common/photo_status.v": "1bf2e6134aa9daa8c5e14c5f1e28ece7502f31840767e3cf9d5a63ccc5d21cc4",
+    "common/photo_thumbnail.v": "6b45b0675ef4c0a7e3777d4fea264ae5f4b08c52d3da67b7c74c557f57d7ef35",
+    "common/photo_touchpad.v": "3cc8c9b46b9b206b0c37353823ca9635cbde5cd9f77058a9a45664061bfdb956",
+    "common/photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df",
+    "common/photo_unified_settings_controller.v": "a2b7444b42f071dc800ea8927dfe6d7d45abcb71b7d23e16f1bdcd03b179938b",
+    "common/saixian_battle_result_fx_pipelined.v": "5c8d134b87235052054374c635dbb127ca2f38b764fe5e2d211926c894caefe8",
+    "common/saixian_hmi_uart.v": "cd27507bad545dc4ae0f04b275e78af524ce4200e216f311f8564f81f400a219",
+    "common/saixian_key_debounce.v": "0ce5ef658b14de16b3d74c81c055ebfadaa7276d9f73aec02417329c80648968",
+    "common/saixian_transition.v": "0db761825a5ca1a810f64b10757b83ba7e3cb4f371a9785441c2a477af321227",
+    "common/top_photo_a.v": "f66e916589c37df9d244cdf9af32c0e6792534372ec592748373d45b4da9b1ba",
+    "src/board_a/td_project/build_board.tcl": "7bb1c3f48a628e4a64fa0c4555b2e6631e35987657d0cffcdd20352e978a1cc4",
+    "src/board_a/td_project/PHOTO_BOARD_A.al": "fa2d3b2a10bb8e2993ca7541355e15506c74d96e2e82be45c82cf5076170f084",
+    "src/board_a/td_project/sources.json": "46baff365355cb07958d1c5019395af516ed4e26958208437a3512f9b9e56829",
+    "src/board_a/user_source/constraints_source/BOARD_A_RECEIVER_pins.adc": "0cb2f3cb2b05a6abed729626068a29466c608dd448406ae70b18833c13e3f921",
+    "src/board_a/user_source/constraints_source/BOARD_A_RECEIVER_timing.sdc": "14a9a3bfa895e4be0e7e3548737120b5aafbf1f0d92b0f58ec94508136414c88",
+    "src/board_a/user_source/hdl_source/dual_still_reset_sync.v": "86a363f9bf457e59e19470eadc14b89eef30a3d9142874ab0c20ced49b8cecac",
+    "src/board_a/user_source/hdl_source/frame_pixels.v": "0b45d4a61c0eac7cdff33fa0d84f8670fe1dc732fedf44a4baa16e022eed369e",
+    "src/board_a/user_source/hdl_source/frame_store.v": "8753d64bd47c6ed588e13a32a5b831b9aaab5457cf5583bc4f8f73e0f02c2d91",
+    "src/board_a/user_source/hdl_source/hdmi_minimal_tx.v": "6abdf0ae79fa61b790ff12ca785cb306308414b61bda280af714b44ea89f7944",
+    "src/board_a/user_source/hdl_source/hdmi_output_diagnostics.v": "d9d76f42d177f8b42f1527c9f5f56f054bf32a810bdb030c612cb544d0866df5",
+    "src/board_a/user_source/hdl_source/hdmi_phy_warpper.v": "7665996d6504860ef2554fb8fc70df0746b54dcb2fe078883c2f72c898366ffb",
+    "src/board_a/user_source/hdl_source/include/global_def.v": "04585e6969fea920591572b2bf483eb1b2a65ac1bc7d9075137478b40c5beff3",
+    "src/board_a/user_source/hdl_source/include/sdr_as_ram.enc.v": "ebecfaf30303a1353ac3bd48d5785836b9622e480ebd6a95bc4a663e43688936",
+    "src/board_a/user_source/hdl_source/include/sdr_init_ref.enc.v": "6ae30d9e850daecdda6375b5389a82b8553b2d63eb9588e5c7ddc4ef3f0ae58e",
+    "src/board_a/user_source/hdl_source/include/sdr_wrrd.enc.v": "8ad6e44a16e5c1ad895a9461ed2a20b0449920f5139e3a0d091a2dcae400c1aa",
+    "src/board_a/user_source/hdl_source/IP/afifo_16_32_256.tcl": "d997836e5bfe6f32f21853efc2ac8ea31d6efa58f018429f9f03a6be6d438b0f",
+    "src/board_a/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+    "src/board_a/user_source/hdl_source/IP/afifo_32_16_256.tcl": "d997836e5bfe6f32f21853efc2ac8ea31d6efa58f018429f9f03a6be6d438b0f",
+    "src/board_a/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+    "src/board_a/user_source/hdl_source/IP/sys_pll.v": "9112e7f38896598d8083c13e919c2a021e50c26f8c59cfd2d48f3a53ac6489d1",
+    "src/board_a/user_source/hdl_source/IP/water_edge_weights.mif": "1ba4dae4767feaeef087e147b6342e9e0a856f160cf06d9186948f6a272a12fc",
+    "src/board_a/user_source/hdl_source/lane_lvds_10_1.v": "fd61b139c3803a16d1a3ed33bbd9babd88af4c73702a98b406d7ea6b7771269b",
+    "src/board_a/user_source/hdl_source/photo_menu_text_lookup.mif": "6bd358ea5b82f7a65629595a1f4415d67d02936c2e7ecb704e6166dbfc6441b1",
+    "src/board_a/user_source/hdl_source/saixian_red_victory_atlas.mif": "24b257234bfd75ddfac932c24736cdd6246fefe037b1e69123c783e7d8b2eadd",
+    "src/board_a/user_source/hdl_source/saixian_sprint_atlas.mif": "a19b48d639fe20d46284654139205c07ac6d2337f1a118dc58c58ce94f75f5e1",
+    "src/board_a/user_source/hdl_source/saixian_sprint_atlas_dict.mif": "33c7b9173195e93014b7402f3b74102c4bfe5fee39f99975a8dbcc9a7612971e",
+    "src/board_a/user_source/hdl_source/saixian_sprint_atlas_dict_packed16.mif": "dfe8ac95a1a941aac480d7782e4cc4384dcfc360d1e11f3e560505a201fd4b79",
+    "src/board_a/user_source/hdl_source/saixian_sprint_atlas_index_hi.mif": "3c752dff3d075310f4478c4d5536e92ff5fd935f145335a79d513853e15915c2",
+    "src/board_a/user_source/hdl_source/saixian_sprint_atlas_index_lo.mif": "1b262844c6c0183dfaf67f0a33e202eff8578c4b70df8361adabcdad2e46db4b",
+    "src/board_a/user_source/hdl_source/saixian_victory_atlas_dict.mif": "6eeb0283246dab237682beacfa59bd34b761db70e3f2bf710c4b3f69df52eec8",
+    "src/board_a/user_source/hdl_source/saixian_victory_atlas_dict_packed16.mif": "20bc36ea23467646d71195839fa2fc6b18eac8a60c14555941dec1056bbf907f",
+    "src/board_a/user_source/hdl_source/saixian_victory_atlas_index_hi.mif": "75eac93207fdcd440e3bfec31f0c5e912bf9ecc567f97e5af67ae654036246d5",
+    "src/board_a/user_source/hdl_source/saixian_victory_atlas_index_lo.mif": "c3ad6609b0408df7d980a88ffba41bf323e48a3bdc8b477d48eec5053b299b8b",
+    "src/board_a/user_source/hdl_source/SD/frame_fifo_write.v": "2d77247259a858f1a752748d721c3db422b0be5c1d70a2ce6dc828a7dfa6a020",
+    "src/board_a/user_source/hdl_source/SD/frame_read_write.v": "bc86f0d36dd660e97922ccb86a671412cfd41787d0454fd4330e43470b261adf",
+    "src/board_a/user_source/hdl_source/SD/sdram.v": "beb0a3e8497f8e30a7c0fc6ba6981316f571443460455f4f3b4d5c843d3830fb",
+    "src/board_a/user_source/hdl_source/video_pll.v": "30e49bd3ccdccfcf7f7a874448be75a84a4790e89e82526ddd660fc2af891faf"
+  },
+  "work_project": "E:\\Codex\\Work\\audio-pitch-dual-20261022\\build-a-r1\\builds\\board_a\\project",
+  "local_project_sha256": "1249a858c03d3a3cbe1f5b14215fe64a65100c25932346ac3fd1dd6cd5af965e",
+  "place_seed_override": "31",
+  "physical_strategy": {
+    "name": "TimingUltraEmbedded",
+    "base": "TimingUltra",
+    "catalog": "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\doc\\strategies\\official_strategy_ph1.json",
+    "catalog_sha256": "b264a5c4ae939a4be0fcf5d2c242a8005132c4812f01d4d060590adee2030729",
+    "parameters": [
+      {
+        "step": "place",
+        "param": "effort",
+        "val": "high"
+      },
+      {
+        "step": "place",
+        "param": "opt_timing",
+        "val": "high"
+      },
+      {
+        "step": "place",
+        "param": "logic_level_opt",
+        "val": "on"
+      },
+      {
+        "step": "place",
+        "param": "aggressive_opt",
+        "val": "21"
+      },
+      {
+        "step": "place",
+        "param": "aggr_neighbor_dist",
+        "val": "5"
+      },
+      {
+        "step": "place",
+        "param": "enhanced_beeline_opt",
+        "val": "3"
+      },
+      {
+        "step": "place",
+        "param": "timing_driven_mode",
+        "val": "on"
+      },
+      {
+        "step": "place",
+        "param": "shifter_opt",
+        "val": "on"
+      },
+      {
+        "step": "place",
+        "param": "crit_path_opt",
+        "val": "on"
+      },
+      {
+        "step": "place",
+        "param": "post_place_opt",
+        "val": "high"
+      },
+      {
+        "step": "place",
+        "param": "hfn_opt_effort",
+        "val": "high"
+      },
+      {
+        "step": "place",
+        "param": "split_data_from_clock",
+        "val": "on"
+      },
+      {
+        "step": "route",
+        "param": "post_route_opt",
+        "val": "high"
+      },
+      {
+        "step": "route",
+        "param": "postrt_opt_extra_round",
+        "val": "4"
+      },
+      {
+        "step": "place",
+        "param": "split_data_from_clock",
+        "val": "off"
+      },
+      {
+        "step": "place",
+        "param": "crit_path_opt",
+        "val": "off"
+      },
+      {
+        "step": "place",
+        "param": "aggressive_opt",
+        "val": "20"
+      }
+    ]
+  },
+  "local_physical_recipe_sha256": "302a29f3e744fe5977fe6f01128f722a35a73e68cba440810009d34975975641",
+  "toolchain_sha256": {
+    "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\bin\\td_commands_prompt.exe": "e2e04ada5e256dccd017240c0f4dcface7f96dca67cde0e56e606ac0e02f827a",
+    "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\doc\\scripts\\DefaultFlow.tcl": "d1a5d4291706dac224cc33008d8945e79ed2eb1adf8ce86cca46be564975bade",
+    "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\doc\\scripts\\MultiSeed.tcl": "7a34989a626419fa97b15e9e69fbb42db1232d0e757e799a85740adc96e899e2",
+    "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\doc\\scripts\\PRFlow.tcl": "ea97a51df594825c06109ff0f4958f741c0a1823999b7f0bc4f1f25e417252ec",
+    "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\doc\\scripts\\SynIpFlow.tcl": "d53d0bfd6d60f76ea720375d33972beed2f69edeaa4c53cd9bb9db33eae71e95"
+  },
+  "returncode": 0,
+  "seconds": 454.1,
+  "inputs_unchanged": true,
+  "toolchain_unchanged": true,
+  "timing_ns": {
+    "SWNS": 0.214,
+    "STNS": 0.0,
+    "HWNS": 0.022,
+    "HTNS": 0.0
+  },
+  "resources": {
+    "lut": 16548,
+    "reg": 11407,
+    "bram": 58,
+    "bram32k": 16,
+    "dsp": 27
+  },
+  "bit": {
+    "path": "E:\\Codex\\Work\\audio-pitch-dual-20261022\\build-a-r1\\builds\\board_a\\project\\src\\board_a\\td_project\\PHOTO_BOARD_A.bit",
+    "sha256": "83baa25d7a32d1e9a809e56a947a669adcb958ca1dc9acfe232dcc59240797b6"
+  },
+  "timing": {
+    "path": "E:\\Codex\\Work\\audio-pitch-dual-20261022\\build-a-r1\\builds\\board_a\\project\\src\\board_a\\td_project\\PHOTO_BOARD_A_pr.timing",
+    "sha256": "a37ecb00f847a64425cd7cc5512841800accb6dda11c9f8a37f8926b8a962ea2"
+  },
+  "area": {
+    "path": "E:\\Codex\\Work\\audio-pitch-dual-20261022\\build-a-r1\\builds\\board_a\\project\\src\\board_a\\td_project\\PHOTO_BOARD_A_phy.area",
+    "sha256": "64ed4d11e01d4eade61d4ae8829653ff05cea1707aa78542e52068c784d9d122"
+  }
+}

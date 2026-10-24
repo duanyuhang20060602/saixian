@@ -3,7 +3,7 @@ module tb_rgb888_transitions;
 reg clk=0;always #5 clk=~clk;
 reg rst=1,req=0;reg [2:0] effect=0;reg right=0;reg [10:0] offset=0;
 wire ack,finish,en;wire [20:0] address;
-frame_fifo_read #(.BURST_SIZE(256),.FRAME_WIDTH(640)) reader(.high_color(1'b1),.rst(rst),.mem_clk(clk),
+frame_fifo_read #(.BURST_SIZE(256),.FRAME_WIDTH(640)) reader(.rst(rst),.mem_clk(clk),
  .Sdr_init_done(1'b1),.Sdr_init_ref_vld(1'b0),.Sdr_busy(1'b0),.Sdr_rd_en(1'b0),.App_wr_busy(1'b0),
  .App_rd_en(en),.App_rd_addr(address),.read_req(req),.read_req_ack(ack),.read_finish(finish),
  .read_addr_0(21'd0),.read_addr_1(21'd691200),.read_addr_2(21'd0),.read_addr_3(21'd0),.read_addr_index(2'd0),.read_len(21'd3840),
@@ -40,7 +40,7 @@ end
 // Direct boundary sweep also checks last row and full-frame endpoints.
 reg [10:0] mx=0;reg [9:0] my=0;reg [1:0] mp=0;wire [20:0] ma;
 reg [20:0] ob=0,nb=691200;
-saixian_frame_mapper mapper(.high_color(1'b1),.word_phase(mp),.xpos(mx),.ypos(my),.old_base(ob),.new_base(nb),
+saixian_frame_mapper mapper(.word_phase(mp),.xpos(mx),.ypos(my),.old_base(ob),.new_base(nb),
  .enabled(1'b1),.move_right(right),.effect(effect),.offset({offset[10:1],1'b0}),.address(ma));
 initial begin
  for(e=0;e<6;e=e+1)for(d=0;d<2;d=d+1)begin

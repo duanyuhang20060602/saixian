@@ -13,7 +13,7 @@ module frame_read_write
 	parameter FRAME_HEIGHT           = 480
 ) 
 (
-	input external_request,external_busy,output access_busy,input high_color,fluid_mode,input [76:0] water_cfg,input [8:0] fluid_progress,
+	input external_request,external_busy,output access_busy,input display_active,output external_allowed,input [76:0] water_cfg,input [8:0] fluid_progress,
 	input                            rst,                  
 	input                            mem_clk,                    // external memory controller user interface clock
 	input							 Sdr_init_done,
@@ -88,20 +88,13 @@ wire read_urgent,App_wr_busy,read_fifo_aclr,O_rd_busy;
 wire bus_claim=(external_busy===1'b1);
 wire bus_reserved=bus_claim || (external_request===1'b1);
 assign access_busy=O_rd_busy || App_wr_busy;
-// Synchronize the frame selector before presenting a delayed request to either
-// reader. Selection remains fixed throughout a frame and owns the shared FIFO.
-(* async_reg="true" *)reg fluid_mode_meta,fluid_mode_sync;
-reg [4:0] read_request_pipe;reg fluid_selected;
+// Preserve the established five-clock request synchronization delay.
+reg [4:0] read_request_pipe;
 always @(posedge mem_clk or posedge rst)
- if(rst)begin fluid_mode_meta<=0;fluid_mode_sync<=0;read_request_pipe<=0;fluid_selected<=0;end
- else begin
-  fluid_mode_meta<=fluid_mode;fluid_mode_sync<=fluid_mode_meta;
-  read_request_pipe<={read_request_pipe[3:0],read_req};
-  if(read_request_pipe[3]&&!read_request_pipe[4])fluid_selected<=fluid_mode_sync;
- end
+ if(rst)read_request_pipe<=0;
+ else read_request_pipe<={read_request_pipe[3:0],read_req};
 wire selected_request=read_request_pipe[4];
-wire legacy_busy,legacy_urgent,legacy_rd,legacy_ack,legacy_finish,legacy_clear;
-wire [ADDR_BITS-1:0] legacy_address,fluid_address;
+wire [ADDR_BITS-1:0] fluid_address;
 wire fluid_busy,fluid_rd,fluid_ack,fluid_finish,fluid_clear,fluid_we,fluid_urgent;
 wire [31:0] fluid_data;
 // Use the frame-owned phase directly; avoid half-word/offset re-quantization.
@@ -109,17 +102,19 @@ wire [76:0] fluid_configuration=water_cfg;
 wire [31:0] fluid_timeouts;
 localparam READ_FIFO_BITS=10;
 wire [READ_FIFO_BITS-1:0] wrusedw;
+// Thumbnail turns are admitted only with at least half a display FIFO reserve.
+assign external_allowed=!display_active || wrusedw>=512;
 
-assign App_rd_en=fluid_selected ? fluid_rd:legacy_rd;
-assign App_rd_addr=fluid_selected ? fluid_address:legacy_address;
-assign read_req_ack=fluid_selected ? fluid_ack:legacy_ack;
-assign read_finish=fluid_selected ? fluid_finish:legacy_finish;
-assign read_fifo_aclr=fluid_selected ? fluid_clear:legacy_clear;
-assign O_rd_busy=fluid_selected ? fluid_busy:legacy_busy;
+assign App_rd_en=fluid_rd;
+assign App_rd_addr=fluid_address;
+assign read_req_ack=fluid_ack;
+assign read_finish=fluid_finish;
+assign read_fifo_aclr=fluid_clear;
+assign O_rd_busy=fluid_busy;
 // A pending light request retires a speculative write claim before arbitration.
-assign read_urgent=bus_reserved || (fluid_selected ? fluid_urgent:legacy_urgent);
+assign read_urgent=bus_reserved || fluid_urgent;
 water_reader #(.FIFO_DEPTH(1024)) fluid_reader(
- .rst(rst || !fluid_selected),.mem_clk(mem_clk),.Sdr_init_done(Sdr_init_done),
+ .rst(rst),.mem_clk(mem_clk),.Sdr_init_done(Sdr_init_done),
  .Sdr_init_ref_vld(Sdr_init_ref_vld),.Sdr_busy(Sdr_busy || bus_claim),.Sdr_rd_en(Sdr_rd_en),
  .App_wr_busy(App_wr_busy || bus_claim),.Sdr_rd_dout(Sdr_rd_dout),.O_rd_busy(fluid_busy),
  .App_rd_en(fluid_rd),.App_rd_addr(fluid_address),.read_req(selected_request),
@@ -172,7 +167,7 @@ frame_fifo_write
 ) 
 frame_fifo_write_m0              
 (  
- .high_color(high_color),
+ 
 	.rst                        (rst                      ),
 	.mem_clk                    (mem_clk                  ),
     .Sdr_init_done				(Sdr_init_done),
@@ -204,62 +199,14 @@ rfifo_32_32_512 #(.ADDR_WIDTH_W(READ_FIFO_BITS),.ADDR_WIDTH_R(READ_FIFO_BITS),.A
 	.clkr                     	(read_clk                   ),          // Read side clock
 	.clkw                     	(mem_clk                    ),          // Write side clock
 	.rst                      	(rst | read_fifo_aclr       ),          // Reset also before first request
-	.we                     	(fluid_selected ? fluid_we:Sdr_rd_en),          // Write Request
+	.we                     	(fluid_we),          // Write Request
 	.re                     	(read_en && !read_fifo_empty),          // Never pop an empty FIFO
-	.di                      	(fluid_selected ? fluid_data:Sdr_rd_dout),          // Input Data
+	.di                      	(fluid_data),          // Input Data
 	.empty_flag					(read_fifo_empty            ),          // Read side Empty flag
 	.full_flag					(                           ),          // Write side Full flag
 	.wrusedw                	(wrusedw         	  	  		 ),          // Read Used Words
 	.rdusedw                	(                  			 ),          // Write Used Words
 	.dout						(read_data                  )
-);
-
-frame_fifo_read
-#
-(
-	.MEM_DATA_BITS              (MEM_DATA_BITS            ),
-	.ADDR_BITS                  (ADDR_BITS                ),
-	.BURST_BITS                 (READ_FIFO_BITS           ),
-	.BURST_SIZE                 (BURST_SIZE               ),
-    .FIFO_DEPTH(1024),
-    .FRAME_WIDTH                (FRAME_WIDTH              )
-)
-frame_fifo_read_m0
-(
- .high_color(1'b1),
-	.rst                        (rst || fluid_selected    ),
-	.mem_clk                    (mem_clk                  ),
-    .Sdr_init_done				(Sdr_init_done),
-	.Sdr_init_ref_vld			(Sdr_init_ref_vld),
-    .Sdr_busy					(Sdr_busy || bus_reserved),
-    .Sdr_rd_en					(Sdr_rd_en),
-	.App_wr_busy				(App_wr_busy || bus_reserved),
-    .O_rd_busy					(legacy_busy),
-    .read_urgent(legacy_urgent),
-	
-    .App_rd_en					(legacy_rd),
-    .App_rd_addr				(legacy_address),
-	.read_req                   (selected_request         ),
-	.read_req_ack               (legacy_ack             ),
-	.read_finish                (legacy_finish              ),
-	.read_addr_0                (read_addr_0              ),
-	.read_addr_1                (read_addr_1              ),
-	.read_addr_2                (read_addr_2              ),
-	.read_addr_3                (read_addr_3              ),
-	.read_addr_index            (read_addr_index          ),    
-	.read_len                   (read_len                 ),
-    .slide_active               (slide_active             ),
-    .slide_old_index            (slide_old_index          ),
-    .slide_new_index            (slide_new_index          ),
-    .slide_offset               (slide_offset             ),
-    .slide_right                (slide_right              ),
-    // RGB888 is fixed to slide by the transition controller. RGB565 uses
-    // fluid_reader; the retired simple maps need no legacy hardware here.
-    .transition_mode            (3'd0                     ),
-    .buffer0_vga                (buffer0_vga              ),
-    .buffer1_vga                (buffer1_vga              ),
-	.fifo_aclr                  (legacy_clear           ),
-	.wrusedw                	(wrusedw                  )
 );
 
 endmodule

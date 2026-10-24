@@ -1,0 +1,50 @@
+{
+  "passed": true,
+  "coefficient_words": 512,
+  "exact_reference_coefficients": 315,
+  "fir_bounds": [
+    {
+      "mode": 0,
+      "absolute_sum": 69488,
+      "max_sum_magnitude": 2276982784
+    },
+    {
+      "mode": 1,
+      "absolute_sum": 65740,
+      "max_sum_magnitude": 2154168320
+    },
+    {
+      "mode": 2,
+      "absolute_sum": 69488,
+      "max_sum_magnitude": 2276982784
+    },
+    {
+      "mode": 3,
+      "absolute_sum": 66404,
+      "max_sum_magnitude": 2175926272
+    },
+    {
+      "mode": 4,
+      "absolute_sum": 61504,
+      "max_sum_magnitude": 2015363072
+    }
+  ],
+  "pcm_capacity": {
+    "refill_waterline": 4096,
+    "sector_bytes": 512,
+    "stereo_frame_bytes": 4,
+    "maximum_outstanding_sectors": 1,
+    "registered_pending_frame": 1,
+    "legal_occupancy_upper_bound": 4225,
+    "allocated_frames": 4352,
+    "assumptions": "Unchanged production SD driver returns at most 512 bytes per sector. The stream permits at most one outstanding sector."
+  },
+  "inputs_sha256": {
+    "common/audio_ui/saixian_audio_pitch.v": "dd1cdedcc9c1309023a3f56f807e5f3e5bed3aa85d3f9f68cf4746e4e3cf611d",
+    "common/audio_ui/saixian_pitch_coeff.hex": "56cf1e157030bece90ac1ae77d657b4240d89c70a8cf1a6997fa307b0fb634f9",
+    "common/audio_ui/saixian_pitch_coeff.mif": "e8692b5200b6c170368b34b81f7694c94c75c6a4a55489f194cfa9502bb11369",
+    "common/photo_sd_audio_stream.v": "5c1c0196bed7661ba9fdf2edab80630f3860223e6a8858935012083738c95a7a",
+    "common/photo_sd_cache.v": "522acfbe250961e33a2c20e1de07359664f3d9e21f0b53a7c5ed1e7d10b53427",
+    "tools/check_resource_tables.py": "d49f75ad5bd03a08f002db18a0ea9aa362763e1c7c3771d20764527d559fb02c"
+  }
+}

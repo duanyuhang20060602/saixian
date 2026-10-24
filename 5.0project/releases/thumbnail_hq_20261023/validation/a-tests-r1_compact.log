@@ -1,0 +1,2 @@
+PASS compact cache: 10240 reads across every bank/tail boundary and 4096 exact reciprocal coefficients
+E:\Codex\Work\resource-next-20261022-221039\project\tests\fx11_water\tb_compact.v:24: $finish called at 348246000 (1ps)

@@ -16,13 +16,13 @@ rfifo_32_32_512 #(.ADDR_WIDTH_W(10),.ADDR_WIDTH_R(10),.AL_FULL_NUM(1021)) fifo(
 reg[1:0] display_delay=0;
 always @(posedge pixel)display_delay<={display_delay[0],raw_de};
 assign display_de=display_delay[1];
-frame_pixels display_pipe(.clk(pixel),.rst(rst),.de(raw_de),.high_color(1'b0),
+frame_pixels display_pipe(.clk(pixel),.rst(rst),.de(raw_de),
  .x(xc[11:0]),.y(yc[10:0]),.image_valid(1'b1),.read_ack(ack),.empty(fifo_empty),.data(fifo_dout),
  .read_req(req),.read_en(pop),.rgb(rgb),.underflow(display_fault),.armed(),.output_started());
 wire writer_busy,writer_enable,writer_ack,writer_done,urgent;
 wire[20:0] writer_address;reg writer_request=1;integer writer_commands=0,active_writer_commands=0;
 frame_fifo_write #(.WRITE_V_FLIP(0),.FRAME_WIDTH(640),.FRAME_HEIGHT(720)) background_writer(
- .high_color(1'b0),.read_urgent(urgent),.rst(rst),.mem_clk(mem),.Sdr_init_done(1'b1),
+ .read_urgent(urgent),.rst(rst),.mem_clk(mem),.Sdr_init_done(1'b1),
  .Sdr_init_ref_vld(1'b0),.Sdr_busy(1'b0),.App_rd_busy(busy),.O_wr_busy(writer_busy),
  .App_wr_en(writer_enable),.App_wr_addr(writer_address),.write_req(writer_request),
  .write_req_ack(writer_ack),.write_finish(writer_done),.write_addr_0(21'd0),

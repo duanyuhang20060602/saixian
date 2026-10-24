@@ -1,0 +1,2 @@
+PASS geometry pipeline equivalence: 1300000 pixels, RGB565 menus with old colour row skipped, arbitrary snapshots and resets, exact 4/6/21-clock latency
+E:\Codex\Downloads\qiansai\5.2project\tests\tb_menu_geometry.v:25: $finish called at 13000050000 (1ps)

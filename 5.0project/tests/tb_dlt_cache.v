@@ -8,7 +8,7 @@ reg rst=1,request=0,release_slot=0,hc_request=0;
 wire award_available;wire hc,ready,directory_ready,write_req,write_en,top_down;wire [31:0] write_data;
 wire [2:0] count;wire [3:0] error;wire [15:0] width,height;
 reg [2:0] ack=0;reg finish=0;integer stored=0,mode,total,audio_reads=0;
-photo_sd_cache #(.SCAN_MAX_SECTOR(2)) dut(.requested_high_color(hc_request),.high_color(hc),
+photo_sd_cache #(.SCAN_MAX_SECTOR(2)) dut(
  .display_valid(1'b0),.display_image(3'd0),.prefetch_pause(1'b0),.audio_packet_active(1'b0),
  .audio_request_valid(1'b0),.requested_audio_epoch(8'd0),.requested_audio_track(3'd0),.audio_fifo_read(1'b0),
  .clk(clk),.rst(rst),.request(request),.target(3'd6),.release_slot(release_slot),.cancel(1'b0),

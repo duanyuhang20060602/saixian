@@ -1,0 +1,2 @@
+PASS A/B timing integration: cache hit, queued clicks, old-commit exclusion, B load/handshake/transfer milestones
+E:\Codex\Work\thumbnail-hq-20261023-155328\project\tests\tb_switch_timing_control.v:52: $finish called at 2160000 (1ps)

@@ -1,0 +1,4 @@
+{
+  "original_normalized_sha256": "960c2284a9a98e04731b510b7799f0d2c4009fcb5b1e904f0153512423d54591",
+  "scope": "Only timeout comparison implementation changes. Counter wraps at 32 bits, timer_reset exposes zero immediately and loads count=1 on the next edge. All packet/control logic outside this timer block is unchanged."
+}

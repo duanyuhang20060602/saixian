@@ -1,5 +1,6 @@
 # Board B: TF reader and sender. EG4S20BG256.
 set_pin_assignment { clk } { LOCATION = R7; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { key2_n } { LOCATION = B2; IOSTANDARD = LVCMOS33; PULLTYPE = PULLUP; }
 set_pin_assignment { transfer_done } { LOCATION = A4; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; }
 set_pin_assignment { transfer_error } { LOCATION = A3; IOSTANDARD = LVCMOS33; DRIVESTRENGTH = 8; }
 set_pin_assignment { sd_ncs } { LOCATION = A12; IOSTANDARD = LVCMOS33; }

@@ -1,0 +1,2 @@
+PASS live thumbnail tail generation: 3 complete 720p frames, 1382400 exact main words, 14400 complete preview pixels, zero underflow, 6720 preview read commands while background receive active
+E:\Codex\Work\thumbnail-hq-20261023-155328\project\tests\tb_thumbnail_bandwidth.v:84: $finish called at 52576388688 (1ps)

@@ -1,0 +1,36 @@
+{
+  "commit": "5fac54252e00f448732c4b3719a3f87d51467369",
+  "first_parent": "b56f0afa5d40f9e9d69806118a93b16255d364b9",
+  "direct_imports": [
+    {
+      "path": "common/photo_cached_control_a.v",
+      "before_sha256": "c4f471603979aac9dadb5901da15ed8c00a684e27e1e28c89d821c0a481263b2",
+      "upstream_sha256": "b2c01bbf5a67e3254e3a295608f24ecf25cf04f75e75f482ac7b3f0960fbc2c7"
+    },
+    {
+      "path": "common/photo_control.v",
+      "before_sha256": "ae23329605f7f53bc02aa86acfa3d3c45ac9b54a93ccb53db88f4fb8bd635957",
+      "upstream_sha256": "f263a0a351e914596095161953bc01617f063940b3210e20d4a54fb9ece845d6"
+    },
+    {
+      "path": "common/photo_switch_timing.v",
+      "before_sha256": null,
+      "upstream_sha256": "f7f05a978d079181da57519a489a9a25b107840a888ad3c944151d31a0b0528b"
+    },
+    {
+      "path": "common/photo_thumbnail.v",
+      "before_sha256": "6b45b0675ef4c0a7e3777d4fea264ae5f4b08c52d3da67b7c74c557f57d7ef35",
+      "upstream_sha256": "42d73ad7872be3e11bfdb07c44fc718c52454c53cefb0b1ff6a8c7fa136a6054"
+    },
+    {
+      "path": "common/top_photo_a.v",
+      "before_sha256": "f66e916589c37df9d244cdf9af32c0e6792534372ec592748373d45b4da9b1ba",
+      "upstream_sha256": "28befb26685f424c6fb9d29c19b5e3357c9b2c80ebc8c5439b69325bf99552b2"
+    },
+    {
+      "path": "common/top_photo_b.v",
+      "before_sha256": "737d89aa2ad93eb46b183be40f15b252b0185e6583a47ad113832a7c900f3177",
+      "upstream_sha256": "5c4eb3150727e60f4a5e3ede99d5f5fc6f4e0227ebc35a1c045212184a032471"
+    }
+  ]
+}

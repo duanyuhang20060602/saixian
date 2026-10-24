@@ -1,12 +1,14 @@
 // Exact accepted spotlight interpolation, fed by a lossless sparse row cache.
-module photo_spotlight_player #(parameter FRAMES=120,PERIOD=6,PLAYBACK_SPEED=2,INITIAL_HOLD_FRAMES=0)(
+module photo_spotlight_player #(parameter SHARED_CACHE=0,FRAMES=120,PERIOD=6,PLAYBACK_SPEED=2,INITIAL_HOLD_FRAMES=0)(
  input mem_clk,mem_rst,enable,input [20:0] base,
  output reg stream_start,output reg [20:0] stream_offset,input stream_ack,
  input [31:0] data,input data_valid,output reg [3:0] error,
  input video_clk,video_rst,display_valid,pause,
  input [23:0] rgb_in,input de_in,vs_in,
  output reg [23:0] rgb_out,output reg de_out,vs_out,
- output reg [6:0] frame_index,output reg initialized
+ output reg [6:0] frame_index,output reg initialized,
+ output cache_write_en,output [8:0] cache_write_address,output [31:0] cache_write_data,
+ output [8:0] cache_read_address,input [31:0] cache_read_data
 );
 
 localparam DISPLAY_PERIOD=PERIOD/PLAYBACK_SPEED;
@@ -83,7 +85,7 @@ always @(posedge mem_clk)begin
     else begin bitmap[39:32]<=buffer[index[1:0]][7:0];if(buffer[index[1:0]][31:8]!=0)error<=3;end
     header_words<=header_words+1'b1;index<=index+1'b1;
    end else if(!bitmap[0] || index<4)begin
-    row_bank[{load_row[1:0],load_bank,column}]<=bitmap[0] ? buffer[index[1:0]]:32'd0;
+    // The row write port is shared with the relief palette in the renderer.
     if(bitmap[0])index<=index+1'b1;
     bitmap<={1'b0,bitmap[39:1]};column<=column+1'b1;if(column==39)state<=NEXT_ROW;
    end else begin state<=REFILL;stream_offset<=base+payload;end
@@ -100,6 +102,13 @@ always @(posedge mem_clk)begin
   default:error<=4;
  endcase
 end
+// Identical write predicate to the original EMIT branch, before state updates.
+assign cache_write_en=!mem_rst && enable_mem && !video_error_sync[2] && error==0 &&
+ state==EMIT && header_words>=2 && (!bitmap[0] || index<4);
+assign cache_write_address={load_row[1:0],load_bank,column};
+assign cache_write_data=bitmap[0] ? buffer[index[1:0]]:32'd0;
+always @(posedge mem_clk)
+ if(!SHARED_CACHE && cache_write_en)row_bank[cache_write_address]<=cache_write_data;
 wire frame_tick=vs_in && !vs_previous;
 wire advance=initialized && next_ready && display_valid && !pause_sync && initial_hold>=INITIAL_HOLD_FRAMES;
 wire field_advance=advance && step==DISPLAY_PERIOD-1;
@@ -188,16 +197,23 @@ end
 wire [2:0] line_fy=pixel_y>=4 ? line_shift[2:0]:3'd0;
 reg [3:0] blank_index;
 reg fetch_active,read_valid_d,read_zero;reg [1:0] fetch_phase,read_lane,read_point;
-reg [7:0] fetch_point;reg [31:0] read0;
+reg [7:0] fetch_point;reg [31:0] internal_read0;
+wire [31:0] read0=SHARED_CACHE ? cache_read_data:internal_read0;
 wire [1:0] fetch_lane=de_in ? fetch_phase:blank_index[1:0];
 wire [7:0] fetch_x=de_in ? fetch_point:{6'd0,blank_index[3:2]};
 wire [6:0] fetch_y=fetch_lane[1] ? line_lower:line_upper;
 wire [8:0] row_address={fetch_y[1:0],fetch_lane[0],fetch_x[7:2]};
+assign cache_read_address=row_address;
 wire source_valid=!de_in || fetch_active;
 wire [7:0] source_byte=read_zero ? 8'd0:(read0>>{read_point,3'b000});
 reg [7:0] top_a,top_b;
 wire [7:0] top_selected=read_lane[0] ? top_b:top_a;
 wire signed [8:0] vertical_difference=$signed({1'b0,source_byte})-$signed({1'b0,top_selected});
+// The fraction is only three bits: keep the product local to the row cache.
+// Explicit signed shift/add avoids a RAM -> distant DSP -> register route.
+wire signed [12:0] vertical_term0=line_fy[0] ? {{4{vertical_difference[8]}},vertical_difference}:13'sd0;
+wire signed [12:0] vertical_term1=line_fy[1] ? {{3{vertical_difference[8]}},vertical_difference,1'b0}:13'sd0;
+wire signed [12:0] vertical_term2=line_fy[2] ? {{2{vertical_difference[8]}},vertical_difference,2'b0}:13'sd0;
 reg signed [12:0] vertical_product;
 reg [10:0] vertical_base,point_a;
 reg vertical_valid,vertical_field;reg [1:0] vertical_slot;
@@ -213,7 +229,8 @@ end
 photo_award_tile_cache tiles(.clk(video_clk),.we(vertical_valid && vertical_field && !video_rst),
  .wa(vertical_slot),.wd({vertical_sum[10:0],point_a}),.address(point_read),.data(point_data));
 always @(posedge video_clk)begin
- read0<=row_bank[row_address];read_zero<=fetch_y>=68;
+ if(!SHARED_CACHE)internal_read0<=row_bank[row_address];
+ read_zero<=fetch_y>=68;
  if(video_rst)begin
   blank_index<=0;fetch_active<=0;read_valid_d<=0;read_lane<=0;read_point<=0;
   fetch_phase<=0;fetch_point<=0;top_a<=0;top_b<=0;
@@ -222,7 +239,7 @@ always @(posedge video_clk)begin
   read_valid_d<=source_valid;read_lane<=fetch_lane;read_point<=fetch_x[1:0];
   vertical_valid<=read_valid_d && read_lane[1];
   vertical_field<=read_lane[0];vertical_slot<=read_point;
-  vertical_product<=vertical_difference*$signed({1'b0,line_fy});
+  vertical_product<=vertical_term0+vertical_term1+vertical_term2;
   vertical_base<={top_selected,3'b000};
   if(read_valid_d && !read_lane[1])begin
    if(read_lane[0])top_b<=source_byte;else top_a<=source_byte;

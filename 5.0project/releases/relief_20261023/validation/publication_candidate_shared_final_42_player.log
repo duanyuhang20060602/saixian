@@ -1,0 +1,2 @@
+PASS two complete 720p frames: indexed angle change, exact 12-cycle shading, dual-clock row cache, randomized memory grant stalls; pixels=1843200 bursts=4672
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_dsp\5.0project\tests\tb_relief_player.v:59: $finish called at 33002090022 (1ps)

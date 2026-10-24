@@ -260,56 +260,69 @@ function signed[21:0] magnitude;input signed[21:0] n;begin magnitude=n<0 ? -n:n;
 // Constant-distance tests below compare both signed bounds in parallel.
 // Valid geometry stays away from the signed minimum, so this is exactly
 // abs(distance)<limit without a conditional negate on the highlight path.
-reg signed[21:0] a,b,mix,darkness,glint,half_width,front,distance,delta,projection,travel,center,metric;
+// Separate coordinate, weight, shade and circular-distance ranges. Keeping
+// every temporary at the 22-bit portal width duplicates long carry chains.
+// Source coordinates retire modulo 2^17 at a_d/b_d, exactly as before.
+reg signed[16:0] a,b;
+reg signed[9:0] mix;
+reg signed[6:0] darkness;
+reg signed[3:0] glint;
+reg signed[11:0] half_width,center;
+reg signed[12:0] front,metric;
+reg signed[13:0] distance;
+reg signed[17:0] projection;
+reg signed[10:0] travel;
+reg signed[21:0] delta;
+reg use_alpha;reg[8:0] bounded_alpha;reg[4:0] alpha_steps;
 always @*begin
- a=px0;b=px0;mix=p0;darkness=0;glint=0;
+ a=px0;b=px0;mix=p0;darkness=0;glint=0;use_alpha=0;bounded_alpha=0;alpha_steps=0;
  half_width=0;front=0;distance=0;delta=0;projection=0;travel=0;center=640;metric=0;
  if(e0)case(fx0)
   3:begin // Eight independently projected cards, staggered in time.
    half_width=(({23'd0,scale0}<<2)+{23'd0,scale0})>>4;projection=product>>>10;
    if(magnitude(lx0)<=half_width&&scale0>=16)begin
     a=origin0+80+projection;b=a;
-    mix=t0<112 ? 0:t0>=144 ? 256:(t0-112)<<3;
+    use_alpha=1;
     darkness=(256-scale0)>>4;if(t0>0&&t0<256&&half_width-magnitude(lx0)<5)glint=3;
    end else begin a=u0;b=u0;mix=256;darkness=12;end
-   if(r0)begin a=1279-a;b=1279-b;end
+   // Reflection is shared after the mode geometry.
   end
   4:begin // Accordion: a progressively compressed texture with shaded folds.
    front=(256-p0);front=(front<<2)+front;a=product>>>10;b=u0;
-   distance=$signed({1'b0,u0})-front;mix=clipped_weight(128+(distance<<3));
+   distance=$signed({1'b0,u0})-front;use_alpha=1;
    if(distance<0)begin
     metric=fold_phase(a[10:0]);darkness=metric<80 ? p0>>4:p0>>3;
     if(darkness>24)darkness=24;
     if(p0>8&&(metric<4||metric>=156))glint=2;
    end
-   if(r0)begin a=1279-a;b=1279-b;end
+   // Reflection is shared after the mode geometry.
   end
   5:begin // Metallic liquid front, local refraction, silver rim and shadow.
    projection=wave_product>>>7;front=({23'd0,p0}<<2)+({23'd0,p0}<<1)-128+projection;distance=$signed({1'b0,u0})-front;
-   mix=clipped_weight(128-(distance<<3));a=u0;b=u0;
+   use_alpha=1;a=u0;b=u0;
    if((distance>-22'sd32&&distance<22'sd32))a=a+(distance>>>1);
    if(distance>0&&distance<32)darkness=6;
    glint=(distance>-22'sd6&&distance<22'sd6) ? 6:(distance>-22'sd16&&distance<22'sd16) ? 2:0;
-   if(r0)begin a=1279-a;b=1279-b;end
+   // Reflection is shared after the mode geometry.
   end
   7:begin // True circular distance squared; no square-root or frame buffer.
    delta=(wave_product<<<3)+wave_product-product-second_product;
-   mix=clipped_weight(128+(delta>>>7));
+   use_alpha=1;
    if((delta>-22'sd24576&&delta<22'sd24576))a=a+(delta>>>11);
    glint=(delta>-22'sd8192&&delta<22'sd8192) ? 7:(delta>-22'sd16384&&delta<22'sd16384) ? 2:0;
    if(delta<0&&delta>-24576)darkness=4;
   end
   8:begin // Slanted glass tiles slide independently, exposing the next image.
    travel=(product>>>8)<<1;distance=$signed(tilt0);distance=distance-(({30'd0,gc0}<<8)+({30'd0,gc0}<<6))+travel-320;
-   a=u0+travel;b=u0;mix=clipped_weight(128+(distance<<3));
-   if(mix<256)darkness=t0>>5;
+   a=u0+travel;b=u0;use_alpha=1;
+   if(distance<16)darkness=t0>>5;
    if((distance>-22'sd5&&distance<22'sd5))glint=4;
-   if(r0)begin a=1279-a;b=1279-b;end
+   // Reflection is shared after the mode geometry.
   end
   9:begin // Horizontal tunnel: old panel contracts, new panel expands.
    a=640+(product>>>10);b=640+(second_product>>>10);
    half_width=({23'd0,p0}<<1)+{23'd0,p0};distance=half_width-magnitude($signed({1'b0,px0})-640);
-   mix=clipped_weight(128+(distance<<<3));
+   use_alpha=1;
    if(magnitude($signed({1'b0,px0})-640)>((((256-p0)<<2)+(256-p0))>>1)&&distance<0)darkness=24;
    else darkness=env0>>4;
    metric=magnitude($signed({1'b0,px0})-640)+magnitude($signed({1'b0,y0})-360);
@@ -319,12 +332,39 @@ always @*begin
    half_width=product>>>8;half_width=(half_width<<1)+half_width;center=640+(wave_product>>>8);
    if(r0)center=1280-center;
    distance=half_width-magnitude($signed({1'b0,px0})-center);
-   mix=clipped_weight(128+(distance<<3));a=px0+(px0<center ? half_width:-half_width);
+   use_alpha=1;a=px0+(px0<center ? half_width:-half_width);
    if((distance>-22'sd24&&distance<22'sd24))a=a+(distance>>>2);
    if(distance<0&&distance>-32)darkness=8;
    glint=(distance>-22'sd5&&distance<22'sd5) ? 5:(distance>-22'sd12&&distance<22'sd12) ? 1:0;
   end
  endcase
+ // One saturating alpha path and one reflection pair serve all mutually
+ // exclusive modes. Select operands before the shared arithmetic.
+ if(use_alpha)begin
+  // Saturating 128 + (d << 3) is a five-bit biased code inside
+  // -16..15. Outside that interval only the endpoint matters. The
+  // portal uses the corresponding exact seven-bit fractional shift.
+  // Select small operands before encoding instead of a 22-bit adder.
+  if(fx0==7)begin
+   if(delta < -22'sd16384)bounded_alpha=0;
+   else if(delta >= 22'sd16384)bounded_alpha=256;
+   else bounded_alpha={1'b0,~delta[14],delta[13:7]};
+  end else if(fx0==3)begin
+   if(t0<112)bounded_alpha=0;
+   else if(t0>=144)bounded_alpha=256;
+   else bounded_alpha={1'b0,~t0[4],t0[3:0],3'd0};
+  end else begin
+   alpha_steps=fx0==5 ? -distance[4:0]:distance[4:0];
+   if(distance < -14'sd16)bounded_alpha=fx0==5 ? 256:0;
+   else if(distance >= 14'sd16)bounded_alpha=fx0==5 ? 0:256;
+   else if(fx0==5 && distance==-14'sd16)bounded_alpha=256;
+   else bounded_alpha={1'b0,~alpha_steps[4],alpha_steps[3:0],3'd0};
+  end
+  mix=$signed({1'b0,bounded_alpha});
+ end
+ if(e0 && r0 && (fx0==3 || fx0==4 || fx0==5 || fx0==8))begin
+  a=17'sd1279-a;b=17'sd1279-b;
+ end
  if(!e0||p0==0||p0==256)begin
   a={wx0,1'b0};b=px0;mix=e0 ? p0:0;darkness=0;glint=0;
  end

@@ -60,7 +60,7 @@ always @(negedge vc)if(running)begin
  if(x==1649)begin x=0;if(y==IMAGE_ROWS+29)begin y=0;frames=frames+1;end else y=y+1;end else x=x+1;
 end
 frame_read_write rw(.external_request(light_req),.external_busy(claim),.access_busy(frame_busy),
- .fluid_mode(1'b1),.fluid_progress(9'd0),.water_cfg(77'd0),.high_color(1'b0),.rst(rst),.mem_clk(mc),
+ .fluid_progress(9'd0),.water_cfg(77'd0),.rst(rst),.mem_clk(mc),
  .Sdr_init_done(1'b1),.Sdr_init_ref_vld(refresh_gate),.Sdr_busy(busy),.App_rd_en(frame_rd),.App_rd_addr(frame_ra),
  .Sdr_rd_en(response_valid && !claim),.Sdr_rd_dout(response_data),.read_clk(vc),.read_req(read_req),.read_req_ack(ack),.read_finish(finish),
  .read_addr_0(21'd0),.read_addr_1(21'd691200),.read_addr_2(21'd1382400),.read_addr_3(21'd0),.read_addr_index(2'd0),.read_len(IMAGE_ROWS*640),

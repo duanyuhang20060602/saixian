@@ -21,7 +21,7 @@ localparam HELLO_SEND=0,HELLO_WAIT=1,IDLE=2,GET=3,WAIT_BEGIN=4,ARM=5,
 reg [3:0] state;reg send;reg [159:0] message;
 assign debug_state=state;
 wire tx_busy,got,bad;wire [159:0] incoming;
-photo_uart #(.CLK_HZ(CLK_HZ)) port(.clk(clk),.rst(rst),.rx(uart_rx),.tx(uart_tx),
+photo_uart #(.CLK_HZ(CLK_HZ),.PULSE_PAYLOAD(1)) port(.clk(clk),.rst(rst),.rx(uart_rx),.tx(uart_tx),
  .send(send),.message(message),.busy(tx_busy),.received(got),.received_message(incoming),.bad_packet(bad));
 wire [7:0] kind=incoming[159:152];wire [31:0] msg_session=incoming[151:120];
 wire [15:0] msg_seq=incoming[119:104];
@@ -110,23 +110,24 @@ always @(posedge clk or posedge rst)begin
 end
 endmodule
 
-module photo_control_b #(parameter CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SEND_SOURCE_SIZE=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0,AWARD_LIGHTS=0)(
- input high_color,
- input award_available,award_scan_complete,
+module photo_control_b #(parameter CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SEND_SOURCE_SIZE=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0,AWARD_LIGHTS=0,RELIEF_CONTROL=0)(
+ input award_available,award_scan_complete,relief_available,
  input clk,rst,uart_rx,output uart_tx,input [2:0] image_count,input media_ready,
  input [1:0] media_slot,input [3:0] media_error,
  input [15:0] media_source_width,media_source_height,
  output reg media_request,output reg [2:0] media_target,output reg media_release,media_cancel,
  output reg [1:0] transmit_slot,output reg start_toggle,abort_toggle,
  output reg display_valid,prefetch_pause,output reg [2:0] display_image,
- output reg [18:0] settings_state,input tx_done,input [31:0] tx_crc,output busy,output reg [3:0] error,output [3:0] debug_state
+ output reg [18:0] settings_state,input tx_done,input [31:0] tx_crc,output busy,output reg [3:0] error,output [3:0] debug_state,
+ output reg timing_begin,timing_ready,timing_send,timing_done,output timing_cancel
 );
 
 wire tx_busy,got,bad;wire [159:0] incoming;
-wire fluid_frame=FLUID && !high_color && media_target!=6;
-wire [31:0] frame_bytes=(AWARD_LIGHTS && media_target==6) || high_color || fluid_frame ? 32'd2764800:FRAME_BYTES;
-wire request_fluid=FLUID && !high_color && incoming[98:96]!=6;
-wire [31:0] request_bytes=(AWARD_LIGHTS && incoming[98:96]==6) || high_color || request_fluid ? 32'd2764800:FRAME_BYTES;
+wire has_relief=RELIEF_CONTROL && relief_available;
+wire fluid_frame=FLUID && media_target<6;
+wire [31:0] frame_bytes=(AWARD_LIGHTS && media_target>=6) || fluid_frame ? 32'd2764800:FRAME_BYTES;
+wire request_fluid=FLUID && incoming[98:96]<6;
+wire [31:0] request_bytes=(AWARD_LIGHTS && incoming[98:96]>=6) || request_fluid ? 32'd2764800:FRAME_BYTES;
 localparam TIME_HZ=CLK_HZ/TIMER_SCALE;
 function [159:0] packet;
  input [7:0] kind;input [31:0] session;input [15:0] request_seq;
@@ -138,33 +139,35 @@ localparam DISCOVER=0,HELLO_ACK=1,IDLE=2,LOAD=3,BEGIN_SEND=4,WAIT_READY=5,
 reg [3:0] state;reg [31:0] session,timer;reg [15:0] request_seq;
 assign debug_state=state;
 reg settings_reply,context_reply,cancel_reply;reg [7:0] announced_count;
-wire [7:0] catalog=AWARD_CONTROL ? {award_available,award_scan_complete,3'd0,image_count}:{5'd0,image_count};
-wire valid_target=incoming[103:96]<image_count || (AWARD_CONTROL && award_available && incoming[103:96]==6);
+wire [7:0] catalog=AWARD_CONTROL ? {award_available,award_scan_complete,has_relief,2'd0,image_count}:{5'd0,image_count};
+wire valid_target=incoming[103:96]<image_count || (AWARD_CONTROL && ((award_available && incoming[103:96]==6) || (has_relief && incoming[103:96]==7)));
 reg direction;reg [1:0] retries;reg send;reg [159:0] message;reg [31:0] completed_crc;
 reg [15:0] source_width,source_height;
 
-photo_uart #(.CLK_HZ(CLK_HZ)) port(.clk(clk),.rst(rst),.rx(uart_rx),.tx(uart_tx),
+photo_uart #(.CLK_HZ(CLK_HZ),.PULSE_PAYLOAD(1)) port(.clk(clk),.rst(rst),.rx(uart_rx),.tx(uart_tx),
  .send(send),.message(message),.busy(tx_busy),.received(got),.received_message(incoming),.bad_packet(bad));
 wire [7:0] kind=incoming[159:152];
 wire matching=incoming[151:120]==session && incoming[119:104]==request_seq && incoming[103:96]=={5'd0,media_target};
+assign timing_cancel=media_cancel || error!=0 || (got && matching && kind==9);
 assign busy=state!=IDLE && state!=DISCOVER;
 always @(posedge clk or posedge rst)begin
  if(rst)begin announced_count<=0;display_valid<=0;display_image<=0;prefetch_pause<=0;context_reply<=0;cancel_reply<=0;settings_state<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};settings_reply<=0;state<=DISCOVER;session<=0;request_seq<=0;timer<=0;direction<=1;retries<=0;send<=0;message<=0;
   media_request<=0;media_target<=0;media_release<=0;media_cancel<=0;transmit_slot<=0;start_toggle<=0;abort_toggle<=0;error<=0;completed_crc<=0;
-  source_width<=0;source_height<=0;end
+  source_width<=0;source_height<=0;timing_begin<=0;timing_ready<=0;timing_send<=0;timing_done<=0;end
  else begin
   timer<=timer+1'b1;send<=0;media_request<=0;
+  timing_begin<=0;timing_ready<=0;timing_send<=0;timing_done<=0;
   if(got && kind==19 && incoming[151:120]==session && incoming[23:16]==catalog)announced_count<=incoming[23:16];media_release<=0;media_cancel<=0;
-  if(got && kind==1 && incoming[87:56]==FRAME_BYTES && (image_count>0 || (AWARD_CONTROL && award_available)))begin
+  if(got && kind==1 && incoming[87:56]==FRAME_BYTES && (image_count>0 || (AWARD_CONTROL && (award_available || has_relief))))begin
    session<=incoming[151:120];abort_toggle<=~abort_toggle;media_cancel<=1;state<=HELLO_ACK;timer<=0;error<=0;
   end else if(got && matching && kind==9 && (state==WAIT_READY || state==SENDING || state==WAIT_ACCEPT || state==WAIT_COMMIT))begin
    abort_toggle<=~abort_toggle;timer<=0;
    if(retries<2)begin retries<=retries+1'b1;state<=BEGIN_SEND;end
    else begin media_cancel<=1;error<=4;state<=ERROR_SEND;end
-  end else if(SETTINGS_LINK && got && kind==12 && incoming[151:120]==session)begin
+  end else if(SETTINGS_LINK && got && kind==12 && !incoming[42] && incoming[151:120]==session)begin
    settings_state<=incoming[42:24];settings_reply<=1;
   end else if(SETTINGS_LINK && got && incoming[151:120]==session && kind==14)begin
-   display_valid<=incoming[89] && (incoming[98:96]<image_count || (AWARD_CONTROL && award_available && incoming[98:96]==6));display_image<=incoming[98:96];
+   display_valid<=incoming[89] && (incoming[98:96]<image_count || (AWARD_CONTROL && ((award_available && incoming[98:96]==6) || (has_relief && incoming[98:96]==7))));display_image<=incoming[98:96];
    prefetch_pause<=incoming[88];context_reply<=1;
   end else if(SETTINGS_LINK && got && incoming[151:120]==session && kind==16)begin
    // Cancel only the link transaction; preserve raw SDRAM caches and SD init.
@@ -180,17 +183,18 @@ always @(posedge clk or posedge rst)begin
     message<=packet(17,session,0,0,0,0,0,0);send<=1;cancel_reply<=0;
    end else if(SETTINGS_LINK && context_reply && !tx_busy && !send)begin
     message<=packet(15,session,0,{5'd0,display_image},{6'd0,display_valid,prefetch_pause},0,0,0);send<=1;context_reply<=0;
-   end else if(SETTINGS_LINK && settings_reply && high_color==settings_state[18] && !tx_busy && !send)begin
+   end else if(SETTINGS_LINK && settings_reply && settings_state[18]==1'b0 && !tx_busy && !send)begin
     message<=packet(13,session,0,0,0,0,{13'd0,settings_state},0);send<=1;settings_reply<=0;
-   end else if(got && kind==3 && incoming[151:120]==session && valid_target && incoming[87:56]==request_bytes && incoming[93]==request_fluid && incoming[94]==high_color && high_color==settings_state[18])begin
+   end else if(got && kind==3 && incoming[151:120]==session && valid_target && incoming[87:56]==request_bytes && incoming[93]==request_fluid && incoming[94]==1'b0 && settings_state[18]==1'b0)begin
     request_seq<=incoming[119:104];media_target<=incoming[98:96];direction<=incoming[88];retries<=0;
-    media_request<=1;state<=LOAD;timer<=0;error<=0;
-   end else if(catalog!=announced_count && (image_count>0 || (AWARD_CONTROL && award_available)) && timer>=TIME_HZ/10 && !tx_busy && !send)begin
+    media_request<=1;state<=LOAD;timer<=0;error<=0;timing_begin<=1;
+   end else if(catalog!=announced_count && (image_count>0 || (AWARD_CONTROL && (award_available || has_relief))) && timer>=TIME_HZ/10 && !tx_busy && !send)begin
     // Reliable count growth notification; acknowledgement never resets caches.
     message<=packet(18,session,0,0,0,FRAME_BYTES,0,catalog);send<=1;timer<=0;
    end
    LOAD:begin
     if(media_ready)begin
+     timing_ready<=1;
      transmit_slot<=media_slot;source_width<=media_source_width;source_height<=media_source_height;
      state<=BEGIN_SEND;timer<=0;
     end
@@ -200,13 +204,13 @@ always @(posedge clk or posedge rst)begin
    BEGIN_SEND:if(!tx_busy && !send)begin
     // BEGIN does not carry a frame CRC. Flag 7 selects source-size metadata
     // in that field; END/ACCEPT/COMMIT retain their existing CRC semantics.
-    message<=packet(4,session,request_seq,{5'd0,media_target},{SEND_SOURCE_SIZE!=0,high_color,fluid_frame,4'd0,direction},frame_bytes,
+    message<=packet(4,session,request_seq,{5'd0,media_target},{SEND_SOURCE_SIZE!=0,1'b0,fluid_frame,4'd0,direction},frame_bytes,
       SEND_SOURCE_SIZE ? {source_width,source_height}:32'd0,0);
     send<=1;state<=WAIT_READY;timer<=0;
    end
-   WAIT_READY:if(got && matching && kind==5)begin start_toggle<=~start_toggle;state<=SENDING;timer<=0;end
+   WAIT_READY:if(got && matching && kind==5)begin start_toggle<=~start_toggle;state<=SENDING;timer<=0;timing_send<=1;end
               else if(timer>=64'd5*TIME_HZ)begin error<=2;state<=ERROR_SEND;end
-   SENDING:if(tx_done)begin completed_crc<=tx_crc;state<=END_SEND;timer<=0;end
+   SENDING:if(tx_done)begin completed_crc<=tx_crc;state<=END_SEND;timer<=0;timing_done<=1;end
            else if(timer>=64'd5*TIME_HZ)begin abort_toggle<=~abort_toggle;error<=5;state<=ERROR_SEND;end
    END_SEND:if(!tx_busy && !send)begin
     message<=packet(6,session,request_seq,{5'd0,media_target},0,frame_bytes,completed_crc,0);send<=1;state<=WAIT_ACCEPT;timer<=0;

@@ -1,5 +1,4 @@
 module bmp_read(
-    input high_color,
     input                       clk,
     input                       rst,
     input                       op_abort,
@@ -119,11 +118,11 @@ reg        audio_header_ok_latched;
 reg [31:0] audio_data_len_latched;
 reg [2:0]  audio_found_count;
 reg        sprint_tag_latched;
-wire dlt_header_ok;wire [31:0] dlt_bytes,dlt_crc;
+wire dlt_header_ok,dlt_relief;wire [31:0] dlt_bytes,dlt_crc;
 reg dlt_ok_latched;reg [31:0] dlt_next;reg dlt_limit;
 photo_dlt_header dlt_header(.clk(clk),.rst(rst | op_abort),
  .valid(state==ST_SCAN && sd_sec_read_data_valid && rd_cnt<64),.index(rd_cnt[5:0]),.data(sd_sec_read_data),
- .header_ok(dlt_header_ok),.file_bytes(dlt_bytes),.payload_crc(dlt_crc));
+ .header_ok(dlt_header_ok),.file_bytes(dlt_bytes),.payload_crc(dlt_crc),.is_relief(dlt_relief));
 always @(posedge clk or posedge rst)begin
  if(rst || op_abort)begin dlt_ok_latched<=0;dlt_next<=0;dlt_limit<=0;end
  else begin
@@ -154,7 +153,7 @@ saixian_load_scaler #(.OUT_WIDTH(1280),.OUT_HEIGHT(720)) u_scaler(
     .clk(clk), .rst(rst | op_abort), .start(write_req && !write_req_previous),
     .source_width(width[15:0]), .source_height(height[15:0]),
     .pixel_valid(raw_pixel_valid), .pixel_in(raw_pixel),
-    .high_color(high_color),.pixel_out_valid(bmp_data_wr_en), .pixel_out(bmp_data),
+    .pixel_out_valid(bmp_data_wr_en), .pixel_out(bmp_data),
     .busy(scaler_busy), .fault(scaler_fault));
 assign ready = (state == ST_IDLE) && !scaler_busy;
 assign header_basic_ok = (header_0 == "B") &&
@@ -481,7 +480,7 @@ always @(posedge clk or posedge rst) begin
                     if (dlt_ok_latched) begin
                         scan_found_valid<=1;
                         scan_found_sector<=scan_sector;
-                        scan_found_width<=16'h8500;scan_found_height<=720;scan_found_dlt<=1;
+                        scan_found_width<=dlt_relief ? 16'hc500:16'h8500;scan_found_height<=720;scan_found_dlt<=1;
                         if(dlt_limit)begin scan_done<=1;scan_exhausted<=1;state<=ST_IDLE;end
                         else state<=ST_SCAN;
                         sd_sec_read_addr<=dlt_next;scan_sector<=dlt_next;
@@ -594,14 +593,13 @@ module saixian_load_scaler #(
     parameter integer OUT_WIDTH=1280, OUT_HEIGHT=720,
     parameter integer VERTICAL_PERIOD=16
 )(
-    input wire clk, rst, start,high_color,
+    input wire clk, rst, start,
     input wire [15:0] source_width, source_height,
     input wire pixel_valid, input wire [23:0] pixel_in,
     output reg pixel_out_valid, output reg [23:0] pixel_out,
     output wire busy, output reg fault
 );
 localparam integer CHUNKS=(OUT_WIDTH+1023)/1024;
-reg color_latched;
 reg active, native_size;
 // VGA artwork/text needs crisp pixel replication, not two-axis blending.
 // Latch the policy per image; other source sizes keep bilinear interpolation.
@@ -654,11 +652,10 @@ wire [7:0] hb=h_base[7:0]+hp_b[15:8];
 wire [15:0] h_word={hr[7:3],hg[7:2],hb[7:3]};
 reg [1:0] read_chunk, read_bank;
 wire [23:0] bank_read [0:2];
-wire [23:0] h_rgb=color_latched ? {hr,hg,hb}:
- {h_word[15:11],h_word[15:13],h_word[10:5],h_word[10:9],h_word[4:0],h_word[4:2]};
+
 genvar bank,chunk;
 generate for(bank=0;bank<3;bank=bank+1) begin: banks
-    wire [23:0] q [0:CHUNKS-1];
+    wire [15:0] q [0:CHUNKS-1];
     for(chunk=0;chunk<CHUNKS;chunk=chunk+1) begin: chunks
         // The 1280-pixel row has a 1024-pixel head and a 256-pixel tail.
         // Keep the tail in two small eRAMs instead of two mostly empty 32Ks.
@@ -666,25 +663,25 @@ generate for(bank=0;bank<3;bank=bank+1) begin: banks
         localparam TAIL_ADDR=LAST_PIXELS<=1 ? 1:$clog2(LAST_PIXELS);
         localparam BANK_ADDR=chunk==CHUNKS-1 ? TAIL_ADDR:10;
         EG_LOGIC_BRAM #(
-          .DATA_WIDTH_A(24),.ADDR_WIDTH_A(BANK_ADDR),.DATA_DEPTH_A(1<<BANK_ADDR),
-          .DATA_WIDTH_B(24),.ADDR_WIDTH_B(BANK_ADDR),.DATA_DEPTH_B(1<<BANK_ADDR),
+          .DATA_WIDTH_A(16),.ADDR_WIDTH_A(BANK_ADDR),.DATA_DEPTH_A(1<<BANK_ADDR),
+          .DATA_WIDTH_B(16),.ADDR_WIDTH_B(BANK_ADDR),.DATA_DEPTH_B(1<<BANK_ADDR),
           .BYTE_ENABLE(0),.MODE("DP"),.REGMODE_A("NOREG"),.REGMODE_B("NOREG"),
           .WRITEMODE_A("NORMAL"),.WRITEMODE_B("NORMAL"),.RESETMODE("SYNC"),
           .DEBUGGABLE("NO"),.PACKABLE("NO"),.FORCE_KEEP("OFF"),
           .INIT_FILE("NONE"),.FILL_ALL("NONE"),.IMPLEMENT(BANK_ADDR<10 ? "9K":"32K")
         ) line_ram(
-          .doa(),.dob(q[chunk]),.dia(h_rgb),.dib(24'd0),
+          .doa(),.dob(q[chunk]),.dia(h_word),.dib(16'd0),
           .cea(h_valid && h_bank_q==bank && (h_addr>>10)==chunk),.ocea(1'b0),.clka(clk),.wea(1'b1),.rsta(1'b0),
           .ceb(v_run && (vx>>10)==chunk),.oceb(1'b0),.clkb(clk),.web(1'b0),.rstb(1'b0),
           .bea(1'b0),.beb(1'b0),.addra(h_addr[BANK_ADDR-1:0]),.addrb(vx[BANK_ADDR-1:0]));
     end
-    reg [23:0] selected;
+    reg [15:0] selected;
     integer k;
     always @* begin
         selected=0;
         for(k=0;k<CHUNKS;k=k+1) if(read_chunk==k) selected=q[k];
     end
-    assign bank_read[bank]=selected;
+    assign bank_read[bank]={selected[15:11],selected[15:13],selected[10:5],selected[10:9],selected[4:0],selected[4:2]};
 end endgenerate
 reg read_first, read_valid, read_last, read_integer;
 reg [7:0] read_weight;
@@ -717,7 +714,7 @@ wire next_y_available=(next_ypos[26:16]<v_source_y) ||
 assign busy=active;
 always @(posedge clk or posedge rst) begin
     if(rst) begin
-        color_latched<=0;active<=0;native_size<=0;vga_crisp<=0;fault<=0;pixel_out_valid<=0;pixel_out<=0;vertical_pace<=0;
+        active<=0;native_size<=0;vga_crisp<=0;fault<=0;pixel_out_valid<=0;pixel_out<=0;vertical_pace<=0;
         in_x<=0;in_y<=0;source_last_x<=0;source_last_y<=0;x_step<=0;y_step<=0;xpos<=0;ypos<=0;
         x_dividend<=0;y_dividend<=0;x_quotient<=0;y_quotient<=0;
         x_remainder<=0;y_remainder<=0;divide_count<=0;dividing<=0;
@@ -730,7 +727,7 @@ always @(posedge clk or posedge rst) begin
         mix_valid<=0;mix_last<=0;mix_base<=0;vp_r<=0;vp_g<=0;vp_b<=0;
         select_valid<=0;select_last<=0;selected_current<=0;selected_previous<=0;selected_weight<=0;
     end else if(start) begin
-        color_latched<=high_color;active<=1;fault<=0;native_size<=(source_width==OUT_WIDTH && source_height==OUT_HEIGHT);vertical_pace<=0;
+        active<=1;fault<=0;native_size<=(source_width==OUT_WIDTH && source_height==OUT_HEIGHT);vertical_pace<=0;
         vga_crisp<=(source_width==16'd640 && source_height==16'd480 &&
                     OUT_WIDTH==1280 && OUT_HEIGHT==720);
         // Compute terminal indices once, rather than subtracting in every

@@ -48,7 +48,7 @@ photo_cached_control_a #(.CLK_HZ(806400),.FRAME_BYTES(64),.SETTINGS_LINK(1),.AWA
  .current_source_width(sw),.current_source_height(sh));
 photo_control_b #(.CLK_HZ(1152000),.FRAME_BYTES(64),.SEND_SOURCE_SIZE(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1)) b(
  .award_available(award_found),.award_scan_complete(scan_complete),
- .high_color(1'b0),.clk(bc),.rst(rst),.uart_rx(at),.uart_tx(bt),.image_count(3'd6),.media_ready(media_ready && media_result_current),
+ .clk(bc),.rst(rst),.uart_rx(at),.uart_tx(bt),.image_count(3'd6),.media_ready(media_ready && media_result_current),
  .media_slot(2'd0),.media_error(media_result_current ? sticky_media_error:4'd0),.media_source_width(locked==6 ? 16'h8500:16'd1280),.media_source_height(16'd720),
  .media_request(request),.media_target(target),.media_release(release_media),.media_cancel(cancel),
  .transmit_slot(transmit_slot),.start_toggle(start_t),.abort_toggle(abort_b_t),.tx_done(done_b),.tx_crc(32'd0),.busy(bbusy),.error(be));
@@ -76,10 +76,10 @@ always @(posedge lc)begin
   if(rx_done)da<=~da;if(sent)db<=~db;
  end
 end
-photo_link_sender #(.FRAME_PIXELS(32)) tx(.high_color(1'b0),.clk(lc),.rst(rst),.start(start),.abort(abort_b),
+photo_link_sender #(.FRAME_PIXELS(32)) tx(.clk(lc),.rst(rst),.start(start),.abort(abort_b),
  .data(rd),.empty(1'b0),.read_ack(ra[1]),.link_ready(lr),.read_req(read_req),.read_en(read_en),
  .link_data(ld),.link_valid(lv),.link_sof(ls),.link_eof(le),.done(sent));
-photo_link_receiver #(.FRAME_PIXELS(32)) rx(.high_color(1'b0),.clk(lc),.rst(rst),.arm(arm),.abort(abort_a),
+photo_link_receiver #(.FRAME_PIXELS(32)) rx(.clk(lc),.rst(rst),.arm(arm),.abort(abort_a),
  .data(ld),.valid(lv),.sof(ls),.eof(le),.ready(lr),.armed(armed),.write_req(wr_req),.write_ack(wa[1]),
  .full(1'b0),.write_en(we),.write_data(wd),.finish_toggle(finish),.done(rx_done),.fault(fault));
 task advance;

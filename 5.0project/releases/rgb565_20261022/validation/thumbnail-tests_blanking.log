@@ -1,0 +1,2 @@
+PASS real 720p blanking: cache across 3 frame boundaries, 9216 source words, 14400 complete preview pixels
+E:\Codex\Downloads\qiansai\5.2project\tests\tb_thumbnail_blanking.v:44: $finish called at 47253535892 (1ps)

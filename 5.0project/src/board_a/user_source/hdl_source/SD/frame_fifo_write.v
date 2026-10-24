@@ -11,8 +11,7 @@ module frame_fifo_write
 	parameter FRAME_HEIGHT           = 480
 )               
 (
-	input high_color,
-    input read_urgent,
+	    input read_urgent,
 	input                            rst,                  
 	input                            mem_clk,                    // external memory controller user interface clock
 	input							 Sdr_init_done,
@@ -49,10 +48,10 @@ localparam ZERO                      = 256'd0;                   //256 bit '0'
 // Vertical flip address mapping for 640x480 frame buffer.
 // Input stream order remains unchanged; only SDRAM write addresses are remapped:
 // stream row 0 -> memory row FRAME_HEIGHT-1, stream row 1 -> memory row FRAME_HEIGHT-2, ...
-wire [ADDR_BITS - 1:0] VFLIP_FIRST_ADDR_OFFSET = high_color ? 21'd690240:(FRAME_HEIGHT - 1) * FRAME_WIDTH;
+wire [ADDR_BITS - 1:0] VFLIP_FIRST_ADDR_OFFSET = (FRAME_HEIGHT - 1) * FRAME_WIDTH;
 localparam [ADDR_BITS - 1:0] VFLIP_VGA_ADDR_OFFSET = (480 - 1) * FRAME_WIDTH;
-wire [ADDR_BITS - 1:0] VFLIP_LINE_JUMP = high_color ? 21'd1919:(FRAME_WIDTH * 2) - 1;
-wire [15:0] VFLIP_LINE_LAST_X = high_color ? 16'd959:FRAME_WIDTH-1;
+wire [ADDR_BITS - 1:0] VFLIP_LINE_JUMP = (FRAME_WIDTH * 2) - 1;
+wire [15:0] VFLIP_LINE_LAST_X = FRAME_WIDTH-1;
 
 //write state machine code
 localparam S_IDLE                    = 0;                        //idle state,waiting for write
@@ -89,7 +88,7 @@ reg  into_burst;
 // APUG011 requires >64 MHz for continuous writes. At this 50 MHz
 // interface, issue exactly one native four-word group and then leave
 // ten idle clocks before any next read/write turn. Row/slot bases and
-// lengths are multiples of four in both RGB565 and RGB888.
+// lengths are multiples of four for RGB565 and its auxiliary/award payloads.
 wire [BURST_BITS-1:0] burst_size=4;
 reg [3:0] write_settle;
 always @(posedge mem_clk or posedge rst)

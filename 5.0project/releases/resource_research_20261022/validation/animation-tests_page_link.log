@@ -1,0 +1,2 @@
+PASS full 720p page transfer: cycles=2304093 vs 5.2=2764893, 691200 identical words including effect plane, unchanged 25MHz link and CRC
+E:\Codex\Downloads\qiansai\5.3project\tests\tb_fast_page_link.v:64: $finish called at 27648930000 (1ps)

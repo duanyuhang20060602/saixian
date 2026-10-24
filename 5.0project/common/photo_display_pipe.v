@@ -3,18 +3,25 @@
 module photo_neutral_delay(
  input clk,rst,de,input [23:0] rgb_in,output [23:0] rgb_out
 );
-// Native eRAM uses one write and one synchronous read each pixel clock.
+// A 16-word delay fits distributed RAM; reserve large eRAM blocks for frames.
 // The 14-clock storage distance plus the input edge preserves 15 stages.
 reg [3:0] pointer,age;
 wire [3:0] read_address=pointer+4'd2;
-wire [23:0] stored;
+wire [23:0] stored_async;reg [23:0] stored;
 always @(posedge clk or posedge rst)begin
  if(rst)begin pointer<=0;age<=0;end
  else begin pointer<=pointer+1'b1;if(age<15)age<=age+1'b1;end
 end
-photo_video_eram #(.MODE("PDPW")) pixels(.clk(clk),
- .wa(pointer),.wea(!rst),.a_in(de ? rgb_in:24'd0),.a_out(),
- .wb(read_address),.web(1'b0),.b_in(24'd0),.b_out(stored));
+always @(posedge clk)stored<=stored_async;
+`ifdef ERAM_SIM
+reg [23:0] delay_words[0:15];
+always @(posedge clk)if(!rst)delay_words[pointer]<=de ? rgb_in:24'd0;
+assign stored_async=delay_words[read_address];
+`else
+EG_LOGIC_DRAM #(.DATA_WIDTH_W(24),.DATA_WIDTH_R(24),.ADDR_WIDTH_W(4),.ADDR_WIDTH_R(4),
+ .DATA_DEPTH_W(16),.DATA_DEPTH_R(16)) pixels(
+ .di(de ? rgb_in:24'd0),.waddr(pointer),.we(!rst),.wclk(clk),.raddr(read_address),.do(stored_async));
+`endif
 assign rgb_out=age==15 ? stored:24'd0;
 endmodule
 

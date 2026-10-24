@@ -1,0 +1,3 @@
+PASS 50000 stereo pitch samples, all five modes, clear removes stale RAM; output 461 clocks, total work 605 clocks/sample
+E:\Codex\Work\audio-pitch-dual-20261022\pitch-compact\model\tb_pitch.v:55: $finish called at 366800060000 (1ps)
+PASS exact independent release fixed-point model, all PCM/mode/ramp/phase/ready fields

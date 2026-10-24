@@ -23,7 +23,7 @@ wire source_we=run && !full && produced<WORDS;
 wire pop=DISPLAY && run && !empty && popped<WORDS;
 function [31:0] pattern;input integer n;begin pattern=32'haf370000 ^ (n*32'h00012379);end endfunction
 frame_read_write #(.WRITE_V_FLIP(0),.FRAME_WIDTH(640),.FRAME_HEIGHT(4),.BURST_SIZE(256)) dut(
- .high_color(HC!=0),.rst(rst),.mem_clk(mc),.Sdr_init_done(1'b1),.Sdr_init_ref_vld(refreshing),.Sdr_busy(1'b0),
+ .rst(rst),.mem_clk(mc),.Sdr_init_done(1'b1),.Sdr_init_ref_vld(refreshing),.Sdr_busy(1'b0),
  .App_rd_en(rd),.App_rd_addr(ra),.Sdr_rd_en(valid_pipe[11]),.Sdr_rd_dout(data_pipe[11]),
  .read_clk(pc),.read_req(rreq),.read_req_ack(ack),.read_finish(rf),
  .read_addr_0(21'd0),.read_addr_1(21'd8192),.read_addr_2(21'd0),.read_addr_3(21'd0),.read_addr_index(2'd0),.read_len(WORDS),

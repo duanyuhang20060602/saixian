@@ -4,7 +4,7 @@ reg clk=0;always #5 clk=~clk;
 reg rst=1,scan=0,valid=0,last=0;reg [7:0] data=0;
 wire req,done,found;wire [15:0] width,height;integer mode=0,i;
 reg [7:0] header[0:511];reg seen=0;
-bmp_read dut(.high_color(1'b0),.clk(clk),.rst(rst),.op_abort(1'b0),.scan_start(scan),.scan_stop(1'b0),.scan_resume(1'b0),
+bmp_read dut(.clk(clk),.rst(rst),.op_abort(1'b0),.scan_start(scan),.scan_stop(1'b0),.scan_resume(1'b0),
  .scan_start_sector(32'd0),.scan_max_sector(32'd0),.scan_target_count(3'd1),.scan_done(done),
  .scan_found_valid(found),.scan_found_width(width),.scan_found_height(height),.load_start(1'b0),.load_sector(32'd0),
  .sd_init_done(1'b1),.bmp_width(16'd1280),.bmp_height(16'd720),.write_req_ack(1'b0),

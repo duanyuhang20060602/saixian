@@ -8,7 +8,7 @@ wire [23:0] pixel;wire [31:0] sector,word_data;integer n=0,j,checks=0,cycles=0;r
 photo_dlt_reader dut(.clk(clk),.rst(rst),.start(start),.start_sector(32'd100),.ready(ready),.done(done),.error(error),
  .write_req(write_req),.write_ack(ack),.full(full),.pixel_valid(pixel_valid),.pixel(pixel),
  .req(req),.sector(sector),.byte_valid(byte_valid),.byte_data(byte_data),.block_end(block_end));
-photo_color_pack packing(.clk(clk),.rst(rst),.clear(write_req),.high_color(1'b0),.valid(pixel_valid),.rgb(pixel),
+photo_color_pack packing(.clk(clk),.rst(rst),.clear(write_req),.valid(pixel_valid),.rgb(pixel),
  .word_valid(word_valid),.word_data(word_data),.aligned(aligned));
 always @(posedge clk)begin
  cycles<=cycles+1;ack<=write_req;

@@ -12,12 +12,24 @@ def main():
     verify(strict=args.verify_only)
     if args.verify_only:print('PASS saved project verification');return
     stamp=datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-    work=args.work or Path('E:/Codex/Work')/('5.0project-build-'+stamp)
-    os.environ.setdefault('SAIXIAN_PLACE_SEED','19')
-    os.environ.setdefault('SAIXIAN_PHYSICAL_STRATEGY','TimingUltraEmbedded')
+    work=args.work or Path('E:/Codex/Work')/((json.loads((ROOT/'package_manifest.json').read_text(encoding='utf-8'))['version']+'project-build-'+stamp))
+    explicit_seed=os.environ.get('SAIXIAN_PLACE_SEED')
+    explicit_strategy=os.environ.get('SAIXIAN_PHYSICAL_STRATEGY')
+    explicit_synthesis=os.environ.get('SAIXIAN_SYNTHESIS_STRATEGY')
+    manifest=json.loads((ROOT/'package_manifest.json').read_text(encoding='utf-8'))
+    profiles={r['board']:r for r in manifest.get('release_builds',[])}
     if args.td_root:os.environ['SAIXIAN_TD_ROOT']=args.td_root.as_posix()
     records=[]
     for board in (('a','b') if args.board=='both' else (args.board,)):
+        profile=profiles.get(board,{})
+        accepted=json.loads((ROOT/profile['record']).read_text(encoding='utf-8')) if profile.get('record') else {}
+        # Reproduce each accepted board's placement recipe, while retaining
+        # explicit user overrides for source-development experiments.
+        os.environ['SAIXIAN_PLACE_SEED']=explicit_seed or accepted.get('place_seed_override') or ('17' if board=='a' else '11')
+        os.environ['SAIXIAN_PHYSICAL_STRATEGY']=explicit_strategy or accepted.get('physical_strategy',{}).get('name','TimingUltraEmbedded')
+        synthesis=explicit_synthesis or accepted.get('synthesis_strategy',{}).get('name')
+        if synthesis:os.environ['SAIXIAN_SYNTHESIS_STRATEGY']=synthesis
+        else:os.environ.pop('SAIXIAN_SYNTHESIS_STRATEGY',None)
         build(board,work)
         record=json.loads((work/f'builds/board_{board}/result.json').read_text(encoding="utf-8-sig"))
         log=(work/f'builds/board_{board}/build.log').read_text(errors='replace')
@@ -25,10 +37,10 @@ def main():
         assert record['status']=='passed' and record['inputs_sha256']==inputs('board_'+board)
         assert slices and int(slices[-1])<=4900
         records.append(record)
-    destination=ROOT/'releases'/('rebuild_'+stamp);destination.mkdir(parents=True,exist_ok=False)
+    destination=work/'release';destination.mkdir(parents=True,exist_ok=False)
     files={}
     for record in records:
-        board=record['board'];name='PHOTO_BOARD_'+board.upper()+'_5_0.bit'
+        board=record['board'];name='PHOTO_BOARD_'+board.upper()+'_'+manifest['version'].replace('.','_')+'.bit'
         shutil.copy2(record['bit']['path'],destination/name);files[name]=digest(destination/name)
         for kind in ('timing','area'):shutil.copy2(record[kind]['path'],destination/Path(record[kind]['path']).name)
     (destination/'validation.json').write_text(json.dumps({'hardware_validation':'pending','boards':records,'files_sha256':files},indent=2)+'\n',encoding='utf-8')

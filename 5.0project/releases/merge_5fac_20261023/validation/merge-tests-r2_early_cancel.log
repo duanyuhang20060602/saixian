@@ -1,0 +1,2 @@
+PASS early overlay: hidden prepare, sticky cancel/ack, no overlapping jobs, frame-boundary publication, hide/reuse, invalidation
+E:\Codex\Work\merge-5_6-5fac-20261023-150502\project\tests\tb_thumbnail_early_cancel.v:27: $finish called at 410000 (1ps)

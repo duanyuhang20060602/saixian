@@ -2,25 +2,28 @@
 // Four snapshots cover the audio FIFO's look-ahead without displaying future
 // audio. Incomplete/bad-CRC requests never become visible. Oldest eligible
 // snapshots retire at vertical blanking, independent of metadata reception.
-module photo_av_metadata_a(
+module photo_av_metadata_a #(parameter EDGE_METADATA=0)(
  input clk,rst,frame_tick,input [31:0] play_position,
  input begin_packet,word_valid,commit_packet,finish_packet,
  input [8:0] word_index,input [31:0] word_data,
  output available,input [4:0] read_band,input [7:0] read_index,
  output [6:0] height,peak,output [31:0] extrema,
- output fft_valid,wave_valid
+ output fft_valid,wave_valid,output [7:0] edge_target
 );
 reg [3:0] occupied,eligible;
 reg [7:0] generation,bank_generation[0:3];
+reg [31:0] position[0:3];
 // Eligibility has a full pixel clock. The publication selector compares only
 // short generation tags, avoiding cascaded wide sample-position subtractors.
 integer e;
 always @(posedge clk or posedge rst)
  if(rst)eligible<=0;
  else for(e=0;e<4;e=e+1)eligible[e]<=occupied[e] && $signed(play_position-position[e])>=0;
-reg [31:0] position[0:3];reg [1:0] flags[0:3];
+reg [1:0] flags[0:3];
 reg [1:0] display_bank,write_bank;reg display_present,receiving;
-reg [1:0] packet_flags;reg [31:0] packet_position;
+reg [1:0] packet_fields;reg [7:0] bank_edge[0:3];
+assign edge_target=display_present ? bank_edge[display_bank]:8'd0;
+wire header_valid=EDGE_METADATA ? word_data[31:16]==16'h4132:word_data[31:8]==24'h415631;
 reg [1:0] free_bank;reg free_found;
 integer i,j;
 always @* begin
@@ -71,22 +74,28 @@ assign fft_valid=display_present && flags[display_bank][0];
 assign wave_valid=display_present && flags[display_bank][1];
 always @(posedge clk or posedge rst)begin
  if(rst)begin
-  occupied<=0;generation<=0;display_bank<=0;write_bank<=0;display_present<=0;receiving<=0;packet_flags<=0;packet_position<=0;
-  for(i=0;i<4;i=i+1)begin position[i]<=0;flags[i]<=0;bank_generation[i]<=0;end
+  occupied<=0;generation<=0;display_bank<=0;write_bank<=0;display_present<=0;receiving<=0;packet_fields<=0;
+  for(i=0;i<4;i=i+1)begin position[i]<=0;flags[i]<=0;bank_generation[i]<=0;bank_edge[i]<=0;end
  end else begin
   if(frame_tick && selected_valid)begin
    display_bank<=selected_bank;display_present<=1;
    for(i=0;i<4;i=i+1)
     if(occupied[i] && $signed(bank_generation[selected_bank]-bank_generation[i])>=0)occupied[i]<=0;
   end
-  if(begin_packet && available)begin write_bank<=free_bank;receiving<=1;packet_flags<=0;packet_position<=0;end
+  if(begin_packet && available)begin write_bank<=free_bank;receiving<=1;packet_fields<=0;end
   if(word_valid && receiving)begin
-   if(word_index==0)packet_flags<=word_data[31:8]==24'h415631 ? word_data[1:0]:2'd0;
-   if(word_index==1)packet_position<=word_data;
+   if(word_index==0)begin
+    flags[write_bank]<=header_valid ? word_data[1:0]:2'd0;
+    bank_edge[write_bank]<=EDGE_METADATA && header_valid ? word_data[15:8]:8'd0;
+    packet_fields[0]<=1;
+   end
+   if(word_index==1)begin position[write_bank]<=word_data;packet_fields[1]<=1;end
   end
   if(finish_packet)begin
    receiving<=0;
-   if(commit_packet && receiving)begin occupied[write_bank]<=1;bank_generation[write_bank]<=generation;generation<=generation+1'b1;position[write_bank]<=packet_position;flags[write_bank]<=packet_flags;end
+   // The unpublished bank already holds the complete metadata. Only this
+   // validity bit crosses the CRC commit boundary; no duplicate staging bank.
+   if(commit_packet && receiving && &packet_fields)begin occupied[write_bank]<=1;bank_generation[write_bank]<=generation;generation<=generation+1'b1;end
   end
  end
 end

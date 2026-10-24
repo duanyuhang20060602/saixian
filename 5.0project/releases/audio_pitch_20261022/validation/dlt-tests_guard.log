@@ -1,0 +1,2 @@
+PASS 36 malformed/short/long DLT sectors, gaps and final-valid/end overlap, cycle-equivalent to 5.3
+E:\Codex\Downloads\qiansai\5.4project\tests\tb_dlt_guard.v:34: $finish called at 288930000 (1ps)

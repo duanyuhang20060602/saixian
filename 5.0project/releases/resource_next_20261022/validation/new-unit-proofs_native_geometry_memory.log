@@ -1,0 +1,19 @@
+E:\Codex\Work\resource-next-20261022-221039\project\common\fluid\water_drop_small.v:19: warning: timescale for water_sqrt inherited from another file.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_memory.v:1: ...: The inherited timescale is here.
+E:\Codex\Work\resource-next-20261022-221039\project\common\fluid\water_drop_small.v:42: warning: timescale for water_drop_vector inherited from another file.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_memory.v:1: ...: The inherited timescale is here.
+E:\Codex\Work\resource-next-20261022-221039\project\common\fluid\water_drop_small.v:192: warning: timescale for water_warp inherited from another file.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_memory.v:1: ...: The inherited timescale is here.
+E:\Codex\Work\resource-next-20261022-221039\project\common\fluid\water_drop_small.v:225: warning: timescale for water_inverse_rom inherited from another file.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_memory.v:1: ...: The inherited timescale is here.
+E:\Codex\Work\resource-next-20261022-221039\project\common\fluid\water_cache.v:2: warning: timescale for water_cache inherited from another file.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_memory.v:1: ...: The inherited timescale is here.
+E:\Codex\Work\resource-next-20261022-221039\project\common\fluid\water_cache.v:57: warning: timescale for water_native_cache inherited from another file.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_memory.v:1: ...: The inherited timescale is here.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\ip_vendor_ram_adapter.v:3: warning: timescale for EG_LOGIC_BRAM inherited from another file.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_memory.v:1: ...: The inherited timescale is here.
+C:\Anlogic\TD_6.2.1_Engineer_6.2.168.116\ip\depot\AXI_Ethernet_Lite_1.0\AXI_Ethernet_Lite\RTL\ram_infer.v:2: warning: timescale for ram_infer inherited from another file.
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_memory.v:1: ...: The inherited timescale is here.
+WARNING: E:\Codex\Work\resource-next-20261022-221039\project\tests\ip_vendor_ram_adapter.v:27: $readmemh: The behaviour for reg[...] mem[N:0]; $readmemh("...", mem); changed in the 1364-2005 standard. To avoid ambiguity, use mem[0:N] or explicit range parameters $readmemh("...", mem, start, stop);. Defaulting to 1364-2005 behavior.
+PASS 20000 native RAM9K tail transactions with concurrent writes and all 4096 reciprocal addresses; exact one-clock ROM/two-clock cache latency
+E:\Codex\Work\resource-next-20261022-221039\project\tests\tb_resource_next_memory.v:26: $finish called at 210280000 (1ps)

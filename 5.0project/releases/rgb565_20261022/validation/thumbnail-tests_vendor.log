@@ -1,0 +1,6 @@
+PASS static eRAM cache: slot=0 color=0, all 2304 pixels including bank boundary, no hold-time SDRAM traffic
+PASS static eRAM cache: slot=1 color=0, all 2304 pixels including bank boundary, no hold-time SDRAM traffic
+PASS static eRAM cache: slot=2 color=0, all 2304 pixels including bank boundary, no hold-time SDRAM traffic
+PASS static eRAM cache: slot=2 color=0, all 2304 pixels including bank boundary, no hold-time SDRAM traffic
+PASS whole-cache CDC, RGB565, three slots, refresh, priority, cancellation and restart
+E:\Codex\Downloads\qiansai\5.2project\tests\tb_thumbnail_memory.v:83: $finish called at 5101380000 (1ps)

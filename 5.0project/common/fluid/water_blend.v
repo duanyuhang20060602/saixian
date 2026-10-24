@@ -2,37 +2,19 @@
 // blended word, so valid is separated by at least one clock. Use that clock
 // for the second pixel, reusing three channel multipliers without throttling
 // the reader. Output latency is four edges including the accepting edge.
+`ifndef WATER_SIM
+`define WATER_BLEND_DSP
+`endif
+`ifdef BLEND_DSP_SIM
+`define WATER_BLEND_DSP
+`endif
 module water_blend(input clk,rst,valid,input[31:0] old_word,new_word,input[8:0] alpha,
  output reg out_valid,output reg[31:0] word_out);
-// Exact small signed-by-alpha product. A balanced shift/add tree uses LUT
-// carry chains instead of one DSP for each 5/6-bit RGB565 colour channel.
-// Radix-four Booth recoding of the seven-bit signed difference gives four
-// partial products. Negative-row corrections share one carry-save reduction.
+// Use spare FPGA multipliers for the exact signed RGB565 differences.
+// Arithmetic simulation and native hardware share the same 17-bit result.
 function signed[16:0] alpha_product;
  input signed[6:0] d;input[8:0] w;
- reg[2:0] code0,code1,code2,code3;
- reg[10:0] mag0,mag1,mag2,mag3;
- reg[16:0] p0,p1,p2,p3,correction,s0,c0,s1,c1,s2,c2;
- begin
- code0={d[1:0],1'b0};code1=d[3:1];code2=d[5:3];code3={d[6],d[6:5]};
- mag0=code0[0]^code0[1] ? {2'd0,w}:
-  ((code0==3'b011)||(code0==3'b100)) ? {1'b0,w,1'b0}:11'd0;
- p0={{6{code0[2]}},(mag0^{11{code0[2]}})} << 0;
- mag1=code1[0]^code1[1] ? {2'd0,w}:
-  ((code1==3'b011)||(code1==3'b100)) ? {1'b0,w,1'b0}:11'd0;
- p1={{6{code1[2]}},(mag1^{11{code1[2]}})} << 2;
- mag2=code2[0]^code2[1] ? {2'd0,w}:
-  ((code2==3'b011)||(code2==3'b100)) ? {1'b0,w,1'b0}:11'd0;
- p2={{6{code2[2]}},(mag2^{11{code2[2]}})} << 4;
- mag3=code3[0]^code3[1] ? {2'd0,w}:
-  ((code3==3'b011)||(code3==3'b100)) ? {1'b0,w,1'b0}:11'd0;
- p3={{6{code3[2]}},(mag3^{11{code3[2]}})} << 6;
- correction={10'd0,code3[2],1'b0,code2[2],1'b0,code1[2],1'b0,code0[2]};
- s0=p0^p1^p2;c0=((p0&p1)|(p0&p2)|(p1&p2))<<1;
- s1=s0^c0^p3;c1=((s0&c0)|(s0&p3)|(c0&p3))<<1;
- s2=s1^c1^correction;c2=((s1&c1)|(s1&correction)|(c1&correction))<<1;
- alpha_product=s2+c2;
- end
+ begin alpha_product=d*$signed({1'b0,w});end
 endfunction
 reg pending;reg[15:0] old_low,new_low;reg[8:0] alpha_low;
 wire[15:0] a=valid ? old_word[31:16]:old_low;
@@ -44,10 +26,23 @@ assign bc[0]={1'b0,b[15:11]};assign bc[1]=b[10:5];assign bc[2]={1'b0,b[4:0]};
 reg v0,v1,low0,low1;reg[8:0] aq;reg[15:0] upper;
 wire signed[17:0] sum[0:2];genvar g;generate for(g=0;g<3;g=g+1)begin:s
  // Scalar registers prevent tiny channel arrays becoming dedicated BRAMs.
- reg signed[6:0] diff;reg[5:0] old,old2;reg signed[16:0] prod;
+ reg signed[6:0] diff;reg[5:0] old,old2;
+ wire signed[16:0] prod;
+`ifdef WATER_BLEND_DSP
+ wire[35:0] dsp_product;
+ EG_PHY_MULT18 #(.INPUTREGA("DISABLE"),.INPUTREGB("DISABLE"),.OUTPUTREG("ENABLE")) multiply(
+  .a({{11{diff[6]}},diff}),.b({9'd0,aq}),.p(dsp_product),.signeda(1'b1),.signedb(1'b0),
+  .acin(18'd0),.bcin(18'd0),.sourcea(1'b1),.sourceb(1'b1),.acout(),.bcout(),
+  .cea(1'b1),.ceb(1'b1),.cepd(1'b1),.clk(clk),.rstan(1'b1),.rstbn(1'b1),.rstpdn(1'b1));
+ assign prod=dsp_product[16:0];
+`else
+ reg signed[16:0] sim_product;
+ always @(posedge clk)sim_product<=alpha_product(diff,aq);
+ assign prod=sim_product;
+`endif
  always @(posedge clk)begin
   old<=ac[g];diff<=$signed({1'b0,bc[g]})-$signed({1'b0,ac[g]});
-  prod<=alpha_product(diff,aq);old2<=old;
+  old2<=old;
  end
  assign sum[g]=$signed({4'd0,old2,8'd0})+$signed(prod)+18'sd128;
 end endgenerate

@@ -15,16 +15,16 @@ integer ticks=0,words=0,mismatches=0,tail_mismatches=0,first_bad=-1,k;
 reg [31:0] expected[0:691199],received[0:230399];
 wire full=ticks%53<9;
 frame_store #(.FLIP(1),.ENABLE_TOP_DOWN(1)) store(
- .write_award(1'b0),.read_award(1'b1),.write_top_down(1'b0),.high_color(COLOR!=0),
+ .write_award(1'b0),.read_award(1'b1),.write_top_down(1'b0),
  .write_slot(2'd0),.read_slot(2'd1),.new_slot(2'd0),.slide_active(1'b0),.slide_right(1'b0),.slide_offset(11'd0),.transition_mode(3'd0),
  .mem_clk(mc),.mem_clk_sft(mc),.rst(rst),.write_clk(mc),.write_req(1'b0),.write_en(1'b0),.write_data(32'd0),
  .read_clk(lc),.read_req(request),.read_en(read_en),.read_ack(read_ack),.read_empty(empty),.read_data(read_data));
 photo_link_sender #(.ENABLE_CRC(1),.AWARD_TAIL(1),.PREFETCH_WORD(1)) tx(
- .award_frame(1'b1),.clk(lc),.rst(rst),.start(start),.abort(1'b0),.high_color(1'b0),.extended_frame(1'b0),
+ .award_frame(1'b1),.clk(lc),.rst(rst),.start(start),.abort(1'b0),.extended_frame(1'b0),
  .plane_start(plane),.data(read_data),.empty(empty),.read_ack(read_ack),.read_req(request),.read_en(read_en),.link_ready(ready),
  .link_data(link_data),.link_valid(valid),.link_sof(sof),.link_eof(eof),.frame_crc(tx_crc));
 photo_link_receiver #(.ENABLE_CRC(1),.AWARD_TAIL(1)) rx(
- .award_frame(1'b1),.clk(lc),.rst(rst),.arm(arm),.abort(1'b0),.high_color(1'b0),.extended_frame(1'b0),
+ .award_frame(1'b1),.clk(lc),.rst(rst),.arm(arm),.abort(1'b0),.extended_frame(1'b0),
  .data(link_data),.valid(valid),.sof(sof),.eof(eof),.ready(ready),.armed(armed),.write_req(write_req),.write_ack(write_req),
  .full(full),.write_en(write_en),.write_data(stored),.finish_toggle(finish_toggle),.done(done),.fault(fault),.frame_crc(rx_crc));
 always @(posedge lc)begin

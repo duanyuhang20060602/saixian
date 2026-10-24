@@ -1,0 +1,370 @@
+{
+  "version": "5.0-thumbnail-20261022",
+  "baseline_commit": "c8041ec71b557f459c273afce12d3fbb33a3b549",
+  "hardware_validation": "pending",
+  "board_a_rebuilt": true,
+  "board_b_rebuilt": false,
+  "board_b_note": "Unchanged FX_PAGE_AUDIO firmware; its complete input hash map still matches the local B project.",
+  "thumbnail": {
+    "stored_pixels": [
+      64,
+      36
+    ],
+    "display_pixels": [
+      160,
+      90
+    ],
+    "pixel_format": "RGB565",
+    "sample_step": [
+      20,
+      20
+    ],
+    "storage": "Whole preview in eRAM: 2048 + 256 pixels; no SDRAM allocation.",
+    "generation": "Read-only sampling of the accepted next-photo slot, during vertical blanking with display FIFO reserve.",
+    "hold_sdram_reads": 0,
+    "placement": {
+      "x": 1088,
+      "y": 528
+    },
+    "click_next": true,
+    "quality_note": "Nearest-neighbor 2.5x display; no additional main-video latency."
+  },
+  "optimizations": {
+    "award_sprite_coordinates": "Narrowed arithmetic and registered centers split geometry across the existing five-clock shader pipeline.",
+    "thumbnail_address": "One source-address accumulator replaces separate row/pixel counters; aligned burst lanes use concatenation.",
+    "music_edge_weights": "One native RAM9K lookup replaces the combinational ROM in the original one-clock stage.",
+    "settings_menu": "Geometry and selected-row decoding precede text selection; an output tap is removed to preserve total video latency."
+  },
+  "area": {
+    "board_a_mslices": 4772,
+    "board_a_resources": {
+      "lut": 17561,
+      "reg": 11817,
+      "bram": 62,
+      "bram32k": 16,
+      "dsp": 24
+    },
+    "board_b_resources": {
+      "lut": 13000,
+      "reg": 9336,
+      "bram": 35,
+      "bram32k": 16,
+      "dsp": 10
+    }
+  },
+  "timing_ns": {
+    "a": {
+      "SWNS": 0.114,
+      "STNS": 0.0,
+      "HWNS": 0.022,
+      "HTNS": 0.0
+    },
+    "b": {
+      "SWNS": 0.101,
+      "STNS": 0.0,
+      "HWNS": 0.022,
+      "HTNS": 0.0
+    }
+  },
+  "tests": [
+    {
+      "test": "control",
+      "passed": true,
+      "seconds": 0.14,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_control.v": "87b28af4133ea1d8decab661b8278fd9d2a62c4bae18d1c56e06b11ac511c68b",
+        "common/photo_cached_control_a.v": "be212246ffca309a4ec792d26b6dc7133bc0a8fd17993532b95d8ac3b6c9db20",
+        "common/photo_uart.v": "fe87579e83c8233f5ee8e6fe3668d8914eddb977fba826d0fd2bd4a81201d82e"
+      },
+      "log": "E:\\Codex\\Work\\thumbnail-5.0-20261021-172807\\controls-cached\\control.log",
+      "log_sha256": "c659b9b1890e70ca698c5d6ce19885bffaba8cc25eee4534338e36ce01ed1a89"
+    },
+    {
+      "test": "touch",
+      "passed": true,
+      "seconds": 18.11,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_touch.v": "e1128ad0c2f5e2b9db919994c5642cf45ac0bc913d5c142b0364bbccacf5d9f0",
+        "common/top_photo_a.v": "ebd0d4ee0c9fa8d1f2ef1065d2ec0997471b7876f4949138937f91014576f69b",
+        "common/saixian_hmi_uart.v": "2c040152d6381f82ba34d6ef9933d4e08ac72d2eb60549a5289f9d35d7db5b00",
+        "common/photo_touchpad.v": "3cc8c9b46b9b206b0c37353823ca9635cbde5cd9f77058a9a45664061bfdb956",
+        "common/photo_unified_settings_controller.v": "f0eab33923e7cc80a081af70d141a283189aa5f3163a305532540906958e70b5",
+        "E:\\Codex\\Work\\thumbnail-5.0-20261021-172807\\controls-cached\\hardware_shells.v": "b1d49bb69b2bc8549ac9bb1c6c1374e52eecc4ba5d5e4082d2c35f10ae0e0757"
+      },
+      "log": "E:\\Codex\\Work\\thumbnail-5.0-20261021-172807\\controls-cached\\touch.log",
+      "log_sha256": "15d6a5b4c40c492c38fbe3f7575ad74b2f7e0326510df6b98109132785cfa277"
+    },
+    {
+      "test": "award_control",
+      "passed": true,
+      "seconds": 3.06,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_award_v5_control.v": "447972c5ad12f136d809e70fbbd9aec04f286064e6ffd607e98222ee02805eda",
+        "common/photo_cached_control_a.v": "be212246ffca309a4ec792d26b6dc7133bc0a8fd17993532b95d8ac3b6c9db20",
+        "common/photo_control.v": "27a341863d68d28c0b11141310c6ff9a13ae39e53c880313354dd447fe79f5ad",
+        "common/photo_uart.v": "fe87579e83c8233f5ee8e6fe3668d8914eddb977fba826d0fd2bd4a81201d82e",
+        "common/photo_link.v": "b5220867ab286874518d2918f7e1640e2829535fbdfdbfc8f022529e3cca530a"
+      },
+      "log": "E:\\Codex\\Work\\thumbnail-5.0-20261021-172807\\controls-cached\\award_control.log",
+      "log_sha256": "42bbbde3a645a43e3215817ae287c52da34678e15b5e26178cfabc000da2c866"
+    },
+    {
+      "test": "timer_equivalence",
+      "passed": true,
+      "seconds": 2.36,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_timer_equivalence.v": "58cb5163e0eb8dc138cd9d17aacaf3c5fb26af131a6c8300a6688dc177b8492e",
+        "common/photo_cached_control_a.v": "be212246ffca309a4ec792d26b6dc7133bc0a8fd17993532b95d8ac3b6c9db20",
+        "tests/touchscreen_timer_reference.v": "f37adf2761417f274d887fae46f0e9a84b5123d74a86388a888361665ed6843e",
+        "common/photo_uart.v": "fe87579e83c8233f5ee8e6fe3668d8914eddb977fba826d0fd2bd4a81201d82e"
+      },
+      "log": "E:\\Codex\\Work\\thumbnail-5.0-20261021-172807\\controls-cached\\timer_equivalence.log",
+      "log_sha256": "0cb71f0b62969c9bc9c580576c8856ab877a7249d0ac737b461f12487d505a79"
+    },
+    {
+      "test": "read_alignment",
+      "passed": true,
+      "seconds": 8.64,
+      "defines": [
+        "WATER_SIM"
+      ],
+      "inputs_sha256": {
+        "tests/tb_read_data_align.v": "c533034e9c0f6cb66208ec771c422353e5cbc2d2df00d43b50b4c76202b3907f",
+        "tests/read_alignment_reference.v": "83473854e851b0d1df698d993d6f2b206d66e265d3d3ef31bfd81295b14b318c",
+        "src/board_a/user_source/hdl_source/frame_store.v": "3cfbdaa8764a62ff950f18e6838d3f2c64dd9c849f3e7f3b796336ca3765fcae",
+        "src/board_a/user_source/hdl_source/SD/frame_read_write.v": "02c0b640c01477ea8ebcaf2201f0da8106dc84f297d73e35b85220ca2e5c8d86",
+        "src/board_a/user_source/hdl_source/SD/frame_fifo_read.v": "5d65d95dab0edc1345bd49e6101a708d70278372ece8761637caad109be3dab7",
+        "src/board_a/user_source/hdl_source/SD/frame_fifo_write.v": "45a916cf077aa38e9725e32705e4b5a076828be9c9a4c460c21736e32b44ee09",
+        "src/board_a/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "src/board_a/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+        "common/fluid/water_drop_small.v": "256019f9db84e617f6acbb2d60efcba636d2949343115e510c68be4d00bacea0",
+        "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_priority_map.v": "f646b1f41b25eddaec072533e1dffd4d1ced9738fd51121c1baec7861f31c100",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_blend.v": "907f59518cfa02cbea456923c57ae7402551dd5e8a7fd8c7a748cfc40b9c7a24",
+        "common/fluid/water_cache.v": "162653dbe2c0ead67ca65fe689bfa3b21e711dd6d5556de698c758a2ac7afafe",
+        "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb"
+      },
+      "log": "E:\\Codex\\Work\\thumbnail-5.0-20261021-172807\\controls-cached\\read_alignment.log",
+      "log_sha256": "f2aab3db03013d4c4eaf56d87e6bb1506a72b0ff67275f9d7e36522d1b3a4521"
+    },
+    {
+      "test": "award_width",
+      "passed": true,
+      "seconds": 23.02,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_award_width.v": "de8b840f4d14f81416081b53b0d76026a5d37fcb7e335a393818a8e01cf2d89a",
+        "common/award_fx.v": "f4e31098dcc4a2c38ecd1c0eae01fe2989814fa61bb95c10d529e6f153c05482",
+        "common/award_sprite_rom.v": "b8fb7656be0428d515bb44c1bb2737f57e2fecf3b1fd80ee38a667be618a21c3",
+        "tests/reference/thumbnail/award_fx.v": "7d510d609d423b81c20d153bb31374bbef9d264685a8cf836685c75b10eb7d26"
+      },
+      "log": "E:\\Codex\\Work\\thumbnail-5.0-20261021-172807\\shaders-center\\award_width.log",
+      "log_sha256": "09234bb2d829b0e66df7bb7ceef36e5896c2c406e06e5476bebc55ce8660b1d5"
+    },
+    {
+      "test": "edge_eram",
+      "passed": true,
+      "seconds": 80.69,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_edge_equivalence.v": "2a41c2c4aae24ce3df5beb227468e93ba152484b742fa1c82ca6c151702c11d7",
+        "common/fluid/water_edge.v": "41fe6867c4bf0dd088e8255615e6bb1f673aa039254c1d916fc32e74cd889a40",
+        "tests/reference/thumbnail/water_edge.v": "05f9facc4c643b0a652b20402034f48891bc985f956228ad3f2cd77ee77c85b8",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "src/board_a/user_source/hdl_source/IP/water_edge_weights.mif": "1ba4dae4767feaeef087e147b6342e9e0a856f160cf06d9186948f6a272a12fc",
+        "E:\\Codex\\Work\\thumbnail-5.0-20261021-172807\\shaders-cached\\edge_weights.hex": "ae5e6ea212b2fc2a0f85a6873afef3ab93d7323acd223f6cfa88993268a35b2c",
+        "E:\\Codex\\Work\\thumbnail-5.0-20261021-172807\\shaders-cached\\ip_init_map.vh": "95bcd69bb242c1eddf27bcb4d1c463425bdd83cfcdefb55bad7e9ec143fd27bc"
+      },
+      "log": "E:\\Codex\\Work\\thumbnail-5.0-20261021-172807\\shaders-cached\\edge_eram.log",
+      "log_sha256": "af80161825159adadd5a0ad2f9abe292e06cda596dd3a36374c5bdcc3f5ba807"
+    },
+    {
+      "test": "menu_geometry",
+      "passed": true,
+      "defines": [
+        "TOUCHSCREEN_SIM"
+      ],
+      "inputs_sha256": {
+        "tests/tb_menu_geometry.v": "e904cfb976e178ec79d09b7017d26f4aba735cf98c412fe93c74a871828eaafb",
+        "common/photo_settings_overlay.v": "781d173173333e41a7a7dc05ccad340cfebefcced74d9a242d47916393609cb5",
+        "tests/reference/thumbnail/photo_settings_overlay.v": "242c6c8b6ac6e0b85fb1efe032159f07c013a7679f4feccb0a69a1d65bc1b9b9",
+        "tests/touchscreen_menu_font.v": "12fda21482b92b9b53b2db223dfd64334b6ec345a9345944381ffa64f7fd80bf",
+        "common/photo_menu_font.mif": "2bc93d7d132dcd858edf436d5c55e73896996cf89a2d224cbd8f78bf337d4c5d",
+        "tests/touchscreen_results/menu_font.hex": "ba163be9b68bed0aa7c67eaaf81c5806136eba6c20b8efa27cf19495bdb94858",
+        "src/board_a/user_source/hdl_source/photo_menu_text_lookup.mif": "6bd358ea5b82f7a65629595a1f4415d67d02936c2e7ecb704e6166dbfc6441b1",
+        "src/board_a/user_source/hdl_source/photo_menu_text_lookup.hex": "754b5d6f555a8118b10d149314378f63d485fa63d13c0c3c8f6a2b9eb94864b9"
+      },
+      "log": "E:\\Codex\\Work\\thumbnail-5.0-20261021-172807\\menu_geometry.log",
+      "log_sha256": "7427b83001c3779410f0686c883e7ae090d480bfadc413c8509eca0c2a0a33c6",
+      "binary_sha256": "4f5f0062968b52df626028e980799e0a2fb1d23c4dd6ef57ea5bf0bbc28ce4f0",
+      "provenance": "Completed independent Icarus run; exact source command recorded in this chat, all evidence predates the compiled binary and has not changed since compilation. Font HEX data equal production MIF values."
+    },
+    {
+      "test": "memory",
+      "passed": true,
+      "seconds": 2.51,
+      "defines": [
+        "THUMBNAIL_SIM"
+      ],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_memory.v": "931b5489f3c6c55517dc55ecb921c0a75a952e8f4350a4d7058c5303f7c7db9f",
+        "common/photo_thumbnail.v": "f4703597dca2ddc6b3addf73e3810072cdde6b827c816138271a4f9dcb517d41"
+      },
+      "log": "E:\\Codex\\Work\\thumbnail-5.0-20261021-172807\\tests-counter\\memory.log",
+      "log_sha256": "eedd3bfce4503981d925793f76423bc5c4909f56e85cf5d90be3a5e21b1f166e"
+    },
+    {
+      "test": "vendor",
+      "passed": true,
+      "seconds": 5.06,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_memory.v": "931b5489f3c6c55517dc55ecb921c0a75a952e8f4350a4d7058c5303f7c7db9f",
+        "common/photo_thumbnail.v": "f4703597dca2ddc6b3addf73e3810072cdde6b827c816138271a4f9dcb517d41",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Work\\thumbnail-5.0-20261021-172807\\tests-counter\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Work\\thumbnail-5.0-20261021-172807\\tests-counter\\vendor.log",
+      "log_sha256": "eedd3bfce4503981d925793f76423bc5c4909f56e85cf5d90be3a5e21b1f166e"
+    },
+    {
+      "test": "overlay",
+      "passed": true,
+      "seconds": 0.08,
+      "defines": [
+        "THUMBNAIL_SIM"
+      ],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_overlay.v": "832c6bcab7377a984cf0235e87839d1dba015538907b393f4e3d0e41442275b0",
+        "common/photo_thumbnail.v": "f4703597dca2ddc6b3addf73e3810072cdde6b827c816138271a4f9dcb517d41"
+      },
+      "log": "E:\\Codex\\Work\\thumbnail-5.0-20261021-172807\\tests-counter\\overlay.log",
+      "log_sha256": "9a152f6e54a77f7e0b3f12b9abc6d701fa77f058e7f4c315e86645e89041a0f1"
+    },
+    {
+      "test": "phase",
+      "passed": true,
+      "seconds": 0.92,
+      "defines": [
+        "THUMBNAIL_SIM"
+      ],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_phase.v": "4fbc19c6a9d11d3121f6c7b8535bc56d43b30f150d82fca2bc90bc5271966635",
+        "common/photo_thumbnail.v": "f4703597dca2ddc6b3addf73e3810072cdde6b827c816138271a4f9dcb517d41",
+        "common/photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795"
+      },
+      "log": "E:\\Codex\\Work\\thumbnail-5.0-20261021-172807\\tests-counter\\phase.log",
+      "log_sha256": "f1aa3f182d00cf02376fa1ba06a468ecc4f0acc1969ca7297407c81a8791aefa"
+    },
+    {
+      "test": "blanking",
+      "passed": true,
+      "seconds": 21.39,
+      "defines": [
+        "THUMBNAIL_SIM"
+      ],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_blanking.v": "dabd347ecb0174d25a51b8d0dbe8e4df6d0a13ce40a025d263799589617f7e18",
+        "common/photo_thumbnail.v": "f4703597dca2ddc6b3addf73e3810072cdde6b827c816138271a4f9dcb517d41",
+        "common/photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795"
+      },
+      "log": "E:\\Codex\\Work\\thumbnail-5.0-20261021-172807\\tests-counter\\blanking.log",
+      "log_sha256": "fa69e8b5902a232740df2d7d823984ff61dc994585b3d4d69a9979190432f8a9"
+    },
+    {
+      "test": "bandwidth",
+      "passed": true,
+      "seconds": 156.28,
+      "defines": [
+        "THUMBNAIL_SIM",
+        "WATER_SIM"
+      ],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_bandwidth.v": "eef728a6b752270ef015c2efb3a4f4d16b3b67c53eedaeb75b61ef08013c32a9",
+        "common/photo_thumbnail.v": "f4703597dca2ddc6b3addf73e3810072cdde6b827c816138271a4f9dcb517d41",
+        "common/photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795",
+        "common/photo_award_memory.v": "0421eb047bc5a1654f78c3670b75f6f2d0931fe3832d18a2c8c72d0c4d87ce91",
+        "src/board_a/user_source/hdl_source/frame_store.v": "3cfbdaa8764a62ff950f18e6838d3f2c64dd9c849f3e7f3b796336ca3765fcae",
+        "src/board_a/user_source/hdl_source/SD/frame_read_write.v": "02c0b640c01477ea8ebcaf2201f0da8106dc84f297d73e35b85220ca2e5c8d86",
+        "src/board_a/user_source/hdl_source/SD/frame_fifo_read.v": "5d65d95dab0edc1345bd49e6101a708d70278372ece8761637caad109be3dab7",
+        "src/board_a/user_source/hdl_source/SD/frame_fifo_write.v": "45a916cf077aa38e9725e32705e4b5a076828be9c9a4c460c21736e32b44ee09",
+        "src/board_a/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "src/board_a/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+        "common/fluid/water_drop_small.v": "256019f9db84e617f6acbb2d60efcba636d2949343115e510c68be4d00bacea0",
+        "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_priority_map.v": "f646b1f41b25eddaec072533e1dffd4d1ced9738fd51121c1baec7861f31c100",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_blend.v": "907f59518cfa02cbea456923c57ae7402551dd5e8a7fd8c7a748cfc40b9c7a24",
+        "common/fluid/water_cache.v": "162653dbe2c0ead67ca65fe689bfa3b21e711dd6d5556de698c758a2ac7afafe",
+        "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb"
+      },
+      "log": "E:\\Codex\\Work\\thumbnail-5.0-20261021-172807\\tests-counter\\bandwidth.log",
+      "log_sha256": "871ee34f246a33ba63e0ab957bcddbc92a9a1e38ff108858350bfa7816402cc1"
+    },
+    {
+      "test": "bandwidth565",
+      "passed": true,
+      "seconds": 157.94,
+      "defines": [
+        "THUMBNAIL_SIM",
+        "WATER_SIM",
+        "THUMBNAIL_RGB565"
+      ],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_bandwidth.v": "eef728a6b752270ef015c2efb3a4f4d16b3b67c53eedaeb75b61ef08013c32a9",
+        "common/photo_thumbnail.v": "f4703597dca2ddc6b3addf73e3810072cdde6b827c816138271a4f9dcb517d41",
+        "common/photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795",
+        "common/photo_award_memory.v": "0421eb047bc5a1654f78c3670b75f6f2d0931fe3832d18a2c8c72d0c4d87ce91",
+        "src/board_a/user_source/hdl_source/frame_store.v": "3cfbdaa8764a62ff950f18e6838d3f2c64dd9c849f3e7f3b796336ca3765fcae",
+        "src/board_a/user_source/hdl_source/SD/frame_read_write.v": "02c0b640c01477ea8ebcaf2201f0da8106dc84f297d73e35b85220ca2e5c8d86",
+        "src/board_a/user_source/hdl_source/SD/frame_fifo_read.v": "5d65d95dab0edc1345bd49e6101a708d70278372ece8761637caad109be3dab7",
+        "src/board_a/user_source/hdl_source/SD/frame_fifo_write.v": "45a916cf077aa38e9725e32705e4b5a076828be9c9a4c460c21736e32b44ee09",
+        "src/board_a/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "src/board_a/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+        "common/fluid/water_drop_small.v": "256019f9db84e617f6acbb2d60efcba636d2949343115e510c68be4d00bacea0",
+        "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_priority_map.v": "f646b1f41b25eddaec072533e1dffd4d1ced9738fd51121c1baec7861f31c100",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_blend.v": "907f59518cfa02cbea456923c57ae7402551dd5e8a7fd8c7a748cfc40b9c7a24",
+        "common/fluid/water_cache.v": "162653dbe2c0ead67ca65fe689bfa3b21e711dd6d5556de698c758a2ac7afafe",
+        "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb"
+      },
+      "log": "E:\\Codex\\Work\\thumbnail-5.0-20261021-172807\\tests-counter\\bandwidth565.log",
+      "log_sha256": "bbeb6119c57c7f91a5bb44d57d7dfc782c38b00b7ce1a00faf88ebb1d6eb7009"
+    }
+  ],
+  "files_sha256": {
+    "PHOTO_BOARD_A_phy.area": "a5196f9d33f9d9d52c84f2dccd98213a7e27ae7b149afbaff5e2c15de850ef9e",
+    "PHOTO_BOARD_A_pr.timing": "c439210d04e9bb4ffd8b24fa4e1c342bf9d87d8267d9c3a4cad79724f8716ec5",
+    "validation/control.log": "c659b9b1890e70ca698c5d6ce19885bffaba8cc25eee4534338e36ce01ed1a89",
+    "validation/touch.log": "15d6a5b4c40c492c38fbe3f7575ad74b2f7e0326510df6b98109132785cfa277",
+    "validation/award_control.log": "42bbbde3a645a43e3215817ae287c52da34678e15b5e26178cfabc000da2c866",
+    "validation/timer_equivalence.log": "0cb71f0b62969c9bc9c580576c8856ab877a7249d0ac737b461f12487d505a79",
+    "validation/read_alignment.log": "f2aab3db03013d4c4eaf56d87e6bb1506a72b0ff67275f9d7e36522d1b3a4521",
+    "validation/award_width.log": "09234bb2d829b0e66df7bb7ceef36e5896c2c406e06e5476bebc55ce8660b1d5",
+    "validation/edge_eram.log": "af80161825159adadd5a0ad2f9abe292e06cda596dd3a36374c5bdcc3f5ba807",
+    "validation/menu_geometry.log": "7427b83001c3779410f0686c883e7ae090d480bfadc413c8509eca0c2a0a33c6",
+    "validation/memory.log": "eedd3bfce4503981d925793f76423bc5c4909f56e85cf5d90be3a5e21b1f166e",
+    "validation/vendor.log": "eedd3bfce4503981d925793f76423bc5c4909f56e85cf5d90be3a5e21b1f166e",
+    "validation/overlay.log": "9a152f6e54a77f7e0b3f12b9abc6d701fa77f058e7f4c315e86645e89041a0f1",
+    "validation/phase.log": "f1aa3f182d00cf02376fa1ba06a468ecc4f0acc1969ca7297407c81a8791aefa",
+    "validation/blanking.log": "fa69e8b5902a232740df2d7d823984ff61dc994585b3d4d69a9979190432f8a9",
+    "validation/bandwidth.log": "871ee34f246a33ba63e0ab957bcddbc92a9a1e38ff108858350bfa7816402cc1",
+    "validation/bandwidth565.log": "bbeb6119c57c7f91a5bb44d57d7dfc782c38b00b7ce1a00faf88ebb1d6eb7009"
+  },
+  "omitted_firmware_sha256": {
+    "PHOTO_BOARD_A_5_0_THUMBNAIL.bit": "326b5f5c985f31069ebbb9f538a77309eeeae08f694c0ad0cb84193d2b149eff",
+    "PHOTO_BOARD_B_5_0_FX_PAGE_AUDIO.bit": "84827e74685b5ab749255f27bc8a2ea759dcab235be0332efe5fb3ea08690ba5"
+  },
+  "firmware_packaging_note": "Historical or duplicate firmware omitted; only the current A/B pair is delivered in the project releases directory."
+}

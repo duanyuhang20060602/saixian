@@ -1,0 +1,528 @@
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:39: warning: Port 7 (data) of module photo_link_receiver expects 1 bit(s), given 16.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:39:        : Pruning 15 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:39: warning: Port 18 (write_data) of module photo_link_receiver expects 1 bit(s), given 32.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:39:        : Pruning 31 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:39: warning: Port 22 (frame_crc) of module photo_link_receiver expects 1 bit(s), given 32.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:39:        : Pruning 31 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:39: warning: Port 23 (fault_detail) of module photo_link_receiver expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:39:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64: warning: Port 7 (thumbnail_slot) of module frame_store expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64: warning: Port 8 (thumbnail_address) of module frame_store expects 1 bit(s), given 13.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64:        : Pruning 12 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64: warning: Port 10 (thumbnail_data) of module frame_store expects 1 bit(s), given 16.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64:        : Pruning 15 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64: warning: Port 13 (light_address) of module frame_store expects 1 bit(s), given 21.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64:        : Pruning 20 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64: warning: Port 15 (light_data) of module frame_store expects 1 bit(s), given 32.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64:        : Pruning 31 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64: warning: Port 17 (light_base) of module frame_store expects 1 bit(s), given 21.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64:        : Pruning 20 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64: warning: Port 18 (water_cfg) of module frame_store expects 1 bit(s), given 77.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64:        : Pruning 76 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64: warning: Port 19 (fluid_progress) of module frame_store expects 1 bit(s), given 9.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64:        : Pruning 8 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64: warning: Port 21 (write_slot) of module frame_store expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64: warning: Port 22 (read_slot) of module frame_store expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64: warning: Port 23 (new_slot) of module frame_store expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64: warning: Port 26 (slide_offset) of module frame_store expects 1 bit(s), given 11.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64:        : Pruning 10 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64: warning: Port 27 (transition_mode) of module frame_store expects 1 bit(s), given 5.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64:        : Pruning 4 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64: warning: Port 34 (write_data) of module frame_store expects 1 bit(s), given 32.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64:        : Pruning 31 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64: warning: Port 44 (read_data) of module frame_store expects 1 bit(s), given 32.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:64:        : Pruning 31 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:91: warning: Port 3 (rgb_in) of module hdmi_minimal_tx expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:91:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:91: warning: Port 11 (x) of module hdmi_minimal_tx expects 1 bit(s), given 12.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:91:        : Pruning 11 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:91: warning: Port 12 (y) of module hdmi_minimal_tx expects 1 bit(s), given 11.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:91:        : Pruning 10 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:94: warning: Port 4 (x) of module frame_pixels expects 1 bit(s), given 12.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:94:        : Pruning 11 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:94: warning: Port 5 (y) of module frame_pixels expects 1 bit(s), given 11.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:94:        : Pruning 10 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:94: warning: Port 9 (data) of module frame_pixels expects 1 bit(s), given 32.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:94:        : Pruning 31 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:94: warning: Port 12 (rgb) of module frame_pixels expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:94:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:97: warning: Port 6 (ready_buf_idx) of module saixian_transition expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:97:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:97: warning: Port 9 (effect_select) of module saixian_transition expects 1 bit(s), given 5.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:97:        : Pruning 4 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:97: warning: Port 10 (active_buf_idx) of module saixian_transition expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:97:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:97: warning: Port 11 (slide_new_buf_idx) of module saixian_transition expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:97:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:97: warning: Port 15 (fluid_progress) of module saixian_transition expects 1 bit(s), given 9.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:97:        : Pruning 8 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:97: warning: Port 16 (transition_mode) of module saixian_transition expects 1 bit(s), given 5.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:97:        : Pruning 4 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:97: warning: Port 17 (slide_offset) of module saixian_transition expects 1 bit(s), given 11.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:97:        : Pruning 10 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:97: warning: Port 19 (transition_level) of module saixian_transition expects 1 bit(s), given 6.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:97:        : Pruning 5 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:114: warning: Port 7 (sample_x) of module photo_touchpad expects 1 bit(s), given 10.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:114:        : Pruning 9 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:114: warning: Port 8 (sample_y) of module photo_touchpad expects 1 bit(s), given 9.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:114:        : Pruning 8 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:114: warning: Port 9 (cursor_x) of module photo_touchpad expects 1 bit(s), given 11.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:114:        : Pruning 10 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:114: warning: Port 10 (cursor_y) of module photo_touchpad expects 1 bit(s), given 10.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:114:        : Pruning 9 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:145: warning: Port 7 (touch_x) of module saixian_hmi_uart expects 1 bit(s), given 10.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:145:        : Pruning 9 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:145: warning: Port 8 (touch_y) of module saixian_hmi_uart expects 1 bit(s), given 9.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:145:        : Pruning 8 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:145: warning: Port 13 (project_value) of module saixian_hmi_uart expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:145:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:145: warning: Port 27 (setting_id) of module saixian_hmi_uart expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:145:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:145: warning: Port 28 (setting_value) of module saixian_hmi_uart expects 1 bit(s), given 8.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:145:        : Pruning 7 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:145: warning: Port 32 (effect_value) of module saixian_hmi_uart expects 1 bit(s), given 5.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:145:        : Pruning 4 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:145: warning: Port 38 (page_id) of module saixian_hmi_uart expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:145:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159: warning: Port 5 (pointer_item) of module photo_unified_settings_controller expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159: warning: Port 12 (hmi_setting_id) of module photo_unified_settings_controller expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159: warning: Port 13 (hmi_setting_value) of module photo_unified_settings_controller expects 1 bit(s), given 8.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159:        : Pruning 7 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159: warning: Port 18 (effect_value) of module photo_unified_settings_controller expects 1 bit(s), given 5.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159:        : Pruning 4 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159: warning: Port 24 (effect_select) of module photo_unified_settings_controller expects 1 bit(s), given 5.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159:        : Pruning 4 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159: warning: Port 26 (auto_interval_seconds) of module photo_unified_settings_controller expects 1 bit(s), given 5.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159:        : Pruning 4 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159: warning: Port 30 (setting_item) of module photo_unified_settings_controller expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159: warning: Port 31 (volume_setting) of module photo_unified_settings_controller expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159: warning: Port 32 (brightness_setting) of module photo_unified_settings_controller expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159: warning: Port 33 (contrast_setting) of module photo_unified_settings_controller expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159: warning: Port 34 (saturation_setting) of module photo_unified_settings_controller expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159: warning: Port 35 (sharpness_setting) of module photo_unified_settings_controller expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159: warning: Port 38 (enhancement_setting) of module photo_unified_settings_controller expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:159:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:167: warning: Port 7 (project_switch) of module saixian_event_controller expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:167:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:167: warning: Port 8 (state) of module saixian_event_controller expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:167:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:167: warning: Port 9 (project_id) of module saixian_event_controller expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:167:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:167: warning: Port 10 (minutes) of module saixian_event_controller expects 1 bit(s), given 7.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:167:        : Pruning 6 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:167: warning: Port 11 (seconds) of module saixian_event_controller expects 1 bit(s), given 6.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:167:        : Pruning 5 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:167: warning: Port 12 (countdown_value) of module saixian_event_controller expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:167:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:167: warning: Port 13 (cue_event) of module saixian_event_controller expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:167:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:196: warning: Port 10 (interval_seconds) of module photo_auto_advance expects 1 bit(s), given 5.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:196:        : Pruning 4 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:221: warning: Port 10 (first_ms) of module photo_switch_timing expects 1 bit(s), given 20.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:221:        : Pruning 19 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:221: warning: Port 11 (second_ms) of module photo_switch_timing expects 1 bit(s), given 20.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:221:        : Pruning 19 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:221: warning: Port 13 (total_ms) of module photo_switch_timing expects 1 bit(s), given 20.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:221:        : Pruning 19 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:224: warning: Port 4 (first_ms) of module photo_switch_timing_display expects 1 bit(s), given 20.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:224:        : Pruning 19 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:224: warning: Port 5 (second_ms) of module photo_switch_timing_display expects 1 bit(s), given 20.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:224:        : Pruning 19 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:224: warning: Port 6 (third_ms) of module photo_switch_timing_display expects 1 bit(s), given 20.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:224:        : Pruning 19 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:224: warning: Port 7 (total_ms) of module photo_switch_timing_display expects 1 bit(s), given 20.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:224:        : Pruning 19 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:224: warning: Port 8 (seg_sel) of module photo_switch_timing_display expects 1 bit(s), given 6.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:224:        : Pruning 5 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:224: warning: Port 9 (seg_data) of module photo_switch_timing_display expects 1 bit(s), given 8.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:224:        : Pruning 7 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226: warning: Port 4 (settings_state) of module photo_cached_control_a expects 1 bit(s), given 19.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226:        : Pruning 18 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226: warning: Port 11 (thumbnail_read_slot) of module photo_cached_control_a expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226: warning: Port 22 (award_notice) of module photo_cached_control_a expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226: warning: Port 23 (last_transfer_error) of module photo_cached_control_a expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226: warning: Port 24 (first_transfer_origin) of module photo_cached_control_a expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226: warning: Port 25 (first_transfer_error) of module photo_cached_control_a expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226: warning: Port 28 (active_slot) of module photo_cached_control_a expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226: warning: Port 29 (new_slot) of module photo_cached_control_a expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226: warning: Port 32 (receive_slot) of module photo_cached_control_a expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226: warning: Port 39 (rx_crc) of module photo_cached_control_a expects 1 bit(s), given 32.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226:        : Pruning 31 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226: warning: Port 41 (ready_slot) of module photo_cached_control_a expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226: warning: Port 43 (image_count) of module photo_cached_control_a expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226: warning: Port 44 (current_image) of module photo_cached_control_a expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226: warning: Port 46 (error) of module photo_cached_control_a expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226: warning: Port 47 (debug_state) of module photo_cached_control_a expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226: warning: Port 49 (thumbnail_slot) of module photo_cached_control_a expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226: warning: Port 50 (thumbnail_id) of module photo_cached_control_a expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226: warning: Port 51 (current_source_width) of module photo_cached_control_a expects 1 bit(s), given 16.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226:        : Pruning 15 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226: warning: Port 52 (current_source_height) of module photo_cached_control_a expects 1 bit(s), given 16.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:226:        : Pruning 15 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:239: warning: Port 5 (transition_mode) of module photo_transition_page_event expects 1 bit(s), given 5.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:239:        : Pruning 4 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:239: warning: Port 6 (page_style) of module photo_transition_page_event expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:239:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:239: warning: Port 8 (image) of module photo_transition_page_event expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:239:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:239: warning: Port 9 (count) of module photo_transition_page_event expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:239:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:245: warning: Port 8 (progress) of module water_scene expects 1 bit(s), given 9.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:245:        : Pruning 8 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:245: warning: Port 9 (cfg) of module water_scene expects 1 bit(s), given 77.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:245:        : Pruning 76 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253: warning: Port 1 (page_style) of module photo_audio_spi_a expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253: warning: Port 10 (volume) of module photo_audio_spi_a expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253: warning: Port 11 (cue_event) of module photo_audio_spi_a expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253: warning: Port 17 (track_count) of module photo_audio_spi_a expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253: warning: Port 18 (track_index) of module photo_audio_spi_a expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253: warning: Port 19 (desired_epoch) of module photo_audio_spi_a expects 1 bit(s), given 8.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253:        : Pruning 7 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253: warning: Port 20 (diagnostic_stage) of module photo_audio_spi_a expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253: warning: Port 21 (buffer_level) of module photo_audio_spi_a expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253: warning: Port 26 (audio_left) of module photo_audio_spi_a expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253: warning: Port 27 (audio_right) of module photo_audio_spi_a expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253: warning: Port 28 (packet_errors) of module photo_audio_spi_a expects 1 bit(s), given 16.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253:        : Pruning 15 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253: warning: Port 29 (underflows) of module photo_audio_spi_a expects 1 bit(s), given 16.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253:        : Pruning 15 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253: warning: Port 35 (av_word_index) of module photo_audio_spi_a expects 1 bit(s), given 9.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253:        : Pruning 8 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253: warning: Port 36 (av_word) of module photo_audio_spi_a expects 1 bit(s), given 32.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253:        : Pruning 31 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253: warning: Port 37 (play_position) of module photo_audio_spi_a expects 1 bit(s), given 32.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:253:        : Pruning 31 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:268: warning: Port 3 (x) of module photo_raster_delay expects 1 bit(s), given 12.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:268:        : Pruning 11 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:268: warning: Port 4 (y) of module photo_raster_delay expects 1 bit(s), given 11.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:268:        : Pruning 10 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:268: warning: Port 6 (y_two_thirds) of module photo_raster_delay expects 1 bit(s), given 9.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:268:        : Pruning 8 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:269: warning: Port 3 (x) of module photo_raster_delay expects 1 bit(s), given 12.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:269:        : Pruning 11 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:269: warning: Port 4 (y) of module photo_raster_delay expects 1 bit(s), given 11.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:269:        : Pruning 10 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:270: warning: Port 3 (x) of module photo_raster_delay expects 1 bit(s), given 12.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:270:        : Pruning 11 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:270: warning: Port 4 (y) of module photo_raster_delay expects 1 bit(s), given 11.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:270:        : Pruning 10 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:280: warning: Port 5 (O_acr_cts) of module audio_arc_calculate expects 1 bit(s), given 20.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:280:        : Pruning 19 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:280: warning: Port 6 (O_acr_n) of module audio_arc_calculate expects 1 bit(s), given 20.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:280:        : Pruning 19 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:322: warning: Port 4 (external_target) of module water_edge expects 1 bit(s), given 8.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:322:        : Pruning 7 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:322: warning: Port 7 (pcm_left) of module water_edge expects 1 bit(s), given 16.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:322:        : Pruning 15 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:322: warning: Port 8 (pcm_right) of module water_edge expects 1 bit(s), given 16.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:322:        : Pruning 15 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:322: warning: Port 9 (x) of module water_edge expects 1 bit(s), given 11.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:322:        : Pruning 10 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:322: warning: Port 10 (y) of module water_edge expects 1 bit(s), given 10.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:322:        : Pruning 9 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:322: warning: Port 14 (rgb) of module water_edge expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:322:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:322: warning: Port 15 (darkness) of module water_edge expects 1 bit(s), given 6.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:322:        : Pruning 5 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:322: warning: Port 19 (rgb_out) of module water_edge expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:322:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:322: warning: Port 20 (level) of module water_edge expects 1 bit(s), given 8.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:322:        : Pruning 7 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:329: warning: Port 9 (I_axis_s_data) of module hdmi_1_4b_transmitter_core_wrapper expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:329:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:329: warning: Port 12 (I_audio_left_data) of module hdmi_1_4b_transmitter_core_wrapper expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:329:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:329: warning: Port 13 (I_audio_right_data) of module hdmi_1_4b_transmitter_core_wrapper expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:329:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:329: warning: Port 15 (I_acr_cts) of module hdmi_1_4b_transmitter_core_wrapper expects 1 bit(s), given 20.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:329:        : Pruning 19 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:329: warning: Port 16 (I_acr_n) of module hdmi_1_4b_transmitter_core_wrapper expects 1 bit(s), given 20.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:329:        : Pruning 19 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:329: warning: Port 20 (O_ch0_tmds_data) of module hdmi_1_4b_transmitter_core_wrapper expects 1 bit(s), given 10.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:329:        : Pruning 9 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:329: warning: Port 21 (O_ch1_tmds_data) of module hdmi_1_4b_transmitter_core_wrapper expects 1 bit(s), given 10.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:329:        : Pruning 9 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:329: warning: Port 22 (O_ch2_tmds_data) of module hdmi_1_4b_transmitter_core_wrapper expects 1 bit(s), given 10.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:329:        : Pruning 9 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:329: warning: Port 23 (O_clk_tmds_data) of module hdmi_1_4b_transmitter_core_wrapper expects 1 bit(s), given 10.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:329:        : Pruning 9 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334: warning: Port 3 (image_count) of module saixian_hmi_status_tx expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334: warning: Port 4 (audio_count) of module saixian_hmi_status_tx expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334: warning: Port 5 (error_code) of module saixian_hmi_status_tx expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334: warning: Port 7 (page_id) of module saixian_hmi_status_tx expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334: warning: Port 9 (sharpness) of module saixian_hmi_status_tx expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334: warning: Port 10 (brightness) of module saixian_hmi_status_tx expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334: warning: Port 11 (contrast) of module saixian_hmi_status_tx expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334: warning: Port 12 (saturation) of module saixian_hmi_status_tx expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334: warning: Port 13 (volume) of module saixian_hmi_status_tx expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334: warning: Port 16 (enhancement) of module saixian_hmi_status_tx expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334: warning: Port 17 (event_state) of module saixian_hmi_status_tx expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334: warning: Port 18 (minutes) of module saixian_hmi_status_tx expects 1 bit(s), given 7.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334:        : Pruning 6 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334: warning: Port 19 (seconds) of module saixian_hmi_status_tx expects 1 bit(s), given 6.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:334:        : Pruning 5 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:346: warning: Port 4 (rgb_in) of module photo_neutral_delay expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:346:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:346: warning: Port 5 (rgb_out) of module photo_neutral_delay expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:346:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:347: warning: Port 3 (darkness) of module photo_display_fade expects 1 bit(s), given 6.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:347:        : Pruning 5 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:347: warning: Port 4 (rgb_in) of module photo_display_fade expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:347:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:347: warning: Port 5 (rgb_out) of module photo_display_fade expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:347:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348: warning: Port 4 (x) of module photo_settings_overlay expects 1 bit(s), given 12.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348:        : Pruning 11 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348: warning: Port 5 (y) of module photo_settings_overlay expects 1 bit(s), given 11.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348:        : Pruning 10 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348: warning: Port 8 (setting_item) of module photo_settings_overlay expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348: warning: Port 12 (volume) of module photo_settings_overlay expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348: warning: Port 14 (brightness) of module photo_settings_overlay expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348: warning: Port 15 (contrast) of module photo_settings_overlay expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348: warning: Port 16 (saturation) of module photo_settings_overlay expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348: warning: Port 17 (sharpness) of module photo_settings_overlay expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348: warning: Port 18 (enhancement) of module photo_settings_overlay expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348: warning: Port 21 (effect) of module photo_settings_overlay expects 1 bit(s), given 5.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348:        : Pruning 4 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348: warning: Port 23 (auto_interval_seconds) of module photo_settings_overlay expects 1 bit(s), given 5.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348:        : Pruning 4 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348: warning: Port 24 (rgb_in) of module photo_settings_overlay expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348: warning: Port 25 (rgb_out) of module photo_settings_overlay expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:348:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:358: warning: Port 3 (notice) of module photo_award_notice expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:358:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:358: warning: Port 4 (x) of module photo_award_notice expects 1 bit(s), given 12.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:358:        : Pruning 11 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:358: warning: Port 5 (y) of module photo_award_notice expects 1 bit(s), given 11.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:358:        : Pruning 10 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:358: warning: Port 6 (rgb_in) of module photo_award_notice expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:358:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:358: warning: Port 7 (rgb_out) of module photo_award_notice expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:358:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:384: warning: Port 2 (glyph_id) of module saixian_font_rom expects 1 bit(s), given 7.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:384:        : Pruning 6 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:384: warning: Port 3 (row) of module saixian_font_rom expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:384:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:384: warning: Port 4 (bits) of module saixian_font_rom expects 1 bit(s), given 16.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:384:        : Pruning 15 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:392: warning: Port 4 (edge_target) of module photo_av_metadata_a expects 1 bit(s), given 8.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:392:        : Pruning 7 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:392: warning: Port 5 (play_position) of module photo_av_metadata_a expects 1 bit(s), given 32.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:392:        : Pruning 31 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:392: warning: Port 10 (word_index) of module photo_av_metadata_a expects 1 bit(s), given 9.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:392:        : Pruning 8 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:392: warning: Port 11 (word_data) of module photo_av_metadata_a expects 1 bit(s), given 32.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:392:        : Pruning 31 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:392: warning: Port 13 (read_band) of module photo_av_metadata_a expects 1 bit(s), given 5.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:392:        : Pruning 4 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:392: warning: Port 14 (read_index) of module photo_av_metadata_a expects 1 bit(s), given 8.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:392:        : Pruning 7 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:392: warning: Port 15 (height) of module photo_av_metadata_a expects 1 bit(s), given 7.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:392:        : Pruning 6 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:392: warning: Port 16 (peak) of module photo_av_metadata_a expects 1 bit(s), given 7.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:392:        : Pruning 6 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:392: warning: Port 17 (extrema) of module photo_av_metadata_a expects 1 bit(s), given 32.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:392:        : Pruning 31 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 5 (x_i) of module saixian_osd_overlay expects 1 bit(s), given 10.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 9 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 6 (y_i) of module saixian_osd_overlay expects 1 bit(s), given 9.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 8 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 7 (rgb_in_i) of module saixian_osd_overlay expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 9 (loading_phase) of module saixian_osd_overlay expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 10 (state) of module saixian_osd_overlay expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 11 (project_id) of module saixian_osd_overlay expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 12 (minutes) of module saixian_osd_overlay expects 1 bit(s), given 7.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 6 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 13 (seconds) of module saixian_osd_overlay expects 1 bit(s), given 6.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 5 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 14 (countdown_value) of module saixian_osd_overlay expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 15 (ticker_x) of module saixian_osd_overlay expects 1 bit(s), given 11.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 10 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 16 (ticker_text_length) of module saixian_osd_overlay expects 1 bit(s), given 5.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 4 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 17 (title_text_length) of module saixian_osd_overlay expects 1 bit(s), given 5.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 4 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 18 (font_addr) of module saixian_osd_overlay expects 1 bit(s), given 11.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 10 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 19 (font_bits) of module saixian_osd_overlay expects 1 bit(s), given 16.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 15 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 21 (source_width_bcd) of module saixian_osd_overlay expects 1 bit(s), given 16.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 15 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 22 (source_height_bcd) of module saixian_osd_overlay expects 1 bit(s), given 16.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 15 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 23 (error_code) of module saixian_osd_overlay expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 24 (visual_height) of module saixian_osd_overlay expects 1 bit(s), given 7.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 6 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 25 (visual_peak) of module saixian_osd_overlay expects 1 bit(s), given 7.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 6 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 26 (visual_wave) of module saixian_osd_overlay expects 1 bit(s), given 32.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 31 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 31 (setting_item) of module saixian_osd_overlay expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 32 (volume_setting) of module saixian_osd_overlay expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 33 (brightness_setting) of module saixian_osd_overlay expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 34 (contrast_setting) of module saixian_osd_overlay expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 35 (sharpness_setting) of module saixian_osd_overlay expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 36 (saturation_setting) of module saixian_osd_overlay expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 39 (enhancement_setting) of module saixian_osd_overlay expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397: warning: Port 40 (rgb_out) of module saixian_osd_overlay expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:397:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422: warning: Port 3 (cursor_x) of module photo_award_render expects 1 bit(s), given 11.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422:        : Pruning 10 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422: warning: Port 4 (cursor_y) of module photo_award_render expects 1 bit(s), given 10.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422:        : Pruning 9 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422: warning: Port 7 (light_base) of module photo_award_render expects 1 bit(s), given 21.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422:        : Pruning 20 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422: warning: Port 9 (light_address) of module photo_award_render expects 1 bit(s), given 21.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422:        : Pruning 20 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422: warning: Port 11 (light_data) of module photo_award_render expects 1 bit(s), given 32.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422:        : Pruning 31 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422: warning: Port 19 (x) of module photo_award_render expects 1 bit(s), given 11.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422:        : Pruning 10 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422: warning: Port 20 (y) of module photo_award_render expects 1 bit(s), given 10.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422:        : Pruning 9 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422: warning: Port 21 (tagged_rgb) of module photo_award_render expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422: warning: Port 22 (rgb) of module photo_award_render expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422: warning: Port 23 (menu_rgb) of module photo_award_render expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422: warning: Port 24 (light_error) of module photo_award_render expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422: warning: Port 25 (light_frame) of module photo_award_render expects 1 bit(s), given 7.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:422:        : Pruning 6 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:453: warning: Port 4 (x) of module photo_boot_screen expects 1 bit(s), given 12.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:453:        : Pruning 11 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:453: warning: Port 5 (y) of module photo_boot_screen expects 1 bit(s), given 11.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:453:        : Pruning 10 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:453: warning: Port 12 (rgb) of module photo_boot_screen expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:453:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:460: warning: Port 8 (cache_slot) of module photo_thumbnail_overlay expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:460:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:460: warning: Port 9 (identity) of module photo_thumbnail_overlay expects 1 bit(s), given 6.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:460:        : Pruning 5 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:460: warning: Port 11 (x) of module photo_thumbnail_overlay expects 1 bit(s), given 12.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:460:        : Pruning 11 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:460: warning: Port 12 (y) of module photo_thumbnail_overlay expects 1 bit(s), given 11.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:460:        : Pruning 10 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:460: warning: Port 14 (slot) of module photo_thumbnail_overlay expects 1 bit(s), given 2.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:460:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:460: warning: Port 17 (data) of module photo_thumbnail_overlay expects 1 bit(s), given 16.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:460:        : Pruning 15 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:460: warning: Port 18 (address) of module photo_thumbnail_overlay expects 1 bit(s), given 13.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:460:        : Pruning 12 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:460: warning: Port 20 (rgb_in) of module photo_thumbnail_overlay expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:460:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:460: warning: Port 21 (rgb_out) of module photo_thumbnail_overlay expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:460:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:467: warning: Port 7 (x) of module photo_pointer_overlay expects 1 bit(s), given 12.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:467:        : Pruning 11 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:467: warning: Port 8 (y) of module photo_pointer_overlay expects 1 bit(s), given 11.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:467:        : Pruning 10 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:467: warning: Port 9 (cursor_x) of module photo_pointer_overlay expects 1 bit(s), given 11.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:467:        : Pruning 10 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:467: warning: Port 10 (cursor_y) of module photo_pointer_overlay expects 1 bit(s), given 10.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:467:        : Pruning 9 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:467: warning: Port 11 (rgb_in) of module photo_pointer_overlay expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:467:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:467: warning: Port 12 (rgb_out) of module photo_pointer_overlay expects 1 bit(s), given 24.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:467:        : Pruning 23 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:471: warning: Port 4 (I_tmds_channel_0) of module hdmi_phy_wrapper expects 1 bit(s), given 10.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:471:        : Pruning 9 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:471: warning: Port 5 (I_tmds_channel_1) of module hdmi_phy_wrapper expects 1 bit(s), given 10.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:471:        : Pruning 9 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:471: warning: Port 6 (I_tmds_channel_2) of module hdmi_phy_wrapper expects 1 bit(s), given 10.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:471:        : Pruning 9 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:471: warning: Port 7 (I_tmds_channel_clk) of module hdmi_phy_wrapper expects 1 bit(s), given 10.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:471:        : Pruning 9 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:475: warning: Port 3 (x) of module hdmi_scan_monitor expects 1 bit(s), given 12.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:475:        : Pruning 11 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:475: warning: Port 4 (y) of module hdmi_scan_monitor expects 1 bit(s), given 11.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:475:        : Pruning 10 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:507: warning: Port 3 (status) of module photo_status expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:507:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:507: warning: Port 4 (error) of module photo_status expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:507:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:507: warning: Port 5 (state) of module photo_status expects 1 bit(s), given 4.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:507:        : Pruning 3 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:507: warning: Port 6 (image) of module photo_status expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:507:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:507: warning: Port 7 (count) of module photo_status expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:507:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:507: warning: Port 8 (diagnostic_page) of module photo_status expects 1 bit(s), given 3.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:507:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:507: warning: Port 9 (diagnostic_crc) of module photo_status expects 1 bit(s), given 16.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:507:        : Pruning 15 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:507: warning: Port 10 (seg_sel) of module photo_status expects 1 bit(s), given 6.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:507:        : Pruning 5 high bits of the expression.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:507: warning: Port 11 (seg_data) of module photo_status expects 1 bit(s), given 8.
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\common\top_photo_a.v:507:        : Pruning 7 high bits of the expression.
+PASS production top result controls: exact one-clock qualified FSM trace cycles=12856, 16 gate masks, stop/select/trigger/frame priorities, pending stop and K4 no restart checks=7
+E:\Codex\Work\saixian-relief-integration-20261023\candidate_shared_video\5.0project\tests\tb_relief_result_controls.v:90: $finish called at 128590000 (1ps)

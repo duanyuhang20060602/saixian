@@ -17,6 +17,7 @@ set_false_path -to [get_regs -nowarn {*ack_meta* *finish_meta* *valid_meta* *rea
 # stable for the complete transaction. Gray FIFO paths retain IP constraints.
 set_false_path -to [get_regs -nowarn {*event_meta* *rx_meta* *fault_meta* *armed_meta* *fin_meta* *key_meta* *sync_key[0]* *key_sync[0]* *write_addr_index_d0* *read_addr_index_d0* *slide_old_d0* *slide_new_d0* *slide_active_d0* *slide_right_d0* *slide_offset_d0* *transition_mode_d0*}]
 set_false_path -from [get_ports {control_rx}]
+set_false_path -from [get_ports {key2_n}]
 set_false_path -to [get_regs -nowarn {*settings_meta* *gain_meta* *processing/ack_meta*}]
 # AUDIO1: SPI oversampling, cut only async first stages.
 # These asynchronous ports feed only the SPI first-stage input registers.
