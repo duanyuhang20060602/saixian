@@ -2,13 +2,15 @@
 // Four snapshots cover the audio FIFO's look-ahead without displaying future
 // audio. Incomplete/bad-CRC requests never become visible. Oldest eligible
 // snapshots retire at vertical blanking, independent of metadata reception.
-module photo_av_metadata_a #(parameter EDGE_METADATA=0)(
+module photo_av_metadata_a #(parameter EDGE_METADATA=0,REMOTE_RELIEF=0)(
  input clk,rst,frame_tick,input [31:0] play_position,
  input begin_packet,word_valid,commit_packet,finish_packet,
  input [8:0] word_index,input [31:0] word_data,
  output available,input [4:0] read_band,input [7:0] read_index,
  output [6:0] height,peak,output [31:0] extrema,
- output fft_valid,wave_valid,output [7:0] edge_target
+ output fft_valid,wave_valid,output [7:0] edge_target,
+ input remote_enable,remote_we,input [7:0] remote_wa,input [23:0] remote_wd,
+ input [7:0] remote_ra,output [23:0] remote_rd
 );
 reg [3:0] occupied,eligible;
 reg [7:0] generation,bank_generation[0:3];
@@ -45,7 +47,10 @@ always @(posedge clk or posedge rst)
  if(rst)begin selected_bank<=0;selected_valid<=0;end
  else begin selected_bank<=choose23 ? pair23:pair01;selected_valid<=|ready_bank;end
 assign available=free_found && !receiving;
-wire [31:0] wave_q;wire [15:0] band_q;
+wire [31:0] wave_q;wire [17:0] band_full;wire [15:0] band_q=band_full[15:0];wire [7:0] wall_red=band_full[16:9];
+wire [7:0] wall_green={1'b0,wall_red[7:1]}+{3'b0,band_full[8:4]};
+wire [7:0] wall_blue={3'b0,wall_red[7:3]}+{4'b0,band_full[3:0]};
+assign remote_rd={wall_red,wall_green,wall_blue};
 wire wave_write=receiving && word_valid && word_index>=34 && word_index<290;
 wire band_write=receiving && word_valid && word_index>=2 && word_index<34;
 wire [8:0] packet_wave_index=word_index-9'd34;
@@ -59,14 +64,14 @@ EG_LOGIC_BRAM #(.DATA_WIDTH_A(32),.ADDR_WIDTH_A(10),.DATA_DEPTH_A(1024),
  .addra({write_bank,packet_wave_index[7:0]}),.dia(word_data),.doa(),
  .clkb(clk),.rstb(1'b0),.ceb(1'b1),.web(1'b0),.oceb(1'b0),.beb(1'b0),
  .addrb({display_bank,read_index}),.dib(32'd0),.dob(wave_q));
-EG_LOGIC_BRAM #(.DATA_WIDTH_A(16),.ADDR_WIDTH_A(7),.DATA_DEPTH_A(128),
- .DATA_WIDTH_B(16),.ADDR_WIDTH_B(7),.DATA_DEPTH_B(128),.BYTE_ENABLE(0),
+EG_LOGIC_BRAM #(.DATA_WIDTH_A(REMOTE_RELIEF ? 18:16),.ADDR_WIDTH_A(REMOTE_RELIEF ? 8:7),.DATA_DEPTH_A(REMOTE_RELIEF ? 256:128),
+ .DATA_WIDTH_B(REMOTE_RELIEF ? 18:16),.ADDR_WIDTH_B(REMOTE_RELIEF ? 8:7),.DATA_DEPTH_B(REMOTE_RELIEF ? 256:128),.BYTE_ENABLE(0),
  .MODE("PDPW"),.REGMODE_A("NOREG"),.REGMODE_B("NOREG"),
  .WRITEMODE_A("NORMAL"),.WRITEMODE_B("NORMAL"),.RESETMODE("SYNC"),.IMPLEMENT("9K")) band_cache(
- .clka(clk),.rsta(1'b0),.cea(1'b1),.wea(band_write),.ocea(1'b0),.bea(1'b0),
- .addra({write_bank,packet_band_index}),.dia(word_data[15:0]),.doa(),
+ .clka(clk),.rsta(1'b0),.cea(1'b1),.wea(REMOTE_RELIEF && remote_enable ? remote_we:band_write),.ocea(1'b0),.bea(1'b0),
+ .addra(REMOTE_RELIEF && remote_enable ? remote_wa:{1'b0,write_bank,packet_band_index}),.dia(REMOTE_RELIEF && remote_enable ? {1'b0,remote_wd[16:0]}:{2'd0,word_data[15:0]}),.doa(),
  .clkb(clk),.rstb(1'b0),.ceb(1'b1),.web(1'b0),.oceb(1'b0),.beb(1'b0),
- .addrb({display_bank,read_band}),.dib(16'd0),.dob(band_q));
+ .addrb(REMOTE_RELIEF && remote_enable ? remote_ra:{1'b0,display_bank,read_band}),.dib(18'd0),.dob(band_full));
 assign height=fft_valid ? band_q[6:0]:7'd0;
 assign peak=fft_valid ? band_q[13:7]:7'd0;
 assign extrema=wave_valid ? wave_q:32'd0;

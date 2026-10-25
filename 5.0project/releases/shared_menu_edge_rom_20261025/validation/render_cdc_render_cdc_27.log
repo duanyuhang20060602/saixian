@@ -1,0 +1,48 @@
+PASS renderer CDC routing wide=0 phase_ps=0 latency=1: 282 grants/1128 words, 108 ACK-edge mode changes, 528 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50240000 (1ps)
+PASS renderer CDC routing wide=0 phase_ps=0 latency=3: 243 grants/972 words, 84 ACK-edge mode changes, 467 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50270000 (1ps)
+PASS renderer CDC routing wide=0 phase_ps=0 latency=12: 162 grants/648 words, 52 ACK-edge mode changes, 332 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50290000 (1ps)
+PASS renderer CDC routing wide=0 phase_ps=0 latency=27: 108 grants/432 words, 36 ACK-edge mode changes, 227 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50280000 (1ps)
+PASS renderer CDC routing wide=0 phase_ps=1700 latency=1: 282 grants/1128 words, 113 ACK-edge mode changes, 549 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50240000 (1ps)
+PASS renderer CDC routing wide=0 phase_ps=1700 latency=3: 243 grants/972 words, 75 ACK-edge mode changes, 448 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50270000 (1ps)
+PASS renderer CDC routing wide=0 phase_ps=1700 latency=12: 162 grants/648 words, 55 ACK-edge mode changes, 331 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50290000 (1ps)
+PASS renderer CDC routing wide=0 phase_ps=1700 latency=27: 108 grants/432 words, 39 ACK-edge mode changes, 223 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50280000 (1ps)
+PASS renderer CDC routing wide=0 phase_ps=4900 latency=1: 282 grants/1128 words, 106 ACK-edge mode changes, 565 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50240000 (1ps)
+PASS renderer CDC routing wide=0 phase_ps=4900 latency=3: 243 grants/972 words, 100 ACK-edge mode changes, 461 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50270000 (1ps)
+PASS renderer CDC routing wide=0 phase_ps=4900 latency=12: 162 grants/648 words, 51 ACK-edge mode changes, 324 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50290000 (1ps)
+PASS renderer CDC routing wide=0 phase_ps=4900 latency=27: 108 grants/432 words, 34 ACK-edge mode changes, 237 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50280000 (1ps)
+PASS renderer CDC routing wide=1 phase_ps=0 latency=1: 108 grants/3312 words, 43 ACK-edge mode changes, 1670 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50620000 (1ps)
+PASS renderer CDC routing wide=1 phase_ps=0 latency=3: 98 grants/3332 words, 37 ACK-edge mode changes, 1676 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50830000 (1ps)
+PASS renderer CDC routing wide=1 phase_ps=0 latency=12: 86 grants/2684 words, 26 ACK-edge mode changes, 1376 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50920000 (1ps)
+PASS renderer CDC routing wide=1 phase_ps=0 latency=27: 64 grants/2296 words, 21 ACK-edge mode changes, 1183 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50940000 (1ps)
+PASS renderer CDC routing wide=1 phase_ps=1700 latency=1: 93 grants/3492 words, 28 ACK-edge mode changes, 1797 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50400000 (1ps)
+PASS renderer CDC routing wide=1 phase_ps=1700 latency=3: 98 grants/3332 words, 34 ACK-edge mode changes, 1663 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50830000 (1ps)
+PASS renderer CDC routing wide=1 phase_ps=1700 latency=12: 88 grants/2632 words, 31 ACK-edge mode changes, 1326 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50920000 (1ps)
+PASS renderer CDC routing wide=1 phase_ps=1700 latency=27: 69 grants/2016 words, 25 ACK-edge mode changes, 1044 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50130000 (1ps)
+PASS renderer CDC routing wide=1 phase_ps=4900 latency=1: 93 grants/3492 words, 31 ACK-edge mode changes, 1779 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50620000 (1ps)
+PASS renderer CDC routing wide=1 phase_ps=4900 latency=3: 104 grants/3236 words, 35 ACK-edge mode changes, 1628 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50830000 (1ps)
+PASS renderer CDC routing wide=1 phase_ps=4900 latency=12: 84 grants/2736 words, 27 ACK-edge mode changes, 1388 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50920000 (1ps)
+PASS renderer CDC routing wide=1 phase_ps=4900 latency=27: 65 grants/2240 words, 19 ACK-edge mode changes, 1155 words returned during opposite mode
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_relief_render_cdc.v:77: $finish called at 50760000 (1ps)

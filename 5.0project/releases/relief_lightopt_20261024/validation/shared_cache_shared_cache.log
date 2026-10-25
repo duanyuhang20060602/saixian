@@ -1,0 +1,2 @@
+PASS shared award cache: old-new-old, 6 full 720p frames, 5529600 visible pixels, 7573563 same-cycle RGB/menu/control comparisons, 5536 stalled four-word bursts, pause and touch, zero underflow
+E:\Codex\Work\saixian-relief-lightopt-20261024\candidate\5.0project\tests\tb_relief_shared_cache.v:73: $finish called at 100985995714 (1ps)

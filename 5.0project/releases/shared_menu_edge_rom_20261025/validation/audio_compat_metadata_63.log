@@ -1,0 +1,12 @@
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\common\photo_av_receiver.v:70: warning: Port 2 (dob) of module EG_LOGIC_BRAM expects 16 bit(s), given 18.
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\common\photo_av_receiver.v:70:        : Padding 2 high bits of the expression.
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\common\photo_av_receiver.v:70: warning: Port 3 (dia) of module EG_LOGIC_BRAM expects 16 bit(s), given 18.
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\common\photo_av_receiver.v:70:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\common\photo_av_receiver.v:70: warning: Port 4 (dib) of module EG_LOGIC_BRAM expects 16 bit(s), given 18.
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\common\photo_av_receiver.v:70:        : Pruning 2 high bits of the expression.
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\common\photo_av_receiver.v:70: warning: Port 17 (addra) of module EG_LOGIC_BRAM expects 7 bit(s), given 8.
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\common\photo_av_receiver.v:70:        : Pruning 1 high bits of the expression.
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\common\photo_av_receiver.v:70: warning: Port 18 (addrb) of module EG_LOGIC_BRAM expects 7 bit(s), given 8.
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\common\photo_av_receiver.v:70:        : Pruning 1 high bits of the expression.
+PASS B envelope: 18003 stereo samples; AV2 header; CRC rejection; playback eligibility; four-bank ordering; 520 generations; native FFT/wave RAM; reset
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\tests\tb_resource_metadata.v:101: $finish called at 466130000 (1ps)

@@ -1,0 +1,2 @@
+PASS color_surface 16384 shared-DSP light cases; 3840 spatial RGB pairs, all shifts, borders, input stalls, row flush
+E:\Codex\Work\saixian-color-ripple-rtl-20261025\candidate\5.0project\tests\fx11_water\tb_color_surface.v:41: $finish called at 411840000 (1ps)

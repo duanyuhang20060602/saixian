@@ -10,6 +10,9 @@ def main():
     # Integrity verification checks the frozen snapshot; ordinary rebuilds
     # validate current paths and permit intentional source-code changes.
     verify(strict=args.verify_only)
+    if args.board in ('a','both'):
+        from prepare_menu_edge_rom import verify as verify_packed_rom
+        verify_packed_rom()
     if args.verify_only:print('PASS saved project verification');return
     stamp=datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
     work=args.work or Path('E:/Codex/Work')/((json.loads((ROOT/'package_manifest.json').read_text(encoding='utf-8'))['version']+'project-build-'+stamp))

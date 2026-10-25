@@ -92,7 +92,7 @@ always @(posedge clk)begin
  end
 end
 endmodule
-module photo_dlt_reader #(parameter REVERSE=0)(input clk,rst,start,input[31:0] start_sector,output ready,done,output[3:0] error,
+module photo_dlt_reader #(parameter REVERSE=0,PIXEL_GAP=16)(input clk,rst,start,input[31:0] start_sector,output ready,done,output[3:0] error,
  output reg write_req,input write_ack,full,output reg pixel_valid,output reg[23:0] pixel,
  output req,output[31:0] sector,input byte_valid,input[7:0] byte_data,input block_end);
 reg[1:0] state=0;integer pixels=0,starts=0;

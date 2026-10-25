@@ -1,0 +1,2 @@
+PASS early overlay: hidden prepare, sticky cancel/ack, no overlapping jobs, frame-boundary publication, hide/reuse, invalidation
+E:\Codex\Work\saixian-color-ripple-rtl-20261025\candidate\5.0project\tests\tb_thumbnail_early_cancel.v:27: $finish called at 410000 (1ps)

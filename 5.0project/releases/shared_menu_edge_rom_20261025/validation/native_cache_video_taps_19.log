@@ -1,0 +1,2 @@
+PASS 250000 exact seven/twelve-clock video tap pairs, arbitrary 24-bit colors, repeated resets, no added latency
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_rebalance_video_taps.v:13: $finish called at 2500000000 (1ps)

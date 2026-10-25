@@ -1,0 +1,2 @@
+PASS four production video-selection registers versus original conditions: all 4096 scene/count combinations, one-clock settling, held outputs and async reset; UI and video wiring match pinned thumbnail branch
+E:\Codex\Work\saixian-shared-rom-20261025\tests\display_controls\display_controls.v:35: $finish called at 41030000 (1ps)

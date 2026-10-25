@@ -200,9 +200,9 @@ end
 wire v,source;wire signed[12:0] dx,dy;wire[9:0] ox,oy;
 water_drop_vector engine(.clk(clk),.rst(rst),.valid(valid||pending),
  .xword(pending ? saved_x:xword),.y(pending ? saved_y:y),.source(pending),
- .enabled0(water_mode||drop0),.enabled1(drop1&&!water_mode),
- .water_mode(water_mode),.progress(progress),
- .cx0(water_mode ? 11'd640:cx0),.cy0(water_mode ? 10'd360:cy0),
+ .enabled0(drop0&&!water_mode),.enabled1(drop1&&!water_mode),
+ .water_mode(1'b0),.progress(progress),
+ .cx0(cx0),.cy0(cy0),
  .cx1(cx1),.cy1(cy1),.radius0(radius0),.radius1(radius1),
  .out_valid(v),.delta_x(dx),.delta_y(dy),.out_xword(ox),.out_y(oy),.out_source(source));
 reg signed[12:0] dx0,dy0;

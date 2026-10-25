@@ -18,10 +18,10 @@ wire [31:0] packed_word,mem_data;reg [2:0] write_ack_pipe=0;reg finish=0;
 wire #2 receiver_clk=link_clk;
 wire [15:0] #3 data_at_a=data;
 wire #3 valid_at_a=valid,sof_at_a=sof,eof_at_a=eof,ready_at_b=ready;
-photo_link_sender #(.FRAME_PIXELS(PIXELS)) tx(.clk(link_clk),.rst(rst),.start(start),.abort(1'b0),
+photo_link_sender #(.FRAME_PIXELS(PIXELS)) tx(.extended_frame(1'b0),.award_frame(1'b0),.relief_frame(1'b0),.clk(link_clk),.rst(rst),.start(start),.abort(1'b0),
  .data(read_data),.empty(read_empty),.read_ack(read_ack_pipe[2]),.link_ready(ready_at_b),.read_req(read_req),.read_en(read_en),
  .link_data(data),.link_valid(valid),.link_sof(sof),.link_eof(eof),.done(sent),.busy(),.frame_crc());
-photo_link_receiver #(.FRAME_PIXELS(PIXELS)) rx(.clk(receiver_clk),.rst(rst),.arm(arm),.abort(1'b0),
+photo_link_receiver #(.FRAME_PIXELS(PIXELS)) rx(.extended_frame(1'b0),.award_frame(1'b0),.relief_frame(1'b0),.clk(receiver_clk),.rst(rst),.arm(arm),.abort(1'b0),
  .data(data_at_a),.valid(valid_at_a),.sof(sof_at_a),.eof(eof_at_a),.ready(ready),.armed(),.busy(),
  .write_req(req),.write_ack(write_ack_pipe[2]),.full(full),.write_en(we),.write_data(packed_word),
  .finish_toggle(finish),.done(done),.fault(fault),.frame_crc());

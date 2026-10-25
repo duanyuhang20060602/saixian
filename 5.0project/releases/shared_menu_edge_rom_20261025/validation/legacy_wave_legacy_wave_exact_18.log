@@ -1,0 +1,3 @@
+PASS exhaustive 512 phase inputs against untouched original signed absolute-value wave function
+PASS complete 720p award differential: visible=921600 total_same-cycle_RGB_checks=1238608; arbitrary RGB/64 tags, pause, enable/re-entry, frame boundary and reset, unchanged five-clock pipeline
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_legacy_wave_exact.v:55: $finish called at 12386180000 (1ps)

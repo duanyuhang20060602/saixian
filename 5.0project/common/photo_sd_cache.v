@@ -1,7 +1,8 @@
 `timescale 1ns/1ps
 // Six-entry directory, two external SDRAM slots. A locked transmit slot is never a
 // load destination. Neighbour prefetch runs while the link consumes its slot.
-module photo_sd_cache #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=1048575,FRAME_WORDS=460800,FORWARD_ONLY=0,DISPLAY_PIN=0,EARLY_PREFETCH=0)(
+module photo_sd_cache #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=1048575,FRAME_WORDS=460800,FORWARD_ONLY=0,DISPLAY_PIN=0,EARLY_PREFETCH=0,TITLE_SD=0)(
+ output title_ready,output [4:0] title_length,input [6:0] title_address,output [31:0] title_data,
  input display_valid,input [2:0] display_image,input prefetch_pause,
  input audio_packet_active,input audio_request_valid,input [7:0] requested_audio_epoch,input [2:0] requested_audio_track,
  output reg [7:0] active_audio_epoch,output reg [2:0] active_audio_track,audio_count,
@@ -30,6 +31,15 @@ assign write_top_down=loading && load_is_dlt;
 wire load_ready=load_is_dlt ? (dlt_ready && dlt_done):bmp_ready;
 wire [3:0] bmp_state;wire [31:0] bmp_read_addr;wire bmp_read_req;
 wire sector_end,byte_valid,scaler_fault;wire [7:0] byte_data;
+reg [1:0] read_owner;reg read_settle;reg [31:0] read_address;
+generate if(TITLE_SD)begin:title_storage
+photo_sd_title_store title_store(.clk(clk),.rst(rst),
+ .valid(TITLE_SD && byte_valid && read_owner==1),.data(byte_data),
+ .sector_end(sector_end && read_owner==1),.ready(title_ready),.length(title_length),
+ .address(title_address),.word(title_data));
+end else begin:no_sd_title
+ assign title_ready=0;assign title_length=0;assign title_data=0;
+end endgenerate
 assign scaler_fault=load_is_dlt ? dlt_error!=0:bmp_fault;
 reg scan_start,scan_resume,scan_complete,scan_yield;reg load_start,load_launch,abort_op;reg [31:0] load_sector;
 reg [31:0] directory[0:7];reg [2:0] cache_id[0:1];reg [1:0] cache_valid;
@@ -49,7 +59,7 @@ wire pack_aligned;
 wire [20:0] frame_words=FRAME_WORDS;
 photo_color_pack packing(.clk(clk),.rst(rst),.clear(load_start || write_req),
  .valid(scaler_pixel && loading),.rgb(pixel),.word_valid(write_en),.word_data(write_data),.aligned(pack_aligned));
-reg [1:0] read_owner;reg read_settle;reg [31:0] read_address;
+
 assign write_slot=load_slot;
 assign write_award=load_is_dlt;
 assign write_relief=load_is_dlt && load_image==7;
@@ -141,13 +151,15 @@ sd_card_top #(.SPI_LOW_SPEED_DIV(248),.SPI_HIGH_SPEED_DIV(2),.READ_MULTIBLOCK(1)
  .sd_init_done(initialized),.init_stage(),.sd_sec_read(read_owner!=0),.sd_sec_read_addr(read_address),
  .sd_sec_read_data(byte_data),.sd_sec_read_data_valid(byte_valid),.sd_sec_read_end(sector_end),
  .sd_sec_write(1'b0),.sd_sec_write_addr(32'd0),.sd_sec_write_data(8'd0),.sd_sec_write_data_req(),.sd_sec_write_end());
-photo_dlt_reader dlt(.clk(clk),.rst(rst || abort_op),.start(load_launch && directory_dlt[load_image]),
+// The FIFO's full input provides backpressure. Four clocks retain pipeline
+// headroom without the old sixteen-clock delay between decoded halfwords.
+photo_dlt_reader #(.PIXEL_GAP(4)) dlt(.clk(clk),.rst(rst || abort_op),.start(load_launch && directory_dlt[load_image]),
  .start_sector(load_sector),.ready(dlt_ready),.done(dlt_done),.error(dlt_error),
  .write_req(dlt_write_req),.write_ack(write_ack),.full(full),.pixel_valid(dlt_pixel_valid),.pixel(dlt_pixel),
  .req(dlt_req),.sector(dlt_sector),.byte_valid(byte_valid && read_owner==3),.byte_data(byte_data),.block_end(sector_end && read_owner==3));
 bmp_read bmp(.clk(clk),.rst(rst),.op_abort(abort_op),.ready(bmp_ready),
  .scan_start(scan_start),.scan_resume(scan_resume),.scan_exhausted(scan_exhausted),
- .scan_stop((image_count!=0 || award_available || relief_available) && (!scanned || scan_yield || (image_count==6 && audio_count==5 && award_available && relief_available))),.scan_start_sector(32'd0),.scan_max_sector(SCAN_MAX_SECTOR),
+ .scan_stop((image_count!=0 || award_available || relief_available) && (!scanned || scan_yield || (image_count==6 && audio_count==5 && award_available && relief_available && (!TITLE_SD || title_ready)))),.scan_start_sector(32'd0),.scan_max_sector(SCAN_MAX_SECTOR),
  .scan_target_count(3'd6),.scan_done(scan_done),.scan_found_valid(found),.scan_found_sector(sector),
  .scan_found_total(),.scan_found_width(width),.scan_found_height(height),.scan_found_sprint(),.scan_found_dlt(found_dlt),
  .audio_found_valid(audio_found),.audio_found_index(),.audio_found_sector(audio_found_sector),.audio_found_bytes(audio_found_bytes),
@@ -203,7 +215,7 @@ always @(posedge clk or posedge rst)begin
    end
    if(scan_done && !scan_start && !scan_resume)begin
     scanning<=0;scanned<=1;scan_yield<=0;
-    scan_complete<=scan_exhausted || (image_count==6 && audio_count==5 && award_available && relief_available);
+    scan_complete<=scan_exhausted || (image_count==6 && audio_count==5 && award_available && relief_available && (!TITLE_SD || title_ready));
     if(image_count==0 && !award_available && !relief_available && !found)error<=1;
    end
    if(scanned && (request || demand || release_slot || found))scan_yield<=1;

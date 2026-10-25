@@ -64,5 +64,10 @@
   "../../../common/photo_thumbnail.v",
   "../../../common/photo_switch_timing.v",
   "../../../common/photo_relief_player.v",
-  "../../../common/photo_relief_motion.v"
+  "../../../common/photo_relief_motion.v",
+  "../../../common/photo_relief_remote.v",
+  "../../../common/photo_relief_remote_tables.v",
+  "../../../common/photo_relief_tables_compact_a.v",
+  "../../../common/photo_relief_decode_cache.v",
+  "../../../common/photo_award_math_bank.v"
 ]

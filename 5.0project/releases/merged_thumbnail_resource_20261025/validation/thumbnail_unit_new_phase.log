@@ -1,0 +1,2 @@
+PASS raster26: all 14400 scaled pixels, exact 112x63 to 160x90 mapping, zero added RGB latency
+E:\Codex\Work\saixian-merged-thumbnail-resource-20261025\candidate\5.0project\tests\tb_thumbnail_button_phase.v:34: $finish called at 1534820000 (1ps)

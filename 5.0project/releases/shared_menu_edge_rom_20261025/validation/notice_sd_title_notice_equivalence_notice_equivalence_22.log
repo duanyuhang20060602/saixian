@@ -1,0 +1,2 @@
+PASS compact notice renderer: 163840 exact RGB pixels, all 8 notice codes, four original messages, all glyph rows/columns, panel bounds, outside aliases and reset; zero added latency/state
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_sd_title_notice_equivalence.v:23: $finish called at 168217000 (1ps)

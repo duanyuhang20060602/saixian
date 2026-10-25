@@ -1,0 +1,3 @@
+PASS background writer made 20960 accepted write commands, 14944 during visible scanout
+PASS full 720p60 frame mode0: 921600 exact RGB pixels checksumc1f6f001, 50MHz SDRAM model, 691200 requests, actual async FIFO peak 640/1024
+E:\Codex\Work\saixian-color-ripple-rtl-20261025\candidate\5.0project\tests\fx11_water\tb_cooperate_scanout.v:77: $finish called at 16501018343 (1ps)

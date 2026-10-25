@@ -1,11 +1,12 @@
 `timescale 1ns/1ps
 // One frame-locked menu for image, audio and playback controls.
-module photo_settings_overlay #(parameter VIDEO_DELAY=21,INTERVAL_CONTROL=0)(
+module photo_settings_overlay #(parameter VIDEO_DELAY=21,INTERVAL_CONTROL=0,SHARED_EDGE_WEIGHT=0)(
  input clk,rst,frame_tick,de,settings_mode,updating,
  input [11:0] x,input [10:0] y,input [3:0] setting_item,
  input [3:0] volume,brightness,contrast,saturation,input [1:0] sharpness,enhancement,
  input invert,vintage,input [4:0] effect,input edge_enable,auto_enable,waveform_mode,audio_repair_enable,
- input [23:0] rgb_in,output [23:0] rgb_out,input [4:0] auto_interval_seconds
+ input [23:0] rgb_in,output [23:0] rgb_out,input [4:0] auto_interval_seconds,
+ input [6:0] edge_weight_address,output [7:0] edge_weight
 );
 reg visible,pending;reg [3:0] selected;
 reg [4:0] values[0:13];
@@ -446,13 +447,13 @@ wire [15:0] font_bits;
 wire [6:0] lookup_glyph;
 generate if(EXTRA_STAGE)begin: text_rom_stage
  wire [7:0] lookup_word;reg table_s1,overflow_s1;reg [6:0] numeric_s1;
- photo_menu_text_lookup text_lookup(.clk(clk),.address({id_q,index_q[3:0]}),.data(lookup_word));
+ photo_menu_text_lookup #(.SHARED_EDGE_WEIGHT(SHARED_EDGE_WEIGHT)) text_lookup(.clk(clk),.address({id_q,index_q[3:0]}),.data(lookup_word),.edge_address(edge_weight_address),.edge_weight(edge_weight));
  always @(posedge clk or posedge rst)
   if(rst)begin table_s1<=0;overflow_s1<=0;numeric_s1<=0;end
   else begin table_s1<=table_q;overflow_s1<=index_q[4];numeric_s1<=numeric_q;end
  assign lookup_glyph=table_s1 ? (overflow_s1 ? 7'd0:lookup_word[6:0]):numeric_s1;
 end else begin: direct_text
- assign lookup_glyph=glyph_s1;
+ assign edge_weight=0;assign lookup_glyph=glyph_s1;
 end endgenerate
 photo_menu_font font(.clk(clk),.glyph(lookup_glyph),.row(row_s1),.bits(font_bits));
 reg [VIDEO_DELAY-3-EXTRA_STAGE-DECODE_STAGE:0] panel_pipe;
@@ -497,19 +498,27 @@ assign rgb_out=panel_pipe[VIDEO_DELAY-3-EXTRA_STAGE-DECODE_STAGE] ? palette_rgb(
 endmodule
 
 // Compact text-id/character-position map. Bitmap fonts stay in their original ROMs.
-module photo_menu_text_lookup(input clk,input [9:0] address,output [7:0] data);
+module photo_menu_text_lookup #(parameter SHARED_EDGE_WEIGHT=0)(input clk,input [9:0] address,output [7:0] data,
+ input [6:0] edge_address,output [7:0] edge_weight);
+// The original table is zero in 896..1023. Port A still returns those zeros;
+// port B reads the packed edge weights there. Both retain one-clock latency.
+wire [7:0] raw_text,raw_edge;reg reserved_text;
+always @(posedge clk)reserved_text<=address[9:7]==3'b111;
+assign data=SHARED_EDGE_WEIGHT && reserved_text ? 8'd0:raw_text;
+assign edge_weight=SHARED_EDGE_WEIGHT ? raw_edge:8'd0;
 `ifdef TOUCHSCREEN_SIM
-reg [7:0] rom[0:1023];reg [7:0] q;
-initial $readmemh("src/board_a/user_source/hdl_source/photo_menu_text_lookup.hex",rom);
-always @(posedge clk)q<=rom[address];
-assign data=q;
+reg [7:0] rom[0:1023];reg [7:0] q,eq;
+initial if(SHARED_EDGE_WEIGHT)$readmemh("src/board_a/user_source/hdl_source/photo_menu_edge_weights.hex",rom);
+else $readmemh("src/board_a/user_source/hdl_source/photo_menu_text_lookup.hex",rom);
+always @(posedge clk)begin q<=rom[address];eq<=rom[{3'b111,edge_address}];end
+assign raw_text=q;assign raw_edge=eq;
 `else
 EG_LOGIC_BRAM #(.DATA_WIDTH_A(8),.ADDR_WIDTH_A(10),.DATA_DEPTH_A(1024),
- .DATA_WIDTH_B(8),.ADDR_WIDTH_B(10),.DATA_DEPTH_B(1024),.BYTE_ENABLE(0),.MODE("SP"),
+ .DATA_WIDTH_B(8),.ADDR_WIDTH_B(10),.DATA_DEPTH_B(1024),.BYTE_ENABLE(0),.MODE(SHARED_EDGE_WEIGHT ? "DP":"SP"),
  .REGMODE_A("NOREG"),.REGMODE_B("NOREG"),.WRITEMODE_A("NORMAL"),.WRITEMODE_B("NORMAL"),
  .RESETMODE("SYNC"),.DEBUGGABLE("NO"),.PACKABLE("NO"),
- .FORCE_KEEP("OFF"),.INIT_FILE("../src/board_a/user_source/hdl_source/photo_menu_text_lookup.mif"),.FILL_ALL("NONE"),.IMPLEMENT("9K")) map_rom(
- .doa(data),.dob(),.dia(8'd0),.dib(8'd0),.cea(1'b1),.ocea(1'b0),.clka(clk),.wea(1'b0),.rsta(1'b0),
- .ceb(1'b0),.oceb(1'b0),.clkb(1'b0),.web(1'b0),.rstb(1'b0),.bea(1'b0),.beb(1'b0),.addra(address),.addrb(10'd0));
+ .FORCE_KEEP("OFF"),.INIT_FILE(SHARED_EDGE_WEIGHT ? "../src/board_a/user_source/hdl_source/photo_menu_edge_weights.mif":"../src/board_a/user_source/hdl_source/photo_menu_text_lookup.mif"),.FILL_ALL("NONE"),.IMPLEMENT("9K")) map_rom(
+ .doa(raw_text),.dob(raw_edge),.dia(8'd0),.dib(8'd0),.cea(1'b1),.ocea(1'b0),.clka(clk),.wea(1'b0),.rsta(1'b0),
+ .ceb(SHARED_EDGE_WEIGHT!=0),.oceb(1'b0),.clkb(clk),.web(1'b0),.rstb(1'b0),.bea(1'b0),.beb(1'b0),.addra(address),.addrb({3'b111,edge_address}));
 `endif
 endmodule

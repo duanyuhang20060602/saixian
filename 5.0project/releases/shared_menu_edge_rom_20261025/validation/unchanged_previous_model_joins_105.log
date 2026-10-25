@@ -1,0 +1,227 @@
+PASS 16 repaired curve objects, all 32 endpoint centers inside their intended support solids by independent BVH ray-parity tests, all tubes capped. 28 original endpoint centers were outside target solids.
+[
+  {
+    "object": "Cup | cast guardian handle",
+    "endpoint": 0,
+    "target": "Cup | platinum bell bowl",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | cast guardian handle",
+    "endpoint": 1,
+    "target": "Cup | platinum bell bowl",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | cast guardian handle.001",
+    "endpoint": 0,
+    "target": "Cup | platinum bell bowl",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | cast guardian handle.001",
+    "endpoint": 1,
+    "target": "Cup | platinum bell bowl",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | gold handle spine",
+    "endpoint": 0,
+    "target": "Cup | platinum bell bowl",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | gold handle spine",
+    "endpoint": 1,
+    "target": "Cup | platinum bell bowl",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | gold handle spine.001",
+    "endpoint": 0,
+    "target": "Cup | platinum bell bowl",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | gold handle spine.001",
+    "endpoint": 1,
+    "target": "Cup | platinum bell bowl",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | sculpted claw bracket",
+    "endpoint": 0,
+    "target": "Cup | upper chased tier",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | sculpted claw bracket",
+    "endpoint": 1,
+    "target": "Cup | platinum bell bowl",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | sculpted claw bracket.001",
+    "endpoint": 0,
+    "target": "Cup | upper chased tier",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | sculpted claw bracket.001",
+    "endpoint": 1,
+    "target": "Cup | platinum bell bowl",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | sculpted claw bracket.002",
+    "endpoint": 0,
+    "target": "Cup | upper chased tier",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | sculpted claw bracket.002",
+    "endpoint": 1,
+    "target": "Cup | platinum bell bowl",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | sculpted claw bracket.003",
+    "endpoint": 0,
+    "target": "Cup | upper chased tier",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | sculpted claw bracket.003",
+    "endpoint": 1,
+    "target": "Cup | platinum bell bowl",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | guardian wing rib",
+    "endpoint": 0,
+    "target": "Cup | cast guardian handle",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | guardian wing rib",
+    "endpoint": 1,
+    "target": "Cup | platinum bell bowl",
+    "center_inside_target": true,
+    "old_center_inside_target": true
+  },
+  {
+    "object": "Cup | guardian wing rib.001",
+    "endpoint": 0,
+    "target": "Cup | cast guardian handle",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | guardian wing rib.001",
+    "endpoint": 1,
+    "target": "Cup | platinum bell bowl",
+    "center_inside_target": true,
+    "old_center_inside_target": true
+  },
+  {
+    "object": "Cup | guardian wing rib.002",
+    "endpoint": 0,
+    "target": "Cup | cast guardian handle",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | guardian wing rib.002",
+    "endpoint": 1,
+    "target": "Cup | platinum bell bowl",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | guardian wing rib.003",
+    "endpoint": 0,
+    "target": "Cup | cast guardian handle",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | guardian wing rib.003",
+    "endpoint": 1,
+    "target": "Cup | platinum bell bowl",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | guardian wing rib.004",
+    "endpoint": 0,
+    "target": "Cup | cast guardian handle.001",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | guardian wing rib.004",
+    "endpoint": 1,
+    "target": "Cup | platinum bell bowl",
+    "center_inside_target": true,
+    "old_center_inside_target": true
+  },
+  {
+    "object": "Cup | guardian wing rib.005",
+    "endpoint": 0,
+    "target": "Cup | cast guardian handle.001",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | guardian wing rib.005",
+    "endpoint": 1,
+    "target": "Cup | platinum bell bowl",
+    "center_inside_target": true,
+    "old_center_inside_target": true
+  },
+  {
+    "object": "Cup | guardian wing rib.006",
+    "endpoint": 0,
+    "target": "Cup | cast guardian handle.001",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | guardian wing rib.006",
+    "endpoint": 1,
+    "target": "Cup | platinum bell bowl",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | guardian wing rib.007",
+    "endpoint": 0,
+    "target": "Cup | cast guardian handle.001",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  },
+  {
+    "object": "Cup | guardian wing rib.007",
+    "endpoint": 1,
+    "target": "Cup | platinum bell bowl",
+    "center_inside_target": true,
+    "old_center_inside_target": false
+  }
+]

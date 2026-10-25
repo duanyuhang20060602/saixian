@@ -1,0 +1,4 @@
+WARNING: E:\Codex\Work\saixian-shared-rom-20261025\candidate\5.0project\tests\ip_vendor_ram_adapter.v:27: $readmemh: The behaviour for reg[...] mem[N:0]; $readmemh("...", mem); changed in the 1364-2005 standard. To avoid ambiguity, use mem[0:N] or explicit range parameters $readmemh("...", mem, start, stop);. Defaulting to 1364-2005 behavior.
+WARNING: E:\Codex\Work\saixian-shared-rom-20261025\candidate\5.0project\tests\ip_vendor_ram_adapter.v:27: $readmemh: The behaviour for reg[...] mem[N:0]; $readmemh("...", mem); changed in the 1364-2005 standard. To avoid ambiguity, use mem[0:N] or explicit range parameters $readmemh("...", mem, start, stop);. Defaulting to 1364-2005 behavior.
+PASS edge eRAM equivalence: all 2097152 coordinate pairs, random RGB/audio/darkness, identical RGB/DE/SOF/EOL/level and latency
+E:\Codex\Work\saixian-shared-rom-20261025\candidate\5.0project\tests\tb_edge_equivalence.v:27: $finish called at 20971606000 (1ps)

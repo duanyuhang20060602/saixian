@@ -1,0 +1,2 @@
+PASS actual vendor read/write FIFOs, 2048 ordered words, 2ns receiver clock skew / 3ns signal delays and full/empty backpressure
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\tests\tb_real_fifo_link_delay.v:52: $finish called at 1786720000 (1ps)

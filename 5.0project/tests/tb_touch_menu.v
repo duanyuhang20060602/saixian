@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 module menu_case #(parameter DELAY=21)(input clk,rst,frame_tick,de,settings_mode,updating,input [11:0] x,input [10:0] y,input [31:0] random_state);
 wire [23:0] a,b;
-photo_settings_overlay #(.VIDEO_DELAY(DELAY)) actual(clk,rst,frame_tick,de,settings_mode,updating,x,y,random_state[3:0],random_state[7:4],random_state[11:8],random_state[15:12],random_state[19:16],random_state[21:20],random_state[23:22],random_state[24],random_state[25],random_state[30:26],random_state[31],random_state[1],random_state[2],random_state[3],random_state[4],random_state[23:0],a,5'd5);
+photo_settings_overlay #(.VIDEO_DELAY(DELAY)) actual(clk,rst,frame_tick,de,settings_mode,updating,x,y,random_state[3:0],random_state[7:4],random_state[11:8],random_state[15:12],random_state[19:16],random_state[21:20],random_state[23:22],random_state[24],random_state[25],random_state[30:26],random_state[31],random_state[1],random_state[2],random_state[3],random_state[4],random_state[23:0],a,5'd5,7'd0,);
 photo_settings_overlay_ref #(.VIDEO_DELAY(DELAY)) frozen(clk,rst,frame_tick,de,settings_mode,updating,x,y,random_state[3:0],random_state[7:4],random_state[11:8],random_state[15:12],random_state[19:16],random_state[21:20],random_state[23:22],random_state[24],random_state[25],random_state[30:26],random_state[31],random_state[1],random_state[2],random_state[3],random_state[4],random_state[23:0],b);
 always @(posedge clk)begin #1;if(a!==b)$fatal(1,"menu palette mismatch delay=%0d x=%0d y=%0d actual=%h expected=%h",DELAY,x,y,a,b);end
 endmodule

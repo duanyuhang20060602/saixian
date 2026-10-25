@@ -1,9 +1,11 @@
 // Antialiased foil sprites, graded mesh/node glow and wall-lamp breathing.
 // Five pipeline stages; delta_video delays DE/VS/boot by the same latency.
-module award_fx #(parameter INITIAL_HOLD_FRAMES=61)(
+module award_fx #(parameter INITIAL_HOLD_FRAMES=61,SHARED_MATH=0)(
  input clk,input rst,input enable,input pause,input frame_tick,
  input [10:0] x,input [9:0] y,input [23:0] base_rgb,input [5:0] tag,
- output reg [23:0] rgb
+ output [23:0] rgb,
+ output signed [8:0] math_delta_r,math_delta_g,output [3:0] math_alpha,output math_request,
+ input signed [14:0] math_product_r,math_product_g
 );
 (* async_reg="true" *) reg pause_meta,pause_sync;
 reg [9:0] motion,fraction;reg [6:0] initial_frames;
@@ -346,9 +348,21 @@ wire [7:0] selected01=sprite0[7:4]>=sprite1[7:4] ? sprite0 : sprite1;
 wire [7:0] selected23=sprite2[7:4]>=sprite3[7:4] ? sprite2 : sprite3;
 wire [7:0] selected=selected01[7:4]>=selected23[7:4] ? selected01 : selected23;
 reg [7:0] selected3;reg [23:0] flow3;
+reg [23:0] local_rgb;
+reg [7:0] shared_base_r,shared_base_g,shared_blue;
+reg shared_nonzero,shared_ready;
 wire [7:0] foil_r=8'd188+{2'd0,selected3[3:0],2'b0};
 wire [7:0] foil_g=8'd122+{1'b0,selected3[3:0],3'b0};
 wire [7:0] foil_b=8'd46+{2'd0,selected3[3:0],2'b0};
+assign math_delta_r=$signed({1'b0,foil_r})-$signed({1'b0,flow3[23:16]});
+assign math_delta_g=$signed({1'b0,foil_g})-$signed({1'b0,flow3[15:8]});
+assign math_alpha=selected3[7:4];assign math_request=|selected3[7:4];
+wire signed [14:0] shared_mix_r=$signed({7'd0,shared_base_r})+($signed(math_product_r)>>>4);
+wire signed [14:0] shared_mix_g=$signed({7'd0,shared_base_g})+($signed(math_product_g)>>>4);
+wire [23:0] shared_rgb=shared_ready ? {
+ (shared_nonzero ? shared_mix_r[7:0]:shared_base_r),
+ (shared_nonzero ? shared_mix_g[7:0]:shared_base_g),shared_blue}:24'd0;
+assign rgb=SHARED_MATH ? shared_rgb:local_rgb;
 function [7:0] blend;
  input [7:0] background,foreground;input [3:0] opacity;
  reg signed [8:0] difference;reg signed [13:0] product;reg signed [14:0] mixed;
@@ -361,7 +375,7 @@ function [7:0] blend;
  end
 endfunction
 always @(posedge clk)begin
- if(rst)begin base0<=0;tag0<=0;live0<=0;wave0<=0;breath0<=0;x0<=0;y0<=0;components0<=0;components1<=0;components2<=0;components3<=0;selected3<=0;flow3<=0;base1<=0;gain1<=0;flow2<=0;rgb<=0;address0<=0;address1<=0;address2<=0;address3<=0;end
+ if(rst)begin base0<=0;tag0<=0;live0<=0;wave0<=0;breath0<=0;x0<=0;y0<=0;components0<=0;components1<=0;components2<=0;components3<=0;selected3<=0;flow3<=0;base1<=0;gain1<=0;flow2<=0;local_rgb<=0;shared_base_r<=0;shared_base_g<=0;shared_blue<=0;shared_nonzero<=0;shared_ready<=0;address0<=0;address1<=0;address2<=0;address3<=0;end
  else begin
   base0<=base_rgb;tag0<=tag;live0<=live;wave0<=phase_curve(phase);breath0<=breath(motion[9:4]);x0<=x;y0<=y;components0<=sprite_components(0,motion,seed);components1<=sprite_components(1,motion,seed^16'h5429);components2<=sprite_components(2,motion,seed^16'h9561);components3<=sprite_components(3,motion,seed^16'h39ac);
   base1<=base0;gain1<=live0 && tag0[0] ? ((weighted>>>2)+(tag0[5] ? 10'sd0 : 10'sd88)) : 10'sd0;
@@ -371,7 +385,12 @@ always @(posedge clk)begin
   address3<=live0 ? sprite_from_components(x0,y0,components3) : 0;
   flow2<=lit;
   flow3<=flow2;selected3<=selected;
-  rgb<={blend(flow3[23:16],foil_r,selected3[7:4]),blend(flow3[15:8],foil_g,selected3[7:4]),blend(flow3[7:0],foil_b,selected3[7:4])};
+  if(!SHARED_MATH)local_rgb<={blend(flow3[23:16],foil_r,selected3[7:4]),blend(flow3[15:8],foil_g,selected3[7:4]),blend(flow3[7:0],foil_b,selected3[7:4])};
+  if(SHARED_MATH)begin
+   shared_base_r<=flow3[23:16];shared_base_g<=flow3[15:8];
+   shared_blue<=blend(flow3[7:0],foil_b,selected3[7:4]);
+   shared_nonzero<=math_request;shared_ready<=1;
+  end
  end
 end
 endmodule

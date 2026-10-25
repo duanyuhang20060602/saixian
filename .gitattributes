@@ -26,3 +26,5 @@
 *.HMI binary
 *.hmi binary
 
+# Preserve verified 5.0 source/firmware bytes and manifest hashes.
+5.0project/** -text

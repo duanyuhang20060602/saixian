@@ -289,9 +289,15 @@ reg [7:0] phase_address;reg coord_valid,coord_de,coord_vs;reg [23:0] coord_rgb;
 reg [13:0] numerator0a,numerator0b;
 reg [7:0] spatial1a,spatial1b,spatial2a,spatial2b;
 reg [7:0] phase0,phase1,phase2,field4;
-reg [7:0] a2_field,b2_field;reg [15:0] product3a,product3b;
+reg [7:0] a2_field,base3_field;
+reg signed [8:0] delta2_field;
+reg signed [16:0] product3_delta;
+// a*(256-t)+b*t = (a<<8)+(b-a)*t, exactly, before the existing dither.
+// The signed difference needs nine bits; keep all fractional product bits.
 reg [4:0] valid_pipe,de_pipe,vs_pipe;
 reg [23:0] rgb_pipe[0:4];reg [7:0] quant_coord,quant_pipe[0:4];integer pipeline_i;
+wire signed [16:0] temporal_sum=$signed({1'b0,base3_field,8'd0})+
+ product3_delta+$signed({9'd0,quant_pipe[3]});
 wire [7:0] quant={pixel_x[0]^pixel_y[0],pixel_y[0],pixel_x[1]^pixel_y[1],pixel_y[1],4'd8};
 function [7:0] screen;
  input [7:0] channel,target,light;reg [15:0] product;
@@ -302,7 +308,7 @@ always @(posedge video_clk)begin
   phase_address<=0;coord_valid<=0;coord_de<=0;coord_vs<=0;coord_rgb<=0;
   numerator0a<=0;numerator0b<=0;spatial1a<=0;spatial1b<=0;spatial2a<=0;spatial2b<=0;
   phase0<=0;phase1<=0;phase2<=0;field4<=0;
-  a2_field<=0;b2_field<=0;product3a<=0;product3b<=0;
+  a2_field<=0;delta2_field<=0;base3_field<=0;product3_delta<=0;
   valid_pipe<=0;de_pipe<=0;vs_pipe<=0;rgb_out<=0;de_out<=0;vs_out<=0;
   for(pipeline_i=0;pipeline_i<5;pipeline_i=pipeline_i+1)begin rgb_pipe[pipeline_i]<=0;quant_pipe[pipeline_i]<=0;end
   quant_coord<=0;
@@ -314,11 +320,11 @@ always @(posedge video_clk)begin
   spatial1a<=(numerator0a+quant_coord[7:2])>>6;
   spatial1b<=(numerator0b+quant_coord[7:2])>>6;
   spatial2a<=spatial1a;spatial2b<=spatial1b;
-  a2_field<=spatial2a;b2_field<=spatial2b;
+  a2_field<=spatial2a;delta2_field<=$signed({1'b0,spatial2b})-$signed({1'b0,spatial2a});
   phase0<=phase_address;phase1<=phase0;phase2<=phase1;
-  product3a<=valid_pipe[2] ? a2_field*(9'd256-{1'b0,phase2}) : 16'd0;
-  product3b<=valid_pipe[2] && phase2!=0 ? b2_field*phase2 : 16'd0;
-  field4<=(product3a+product3b+quant_pipe[3])>>8;
+  base3_field<=valid_pipe[2] ? a2_field:8'd0;
+  product3_delta<=valid_pipe[2] ? delta2_field*$signed({1'b0,phase2}):17'sd0;
+  field4<=temporal_sum[15:8];
   valid_pipe<={valid_pipe[3:0],coord_valid};
   de_pipe<={de_pipe[3:0],coord_de};vs_pipe<={vs_pipe[3:0],coord_vs};
   rgb_pipe[0]<=coord_rgb;quant_pipe[0]<=quant_coord;

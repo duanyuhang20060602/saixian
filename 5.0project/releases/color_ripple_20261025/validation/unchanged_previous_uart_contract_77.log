@@ -1,0 +1,2 @@
+PASS UART contract: all 256 packet kinds, real serial CRC payload stable >=139 clocks; reconnect/got collision masks stale session; new session, seq/id/length predicates and bad CRC gating
+E:\Codex\Work\saixian-relief-native-20261024\candidate\5.0project\tests\tb_relief_uart_contract.v:99: $finish called at 4476170000 (1ps)

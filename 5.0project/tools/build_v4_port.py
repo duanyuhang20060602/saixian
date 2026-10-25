@@ -111,12 +111,12 @@ def build(board, work, mapped_from=None, checkpoint_stage='gate'):
     if physical_strategy:
         catalog = td_root/'doc/strategies/official_strategy_ph1.json'
         strategies = json.loads(catalog.read_text(encoding='utf-8'))
-        strategy_base = {'MacroTimingExtra':'MacroTiming','MacroTimingEmbedded':'MacroTiming','TimingUltraNoPadSplit':'TimingUltra','TimingUltraEmbedded':'TimingUltra','TimingUltraEmbeddedExtra':'TimingUltra','TimingUltraEmbeddedNoSwap':'TimingUltra','TimingMediumEmbedded':'TimingMedium','TimingMediumEmbeddedReset':'TimingMedium','CongestionEmbedded':'CongestionHigh'}.get(physical_strategy,physical_strategy)
+        strategy_base = {'TimingUltraEmbeddedCompactRoute':'TimingUltra','MacroTimingExtra':'MacroTiming','MacroTimingEmbedded':'MacroTiming','TimingUltraEmbeddedCleanRoute':'TimingUltra','TimingUltraNoPadSplit':'TimingUltra','TimingUltraEmbedded':'TimingUltra','TimingUltraEmbeddedExtra':'TimingUltra','TimingUltraEmbeddedNoSwap':'TimingUltra','TimingMediumEmbedded':'TimingMedium','TimingMediumEmbeddedReset':'TimingMedium','CongestionEmbedded':'CongestionHigh'}.get(physical_strategy,physical_strategy)
         strategy = dict(strategies[strategy_base])
         strategy['params'] = list(strategy['params'])
-        if physical_strategy in ('TimingUltraNoPadSplit','TimingUltraEmbedded','TimingUltraEmbeddedExtra','TimingUltraEmbeddedNoSwap','TimingMediumEmbedded','TimingMediumEmbeddedReset','MacroTimingEmbedded','CongestionEmbedded'):
+        if physical_strategy in ('TimingUltraEmbeddedCompactRoute','TimingUltraEmbeddedCleanRoute','TimingUltraNoPadSplit','TimingUltraEmbedded','TimingUltraEmbeddedExtra','TimingUltraEmbeddedNoSwap','TimingMediumEmbedded','TimingMediumEmbeddedReset','MacroTimingEmbedded','CongestionEmbedded'):
             strategy['params'] += [{'step':'place','param':'split_data_from_clock','val':'off'}]
-        if physical_strategy in ('TimingUltraEmbedded','TimingUltraEmbeddedExtra','TimingUltraEmbeddedNoSwap','TimingMediumEmbedded','TimingMediumEmbeddedReset','MacroTimingEmbedded','CongestionEmbedded'):
+        if physical_strategy in ('TimingUltraEmbeddedCompactRoute','TimingUltraEmbeddedCleanRoute','TimingUltraEmbedded','TimingUltraEmbeddedExtra','TimingUltraEmbeddedNoSwap','TimingMediumEmbedded','TimingMediumEmbeddedReset','MacroTimingEmbedded','CongestionEmbedded'):
             # The post-place crit_path_opt zigzag pass queries external-pad
             # coordinates on embedded SDRAM pads (ARC-8011/PHY-8105).
             strategy['params'] += [{'step':'place','param':'crit_path_opt','val':'off'},
@@ -129,6 +129,19 @@ def build(board, work, mapped_from=None, checkpoint_stage='gate'):
             strategy['params'] += [{'step':'route','param':'postrt_opt_extra_round','val':'8'}]
         if physical_strategy == 'TimingUltraEmbeddedNoSwap':
             strategy['params'] += [{'step':'route','param':'swap_pin','val':'off'}]
+        if physical_strategy in ('TimingUltraEmbeddedCleanRoute','TimingUltraEmbeddedCompactRoute'):
+            # Preserve placement/timing checks; avoid the tool's failing
+            # post-route ECO reconstruction and maximize route cleanup.
+            strategy['params'] += [{'step':'route','param':'post_route_opt','val':'off'},
+                                   {'step':'route','param':'postrt_opt_extra_round','val':'0'},
+                                   {'step':'route','param':'effort','val':'routability'},
+                                   {'step':'route','param':'swap_pin','val':'off'}]
+        if physical_strategy == 'TimingUltraEmbeddedCompactRoute':
+            # Keep mapping and clocks intact. Avoid area-expanding prepack
+            # logic-level restructuring when the device is nearly full.
+            strategy['params'] += [{'step':'place','param':'aggressive_opt','val':'0'},
+                                   {'step':'place','param':'logic_level_opt','val':'off'},
+                                   {'step':'place','param':'hfn_opt_effort','val':'low'}]
         if mapped_from and checkpoint_stage == 'place':
             assert record['place_seed_override'] == origin['place_seed_override'], 'Keep the accepted placement seed'
             original_place = [p for p in origin['physical_strategy']['parameters'] if p['step'] == 'place']

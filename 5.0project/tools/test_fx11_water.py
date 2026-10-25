@@ -57,7 +57,7 @@ def main():
     mux=model[mux_begin:mux_end].replace('always @(param_trig)','always @*').replace('assign ','')
     model=model[:mux_begin]+mux+model[mux_end:]
     native_model.write_text(model,encoding='utf-8')
-    dependencies=[Path(__file__),ROOT/'tools/fx11_vectors.py',*list((ROOT/'tests/reference/fx11_water').glob('*.py')),
+    dependencies=[Path(__file__),ROOT/'tools/fx11_vectors.py',ROOT/'tools/color_ripple_reference.py',*list((ROOT/'tests/reference/fx11_water').glob('*.py')),
                   *list((ROOT/'common/fluid').glob('*.hex')),*list((ROOT/'common/fluid').glob('*.mif'))]
     def run(name):
         started=time.monotonic();scan=name.startswith('scanout_');band=name.startswith('bandwidth_') or scan

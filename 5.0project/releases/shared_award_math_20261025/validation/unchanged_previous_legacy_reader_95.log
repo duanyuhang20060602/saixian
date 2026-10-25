@@ -1,0 +1,2 @@
+PASS SXDLT TF decoding and RGB565 packing: 691200 exact words including plate, opaque tail and full backpressure
+E:\Codex\Work\saixian-relief-lightopt-20261024\candidate\5.0project\tests\tb_relief_reader.v:39: $finish called at 248258870000 (1ps)

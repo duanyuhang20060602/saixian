@@ -349,7 +349,8 @@
                     <Attr Name="CompileOrder" Val="42"/>
                 </FileInfo>
             </File>
-        </Verilog>
+        <File Path="../../../common/photo_sd_title_store.v"><FileInfo><Attr Name="UsedInSyn" Val="true"/><Attr Name="UsedInP&R" Val="true"/><Attr Name="BelongTo" Val="design_1"/><Attr Name="CompileOrder" Val="43"/></FileInfo></File>
+<File Path="../../../common/photo_relief_remote.v"><FileInfo><Attr Name="UsedInSyn" Val="true"/><Attr Name="UsedInP&amp;R" Val="true"/><Attr Name="BelongTo" Val="design_1"/><Attr Name="CompileOrder" Val="44"/></FileInfo></File><File Path="../../../common/photo_relief_remote_tables.v"><FileInfo><Attr Name="UsedInSyn" Val="true"/><Attr Name="UsedInP&amp;R" Val="true"/><Attr Name="BelongTo" Val="design_1"/><Attr Name="CompileOrder" Val="45"/></FileInfo></File></Verilog>
 </Source_Files>
     <FileSets>
         <FileSet Name="design_1" Type="DesignFiles">
