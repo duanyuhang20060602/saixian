@@ -117,10 +117,11 @@ photo_touchpad pointer(.clk(pixel_clk),.rst(rst_pixel),.enable(pointer_enabled),
  .sample_valid(touch_valid),.sample_down(touch_down),.sample_x(touch_x),.sample_y(touch_y),
  .cursor_x(cursor_x),.cursor_y(cursor_y),.click(pointer_click),.contact(pointer_contact));
 wire pointer_menu_click=pointer_click && pointer_enabled && cursor_x>=1152 && cursor_x<1256 && cursor_y>=24 && cursor_y<64;
+localparam THUMBNAIL_X=1096,THUMBNAIL_Y=315;
 wire pointer_navigation_enable=pointer_enabled && !settings_mode && !award_active && !award_loading && count>1;
-wire pointer_next_click=pointer_click && pointer_navigation_enable &&
- ((cursor_x>=1192 && cursor_x<1256 && cursor_y>=328 && cursor_y<392) ||
-  (thumbnail_visible && cursor_x>=1086 && cursor_x<1250 && cursor_y>=514 && cursor_y<620));
+wire pointer_next_click=pointer_click && pointer_navigation_enable && thumbnail_visible &&
+ cursor_x>=THUMBNAIL_X-2 && cursor_x<THUMBNAIL_X+162 &&
+ cursor_y>=THUMBNAIL_Y-14 && cursor_y<THUMBNAIL_Y+92;
 wire pointer_row_click=pointer_click && pointer_enabled && settings_mode && cursor_x>=64 && cursor_x<864 && cursor_y>=144 && cursor_y<592;
 wire [9:0] pointer_row_y=cursor_y-10'd144;
 // Isolate context/hit decoding from the settings controller's update priority.
@@ -265,7 +266,10 @@ photo_audio_spi_a #(.STARTUP_SYNC(1),.FIFO_AW(11),.FIFO_RAM32_HEAD(2048),.EXTEND
 wire [11:0] raster_x21,raster_x26,raster_x34;
 wire [10:0] raster_y21,raster_y26,raster_y34;
 wire raster_valid21,raster_valid26,raster_valid34;
-assign thumbnail_blank=raster_valid26 && raster_y26>=11'd720;
+// Stop admitting long preview turns 256 pixels before blanking ends.
+// Already-owned turns drain normally; the display FIFO reserve still wins.
+assign thumbnail_blank=raster_valid26 && raster_y26>=11'd720 &&
+ !(raster_y26==11'd749 && raster_x26>=12'd1394);
 wire [8:0] raster_ui_y;
 photo_raster_delay #(.DELAY(21),.SCALE_Y(1)) raster21(.clk(pixel_clk),.rst(rst_pixel),.x(raster_x21),.y(raster_y21),.valid(raster_valid21),.y_two_thirds(raster_ui_y));
 photo_raster_delay #(.DELAY(26)) raster26(.clk(pixel_clk),.rst(rst_pixel),.x(raster_x26),.y(raster_y26),.valid(raster_valid26));
@@ -459,14 +463,14 @@ photo_boot_screen #(.VIDEO_DELAY(26),.MIN_FRAMES(90),.STAGED_LOADING(1)) boot_sc
  .frame_ready(display_valid && started),.active(boot_active),.rgb(boot_rgb));
 wire [23:0] pointer_rgb;
 wire [23:0] thumbnail_rgb;
-photo_thumbnail_overlay #(.Y(528),.DELAY(1),.SEPARATE_DISPLAY(1)) preview(.clk(pixel_clk),.rst(rst_image_pixel),.frame_tick(blank_start),
+photo_thumbnail_overlay #(.X(THUMBNAIL_X),.Y(THUMBNAIL_Y),.DELAY(1),.SEPARATE_DISPLAY(1)) preview(.clk(pixel_clk),.rst(rst_image_pixel),.frame_tick(blank_start),
  .enable(preview_enable_q),
  .display_enable(!settings_updating && !transition_active),.read_busy(thumbnail_read_busy),
  .cache_valid(thumbnail_cache_valid),.cache_slot(thumbnail_cache_slot),.identity({1'b0,thumbnail_id,thumbnail_cache_slot}),
  .de(raster_de26),.x(raster_x26),.y(raster_y26),.request(thumbnail_request),.slot(thumbnail_slot),.cancel(thumbnail_cancel),
  .done(thumbnail_done),.data(thumbnail_data),.address(thumbnail_address),.visible(thumbnail_visible),
  .rgb_in(playback_rgb),.rgb_out(thumbnail_rgb));
-photo_pointer_overlay #(.DELAY(5)) pointer_osd(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),
+photo_pointer_overlay #(.DELAY(5),.NAVIGATION_BUTTON(0)) pointer_osd(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),
  .enable(pointer_enabled),.navigation_enable(pointer_nav_display_q),.de(raster_de21),.x(raster_x21),.y(raster_y21),.cursor_x(cursor_x),.cursor_y(cursor_y),
  .rgb_in(thumbnail_rgb),.rgb_out(pointer_rgb));
 assign feature_rgb=boot_active ? boot_rgb:pointer_rgb;

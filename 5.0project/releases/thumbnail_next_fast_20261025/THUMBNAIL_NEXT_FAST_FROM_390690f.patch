@@ -1,0 +1,1539 @@
+diff --git a/5.0project/tests/reference/thumbnail_button_before/base.json b/5.0project/tests/reference/thumbnail_button_before/base.json
+new file mode 100644
+index 0000000..9816067
+--- /dev/null
++++ b/5.0project/tests/reference/thumbnail_button_before/base.json
+@@ -0,0 +1,9 @@
++{
++  "upstream": "390690f91f6e49e8124064843a32f0515ded91ad",
++  "base_delivery_sha256": "eaf6fa19737396856b0128af938adfe0c2040d29e0ba54622835e1f13bcbb885",
++  "files": [
++    "common/photo_thumbnail.v",
++    "common/photo_touchpad.v",
++    "common/top_photo_a.v"
++  ]
++}
+\ No newline at end of file
+diff --git a/5.0project/tests/reference/thumbnail_button_before/photo_thumbnail.v b/5.0project/tests/reference/thumbnail_button_before/photo_thumbnail.v
+new file mode 100644
+index 0000000..4dacf0d
+--- /dev/null
++++ b/5.0project/tests/reference/thumbnail_button_before/photo_thumbnail.v
+@@ -0,0 +1,188 @@
++// A static 112x63 RGB565 preview is generated from the accepted next-photo
++// cache during vertical blanking. Sample the centers of the uniform 80/7-pixel cells.
++module photo_thumbnail_memory(
++ input clk,rst,init_done,refresh,busy,frame_busy,allow_access,other_request,
++ output request,claim,read_command,output [20:0] address,
++ input response_valid,input [31:0] response,
++ input video_clk,video_request,video_cancel,video_blank,input [1:0] video_slot,
++ output reg video_done,input [12:0] video_address,output [15:0] video_data
++);
++function [20:0] base;
++ input [1:0] slot;
++ begin case(slot)0:base=0;1:base=21'd1048576;default:base=21'd0;endcase end
++endfunction
++localparam IDLE=0,READ=1,RECOVER=2;
++reg [1:0] state;
++(* async_reg="true" *)reg [2:0] job_sync;
++(* async_reg="true" *)reg [1:0] slot_meta,slot_sync;
++(* async_reg="true" *)reg cancel_meta,cancel_sync,blank_meta,blank_sync;
++reg job_seen,active;
++reg [6:0] column;reg [5:0] row;
++reg [2:0] column_phase,row_phase;reg [12:0] cache_index;
++reg [20:0] pixel_address;
++reg [2:0] issued;reg [1:0] received;reg [3:0] recovery;
++// Source x,y=floor((80*n+40)/7). Accumulate word steps and the
++// half-word selector, avoiding pixel-clock division and DSP resources.
++// Last sampled word offset is 637; each next row starts at word offset 2.
++wire [20:0] pixel_step=column==111 ?
++ (row_phase>=4 ? 21'd7045:21'd6405):(column_phase>=2 ? 21'd6:21'd5);
++assign request=active && blank_sync && !cancel_sync && allow_access && !other_request;
++assign claim=state!=IDLE;
++assign read_command=state==READ && issued<4 && !refresh;
++// Every owned turn is an aligned four-word burst. Upper bits never carry.
++assign address={pixel_address[20:2],issued[1:0]};
++wire write_sample=state==READ && response_valid && received==pixel_address[1:0];
++// The remainder selects the correct RGB565 pixel within the source word.
++wire [15:0] sample=column_phase>=4 ? response[15:0]:response[31:16];
++photo_thumbnail_cache cache(.write_clk(clk),.write_enable(write_sample),.write_address(cache_index),.write_data(sample),
++ .read_clk(video_clk),.read_address(video_address),.read_data(video_data));
++always @(posedge clk or posedge rst)
++ if(rst)begin
++  state<=IDLE;job_sync<=0;slot_meta<=0;slot_sync<=0;cancel_meta<=0;cancel_sync<=0;blank_meta<=0;blank_sync<=0;
++  job_seen<=0;active<=0;column<=0;row<=0;pixel_address<=0;
++  issued<=0;received<=0;recovery<=0;video_done<=0;column_phase<=6;row_phase<=5;cache_index<=0;
++ end else begin
++  job_sync<={job_sync[1:0],video_request};slot_meta<=video_slot;slot_sync<=slot_meta;
++  cancel_meta<=video_cancel;cancel_sync<=cancel_meta;blank_meta<=video_blank;blank_sync<=blank_meta;
++  case(state)
++   IDLE:if(job_sync[2]!=job_seen)begin
++    job_seen<=job_sync[2];active<=!cancel_sync;
++    column<=0;row<=0;pixel_address<=base(slot_sync)+21'd3202;
++    column_phase<=6;row_phase<=5;cache_index<=0;
++    if(cancel_sync)video_done<=job_sync[2];
++   end else if(active && cancel_sync)begin active<=0;video_done<=job_seen;end
++   else if(request && init_done && !refresh && !busy && !frame_busy)begin
++    state<=READ;issued<=0;received<=0;
++   end
++   READ:begin
++    if(read_command)issued<=issued+1'b1;
++    if(response_valid)begin
++     received<=received+1'b1;
++     if(received==3)begin state<=RECOVER;recovery<=0;end
++    end
++   end
++   RECOVER:if(recovery==10)begin
++    state<=IDLE;
++    if(row==62 && column==111)begin active<=0;video_done<=job_seen;end
++    else begin
++     pixel_address<=pixel_address+pixel_step;
++     cache_index<=cache_index+1'b1;
++     if(column==111)begin
++      column<=0;row<=row+1'b1;column_phase<=6;
++      row_phase<=row_phase>=4 ? row_phase-3'd4:row_phase+3'd3;
++     end else begin
++      column<=column+1'b1;
++      column_phase<=column_phase>=2 ? column_phase-3'd2:column_phase+3'd5;
++     end
++    end
++   end else recovery<=recovery+1'b1;
++   default:state<=IDLE;
++  endcase
++ end
++endmodule
++
++// 7056 RGB565 pixels: two 2048-pixel RAM32K banks, a 2048-pixel
++// RAM9K bank (four blocks), and a 1024-pixel RAM9K bank (two blocks).
++// No bit packing or color truncation; arbitrary reads take one video clock.
++module photo_thumbnail_cache(
++ input write_clk,write_enable,input [12:0] write_address,input [15:0] write_data,
++ input read_clk,input [12:0] read_address,output [15:0] read_data
++);
++`ifdef THUMBNAIL_SIM
++ reg [15:0] memory[0:7055];reg [15:0] q;
++ always @(posedge write_clk)if(write_enable && write_address<7056)memory[write_address]<=write_data;
++ always @(posedge read_clk)q<=read_address<7056 ? memory[read_address]:16'd0;
++ assign read_data=q;
++`else
++ wire [15:0] bank_data[0:3];reg [1:0] bank;reg valid;
++ always @(posedge read_clk)begin bank<=read_address[12:11];valid<=read_address<7056;end
++ assign read_data=valid ? bank_data[bank]:16'd0;
++ genvar b;
++ generate for(b=0;b<4;b=b+1)begin:banks
++ localparam AW=b==3 ? 10:11;
++ localparam DEPTH=b==3 ? 1024:2048;
++ EG_LOGIC_BRAM #(.DATA_WIDTH_A(16),.ADDR_WIDTH_A(AW),.DATA_DEPTH_A(DEPTH),
++ .DATA_WIDTH_B(16),.ADDR_WIDTH_B(AW),.DATA_DEPTH_B(DEPTH),.BYTE_ENABLE(0),
++ .MODE("PDPW"),.REGMODE_A("NOREG"),.REGMODE_B("NOREG"),.WRITEMODE_A("NORMAL"),.WRITEMODE_B("NORMAL"),
++ .RESETMODE("SYNC"),.IMPLEMENT(b<2 ? "32K":"9K")) ram(
++ .clka(write_clk),.rsta(1'b0),.cea(1'b1),.wea(write_enable && write_address<7056 && write_address[12:11]==b),.ocea(1'b1),.bea(1'b0),
++ .addra(write_address[AW-1:0]),.dia(write_data),.doa(),
++ .clkb(read_clk),.rstb(1'b0),.ceb(1'b1),.web(1'b0),.oceb(1'b1),.beb(1'b0),.addrb(read_address[AW-1:0]),.dib(16'd0),.dob(bank_data[b]));
++ end endgenerate
++`endif
++endmodule
++
++// Whole-preview handshake: hold the source slot until completion or a
++// safely acknowledged cancellation. New cache identities never show old RAM.
++module photo_thumbnail_overlay #(parameter X=1088,Y=528,DELAY=1,SEPARATE_DISPLAY=0)(
++ input clk,rst,frame_tick,enable,cache_valid,input [1:0] cache_slot,input [5:0] identity,
++ input de,input [11:0] x,input [10:0] y,
++ output reg request,output reg [1:0] slot,output cancel,
++ input done,input [15:0] data,output [12:0] address,
++ output visible,input [23:0] rgb_in,output [23:0] rgb_out,
++ input display_enable,output read_busy
++);
++(* async_reg="true" *)reg [2:0] done_sync;
++reg pending,cancel_pending,ready,armed;
++reg [5:0] held;
++wire eligible=enable && cache_valid && cache_slot<3;
++wire changed=identity!=held;
++assign cancel=cancel_pending || !eligible || (pending && changed);
++wire show_allowed=!SEPARATE_DISPLAY || display_enable;
++assign visible=armed && ready && eligible && !changed && show_allowed;
++assign read_busy=pending || cancel_pending;
++reg [6:0] source_x;reg [5:0] source_y;reg [3:0] phase_x,phase_y;reg [12:0] row_address;
++wire advance_x=phase_x>=3;
++wire [6:0] next_x=x==X-1 ? 7'd0:
++ (x>=X && x<X+159 && advance_x ? source_x+7'd1:source_x);
++assign address=row_address+next_x;
++always @(posedge clk or posedge rst)
++ if(rst)begin
++  done_sync<=0;pending<=0;cancel_pending<=0;ready<=0;armed<=0;
++  held<=0;request<=0;slot<=0;source_x<=0;source_y<=0;phase_x<=0;phase_y<=0;row_address<=0;
++ end else begin
++  done_sync<={done_sync[1:0],done};
++  if(pending && (!eligible || changed))cancel_pending<=1;
++  if(pending && done_sync[2]==request)begin
++   pending<=0;cancel_pending<=0;ready<=eligible && !changed && !cancel_pending;
++  end
++  if(!pending && !ready && eligible)begin
++   held<=identity;slot<=cache_slot;request<=!request;pending<=1;cancel_pending<=0;
++  end
++  if(!eligible || changed)begin ready<=0;armed<=0;end
++  if(!show_allowed)armed<=0;
++  if(frame_tick)armed<=ready && eligible && !changed && show_allowed;
++  // Exact 7/10 increments map 112x63 to 160x90 without a pixel divider.
++  if(x==X-1)begin source_x<=0;phase_x<=0;end
++  else if(x>=X && x<X+159)begin
++   phase_x<=phase_x>=3 ? phase_x-4'd3:phase_x+4'd7;
++   if(advance_x)source_x<=source_x+1'b1;
++  end
++  if(x==1649)begin
++   if(y==Y-1)begin source_y<=0;phase_y<=0;row_address<=0;end
++   else if(y>=Y && y<Y+89)begin
++    phase_y<=phase_y>=3 ? phase_y-4'd3:phase_y+4'd7;
++    if(phase_y>=3)begin source_y<=source_y+1'b1;row_address<=row_address+13'd112;end
++   end
++  end
++ end
++wire image_area=de && x>=X && x<X+160 && y>=Y && y<Y+90;
++wire panel=de && x>=X-2 && x<X+162 && y>=Y-14 && y<Y+92;
++wire border=panel && (x<X || x>=X+160 || y>=Y+90 || y<Y-12);
++wire heading=de && x>=X && x<X+160 && y>=Y-12 && y<Y;
++wire [4:0] tx=x-X-4;wire [2:0] ty=y-Y+10;
++reg [23:0] letters;
++always @*case(ty)
++ 0:letters=24'b100010111110100010111110;
++ 1:letters=24'b110010100000010100001000;
++ 2:letters=24'b101010100000001000001000;
++ 3:letters=24'b100110111100001000001000;
++ 4:letters=24'b100010100000010100001000;
++ 5:letters=24'b100010100000100010001000;
++ default:letters=24'b100010111110100010001000;
++endcase
++wire ink=heading && x>=X+4 && x<X+28 && y>=Y-10 && y<Y-3 && letters[23-tx];
++wire [23:0] rgb={data[15:11],data[15:13],data[10:5],data[10:9],data[4:0],data[4:2]};
++assign rgb_out=visible && border ? 24'h52c4ff:visible && ink ? 24'hffffff:
++ visible && heading ? 24'h10283c:visible && image_area ? rgb:rgb_in;
++endmodule
+diff --git a/5.0project/tests/reference/thumbnail_button_before/photo_touchpad.v b/5.0project/tests/reference/thumbnail_button_before/photo_touchpad.v
+new file mode 100644
+index 0000000..868e5df
+--- /dev/null
++++ b/5.0project/tests/reference/thumbnail_button_before/photo_touchpad.v
+@@ -0,0 +1,99 @@
++// Relative TJC touchpad. All state uses the existing 75 MHz pixel clock.
++// Only an unmoved short press/release generates a click; lost releases expire.
++module photo_touchpad #(
++ parameter integer CLK_HZ=75000000,
++ parameter integer TAP_MIN_MS=20,TAP_MAX_MS=250,CONTACT_TIMEOUT_MS=180
++)(
++ input clk,rst,enable,frame_tick,sample_valid,sample_down,
++ input [9:0] sample_x,input [8:0] sample_y,
++ output reg [10:0] cursor_x,output reg [9:0] cursor_y,
++ output reg click,output reg contact
++);
++localparam integer MS_CLKS=CLK_HZ/1000;
++reg [16:0] ms_count;
++wire ms_tick=ms_count==MS_CLKS-1;
++reg [7:0] age,quiet;
++reg moved;
++reg [9:0] last_x,origin_x;
++reg [8:0] last_y,origin_y;
++reg [10:0] pos_x;reg [9:0] pos_y;
++wire signed [11:0] dx=$signed({2'b00,sample_x})-$signed({2'b00,last_x});
++wire signed [10:0] dy=$signed({2'b00,sample_y})-$signed({2'b00,last_y});
++wire signed [12:0] nx=$signed({2'b00,pos_x})+($signed({dx[11],dx})<<<1);
++wire signed [11:0] ny=$signed({2'b00,pos_y})+($signed({dy[10],dy})<<<1);
++wire signed [10:0] origin_dx=$signed({1'b0,sample_x})-$signed({1'b0,origin_x});
++wire signed [9:0] origin_dy=$signed({1'b0,sample_y})-$signed({1'b0,origin_y});
++wire far_x=origin_dx>11'sd8 || origin_dx< -11'sd8;
++wire far_y=origin_dy>10'sd8 || origin_dy< -10'sd8;
++always @(posedge clk or posedge rst)begin
++ if(rst)begin
++  ms_count<=0;age<=0;quiet<=0;moved<=0;contact<=0;click<=0;
++  last_x<=0;last_y<=0;origin_x<=0;origin_y<=0;
++  pos_x<=640;pos_y<=360;cursor_x<=640;cursor_y<=360;
++ end else begin
++  ms_count<=ms_tick ? 0:ms_count+1'b1;click<=0;
++  if(frame_tick)begin cursor_x<=pos_x;cursor_y<=pos_y;end
++  if(!enable)begin contact<=0;age<=0;quiet<=0;moved<=0;end
++  else begin
++   if(ms_tick && contact)begin
++    if(age!=255)age<=age+1'b1;
++    if(quiet>=CONTACT_TIMEOUT_MS-1)begin contact<=0;moved<=1;end
++    else quiet<=quiet+1'b1;
++   end
++   if(sample_valid)begin
++    quiet<=0;
++    if(sample_down)begin
++     last_x<=sample_x;last_y<=sample_y;
++     if(!contact)begin
++      contact<=1;origin_x<=sample_x;origin_y<=sample_y;age<=0;moved<=0;
++     end else begin
++      // Gain 2 is a shift, with saturation rather than coordinate wrap.
++      pos_x<=nx<0 ? 11'd0:nx>1279 ? 11'd1279:nx[10:0];
++      pos_y<=ny<0 ? 10'd0:ny>719 ? 10'd719:ny[9:0];
++      if(far_x || far_y)moved<=1;
++     end
++    end else begin
++     contact<=0;
++     if(contact && !moved && !far_x && !far_y && age>=TAP_MIN_MS && age<TAP_MAX_MS)
++      click<=1;
++    end
++   end
++  end
++ end
++end
++endmodule
++
++// Raster cursor and settings launcher, aligned with the existing 26-clock RGB.
++// No RAM, multiplier, extra video latency, or SDRAM traffic.
++module photo_pointer_overlay #(parameter DELAY=26)(
++ input clk,rst,frame_tick,enable,de,navigation_enable,input [11:0] x,input [10:0] y,
++ input [10:0] cursor_x,input [9:0] cursor_y,
++ input [23:0] rgb_in,output [23:0] rgb_out
++);
++reg visible,navigation_visible;
++wire next_button=x>=1192 && x<1256 && y>=328 && y<392;
++wire next_ink=(x>=1208 && x<1224 && y>=356 && y<364) ||
++ (x>=1224 && x<1232 && y>=344 && y<376) ||
++ (x>=1232 && x<1240 && y>=352 && y<368) ||
++ (x>=1240 && x<1244 && y>=356 && y<364);
++reg [11:0] dx;reg [10:0] dy;reg bounds,button,button_ink;
++reg [DELAY-2:0] body_pipe,border_pipe,button_pipe,ink_pipe;
++wire body=bounds && dx<16 && dy<24 && {1'b0,dx[3:0]}<=({1'b0,dy[4:1]}+5'd1);
++wire border=body && (dx[3:0]<2 || dy[4:0]>21 || {dx[3:0],1'b0}>=dy[4:0]);
++always @(posedge clk or posedge rst)begin
++ if(rst)begin visible<=0;navigation_visible<=0;dx<=0;dy<=0;bounds<=0;button<=0;button_ink<=0;
++  body_pipe<=0;border_pipe<=0;button_pipe<=0;ink_pipe<=0;
++ end else begin
++  if(frame_tick)begin visible<=enable;navigation_visible<=navigation_enable;end
++  dx<=x-{1'b0,cursor_x};dy<=y-{1'b0,cursor_y};
++  bounds<=visible && de && x>={1'b0,cursor_x} && y>={1'b0,cursor_y};
++  button<=visible && de && ((x>=1152 && x<1256 && y>=24 && y<64) || (navigation_visible && next_button));
++  // Three horizontal menu lines and a simple frame remain readable at 720p.
++  button_ink<=(x>=1180 && x<1228 && ((y>=34 && y<38)||(y>=44 && y<48)||(y>=54 && y<58))) || (navigation_visible && next_button && next_ink);
++  body_pipe<={body_pipe[DELAY-3:0],body};border_pipe<={border_pipe[DELAY-3:0],border};
++  button_pipe<={button_pipe[DELAY-3:0],button};ink_pipe<={ink_pipe[DELAY-3:0],button_ink};
++ end
++end
++assign rgb_out=body_pipe[DELAY-2] ? (border_pipe[DELAY-2] ? 24'h101820:24'hffffff):
++ button_pipe[DELAY-2] ? (ink_pipe[DELAY-2] ? 24'hffffff:24'h205f7a):rgb_in;
++endmodule
+diff --git a/5.0project/tests/reference/thumbnail_button_before/top_photo_a.v b/5.0project/tests/reference/thumbnail_button_before/top_photo_a.v
+new file mode 100644
+index 0000000..bf35e88
+--- /dev/null
++++ b/5.0project/tests/reference/thumbnail_button_before/top_photo_a.v
+@@ -0,0 +1,517 @@
++`timescale 1ns/1ps
++module top_photo_a(
++ input clk,hdmi_hpd,link_clk,input [15:0] link_data,input link_valid,link_sof,link_eof,
++ input [3:0] key,input control_rx,hmi_uart_rx,output control_tx,hmi_uart_tx,
++ input audio_miso,output audio_sclk,audio_cs,audio_mosi,
++ output link_ready,output [5:0] seg_sel,output [7:0] seg_data,
++ output HDMI_CLK_P,HDMI_D2_P,HDMI_D1_P,HDMI_D0_P,HDMI_DDC_SCL,inout HDMI_DDC_SDA);
++wire unused_sd,mem_clk,mem_clk_sft,sys_lock,pixel_clk,serial_clk,video_lock;
++wire rst_mem,rst_pixel,rst_serial,rst_link,rst_ref;
++sys_pll u_sys_pll(.refclk(clk),.reset(1'b0),.clk0_out(unused_sd),.clk1_out(mem_clk),.clk2_out(mem_clk_sft),.locked(sys_lock));
++video_pll u_video_pll(.refclk(clk),.reset(1'b0),.clk0_out(pixel_clk),.clk1_out(serial_clk),.locked(video_lock));
++dual_still_reset_sync rm(.clk(mem_clk),.arst(!sys_lock),.rst(rst_mem));
++dual_still_reset_sync rp(.clk(pixel_clk),.arst(!video_lock || !sys_lock),.rst(rst_pixel));
++dual_still_reset_sync rh(.clk(serial_clk),.arst(!video_lock || !sys_lock),.rst(rst_serial));
++dual_still_reset_sync rl(.clk(link_clk),.arst(!sys_lock || !video_lock),.rst(rst_link));
++dual_still_reset_sync rr(.clk(clk),.arst(!sys_lock || !video_lock),.rst(rst_ref));
++// The image pipeline has one fixed RGB565 format and the normal PLL resets.
++wire rst_image_pixel=rst_pixel,rst_image_mem=rst_mem,rst_image_link=rst_link;
++wire req,we,ack,full,finish,rx_done,rx_armed,rx_fault;
++wire [3:0] rx_fault_detail;
++wire [31:0] packed_data,read_data,rx_crc;reg finish_toggle,done_toggle;
++always @(posedge mem_clk or posedge rst_mem)
++ if(rst_mem)finish_toggle<=0;else if(finish)finish_toggle<=~finish_toggle;
++always @(posedge link_clk or posedge rst_link)
++ if(rst_link)done_toggle<=0;else if(rx_done)done_toggle<=~done_toggle;
++wire receive_fluid,receive_award,receive_relief;
++(* async_reg="true" *)reg fluid_link_meta,fluid_link_sync;
++always @(posedge link_clk or posedge rst_link)
++ if(rst_link)begin fluid_link_meta<=0;fluid_link_sync<=0;end
++ else begin fluid_link_meta<=receive_fluid;fluid_link_sync<=fluid_link_meta;end
++(* async_reg="true" *)reg award_link_meta,award_link_sync;
++always @(posedge link_clk or posedge rst_link)
++ if(rst_link)begin award_link_meta<=0;award_link_sync<=0;end
++ else begin award_link_meta<=receive_award;award_link_sync<=award_link_meta;end
++(* async_reg="true" *)reg relief_link_meta,relief_link_sync;
++always @(posedge link_clk or posedge rst_link)if(rst_link)begin relief_link_meta<=0;relief_link_sync<=0;end else begin relief_link_meta<=receive_relief;relief_link_sync<=relief_link_meta;end
++wire arm_toggle,abort_toggle,arm,abort;
++wire [1:0] receive_slot,active_slot,new_slot,ready_slot;
++photo_event_sync sa(.clk(link_clk),.rst(rst_link),.toggle(arm_toggle),.pulse(arm));
++photo_event_sync sb(.clk(link_clk),.rst(rst_link),.toggle(abort_toggle),.pulse(abort));
++photo_link_receiver #(.ENABLE_CRC(1),.LEGACY_TIMING(1),.AWARD_TAIL(1)) rx(.relief_frame(relief_link_sync),.award_frame(award_link_sync),.extended_frame(fluid_link_sync),.clk(link_clk),.rst(rst_image_link),.arm(arm),.abort(abort),.data(link_data),.valid(link_valid),.sof(link_sof),.eof(link_eof),
++ .ready(link_ready),.armed(rx_armed),.busy(),.write_req(req),.write_ack(ack),.full(full),.write_en(we),.write_data(packed_data),
++ .finish_toggle(finish_toggle),.done(rx_done),.fault(rx_fault),.frame_crc(rx_crc),.fault_detail(rx_fault_detail));
++
++wire read_req,read_en,read_ack,read_finish,read_empty,init_done;
++wire transition_active,slide_right,display_valid,frame_commit,ready_toggle,ready_right,ready_immediate;
++wire [8:0] fluid_progress;
++wire [76:0] fluid_configuration;
++wire [4:0] transition_mode;wire [10:0] slide_offset;wire [5:0] darkness;
++wire [4:0] effect_select;wire auto_enable;wire [4:0] auto_interval_seconds;
++wire light_wide,light_request,light_ack,light_valid;wire [20:0] light_address,light_base;wire [31:0] light_data;
++wire done_pixel,busy;wire [2:0] count,current;wire [3:0] error,control_state;
++wire thumbnail_request,thumbnail_done,thumbnail_cache_valid,thumbnail_visible,thumbnail_cancel;
++wire [1:0] thumbnail_slot,thumbnail_cache_slot;wire [2:0] thumbnail_id;
++wire [12:0] thumbnail_address;wire [15:0] thumbnail_data;
++wire thumbnail_blank;
++wire thumbnail_read_busy;
++wire relief_available;
++wire auto_next,award_available,award_scan_complete,award_loading;wire [2:0] award_notice;wire [3:0] last_transfer_error;
++wire settings_mode;
++wire boot_active;
++wire [15:0] current_source_width,current_source_height;
++wire award_active=display_valid && current>=3'd6 && current_source_width[15];
++// DISPLAY_CONTROL_REGISTERS
++reg award_menu_select_q,award_display_select_q,preview_enable_q,pointer_nav_display_q;
++frame_store #(.FLIP(0)) store(.write_relief(receive_relief),.write_award(receive_award),.read_award(award_active),
++ .display_active(display_valid),.thumbnail_request(thumbnail_request),.thumbnail_cancel(thumbnail_cancel),
++ .thumbnail_blank(thumbnail_blank),.thumbnail_slot(thumbnail_slot),
++ .thumbnail_address(thumbnail_address),.thumbnail_done(thumbnail_done),.thumbnail_data(thumbnail_data),
++ .light_wide(light_wide),.light_enable(award_active),.light_request(light_request),.light_address(light_address),.light_ack(light_ack),
++ .light_data(light_data),.light_valid(light_valid),.light_base(light_base),
++ .water_cfg(fluid_configuration),.fluid_progress(fluid_progress),.write_fluid(receive_fluid),.write_slot(receive_slot),.read_slot(active_slot),.new_slot(new_slot),
++ .slide_active(transition_active),.slide_right(slide_right),.slide_offset({1'b0,slide_offset[10:1]}),.transition_mode(transition_mode),
++ .mem_clk(mem_clk),.mem_clk_sft(mem_clk_sft),.rst(rst_image_mem),
++ .write_clk(link_clk),.write_req(req),.write_en(we && !full),.write_data(packed_data),.write_ack(ack),.write_finish(finish),.write_full(full),
++ .read_clk(pixel_clk),.read_req(read_req),.read_en(read_en),.read_ack(read_ack),.read_finish(read_finish),
++ .read_empty(read_empty),.read_data(read_data),.init_done(init_done));
++wire hs,vs,de,fs;wire [11:0] x;wire [10:0] y;wire [9:0] blue,green,red;
++wire blank_start=x==0 && y==720;
++wire [23:0] menu_notice_rgb;
++wire [23:0] raw_rgb,final_rgb,feature_rgb,music_ui_rgb;
++wire result_busy,result_sprint_active;
++
++
++wire [23:0] award_rgb,award_menu_rgb;
++wire [3:0] award_light_error;wire [6:0] award_light_frame;
++reg [1:0] award_raw_de;
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)award_raw_de<=0;else award_raw_de<={award_raw_de[0],de};
++reg award_pause;
++// The FIFO reader takes two cycles, photo enhancement seven, adjustment
++// eight and style/fade/multiply/range four: 21 clocks in all.
++hdmi_minimal_tx #(.EXTERNAL_VIDEO(1),.VIDEO_DELAY(21)) u_tx(.clk(pixel_clk),.rst(rst_pixel),.rgb_in(final_rgb),
++ .blue(),.green(),.red(),.hs(hs),.vs(vs),.de(de),.frame_start(fs),.x(x),.y(y));
++wire armed,started,underflow;
++frame_pixels pixels(.clk(pixel_clk),.rst(rst_image_pixel),.de(de),.x(x),.y(y),.image_valid(display_valid),
++ .read_ack(read_ack),.empty(read_empty),.data(read_data),.read_req(read_req),.read_en(read_en),.rgb(raw_rgb),
++ .armed(armed),.output_started(started),.underflow(underflow));
++saixian_transition #(.ALLOW_IMMEDIATE(1)) transition(.fluid_enable(!award_active && !award_loading && !settings_mode),.clk(pixel_clk),.rst(rst_image_pixel),.frame_tick(blank_start),.frame_ready_toggle(ready_toggle),
++ .ready_buf_idx(ready_slot),.ready_slide_right(ready_right),.ready_immediate(ready_immediate),.effect_select(effect_select),.active_buf_idx(active_slot),.slide_new_buf_idx(new_slot),
++ .frame_commit_toggle(frame_commit),.display_valid(display_valid),.transition_active(transition_active),
++ .fluid_progress(fluid_progress),.transition_mode(transition_mode),.slide_offset(slide_offset),.slide_right(slide_right),.transition_level(darkness));
++wire [3:0] presses;
++genvar k;
++generate for(k=0;k<4;k=k+1)begin:keys
++ saixian_key_debounce #(.CLK_FREQ_HZ(75000000)) button(.clk(pixel_clk),.rst(rst_pixel),.key_n(key[k]),.press_pulse(presses[k]));
++end endgenerate
++wire touch_valid,touch_down,touch_mode_valid,touch_mode_value;
++wire [9:0] touch_x;wire [8:0] touch_y;
++reg touch_mode;
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)touch_mode<=1;else if(touch_mode_valid)touch_mode<=touch_mode_value;
++wire [10:0] cursor_x;wire [9:0] cursor_y;wire pointer_click,pointer_contact;
++wire carousel_mode;
++wire pointer_enabled=touch_mode && carousel_mode && !boot_active && !result_busy;
++photo_touchpad pointer(.clk(pixel_clk),.rst(rst_pixel),.enable(pointer_enabled),.frame_tick(blank_start),
++ .sample_valid(touch_valid),.sample_down(touch_down),.sample_x(touch_x),.sample_y(touch_y),
++ .cursor_x(cursor_x),.cursor_y(cursor_y),.click(pointer_click),.contact(pointer_contact));
++wire pointer_menu_click=pointer_click && pointer_enabled && cursor_x>=1152 && cursor_x<1256 && cursor_y>=24 && cursor_y<64;
++wire pointer_navigation_enable=pointer_enabled && !settings_mode && !award_active && !award_loading && count>1;
++wire pointer_next_click=pointer_click && pointer_navigation_enable &&
++ ((cursor_x>=1192 && cursor_x<1256 && cursor_y>=328 && cursor_y<392) ||
++  (thumbnail_visible && cursor_x>=1086 && cursor_x<1250 && cursor_y>=514 && cursor_y<620));
++wire pointer_row_click=pointer_click && pointer_enabled && settings_mode && cursor_x>=64 && cursor_x<864 && cursor_y>=144 && cursor_y<592;
++wire [9:0] pointer_row_y=cursor_y-10'd144;
++// Isolate context/hit decoding from the settings controller's update priority.
++reg pointer_menu_event,pointer_row_event,pointer_increase_q;reg [3:0] pointer_item_q;
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)begin pointer_menu_event<=0;pointer_row_event<=0;pointer_increase_q<=0;pointer_item_q<=0;end
++ else begin
++  pointer_menu_event<=pointer_menu_click;pointer_row_event<=pointer_row_click;
++  pointer_item_q<=pointer_row_y[8:5];pointer_increase_q<=cursor_x>=448;
++ end
++wire hmi_award_valid,hmi_award_value;
++wire hmi_music_next,hmi_start,hmi_pause,hmi_pause_set,hmi_resume,hmi_finish;
++wire hmi_result_blue,hmi_result_red,hmi_result_sprint,hmi_result_stop;
++wire hmi_project_valid;wire [1:0] hmi_project_value;
++wire key4_short,key4_long;
++photo_key_hold key4_hold(.clk(pixel_clk),.rst(rst_pixel),.key_n(key[3]),.short_release(key4_short),.long_press(key4_long));
++wire [3:0] event_state,countdown_value,cue_event;wire [6:0] event_minutes;wire [5:0] event_seconds;
++wire [1:0] event_project;reg [1:0] project_select;
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)project_select<=0;else if(hmi_project_valid && carousel_mode)project_select<=hmi_project_value;
++wire hmi_prev,hmi_next,setting_valid,reset_defaults,page_notify;wire [2:0] setting_id,page_id;wire [7:0] setting_value;
++wire edge_valid,edge_value,edge_enable;
++wire effect_valid,auto_valid,auto_value;wire audio_view_valid,audio_view_value,waveform_mode;wire [4:0] effect_value;
++saixian_hmi_uart #(.CLK_FREQ_HZ(75000000)) screen_rx(.clk(pixel_clk),.rst(rst_pixel),.uart_rx(hmi_uart_rx),
++ .award_mode_valid(hmi_award_valid),.award_mode_value(hmi_award_value),
++ .touch_valid(touch_valid),.touch_x(touch_x),.touch_y(touch_y),.touch_down(touch_down),
++ .touch_mode_valid(touch_mode_valid),.touch_mode_value(touch_mode_value),
++ .project_valid(hmi_project_valid),.project_value(hmi_project_value),
++ .start_pulse(hmi_start),.pause_pulse(hmi_pause),.pause_set_pulse(hmi_pause_set),.resume_pulse(hmi_resume),.finish_pulse(hmi_finish),
++ .result_blue_pulse(hmi_result_blue),.result_red_pulse(hmi_result_red),
++ .result_sprint_pulse(hmi_result_sprint),.result_stop_pulse(hmi_result_stop),
++ .music_next_pulse(hmi_music_next),.prev_pulse(hmi_prev),.next_pulse(hmi_next),.setting_valid(setting_valid),.setting_id(setting_id),.setting_value(setting_value),
++ .edge_valid(edge_valid),.edge_value(edge_value),.effect_valid(effect_valid),.effect_value(effect_value),.auto_valid(auto_valid),.auto_value(auto_value),.audio_view_valid(audio_view_valid),.audio_view_value(audio_view_value),
++ .reset_defaults_pulse(reset_defaults),.page_id(page_id),.page_notify_pulse(page_notify));
++wire audio_repair_enable;wire [3:0] setting_item;wire [3:0] brightness,contrast,saturation,volume;wire [1:0] sharpness,enhancement;wire invert,vintage;
++// Match the single-board photo pipeline: enhancement owns the spatial
++// smoothing/sharpening control; the later colour stage must not sharpen twice.
++photo_unified_settings_controller #(.CLK_FREQ_HZ(75000000),.IMAGE_MENU(0),.POINTER_CONTROL(1),.INTERVAL_CONTROL(1)) settings(.clk(pixel_clk),.rst(rst_pixel),.carousel_mode(carousel_mode),
++ .pointer_valid(pointer_row_event),.pointer_item(pointer_item_q),.pointer_increase(pointer_increase_q),
++ .key_next_item(presses[0]),.key_decrease(presses[1]),.key_enter_exit((presses[2] || pointer_menu_event) && !result_busy),.key_increase(presses[3]),
++ .hmi_setting_valid(setting_valid),.hmi_setting_id(setting_id),.hmi_setting_value(setting_value),.hmi_reset_defaults(reset_defaults),
++ .edge_valid(edge_valid),.edge_value(edge_value),.effect_valid(effect_valid),.effect_value(effect_value),.auto_valid(auto_valid),.auto_value(auto_value),.audio_view_valid(audio_view_valid),.audio_view_value(audio_view_value),
++ .edge_enable(edge_enable),.effect_select(effect_select),.auto_enable(auto_enable),.auto_interval_seconds(auto_interval_seconds),
++ .audio_repair_enable(audio_repair_enable),.waveform_mode(waveform_mode),.settings_mode(settings_mode),.setting_item(setting_item),.volume_setting(volume),.brightness_setting(brightness),.contrast_setting(contrast),
++ .saturation_setting(saturation),.sharpness_setting(sharpness),.invert_setting(invert),.vintage_setting(vintage),.enhancement_setting(enhancement));
++saixian_event_controller #(.CLK_FREQ_HZ(75000000)) event_controller(.clk(pixel_clk),.rst(rst_pixel),.frame_start(blank_start),
++ .key_start(!settings_mode && !result_busy && (hmi_start || (!carousel_mode && (key4_long || presses[0])))),
++ .key_pause((!carousel_mode && presses[1]) || (!(award_active && carousel_mode) && (hmi_pause || (hmi_pause_set && event_state==6) || (hmi_resume && event_state==7)))),
++ .key_end((!carousel_mode && presses[2]) || hmi_finish),.project_switch(project_select),
++ .state(event_state),.project_id(event_project),.minutes(event_minutes),.seconds(event_seconds),
++ .countdown_value(countdown_value),.cue_event(cue_event),.carousel_mode(carousel_mode));
++reg [27:0] finish_delay;
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)finish_delay<=0;else if(event_state!=8)finish_delay<=0;
++ else if(finish_delay<150000000)finish_delay<=finish_delay+1'b1;
++wire bg_music_enable=(carousel_mode && !result_busy) || (event_state==8 && finish_delay>=150000000);
++// Register playback focus: the event-state decoder must not feed the UART
++// request/cache-victim control cone in the same pixel-clock cycle.
++reg photo_focus;
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)photo_focus<=0;
++ else photo_focus<=settings_mode || !carousel_mode || award_active || award_loading || result_busy;
++reg armed_meta,armed_sync,fault_meta,fault_sync;
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)begin armed_meta<=0;armed_sync<=0;fault_meta<=0;fault_sync<=0;end
++ else begin armed_meta<=rx_armed;armed_sync<=armed_meta;fault_meta<=rx_fault;fault_sync<=fault_meta;end
++
++
++wire [3:0] first_transfer_origin,first_transfer_error;
++reg [3:0] first_link_fault;
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)first_link_fault<=0;
++ else if(presses[0] || hmi_next || pointer_next_click || key4_short)first_link_fault<=0;
++ else if(fault_sync && first_link_fault==0)first_link_fault<=rx_fault_detail;
++photo_auto_advance #(.ADJUSTABLE(1)) auto_advance(.clk(pixel_clk),.rst(rst_pixel),.enable(auto_enable && carousel_mode && !award_active && !award_loading && !result_busy),
++ .display_valid(display_valid),.transition_active(transition_active),.busy(busy),.enough_images(count>1),
++ .settings_mode(settings_mode),.manual_event(presses[0] || key4_short || hmi_next || pointer_next_click || reset_defaults),
++ .interval_seconds(auto_interval_seconds),.next_pulse(auto_next));
++photo_event_sync sd(.clk(pixel_clk),.rst(rst_pixel),.toggle(done_toggle),.pulse(done_pixel));
++reg done_pixel_registered;
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)done_pixel_registered<=0;else done_pixel_registered<=done_pixel;
++wire [18:0] image_settings={1'b0,brightness,contrast,saturation,sharpness,enhancement,invert,vintage};
++// Register gated navigation events before the cache's adjacency/priority logic.
++// One-clock event staging removes result-state decoding from that long path.
++reg photo_next_event,photo_award_event,photo_relief_event;
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)begin photo_next_event<=0;photo_award_event<=0;photo_relief_event<=0;end
++ else begin
++  photo_next_event<=carousel_mode && !settings_mode && !result_busy && (presses[0] || hmi_next || pointer_next_click || auto_next);
++  photo_award_event<=carousel_mode && !settings_mode && !result_busy && !award_loading &&
++   ((hmi_award_valid && !hmi_award_value) || (key4_short && (current>=6 || (!relief_available && award_scan_complete))));
++  photo_relief_event<=carousel_mode && !settings_mode && !result_busy && !award_loading &&
++   ((hmi_award_valid && hmi_award_value) || (key4_short && current<6 && (relief_available || !award_scan_complete)));
++ end
++wire settings_updating;
++wire timing_begin,timing_present,timing_commit,timing_cancel,timing_running,timing_valid;
++wire [19:0] timing_wait_ms,timing_effect_ms,timing_total_ms;
++wire [5:0] timing_seg_sel,base_seg_sel;wire [7:0] timing_seg_data,base_seg_data;
++photo_switch_timing #(.CLK_HZ(75000000),.PHASES(2)) timing_probe(.clk(pixel_clk),.rst(rst_pixel),
++ .start(timing_begin),.mark1(timing_present),.mark2(1'b0),.finish(timing_commit),.cancel(timing_cancel),
++ .running(timing_running),.valid(timing_valid),.first_ms(timing_wait_ms),.second_ms(timing_effect_ms),.third_ms(),.total_ms(timing_total_ms));
++photo_switch_timing_display #(.CLK_HZ(75000000),.PAGES(3)) timing_display(.clk(pixel_clk),.rst(rst_pixel),.running(timing_running),
++ .first_ms(timing_wait_ms),.second_ms(timing_effect_ms),.third_ms(20'd0),.total_ms(timing_total_ms),.seg_sel(timing_seg_sel),.seg_data(timing_seg_data));
++photo_cached_control_a #(.CHECK_FRAME_CRC(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.EARLY_THUMBNAIL(1),.RELIEF_CONTROL(1)) ctrl(.receive_relief(receive_relief),.receive_award(receive_award),.receive_fluid(receive_fluid),.settings_mode(photo_focus),.settings_state(image_settings),.settings_updating(settings_updating),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
++ .thumbnail_read_busy(thumbnail_read_busy),.thumbnail_read_slot(thumbnail_slot),
++ .timing_begin(timing_begin),.timing_present(timing_present),.timing_commit(timing_commit),.timing_cancel(timing_cancel),
++ .award_toggle(photo_award_event),.relief_toggle(photo_relief_event),.relief_available(relief_available),.award_available(award_available),.award_scan_complete(award_scan_complete),.award_loading(award_loading),.award_notice(award_notice),.last_transfer_error(last_transfer_error),
++ .first_transfer_origin(first_transfer_origin),.first_transfer_error(first_transfer_error),
++ .previous(1'b0),.next(photo_next_event),
++ .active_slot(active_slot),.new_slot(new_slot),.transition_active(transition_active),.commit_toggle(frame_commit),
++ .receive_slot(receive_slot),.arm_toggle(arm_toggle),.abort_toggle(abort_toggle),.rx_armed(armed_sync),.rx_done(done_pixel_registered),
++ .ready_immediate(ready_immediate),.rx_fault(fault_sync),.rx_crc(rx_crc),.ready_toggle(ready_toggle),.ready_slot(ready_slot),.ready_right(ready_right),
++ .image_count(count),.current_image(current),.busy(busy),.error(error),.debug_state(control_state),
++ .thumbnail_valid(thumbnail_cache_valid),.thumbnail_slot(thumbnail_cache_slot),.thumbnail_id(thumbnail_id),
++ .current_source_width(current_source_width),.current_source_height(current_source_height));
++wire page_turn_cue;wire [3:0] page_turn_style;
++photo_transition_page_event page_feedback(.clk(pixel_clk),.rst(rst_pixel),
++ .enable(carousel_mode && !settings_mode && !award_active && !award_loading && !result_busy && !boot_active),
++ .transition_active(transition_active),.transition_mode(transition_mode),.page_style(page_turn_style),
++ .display_valid(display_valid),.image(current),.count(count),.page_event(page_turn_cue));
++wire [2:0] music_count,music_index;wire [7:0] music_epoch;
++wire [3:0] audio_diag_stage,audio_buffer_level;wire audio_header_seen,audio_pcm_seen,audio_nonzero_seen;
++water_scene dwell_water(.clk(pixel_clk),.rst(rst_image_pixel),.frame_tick(blank_start),
++ .display_valid(display_valid),.transition_active(transition_active),
++ .wave_enable(carousel_mode && !settings_mode && !award_active && !award_loading && !result_busy && !boot_active && !settings_updating),
++ .manual_drop(1'b0),.progress(fluid_progress),.cfg(fluid_configuration));
++wire music_buffer_ready,music_catalog_complete;reg startup_released;
++wire audio_sample_valid;wire [23:0] audio_left,audio_right;wire [15:0] audio_packet_errors,audio_underflows;
++wire av_available,av_begin,av_word_valid,av_commit,av_finish,av_stream_reset;
++wire [8:0] av_word_index;wire [31:0] av_word,av_play_position;
++photo_audio_spi_a #(.STARTUP_SYNC(1),.FIFO_AW(11),.FIFO_RAM32_HEAD(2048),.EXTENDED_AV(1),.PAGE_CUE(1),.TYPED_PAGE(1)) audio_link(.page_style(page_turn_style),.page_event(page_turn_cue),.playback_hold(!startup_released),.buffer_ready(music_buffer_ready),.catalog_complete(music_catalog_complete),.clk(pixel_clk),.rst(rst_pixel),.bg_enable(bg_music_enable),.repair_enable(audio_repair_enable),.volume(volume),.cue_event(cue_event),
++ .next_track(carousel_mode && !result_busy && ((!settings_mode && !award_active && presses[1]) || hmi_music_next)),
++ .spi_miso(audio_miso),.spi_sclk(audio_sclk),.spi_cs(audio_cs),.spi_mosi(audio_mosi),
++ .track_count(music_count),.track_index(music_index),.desired_epoch(music_epoch),
++ .diagnostic_stage(audio_diag_stage),.buffer_level(audio_buffer_level),.header_seen(audio_header_seen),.pcm_seen(audio_pcm_seen),.nonzero_seen(audio_nonzero_seen),
++ .sample_valid(audio_sample_valid),.audio_left(audio_left),.audio_right(audio_right),.packet_errors(audio_packet_errors),.underflows(audio_underflows),
++ .av_available(av_available),.av_begin(av_begin),.av_word_valid(av_word_valid),.av_commit(av_commit),.av_finish(av_finish),
++ .av_word_index(av_word_index),.av_word(av_word),.play_position(av_play_position),.stream_reset(av_stream_reset));
++// Keep the known 21-cycle RGB path; send aligned AXI pixels to the single-board
++// HDMI core, including an exact last-pixel marker and first-frame marker.
++wire [11:0] raster_x21,raster_x26,raster_x34;
++wire [10:0] raster_y21,raster_y26,raster_y34;
++wire raster_valid21,raster_valid26,raster_valid34;
++assign thumbnail_blank=raster_valid26 && raster_y26>=11'd720;
++wire [8:0] raster_ui_y;
++photo_raster_delay #(.DELAY(21),.SCALE_Y(1)) raster21(.clk(pixel_clk),.rst(rst_pixel),.x(raster_x21),.y(raster_y21),.valid(raster_valid21),.y_two_thirds(raster_ui_y));
++photo_raster_delay #(.DELAY(26)) raster26(.clk(pixel_clk),.rst(rst_pixel),.x(raster_x26),.y(raster_y26),.valid(raster_valid26));
++photo_raster_delay #(.DELAY(34)) raster34(.clk(pixel_clk),.rst(rst_pixel),.x(raster_x34),.y(raster_y34),.valid(raster_valid34));
++wire raster_de21=raster_valid21 && raster_x21<1280 && raster_y21<720;
++wire raster_de26=raster_valid26 && raster_x26<1280 && raster_y26<720;
++wire raster_sof26=raster_valid26 && raster_x26==0 && raster_y26==0;
++wire raster_last26=raster_de26 && raster_x26==1279;
++wire raster_vs26=raster_valid26 && raster_y26>=725 && raster_y26<730;
++wire raster_tick26=raster_valid26 && raster_x26==0 && raster_y26==720;
++wire raster_sof34=raster_valid34 && raster_x34==0 && raster_y34==0;
++wire raster_last34=raster_valid34 && raster_x34==1279 && raster_y34<720;
++wire acr_valid;wire [19:0] acr_cts,acr_n;
++audio_arc_calculate #(.ACR_N(6144)) acr(.I_clk(pixel_clk),.I_rst(rst_pixel),.I_audio_valid(audio_sample_valid),.O_acr_valid(acr_valid),.O_acr_cts(acr_cts),.O_acr_n(acr_n));
++reg hpd_audio_meta,hpd_audio_sync,hpd_audio_previous;
++always @(posedge pixel_clk or posedge rst_pixel)begin
++ if(rst_pixel)begin hpd_audio_meta<=0;hpd_audio_sync<=0;hpd_audio_previous<=0;end
++ else begin hpd_audio_meta<=hdmi_hpd;hpd_audio_sync<=hpd_audio_meta;hpd_audio_previous<=hpd_audio_sync;end
++end
++wire [23:0] result_rgb;wire result_de,result_vs;
++// Capture the complete command gates before the result renderer's pixel
++// registers. Events settle one clock later; the video pipeline is unchanged.
++reg result_select_blue_q,result_select_red_q,result_select_sprint_q;
++reg result_trigger_q,result_stop_q,result_frame_tick_q;
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)begin
++  result_select_blue_q<=0;result_select_red_q<=0;result_select_sprint_q<=0;
++  result_trigger_q<=0;result_stop_q<=0;result_frame_tick_q<=0;
++ end
++ else begin
++  result_trigger_q<=(result_busy && carousel_mode && !settings_mode) && (presses[0] || hmi_next);
++  result_stop_q<=hmi_result_stop || (key4_long && result_busy);
++  result_frame_tick_q<=raster_tick26;
++  result_select_blue_q<=(hmi_result_blue || (result_busy && presses[1])) && carousel_mode && !settings_mode && !award_active && !award_loading;
++  result_select_red_q<=(hmi_result_red || (result_busy && presses[2])) && carousel_mode && !settings_mode && !award_active && !award_loading;
++  result_select_sprint_q<=(hmi_result_sprint || key4_long) && carousel_mode && !settings_mode && !award_active && !award_loading;
++ end
++saixian_battle_result_fx u_result_animation(
++ .clk(pixel_clk),.rst(rst_pixel),.frame_tick(result_frame_tick_q),
++ .trigger(result_trigger_q),
++ .select_blue(result_select_blue_q),
++ .select_red(result_select_red_q),
++  .select_sprint(result_select_sprint_q),
++  .stop(result_stop_q),.busy(result_busy),.sprint_active(result_sprint_active),
++ .sprint_background_valid(display_valid),.x_in(raster_x26[10:0]),.y_in(raster_y26[9:0]),
++ .de_in(raster_de26),.vs_in(raster_vs26),.rgb_in(feature_rgb),
++ .de_out(result_de),.vs_out(result_vs),.rgb_out(result_rgb));
++wire edge_de,edge_sof,edge_last;wire [23:0] edge_rgb;wire [7:0] edge_level,edge_target;
++// Stage the scene-state decode before the edge renderer's pixel datapath.
++// This changes only control settling by one clock; RGB/DE/SOF/EOL stay aligned.
++reg music_drive_q;
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)music_drive_q<=0;
++ else music_drive_q<=edge_enable && carousel_mode && !settings_mode && !award_active && !award_loading && !result_busy && !boot_active && display_valid;
++// Edge light has a fixed five-clock RGB/DE/SOF/EOL pipeline, even when disabled.
++water_edge #(.EXTERNAL_ENVELOPE(1)) music_edge(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),.external_target(edge_target),
++ .music_drive(music_drive_q),
++ .pcm_valid(audio_sample_valid),.pcm_left(audio_left[23:8]),.pcm_right(audio_right[23:8]),
++ .x(raster_x34[10:0]),.y(raster_y34[9:0]),.de(result_de),.sof(raster_sof34),.eol(raster_last34),
++ .rgb(result_rgb),.darkness(6'd0),.de_out(edge_de),.sof_out(edge_sof),.eol_out(edge_last),.rgb_out(edge_rgb),.level(edge_level));
++wire [9:0] hdmi_clock_data;wire axis_ready,hdmi_video_locked;
++hdmi_1_4b_transmitter_core_wrapper #(.DEVICE("EG"),.HTOTAL(1650),.HSA(40),.HFP(110),.HBP(220),.HACTIVE(1280),
++ .VTOTAL(750),.VSA(5),.VFP(5),.VBP(20),.VACTIVE(720),.VIDEO_VIC(4),.VIDEO_TPG("Disable"),.VIDEO_FORMAT("RGB"),.AUDIO_SAMPLE_RATE("48K"),.IIC_SCL_DIV(375)) audio_hdmi(
++ .I_pixel_clk(pixel_clk),.I_rst(rst_pixel),.I_edid_read_trig(hpd_audio_sync && !hpd_audio_previous),.O_edid_read_valid(),.O_edid_read_data(),
++ .I_axis_s_user(edge_sof),.I_axis_s_valid(edge_de),.I_axis_s_last(edge_last),.I_axis_s_data(edge_rgb),.O_axis_s_ready(axis_ready),
++ .I_audio_valid(audio_sample_valid),.I_audio_left_data(audio_left),.I_audio_right_data(audio_right),.I_acr_valid(acr_valid),.I_acr_cts(acr_cts),.I_acr_n(acr_n),.O_video_locked(hdmi_video_locked),
++ .O_ddc_scl(HDMI_DDC_SCL),.IO_ddc_sda(HDMI_DDC_SDA),.O_ch0_tmds_data(blue),.O_ch1_tmds_data(green),.O_ch2_tmds_data(red),.O_clk_tmds_data(hdmi_clock_data));
++saixian_hmi_status_tx #(.CLK_FREQ_HZ(75000000),.ENHANCEMENT_FEEDBACK(1)) screen_tx(.clk(pixel_clk),.rst(rst_pixel),.image_count(count),
++ .audio_count(music_count),.error_code(error>7 ? 3'd7:error[2:0]),.initializing(count==0),.page_id(page_id),
++ .refresh_request(page_notify || setting_valid || reset_defaults),.sharpness(sharpness),.brightness(brightness),.contrast(contrast),
++ .saturation(saturation),.volume(volume),.invert(invert),.vintage(vintage),.enhancement(enhancement),.event_state(event_state),.minutes(event_minutes),.seconds(event_seconds),
++ .uart_tx(hmi_uart_tx),.command_sent_pulse());
++// Image enhancement/adjustment is already performed on B. Keep the
++// established 2+15+4=21 clocks without a second neutral processing engine.
++reg [1:0] de_pipe;reg [10:0] x0,x1;reg [9:0] y0,y1;
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)begin de_pipe<=0;x0<=0;x1<=0;y0<=0;y1<=0;end
++ else begin de_pipe<={de_pipe[0],de};x0<=x[10:0];x1<=x0;y0<=y[9:0];y1<=y0;end
++wire [23:0] neutral_rgb,range_rgb;
++photo_neutral_delay neutral(.clk(pixel_clk),.rst(rst_pixel),.de(de_pipe[1]),.rgb_in(raw_rgb),.rgb_out(neutral_rgb));
++photo_display_fade display_fade(.clk(pixel_clk),.rst(rst_pixel),.darkness(darkness),.rgb_in(neutral_rgb),.rgb_out(range_rgb));
++photo_settings_overlay #(.VIDEO_DELAY(21),.INTERVAL_CONTROL(1)) menu_overlay(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),
++ .x(x),.y(y),.de(de),.settings_mode(settings_mode),.setting_item(setting_item),.updating(settings_updating),
++ .edge_enable(edge_enable),.audio_repair_enable(audio_repair_enable),.volume(volume),.waveform_mode(waveform_mode),.brightness(brightness),.contrast(contrast),.saturation(saturation),.sharpness(sharpness),.enhancement(enhancement),
++ .invert(invert),.vintage(vintage),.effect(effect_select),.auto_enable(auto_enable),.auto_interval_seconds(auto_interval_seconds),
++ .rgb_in(award_menu_select_q ? award_menu_rgb:range_rgb),.rgb_out(menu_notice_rgb));
++// Lock the slow status decode in blanking, before the combinational banner.
++reg [2:0] frame_award_notice;
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)frame_award_notice<=0;
++ else if(blank_start)frame_award_notice<=carousel_mode && !settings_mode ? (award_loading ? 3'd1:award_notice):3'd0;
++photo_award_notice award_notice_osd(.clk(pixel_clk),.rst(rst_pixel),.notice(frame_award_notice),
++ .x(raster_x21),.y(raster_y21),.rgb_in(menu_notice_rgb),.rgb_out(final_rgb));
++reg settings_render_mode;
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)settings_render_mode<=0;else if(blank_start)settings_render_mode<=settings_mode;
++// begin DISPLAY_CONTROL_STAGE
++// Register scene selection before the wide RGB multiplexers. Only control
++// settling changes by one clock; all RGB/DE/coordinate pipelines stay intact.
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)begin
++  award_menu_select_q<=0;award_display_select_q<=0;preview_enable_q<=0;pointer_nav_display_q<=0;
++ end else begin
++  award_menu_select_q<=award_active;
++  award_display_select_q<=award_active && carousel_mode && !settings_render_mode;
++  preview_enable_q<=display_valid && carousel_mode && !boot_active && !settings_mode && !result_busy && !award_active && !award_loading;
++  pointer_nav_display_q<=pointer_navigation_enable;
++ end
++// end DISPLAY_CONTROL_STAGE
++
++reg [9:0] ui_x;reg [8:0] ui_y;reg ui_de;reg [23:0] ui_rgb;
++always @(posedge pixel_clk or posedge rst_pixel)begin
++ if(rst_pixel)begin ui_x<=0;ui_y<=0;ui_de<=0;ui_rgb<=0;end
++ else begin ui_x<=raster_x21[10:1];ui_y<=raster_ui_y;ui_rgb<=final_rgb;
++  ui_de<=raster_de21 && !settings_render_mode;end
++end
++wire [10:0] ui_font_addr;wire [15:0] ui_font_bits;
++saixian_font_rom ui_font(.clk(pixel_clk),.glyph_id(ui_font_addr[10:4]),.row(ui_font_addr[3:0]),.bits(ui_font_bits));
++reg [10:0] ticker_x;
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)ticker_x<=0;else if(blank_start)ticker_x<=ticker_x>=864 ? 0:ticker_x+1'b1;
++// Analyze the same post-mix, post-volume PCM delivered to HDMI.
++wire [9:0] visual_x=ui_x-10'd64;
++wire [6:0] visual_height,visual_peak;wire [31:0] visual_wave;
++wire visual_fft_valid,visual_wave_valid;
++photo_av_metadata_a #(.EDGE_METADATA(1)) visual_cache(.clk(pixel_clk),.rst(rst_pixel || av_stream_reset),.frame_tick(blank_start),.edge_target(edge_target),
++ .play_position(av_play_position),.begin_packet(av_begin),.word_valid(av_word_valid),.commit_packet(av_commit),.finish_packet(av_finish),
++ .word_index(av_word_index),.word_data(av_word),.available(av_available),
++ .read_band(visual_x[8:4]),.read_index(visual_x[8:1]),.height(visual_height),.peak(visual_peak),.extrema(visual_wave),
++ .fft_valid(visual_fft_valid),.wave_valid(visual_wave_valid));
++saixian_osd_overlay #(.SHOW_SOURCE_RESOLUTION(0)) music_event_ui(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),.de_i(ui_de),
++ .x_i(ui_x),.y_i(ui_y),.rgb_in_i(ui_rgb),.display_valid(display_valid || music_count!=0 || !carousel_mode),
++ .loading_phase(3'd0),.state(event_state),.project_id(carousel_mode ? project_select:event_project),
++ .minutes(event_minutes),.seconds(event_seconds),.countdown_value(countdown_value),.ticker_x(ticker_x),
++ .ticker_text_length(5'd0),.title_text_length(5'd0),.font_addr(ui_font_addr),.font_bits(ui_font_bits),.font_ready(1'b1),
++ .source_width_bcd(16'd0),.source_height_bcd(16'd0),.error_code(3'd0),
++ .visual_height(visual_height),.visual_peak(visual_peak),.visual_wave(visual_wave),
++ .visual_fft_valid(visual_fft_valid),.visual_wave_valid(visual_wave_valid),
++ .waveform_mode(waveform_mode),.settings_mode(1'b0),.setting_item(3'd0),
++ .volume_setting(volume),.brightness_setting(brightness),.contrast_setting(contrast),.sharpness_setting(sharpness),
++ .saturation_setting(saturation),.invert_setting(invert),.vintage_setting(vintage),.enhancement_setting(enhancement),
++ .rgb_out(music_ui_rgb));
++// The OSD drives black when DE is low: use an explicit, equal-latency
++// bypass for the unified settings page instead of hiding it via DE.
++reg [23:0] menu_bypass_rgb[0:4];reg [4:0] menu_bypass_select;integer menu_bi;
++always @(posedge pixel_clk or posedge rst_pixel)begin
++ if(rst_pixel)begin menu_bypass_select<=0;for(menu_bi=0;menu_bi<5;menu_bi=menu_bi+1)menu_bypass_rgb[menu_bi]<=0;end
++ else begin
++  menu_bypass_select<={menu_bypass_select[3:0],settings_render_mode};
++  menu_bypass_rgb[0]<=final_rgb;
++  for(menu_bi=1;menu_bi<5;menu_bi=menu_bi+1)menu_bypass_rgb[menu_bi]<=menu_bypass_rgb[menu_bi-1];
++ end
++end
++// Award input coordinates follow the same two-cycle FIFO latency as raw_rgb.
++// Bypass photo fades and music graphics for the full scene.
++photo_award_render #(.RELIEF_ENABLE(1)) award_render(
++ .relief_mode(current==7),.touch_contact(pointer_contact),.cursor_x(cursor_x),.cursor_y(cursor_y),.mem_clk(mem_clk),.mem_rst(rst_image_mem),.light_base(light_base),
++ .light_wide(light_wide),.light_request(light_request),.light_address(light_address),.light_ack(light_ack),.light_data(light_data),.light_valid(light_valid),
++ .de_in(award_raw_de[1]),.clk(pixel_clk),.rst(rst_pixel),.enable(award_active),
++ .pause(award_pause || settings_mode),.frame_tick(blank_start),.x(x1),.y(y1),
++ .tagged_rgb(raw_rgb),.rgb(award_rgb),.menu_rgb(award_menu_rgb),
++ .light_error(award_light_error),.light_frame(award_light_frame));
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)award_pause<=0;
++ else if(!award_active)award_pause<=0;
++ else if(hmi_resume)award_pause<=0;
++ else if(hmi_pause_set)award_pause<=1;
++ else if(hmi_pause || (!settings_mode && carousel_mode && presses[1]))award_pause<=!award_pause;
++wire [23:0] playback_rgb=award_display_select_q ? award_rgb:
++ (menu_bypass_select[4] ? menu_bypass_rgb[4]:music_ui_rgb);
++wire [23:0] boot_rgb;
++// Release audio at the first visible frame after the loading UI exits.
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)startup_released<=0;
++ else if(!boot_active && de && x==0 && y==0)startup_released<=1;
++wire boot_audio_ready=music_buffer_ready || (music_catalog_complete && music_count==0);
++(* async_reg="true" *)reg boot_init_meta,boot_init_sync;
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)begin boot_init_meta<=0;boot_init_sync<=0;end
++ else begin boot_init_meta<=init_done;boot_init_sync<=boot_init_meta;end
++// Animation ROMs are configured with the FPGA, rather than loaded from TF.
++// Wait for the local renderer pipeline to leave reset before declaring ready.
++reg [3:0] boot_animation_warmup;
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)boot_animation_warmup<=0;
++ else if(!(&boot_animation_warmup))boot_animation_warmup<=boot_animation_warmup+1'b1;
++photo_boot_screen #(.VIDEO_DELAY(26),.MIN_FRAMES(90),.STAGED_LOADING(1)) boot_screen(
++ .clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),.x(x),.y(y),
++ .memory_ready(boot_init_sync),.catalog_ready(count!=0 || award_available || relief_available),
++ .animation_ready(&boot_animation_warmup),.audio_ready(boot_audio_ready),
++ .frame_ready(display_valid && started),.active(boot_active),.rgb(boot_rgb));
++wire [23:0] pointer_rgb;
++wire [23:0] thumbnail_rgb;
++photo_thumbnail_overlay #(.Y(528),.DELAY(1),.SEPARATE_DISPLAY(1)) preview(.clk(pixel_clk),.rst(rst_image_pixel),.frame_tick(blank_start),
++ .enable(preview_enable_q),
++ .display_enable(!settings_updating && !transition_active),.read_busy(thumbnail_read_busy),
++ .cache_valid(thumbnail_cache_valid),.cache_slot(thumbnail_cache_slot),.identity({1'b0,thumbnail_id,thumbnail_cache_slot}),
++ .de(raster_de26),.x(raster_x26),.y(raster_y26),.request(thumbnail_request),.slot(thumbnail_slot),.cancel(thumbnail_cancel),
++ .done(thumbnail_done),.data(thumbnail_data),.address(thumbnail_address),.visible(thumbnail_visible),
++ .rgb_in(playback_rgb),.rgb_out(thumbnail_rgb));
++photo_pointer_overlay #(.DELAY(5)) pointer_osd(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),
++ .enable(pointer_enabled),.navigation_enable(pointer_nav_display_q),.de(raster_de21),.x(raster_x21),.y(raster_y21),.cursor_x(cursor_x),.cursor_y(cursor_y),
++ .rgb_in(thumbnail_rgb),.rgb_out(pointer_rgb));
++assign feature_rgb=boot_active ? boot_rgb:pointer_rgb;
++hdmi_phy_wrapper #(.DEVICE("EG")) u_hdmi_phy(.I_pixel_clk(pixel_clk),.I_serial_clk(serial_clk),.I_rst(rst_serial),
++ .I_tmds_channel_0(blue),.I_tmds_channel_1(green),.I_tmds_channel_2(red),.I_tmds_channel_clk(hdmi_clock_data),
++ .O_tmds_ch0_p(HDMI_D0_P),.O_tmds_ch1_p(HDMI_D1_P),.O_tmds_ch2_p(HDMI_D2_P),.O_tmds_clk_p(HDMI_CLK_P));
++wire scan_valid,scan_fault,clock_valid,clock_fault;
++hdmi_scan_monitor #(.HT(1650),.VT(750),.HA(1280),.VA(720),.HS(40),.VS(5)) u_scan(
++ .clk(pixel_clk),.rst(rst_pixel),.x(x),.y(y),.de(de),.hs(hs),.vs(vs),.frame_start(fs),.valid(scan_valid),.fault(scan_fault));
++hdmi_pixel_clock_monitor #(.EXPECTED_PIXELS(7500000),.TOLERANCE_PIXELS(75000)) u_clock_check(
++ .ref_clk(clk),.pixel_clk(pixel_clk),.arst(!video_lock),.valid(clock_valid),.fault(clock_fault));
++// Preserve the first image fault until startup succeeds. Audio readiness
++// must not hide why the loading screen is still waiting for its first frame.
++reg [3:0] startup_first_error;
++always @(posedge pixel_clk or posedge rst_pixel)
++ if(rst_pixel)startup_first_error<=0;
++ else if(!startup_released && startup_first_error==0 && error!=0)startup_first_error<=error;
++wire [15:0] startup_failure_digits={4'd8,4'd0,control_state,startup_first_error};
++reg hpd_meta,hpd_sync;reg [17:0] status_meta,status_sync;
++reg [19:0] audio_diag_meta,audio_diag_sync;
++reg [15:0] award_diag_meta,award_diag_sync;
++reg menu_meta,menu_sync;reg [15:0] menu_digits_meta,menu_digits_sync;
++// photo_status shifts nibble 0 out first, so encode the displayed order in reverse.
++wire [15:0] menu_digits={4'd0,{3'b000,auto_enable},effect_select[3:0],setting_item};
++always @(posedge clk or posedge rst_ref)
++ if(rst_ref)begin hpd_meta<=0;hpd_sync<=0;status_meta<=0;status_sync<=0;
++  award_diag_meta<=0;award_diag_sync<=0;audio_diag_meta<=0;audio_diag_sync<=0;menu_meta<=0;menu_sync<=0;menu_digits_meta<=0;menu_digits_sync<=0;end
++ else begin hpd_meta<=hdmi_hpd;hpd_sync<=hpd_meta;
++  audio_diag_meta<={audio_diag_stage,{1'b0,music_count},(music_count!=0 ? {1'b0,music_index}+4'd1:4'd0),audio_buffer_level,
++   {1'b0,audio_nonzero_seen,hdmi_video_locked,hpd_audio_sync}};
++  audio_diag_sync<=audio_diag_meta;
++  // Award playback: 4 6 E FF C (E=light error, FF=field 00..77).
++  // Preserve earlier transfer/startup faults ahead of this live diagnostic.
++  award_diag_meta<=first_transfer_origin!=0 ? {4'd4,first_transfer_origin,first_transfer_error,(first_transfer_origin==2 ? first_link_fault:4'd0)}:(!startup_released && startup_first_error!=0) ? startup_failure_digits:award_active ? {4'd6,award_light_error,1'b0,award_light_frame}:{1'b0,(award_loading ? 3'd1:award_notice),3'd0,award_available,3'd0,award_scan_complete,((award_notice==3 || award_notice==4) ? last_transfer_error:error)};award_diag_sync<=award_diag_meta;
++  menu_meta<=settings_mode;menu_sync<=menu_meta;
++  menu_digits_meta<=menu_digits;menu_digits_sync<=menu_digits_meta;
++  status_meta<={count,(display_valid ? current+3'd1:3'd0),control_state,error,
++   (error!=0 || underflow || scan_fault || clock_fault ? 4'd9:busy ? 4'd3:display_valid ? 4'd5:4'd2)};
++  status_sync<=status_meta;end
++photo_status #(.CLK_HZ(50000000)) status(.clk(clk),.rst(rst_ref),.status(menu_sync ? (hpd_sync ? status_sync[3:0]:4'd0):audio_diag_sync[3:0]),
++ .error(status_sync[7:4]),.state(status_sync[11:8]),.image(status_sync[14:12]),.count(status_sync[17:15]),
++ .diagnostic_page(menu_sync ? 3'd1:award_diag_sync[15:12]!=0 ? 3'd4:3'd5),.diagnostic_crc(menu_sync ? menu_digits_sync:award_diag_sync[15:12]!=0 ? award_diag_sync:audio_diag_sync[19:4]),.seg_sel(base_seg_sel),.seg_data(base_seg_data));
++wire show_timing=timing_valid && !settings_mode && !award_active && !award_loading &&
++ first_transfer_origin==0 && startup_first_error==0 && error==0;
++assign seg_sel=show_timing ? timing_seg_sel:base_seg_sel;
++assign seg_data=show_timing ? timing_seg_data:base_seg_data;
++
++endmodule
+diff --git a/5.0project/tests/tb_thumbnail_arrow_removed.v b/5.0project/tests/tb_thumbnail_arrow_removed.v
+new file mode 100644
+index 0000000..8fe7873
+--- /dev/null
++++ b/5.0project/tests/tb_thumbnail_arrow_removed.v
+@@ -0,0 +1,18 @@
++`timescale 1ns/1ps
++module tb;
++reg clk=0,rst=1,ft=0;always #5 clk=~clk;
++reg [11:0] x=1220;reg [10:0] y=360;wire [23:0] rgb;
++photo_pointer_overlay #(.DELAY(5),.NAVIGATION_BUTTON(0)) dut(.clk(clk),.rst(rst),.frame_tick(ft),.enable(1'b1),
++ .de(1'b1),.navigation_enable(1'b1),.x(x),.y(y),.cursor_x(11'd100),.cursor_y(10'd100),.rgb_in(24'h345678),.rgb_out(rgb));
++integer xx,yy;
++initial begin
++ repeat(5)@(negedge clk);rst=0;ft=1;@(negedge clk);ft=0;
++ for(yy=328;yy<392;yy=yy+8)for(xx=1192;xx<1256;xx=xx+8)begin
++  x=xx;y=yy;repeat(7)@(negedge clk);
++  if(rgb!==24'h345678)$fatal(1,"legacy next arrow still drawn");
++ end
++ x=1200;y=44;repeat(7)@(negedge clk);
++ if(rgb===24'h345678)$fatal(1,"menu launcher was removed with arrow");
++ $display("PASS navigation arrow removed across its old bounds; menu launcher and cursor pipeline retained");$finish;
++end
++endmodule
+diff --git a/5.0project/tests/tb_thumbnail_button_phase.v b/5.0project/tests/tb_thumbnail_button_phase.v
+new file mode 100644
+index 0000000..74524b9
+--- /dev/null
++++ b/5.0project/tests/tb_thumbnail_button_phase.v
+@@ -0,0 +1,37 @@
++`timescale 1ns/1ps
++module tb_thumbnail_phase;
++reg clk=0,rst=1,ft=0;
++always #5 clk=~clk;
++wire [11:0] x;wire [10:0] y;wire raster_valid;
++photo_raster_delay #(.DELAY(26),.START_Y(313)) raster(.clk(clk),.rst(rst),.x(x),.y(y),.valid(raster_valid));
++wire req,visible,cancel;wire [1:0] slot;wire [12:0] address;wire [23:0] rgb;
++reg done=0;reg [15:0] data=0;integer checked=0;
++function [15:0] pattern;
++ input integer px,py;
++ begin pattern={px[4:0],py[5:0],(px[4:0]^py[4:0])};end
++endfunction
++function [23:0] expand;
++ input [15:0] p;
++ begin expand={p[15:11],p[15:13],p[10:5],p[10:9],p[4:0],p[4:2]};end
++endfunction
++photo_thumbnail_overlay #(.X(1096),.Y(315)) dut(.clk(clk),.rst(rst),.frame_tick(ft),.enable(1'b1),.cache_valid(1'b1),.cache_slot(2'd1),.identity(6'd5),
++ .de(raster_valid && x<1280 && y<720),.x(x),.y(y),.request(req),.slot(slot),.cancel(cancel),
++ .done(done),.data(data),.address(address),.visible(visible),.rgb_in(24'h102030),.rgb_out(rgb));
++always @(posedge clk)begin
++ data<=pattern(address%112,address/112);
++ #1;
++ if(!rst && raster_valid && y>=315 && y<405 && x>=1096 && x<1256)begin
++  if(!visible || rgb!==expand(pattern((x-1096)*7/10,(y-315)*7/10)))$fatal(1,"phase x=%d y=%d rgb=%h expected=%h address=%d",x,y,rgb,expand(pattern((x-1096)*7/10,(y-315)*7/10)),address);
++  checked=checked+1;
++ end
++end
++initial begin
++ repeat(6)@(negedge clk);rst=0;
++ wait(req!=done);repeat(12)@(negedge clk);done=req;
++ repeat(10)@(negedge clk);ft=1;@(negedge clk);ft=0;
++ wait(y==406);@(negedge clk);
++ if(checked!=14400)$fatal(1,"phase test incomplete pixels=%d",checked);
++ $display("PASS raster26: all 14400 scaled pixels, exact 112x63 to 160x90 mapping, zero added RGB latency");$finish;
++end
++initial begin #2000000;$fatal(1,"phase timeout");end
++endmodule
+diff --git a/5.0project/tests/tb_thumbnail_button_touch.v b/5.0project/tests/tb_thumbnail_button_touch.v
+new file mode 100644
+index 0000000..883d8ce
+--- /dev/null
++++ b/5.0project/tests/tb_thumbnail_button_touch.v
+@@ -0,0 +1,84 @@
++`timescale 1ns/1ps
++module tb_thumbnail_touch;
++reg clk=0;always #5 clk=~clk;
++reg rst=1,rx=1,boot=1,result=0,carousel=1;integer next_count=0;
++always @(posedge clk)if(dut.photo_next_event)next_count=next_count+1;
++top_photo_a dut(.clk(clk),.key(4'hf),.hmi_uart_rx(rx));
++defparam dut.screen_rx.CLK_FREQ_HZ=1152000;
++defparam dut.pointer.CLK_HZ=1152000;
++initial begin
++ force dut.pixel_clk=clk;force dut.rst_pixel=rst;
++ force dut.blank_start=1'b1;force dut.presses=4'd0;
++ force dut.boot_active=boot;force dut.result_busy=result;force dut.carousel_mode=carousel;
++end
++task tx;input [7:0] b;integer i;
++begin @(negedge clk);rx=0;repeat(10)@(negedge clk);
++ for(i=0;i<8;i=i+1)begin rx=b[i];repeat(10)@(negedge clk);end
++ rx=1;repeat(10)@(negedge clk);end endtask
++task touch;input [15:0] x,y;input down;
++reg [7:0] sum;
++begin sum=8'ha6+x[7:0]+x[15:8]+y[7:0]+y[15:8]+down;
++ tx('ha6);tx(x[7:0]);tx(x[15:8]);tx(y[7:0]);tx(y[15:8]);tx(down);
++ tx(sum);tx(255);tx(255);tx(255);repeat(20)@(negedge clk);end endtask
++task tap;begin touch(100,100,1);repeat(34560)@(negedge clk);touch(100,100,0);end endtask
++task cmd;input [7:0] v;
++begin tx('h55);tx('h31);tx(v);tx(0);tx(255);tx(255);tx(255);repeat(20)@(negedge clk);end endtask
++initial begin
++ repeat(5)@(negedge clk);rst=0;repeat(10)@(negedge clk);
++ if(dut.pointer_enabled!==0)$fatal(1,"boot must block pointer");
++ boot=0;repeat(10)@(negedge clk);if(!dut.pointer_enabled)$fatal(1,"MOUSE default enabled");
++ touch(100,200,1);touch(380,40,1);touch(380,40,0);
++ if(dut.cursor_x!=1200 || dut.cursor_y!=40 || dut.settings_mode)$fatal(1,"drag to launcher");
++ tap();if(!dut.settings_mode)$fatal(1,"UART tap must open actual top menu");
++ touch(400,100,1);touch(100,160,1);touch(100,160,0);
++ if(dut.cursor_x!=600 || dut.cursor_y!=160)$fatal(1,"drag to volume");
++ tap();if(dut.volume!=6 || dut.setting_item!=0)$fatal(1,"UART tap must increase actual volume");
++ // Move to left half of the same row.
++ touch(200,100,1);touch(50,100,1);touch(50,100,0);
++ tap();if(dut.volume!=5)$fatal(1,"left half must decrease");
++ // Adjust the added interval row through the real MOUSE UART path.
++ touch(100,100,1);touch(250,308,1);touch(250,308,0);
++ if(dut.cursor_x!=600 || dut.cursor_y!=576)$fatal(1,"drag to interval row");
++ tap();if(dut.auto_interval_seconds!=6 || dut.setting_item!=13)$fatal(1,"touch interval increase");
++ touch(200,100,1);touch(50,100,1);touch(50,100,0);
++ tap();if(dut.auto_interval_seconds!=5)$fatal(1,"touch interval decrease");
++ touch(100,308,1);touch(100,100,1);touch(100,100,0);
++ cmd(0);if(dut.pointer_enabled)$fatal(1,"disable command");
++ tap();if(dut.volume!=5)$fatal(1,"disabled touch must not edit");
++ cmd(1);result=1;repeat(5)@(negedge clk);tap();if(dut.volume!=5 || dut.pointer_enabled)$fatal(1,"result context must block");
++ result=0;carousel=0;repeat(5)@(negedge clk);if(dut.pointer_enabled)$fatal(1,"event context must block");
++ // Exercise the registered edge-control path with unrelated scene blocks omitted.
++ force dut.edge_enable=1'b1;force dut.display_valid=1'b1;
++ force dut.award_active=1'b0;force dut.award_loading=1'b0;force dut.settings_mode=1'b0;
++ carousel=1;force dut.count=3'd2;repeat(3)@(negedge clk);
++ // Existing cursor is (300,160): drag to next arrow, then short UART tap.
++ touch(100,100,1);touch(560,200,1);touch(560,200,0);
++ if(dut.cursor_x!=1220 || dut.cursor_y!=360)$fatal(1,"drag to next arrow");
++ force dut.thumbnail_visible=1'b0;tap();repeat(3)@(negedge clk);
++ if(next_count!=0)$fatal(1,"removed arrow retained a hidden hot spot");
++ force dut.thumbnail_visible=1'b1;tap();repeat(3)@(negedge clk);
++ if(next_count!=1)$fatal(1,"visible preview must replace next arrow");
++ // The live preview uses exactly the existing queued next-photo event.
++ force dut.thumbnail_visible=1'b1;
++ touch(100,100,1);touch(70,100,1);touch(70,100,0);
++ if(dut.cursor_x!=1160 || dut.cursor_y!=360)$fatal(1,"drag to thumbnail");
++ tap();repeat(3)@(negedge clk);if(next_count!=2)$fatal(1,"thumbnail tap must pulse once");
++ force dut.thumbnail_visible=1'b0;tap();if(next_count!=2)$fatal(1,"hidden thumbnail accepted a tap");
++ force dut.thumbnail_visible=1'b1;
++ touch(100,100,1);touch(100,205,1);touch(100,205,0);
++ if(dut.cursor_y!=570)$fatal(1,"drag to obsolete preview position");
++ tap();if(next_count!=2)$fatal(1,"old thumbnail position retained a hot spot");
++ touch(100,230,1);touch(130,125,1);touch(130,125,0);
++ force dut.settings_mode=1'b1;tap();if(next_count!=2)$fatal(1,"menu blocks next arrow");
++ force dut.settings_mode=1'b0;force dut.award_active=1'b1;tap();if(next_count!=2)$fatal(1,"award blocks next arrow");
++ force dut.award_active=1'b0;force dut.count=3'd1;tap();if(next_count!=2)$fatal(1,"single photo hides next arrow");
++ force dut.count=3'd2;repeat(3)@(negedge clk);
++ if(dut.music_drive_q!==1)$fatal(1,"edge control must enable after staging");
++ result=1;repeat(3)@(negedge clk);
++ if(dut.music_drive_q!==0)$fatal(1,"result must clear staged edge control");
++ result=0;boot=1;repeat(3)@(negedge clk);
++ if(dut.music_drive_q!==0)$fatal(1,"boot must block staged edge control");
++ $display("PASS moved preview replaces arrow; hidden/old-position taps rejected; actual top wiring: UART -> gesture -> launcher -> menu volume, drag rejection, default enable, mode and boot/result/event gates (other hardware blocks omitted)");$finish;
++end
++initial begin #100000000;$fatal(1,"top test timeout");end
++endmodule
+diff --git a/5.0project/tests/tb_thumbnail_source_lock.v b/5.0project/tests/tb_thumbnail_source_lock.v
+new file mode 100644
+index 0000000..61bd8ea
+--- /dev/null
++++ b/5.0project/tests/tb_thumbnail_source_lock.v
+@@ -0,0 +1,24 @@
++`timescale 1ns/1ps
++module tb;
++reg clk=0,rst=1,lock_source=1;always #5 clk=~clk;
++photo_cached_control_a #(.FLUID(1),.CHECK_FRAME_CRC(1),.EARLY_THUMBNAIL(1)) dut(
++ .clk(clk),.rst(rst),.uart_rx(1'b1),.settings_mode(1'b0),.settings_state(19'd0),.award_toggle(1'b0),.previous(1'b0),.next(1'b0),
++ .active_slot(2'd0),.new_slot(2'd1),.transition_active(1'b0),.commit_toggle(1'b0),
++ .rx_armed(1'b0),.rx_done(1'b0),.rx_fault(1'b0),.rx_crc(32'd0),.thumbnail_read_busy(lock_source),.thumbnail_read_slot(2'd1));
++initial begin
++ repeat(5)@(negedge clk);rst=0;
++ @(negedge clk);dut.state_flags=0;dut.have_current=1;dut.current_image=0;dut.image_count=6;
++ dut.cache_valid=3;dut.cache_id[0]=0;dut.cache_id[1]=1;dut.nav_pending=1;dut.nav_target=4;
++ repeat(20)@(negedge clk);
++ if(dut.victim_ok || dut.plan_ok)$fatal(1,"in-flight preview source selected as victim");
++ lock_source=0;repeat(10)@(negedge clk);
++ if(!dut.victim_ok || dut.victim!=1 || !dut.plan_ok || dut.plan_victim!=1)$fatal(1,"released source cannot be reused");
++ // Reassert the lock against an already registered receive plan. Its
++ // preview-context lease must prevent the old plan from overwriting slot 1.
++ lock_source=1;dut.state_flags=4;
++ repeat(10)@(negedge clk);
++ if(!dut.cache_valid[1] || dut.victim_ok || dut.plan_ok)$fatal(1,"stale plan overwrote the newly pinned source");
++ $display("PASS native two-slot preview source lock, release/reuse and stale receive-plan rejection");$finish;
++end
++initial begin #100000;$fatal(1,"source lock timeout");end
++endmodule
+diff --git a/5.0project/tools/test_thumbnail_button.py b/5.0project/tools/test_thumbnail_button.py
+new file mode 100644
+index 0000000..9163b7d
+--- /dev/null
++++ b/5.0project/tools/test_thumbnail_button.py
+@@ -0,0 +1,91 @@
++"""Verify batched sampling, relocated click navigation and video coexistence."""
++from pathlib import Path
++import argparse,concurrent.futures,hashlib,json,re,subprocess,time
++ROOT=Path(__file__).resolve().parents[1]
++def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
++def main():
++ ap=argparse.ArgumentParser();ap.add_argument('--out',type=Path,required=True);ap.add_argument('--iverilog',type=Path,required=True)
++ ap.add_argument('--mode',choices=['unit','blanking','bandwidth','live_bandwidth','source_lock'],default='unit');ap.add_argument('--reuse',action='store_true');a=ap.parse_args();out=a.out.resolve();out.mkdir(parents=True,exist_ok=True)
++ prior={c['test']:c for c in json.loads((out/'results.json').read_text())['cases']} if a.reuse and (out/'results.json').exists() else {}
++ common=ROOT/'common';cases=[]
++ reference=ROOT/'tests/reference/thumbnail_button_before/photo_thumbnail.v'
++ s=reference.read_text()
++ for name in ('photo_thumbnail_memory','photo_thumbnail_cache','photo_thumbnail_overlay'):s=s.replace(name,name+'_before')
++ before=out/'thumbnail_before.v';before.write_text(s)
++ if a.mode=='source_lock':
++  cases=[('source_lock',[ROOT/'tests/tb_thumbnail_source_lock.v',common/'photo_cached_control_a.v',common/'photo_uart.v'],[],'tb')]
++ elif a.mode=='unit':
++  fixture=(ROOT/'tests/tb_thumbnail_memory.v').read_text().replace('28224','40320')
++  (out/'memory.v').write_text(fixture)
++  cases=[('memory',[out/'memory.v',common/'photo_thumbnail.v'],['-DTHUMBNAIL_SIM'],'tb_thumbnail_memory'),
++   ('overlay',[ROOT/'tests/tb_thumbnail_overlay.v',common/'photo_thumbnail.v'],['-DTHUMBNAIL_SIM'],'tb_thumbnail_overlay'),
++   ('cancel',[ROOT/'tests/tb_thumbnail_early_cancel.v',common/'photo_thumbnail.v'],['-DTHUMBNAIL_SIM'],'tb_thumbnail_early_cancel'),
++   ('pointer',[ROOT/'tests/tb_pointer_overlay.v',common/'photo_touchpad.v'],[],'tb_pointer_overlay'),
++   ('arrow_removed',[ROOT/'tests/tb_thumbnail_arrow_removed.v',common/'photo_touchpad.v'],[],'tb'),
++   ('new_phase',[ROOT/'tests/tb_thumbnail_button_phase.v',common/'photo_thumbnail.v',common/'photo_raster_delay.v'],['-DTHUMBNAIL_SIM'],'tb_thumbnail_phase')]
++  # Only the UI/UART/pointer/settings modules are real in this wiring test;
++  # physical PLLs, SDRAM and unrelated renderers use generated port shells.
++  text=(common/'top_photo_a.v').read_text();real={'saixian_hmi_uart','photo_touchpad','photo_pointer_overlay','photo_unified_settings_controller'};shells={}
++  for m in re.finditer(r'^\s*([a-z]\w*_\w+)\s*(?:#\((.*?)\))?\s+(\w+)\s*\((.*?)\);',text,re.M|re.S):
++   module,parameters,instance,ports=m.groups()
++   if module in real or module=='module':continue
++   names=list(dict.fromkeys(re.findall(r'\.(\w+)\s*\(',ports)));params=list(dict.fromkeys(re.findall(r'\.(\w+)\s*\(',parameters or '')))
++   if module in shells:
++    names=list(dict.fromkeys(re.findall(r'input (\w+)',shells[module])+names));params=list(dict.fromkeys(re.findall(r'parameter (\w+)',shells[module])+params))
++   if names:shells[module]='module '+module+(' #('+','.join('parameter '+p+'=0' for p in params)+')' if params else '')+'('+','.join('input '+p for p in names)+'); endmodule'
++  shell=out/'hardware_shells.v';shell.write_text('\n'.join(shells.values()))
++  cases.append(('touch',[ROOT/'tests/tb_thumbnail_button_touch.v',common/'top_photo_a.v',common/'saixian_hmi_uart.v',common/'photo_touchpad.v',common/'photo_unified_settings_controller.v',shell],[],'tb_thumbnail_touch'))
++ elif a.mode=='blanking':
++  for old in (True,False):
++   fixture=(ROOT/'tests/tb_thumbnail_blanking.v').read_text()
++   if old:
++    for name in ('photo_thumbnail_memory','photo_thumbnail_overlay'):fixture=fixture.replace(name,name+'_before')
++   fixture=fixture.replace('if(reads!=28224 || frames>10 || frames<7)', 'if(reads!='+('28224' if old else '40320')+' || frames>10 || frames<2)')
++   fixture=fixture.replace('wire blank=valid && y>=720;',"wire blank=valid && y>=720 && !(y==749 && x>=1394);")
++   # Count the display only after the complete-cache handshake as before;
++   # owned bursts drain within the early blanking guard, before active video.
++   fixture=fixture.replace('if(!blank && !(y==0 && x<64))', 'if(valid && y<720)')
++   fixture=fixture.replace('28224 source words',('28224' if old else '40320')+' source words')
++   p=out/('blank_before.v' if old else 'blank_after.v');p.write_text(fixture)
++   cases.append(('blanking_before' if old else 'blanking_after',[p,before if old else common/'photo_thumbnail.v',common/'photo_raster_delay.v'],['-DTHUMBNAIL_SIM'],'tb_thumbnail_blanking'))
++ else:
++  fixture=(ROOT/'tests/tb_thumbnail_bandwidth.v').read_text().replace('28224','40320')
++  fixture=fixture.replace('photo_thumbnail_overlay #(.Y(528),','photo_thumbnail_overlay #(.X(1096),.Y(315),')
++  fixture=fixture.replace('x>=1088 && x<1248 && y>=528 && y<618','x>=1096 && x<1256 && y>=315 && y<405')
++  fixture=fixture.replace('(raster_valid && y>=720)', '(raster_valid && y>=720 && !(y==749 && x>=1394))')
++  p=out/'bandwidth.v';p.write_text(fixture)
++  names=['common/photo_thumbnail.v','common/photo_award_memory.v','common/photo_raster_delay.v']
++  names += ['src/board_a/user_source/hdl_source/'+f for f in ['frame_store.v','SD/frame_read_write.v','SD/frame_fifo_write.v','IP/afifo_32_16_256.v','IP/afifo_16_32_256.v']]
++  names += ['common/fluid/'+f for f in ['water_drop_small.v','water_reader.v','water_effect_map_base.v','water_priority_map.v','water_surface.v','water_blend.v','water_cache.v','water_reconstruct.v']]
++  vendor=Path('C:/Anlogic/TD_6.2.1_Engineer_6.2.168.116/ip/depot/AXI_Ethernet_Lite_1.0/AXI_Ethernet_Lite/RTL/ram_infer.v')
++  (out/'ip_init_map.vh').write_text('localparam HEX_FILE="";\n')
++  # These effects are disabled in this RGB565 coexistence test. Existing
++  # ROM assets remain available under a nonempty prefix for Icarus strings.
++  import shutil
++  for h in (common/'fluid').glob('*.hex'):shutil.copy2(h,out/h.name)
++  flags=['-DTHUMBNAIL_SIM','-DWATER_SIM','-DTHUMBNAIL_RGB565','-DFX11_ROM_ROOT="./"','-I'+str(out)]
++  if a.mode=='live_bandwidth':flags.append('-DTHUMBNAIL_DYNAMIC')
++  cases=[(a.mode,[p,*[ROOT/f for f in names],ROOT/'tests/ip_vendor_ram_adapter.v',vendor],flags,'tb_thumbnail_bandwidth')]
++ def run(case):
++  name,files,flags,top=case;hashes={str(p):sha(p) for p in files};binary=out/(name+'.vvp');start=time.monotonic()
++  old=prior.get(name,{})
++  if old.get('passed') and old.get('inputs_sha256')==hashes:
++   print('REUSE verified identical inputs: '+name,flush=True)
++   return {**old,'reused_verified_inputs':True}
++  p=subprocess.run([str(a.iverilog),'-g2012',*flags,'-s',top,'-o',str(binary),*map(str,files)],cwd=out,capture_output=True,text=True);log=p.stdout+p.stderr
++  if p.returncode==0:
++   try:
++    p=subprocess.run([str(a.iverilog.with_name('vvp.exe')),str(binary)],cwd=out,capture_output=True,text=True,timeout=1200);log+=p.stdout+p.stderr
++   except subprocess.TimeoutExpired:
++    log+='\nTIMEOUT: no PASS claimed.\n';p=subprocess.CompletedProcess([],124)
++  (out/(name+'.log')).write_text(log)
++  passed=p.returncode==0 and 'PASS ' in log and not re.search(r'(?im)^(ERROR:|FATAL:)',log) and all(sha(Path(k))==v for k,v in hashes.items())
++  record=dict(test=name,passed=passed,seconds=round(time.monotonic()-start,2),inputs_sha256=hashes,log_sha256=sha(out/(name+'.log')))
++  match=re.search(r'cache across (\d+) frame boundaries',log)
++  if match:record['frame_boundaries']=int(match[1])
++  print(name+': '+next((s for s in log.splitlines() if s.startswith('PASS ')),log[-3500:]),flush=True)
++  return record
++ with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:records=list(pool.map(run,cases))
++ (out/'results.json').write_text(json.dumps(dict(base='transfer-speed candidate based on 390690f',cases=records),indent=2)+'\n')
++ if not all(r['passed'] for r in records):raise SystemExit(1)
++if __name__=='__main__':main()
+diff --git a/5.0project/common/photo_link.v b/5.0project/common/photo_link.v
+--- a/5.0project/common/photo_link.v
++++ b/5.0project/common/photo_link.v
+@@ -89,12 +89,15 @@
+ reg [2:0] state;reg [20:0] count;reg [15:0] first;reg [31:0] crc;
+ reg ack_meta,ack_sync,fin_meta,fin_sync,fin_seen;reg [2:0] settle;
+ reg ready_reg;
++// Accept the next high half while the preceding complete word drains.
++// The odd half still waits until no unconsumed complete word is pending.
++wire can_receive=state==RECEIVE && !full && (!write_en || !count[0]);
+ // Return a registered ready on the falling edge, so it has half a clock
+ // to reach B before its rising-edge decision. A uses that same advertised
+ // permission at the following rising edge; a pending word can be held full.
+ always @(negedge clk or posedge rst)
+- if(rst)ready_reg<=0;else ready_reg<=state==RECEIVE && !full && !write_en;
+-assign ready=LEGACY_TIMING ? (state==RECEIVE && !full && !write_en):ready_reg;
++ if(rst)ready_reg<=0;else ready_reg<=can_receive;
++assign ready=LEGACY_TIMING ? (can_receive):ready_reg;
+ assign armed=state==RECEIVE;assign busy=state!=IDLE;assign frame_crc=ENABLE_CRC ? ~crc:32'd0;
+ always @(posedge clk or posedge rst)begin
+  if(rst)begin frame_relief<=0;frame_extended<=0;state<=IDLE;count<=0;first<=0;crc<=32'hffffffff;write_req<=0;write_en<=0;write_data<=0;done<=0;fault<=0;fault_detail<=0;ack_meta<=0;ack_sync<=0;fin_meta<=0;fin_sync<=0;fin_seen<=0;settle<=0;end
+diff --git a/5.0project/common/photo_sd_cache.v b/5.0project/common/photo_sd_cache.v
+--- a/5.0project/common/photo_sd_cache.v
++++ b/5.0project/common/photo_sd_cache.v
+@@ -141,7 +141,9 @@
+  .sd_init_done(initialized),.init_stage(),.sd_sec_read(read_owner!=0),.sd_sec_read_addr(read_address),
+  .sd_sec_read_data(byte_data),.sd_sec_read_data_valid(byte_valid),.sd_sec_read_end(sector_end),
+  .sd_sec_write(1'b0),.sd_sec_write_addr(32'd0),.sd_sec_write_data(8'd0),.sd_sec_write_data_req(),.sd_sec_write_end());
+-photo_dlt_reader dlt(.clk(clk),.rst(rst || abort_op),.start(load_launch && directory_dlt[load_image]),
++// The FIFO's full input provides backpressure. Four clocks retain pipeline
++// headroom without the old sixteen-clock delay between decoded halfwords.
++photo_dlt_reader #(.PIXEL_GAP(4)) dlt(.clk(clk),.rst(rst || abort_op),.start(load_launch && directory_dlt[load_image]),
+  .start_sector(load_sector),.ready(dlt_ready),.done(dlt_done),.error(dlt_error),
+  .write_req(dlt_write_req),.write_ack(write_ack),.full(full),.pixel_valid(dlt_pixel_valid),.pixel(dlt_pixel),
+  .req(dlt_req),.sector(dlt_sector),.byte_valid(byte_valid && read_owner==3),.byte_data(byte_data),.block_end(sector_end && read_owner==3));
+diff --git a/5.0project/common/photo_thumbnail.v b/5.0project/common/photo_thumbnail.v
+--- a/5.0project/common/photo_thumbnail.v
++++ b/5.0project/common/photo_thumbnail.v
+@@ -1,12 +1,14 @@
+-// A static 112x63 RGB565 preview is generated from the accepted next-photo
+-// cache during vertical blanking. Sample the centers of the uniform 80/7-pixel cells.
+-module photo_thumbnail_memory(
++// Sample 112x63 cell centres from a completed RGB565 photo. One aligned
++// 64-word turn supplies every centre that lies in that block, amortizing
++// SDRAM response/recovery overhead without allocating another pixel buffer.
++module photo_thumbnail_memory #(parameter BURST_WORDS=64)(
+  input clk,rst,init_done,refresh,busy,frame_busy,allow_access,other_request,
+  output request,claim,read_command,output [20:0] address,
+  input response_valid,input [31:0] response,
+  input video_clk,video_request,video_cancel,video_blank,input [1:0] video_slot,
+  output reg video_done,input [12:0] video_address,output [15:0] video_data
+ );
++localparam BW=$clog2(BURST_WORDS);
+ function [20:0] base;
+  input [1:0] slot;
+  begin case(slot)0:base=0;1:base=21'd1048576;default:base=21'd0;endcase end
+@@ -16,65 +18,74 @@
+ (* async_reg="true" *)reg [2:0] job_sync;
+ (* async_reg="true" *)reg [1:0] slot_meta,slot_sync;
+ (* async_reg="true" *)reg cancel_meta,cancel_sync,blank_meta,blank_sync;
+-reg job_seen,active;
++reg job_seen,active,samples_done,block_done;
+ reg [6:0] column;reg [5:0] row;
+ reg [2:0] column_phase,row_phase;reg [12:0] cache_index;
+ reg [20:0] pixel_address;
+-reg [2:0] issued;reg [1:0] received;reg [3:0] recovery;
+-// Source x,y=floor((80*n+40)/7). Accumulate word steps and the
+-// half-word selector, avoiding pixel-clock division and DSP resources.
+-// Last sampled word offset is 637; each next row starts at word offset 2.
++reg [20-BW:0] block_address;
++reg [BW:0] issued;reg [BW-1:0] received;reg [3:0] recovery;
+ wire [20:0] pixel_step=column==111 ?
+  (row_phase>=4 ? 21'd7045:21'd6405):(column_phase>=2 ? 21'd6:21'd5);
+ assign request=active && blank_sync && !cancel_sync && allow_access && !other_request;
+ assign claim=state!=IDLE;
+-assign read_command=state==READ && issued<4 && !refresh;
+-// Every owned turn is an aligned four-word burst. Upper bits never carry.
+-assign address={pixel_address[20:2],issued[1:0]};
+-wire write_sample=state==READ && response_valid && received==pixel_address[1:0];
+-// The remainder selects the correct RGB565 pixel within the source word.
++assign read_command=state==READ && issued<BURST_WORDS && !refresh;
++assign address={block_address,issued[BW-1:0]};
++// Samples advance monotonically inside a block. Latch its end once rather
++// than compare the whole SDRAM address on every returned word.
++wire [BW+2:0] next_sample_offset={3'b000,pixel_address[BW-1:0]}+
++ (column_phase>=2 ? 7'd6:7'd5);
++wire leave_block=column==111 || next_sample_offset>=BURST_WORDS;
++wire write_sample=state==READ && response_valid && !samples_done && !block_done &&
++ received==pixel_address[BW-1:0];
+ wire [15:0] sample=column_phase>=4 ? response[15:0]:response[31:16];
+ photo_thumbnail_cache cache(.write_clk(clk),.write_enable(write_sample),.write_address(cache_index),.write_data(sample),
+  .read_clk(video_clk),.read_address(video_address),.read_data(video_data));
+ always @(posedge clk or posedge rst)
+  if(rst)begin
+   state<=IDLE;job_sync<=0;slot_meta<=0;slot_sync<=0;cancel_meta<=0;cancel_sync<=0;blank_meta<=0;blank_sync<=0;
+-  job_seen<=0;active<=0;column<=0;row<=0;pixel_address<=0;
++  job_seen<=0;active<=0;samples_done<=0;block_done<=0;column<=0;row<=0;pixel_address<=0;block_address<=0;
+   issued<=0;received<=0;recovery<=0;video_done<=0;column_phase<=6;row_phase<=5;cache_index<=0;
+  end else begin
+   job_sync<={job_sync[1:0],video_request};slot_meta<=video_slot;slot_sync<=slot_meta;
+   cancel_meta<=video_cancel;cancel_sync<=cancel_meta;blank_meta<=video_blank;blank_sync<=blank_meta;
++  // Advance only when this response contains the next exact sample. Other
++  // words in the same burst are discarded; no image quality is reduced.
++  if(write_sample)begin
++   if(leave_block)block_done<=1;
++   if(row==62 && column==111)samples_done<=1;
++   else begin
++    pixel_address<=pixel_address+pixel_step;cache_index<=cache_index+1'b1;
++    if(column==111)begin
++     column<=0;row<=row+1'b1;column_phase<=6;
++     row_phase<=row_phase>=4 ? row_phase-3'd4:row_phase+3'd3;
++    end else begin
++     column<=column+1'b1;
++     column_phase<=column_phase>=2 ? column_phase-3'd2:column_phase+3'd5;
++    end
++   end
++  end
+   case(state)
+    IDLE:if(job_sync[2]!=job_seen)begin
+-    job_seen<=job_sync[2];active<=!cancel_sync;
++    job_seen<=job_sync[2];active<=!cancel_sync;samples_done<=0;
+     column<=0;row<=0;pixel_address<=base(slot_sync)+21'd3202;
+     column_phase<=6;row_phase<=5;cache_index<=0;
+     if(cancel_sync)video_done<=job_sync[2];
+    end else if(active && cancel_sync)begin active<=0;video_done<=job_seen;end
+    else if(request && init_done && !refresh && !busy && !frame_busy)begin
+-    state<=READ;issued<=0;received<=0;
++    state<=READ;issued<=0;received<=0;block_done<=0;block_address<=pixel_address[20:BW];
+    end
+    READ:begin
+     if(read_command)issued<=issued+1'b1;
+     if(response_valid)begin
+      received<=received+1'b1;
+-     if(received==3)begin state<=RECOVER;recovery<=0;end
++     if(received==BURST_WORDS-1)begin state<=RECOVER;recovery<=0;end
+     end
+    end
+    RECOVER:if(recovery==10)begin
+     state<=IDLE;
+-    if(row==62 && column==111)begin active<=0;video_done<=job_seen;end
+-    else begin
+-     pixel_address<=pixel_address+pixel_step;
+-     cache_index<=cache_index+1'b1;
+-     if(column==111)begin
+-      column<=0;row<=row+1'b1;column_phase<=6;
+-      row_phase<=row_phase>=4 ? row_phase-3'd4:row_phase+3'd3;
+-     end else begin
+-      column<=column+1'b1;
+-      column_phase<=column_phase>=2 ? column_phase-3'd2:column_phase+3'd5;
+-     end
+-    end
++    // A cancellation is acknowledged only after every issued response and
++    // recovery clock drained. The source slot stays pinned until then.
++    if(samples_done || cancel_sync)begin active<=0;video_done<=job_seen;end
+    end else recovery<=recovery+1'b1;
+    default:state<=IDLE;
+   endcase
+@@ -183,6 +194,8 @@
+ endcase
+ wire ink=heading && x>=X+4 && x<X+28 && y>=Y-10 && y<Y-3 && letters[23-tx];
+ wire [23:0] rgb={data[15:11],data[15:13],data[10:5],data[10:9],data[4:0],data[4:2]};
+-assign rgb_out=visible && border ? 24'h52c4ff:visible && ink ? 24'hffffff:
+- visible && heading ? 24'h10283c:visible && image_area ? rgb:rgb_in;
++// Select the local colour before the single visibility gate. Explicit areas
++// preserve clipped/edge layouts as well as the production right-side panel.
++wire [23:0] panel_rgb=border ? 24'h52c4ff:heading ? (ink ? 24'hffffff:24'h10283c):rgb;
++assign rgb_out=visible && (border || heading || image_area) ? panel_rgb:rgb_in;
+ endmodule
+diff --git a/5.0project/common/photo_touchpad.v b/5.0project/common/photo_touchpad.v
+--- a/5.0project/common/photo_touchpad.v
++++ b/5.0project/common/photo_touchpad.v
+@@ -1,99 +1,99 @@
+-// Relative TJC touchpad. All state uses the existing 75 MHz pixel clock.
+-// Only an unmoved short press/release generates a click; lost releases expire.
+-module photo_touchpad #(
+- parameter integer CLK_HZ=75000000,
+- parameter integer TAP_MIN_MS=20,TAP_MAX_MS=250,CONTACT_TIMEOUT_MS=180
+-)(
+- input clk,rst,enable,frame_tick,sample_valid,sample_down,
+- input [9:0] sample_x,input [8:0] sample_y,
+- output reg [10:0] cursor_x,output reg [9:0] cursor_y,
+- output reg click,output reg contact
+-);
+-localparam integer MS_CLKS=CLK_HZ/1000;
+-reg [16:0] ms_count;
+-wire ms_tick=ms_count==MS_CLKS-1;
+-reg [7:0] age,quiet;
+-reg moved;
+-reg [9:0] last_x,origin_x;
+-reg [8:0] last_y,origin_y;
+-reg [10:0] pos_x;reg [9:0] pos_y;
+-wire signed [11:0] dx=$signed({2'b00,sample_x})-$signed({2'b00,last_x});
+-wire signed [10:0] dy=$signed({2'b00,sample_y})-$signed({2'b00,last_y});
+-wire signed [12:0] nx=$signed({2'b00,pos_x})+($signed({dx[11],dx})<<<1);
+-wire signed [11:0] ny=$signed({2'b00,pos_y})+($signed({dy[10],dy})<<<1);
+-wire signed [10:0] origin_dx=$signed({1'b0,sample_x})-$signed({1'b0,origin_x});
+-wire signed [9:0] origin_dy=$signed({1'b0,sample_y})-$signed({1'b0,origin_y});
+-wire far_x=origin_dx>11'sd8 || origin_dx< -11'sd8;
+-wire far_y=origin_dy>10'sd8 || origin_dy< -10'sd8;
+-always @(posedge clk or posedge rst)begin
+- if(rst)begin
+-  ms_count<=0;age<=0;quiet<=0;moved<=0;contact<=0;click<=0;
+-  last_x<=0;last_y<=0;origin_x<=0;origin_y<=0;
+-  pos_x<=640;pos_y<=360;cursor_x<=640;cursor_y<=360;
+- end else begin
+-  ms_count<=ms_tick ? 0:ms_count+1'b1;click<=0;
+-  if(frame_tick)begin cursor_x<=pos_x;cursor_y<=pos_y;end
+-  if(!enable)begin contact<=0;age<=0;quiet<=0;moved<=0;end
+-  else begin
+-   if(ms_tick && contact)begin
+-    if(age!=255)age<=age+1'b1;
+-    if(quiet>=CONTACT_TIMEOUT_MS-1)begin contact<=0;moved<=1;end
+-    else quiet<=quiet+1'b1;
+-   end
+-   if(sample_valid)begin
+-    quiet<=0;
+-    if(sample_down)begin
+-     last_x<=sample_x;last_y<=sample_y;
+-     if(!contact)begin
+-      contact<=1;origin_x<=sample_x;origin_y<=sample_y;age<=0;moved<=0;
+-     end else begin
+-      // Gain 2 is a shift, with saturation rather than coordinate wrap.
+-      pos_x<=nx<0 ? 11'd0:nx>1279 ? 11'd1279:nx[10:0];
+-      pos_y<=ny<0 ? 10'd0:ny>719 ? 10'd719:ny[9:0];
+-      if(far_x || far_y)moved<=1;
+-     end
+-    end else begin
+-     contact<=0;
+-     if(contact && !moved && !far_x && !far_y && age>=TAP_MIN_MS && age<TAP_MAX_MS)
+-      click<=1;
+-    end
+-   end
+-  end
+- end
+-end
+-endmodule
+-
+-// Raster cursor and settings launcher, aligned with the existing 26-clock RGB.
+-// No RAM, multiplier, extra video latency, or SDRAM traffic.
+-module photo_pointer_overlay #(parameter DELAY=26)(
+- input clk,rst,frame_tick,enable,de,navigation_enable,input [11:0] x,input [10:0] y,
+- input [10:0] cursor_x,input [9:0] cursor_y,
+- input [23:0] rgb_in,output [23:0] rgb_out
+-);
+-reg visible,navigation_visible;
+-wire next_button=x>=1192 && x<1256 && y>=328 && y<392;
+-wire next_ink=(x>=1208 && x<1224 && y>=356 && y<364) ||
+- (x>=1224 && x<1232 && y>=344 && y<376) ||
+- (x>=1232 && x<1240 && y>=352 && y<368) ||
+- (x>=1240 && x<1244 && y>=356 && y<364);
+-reg [11:0] dx;reg [10:0] dy;reg bounds,button,button_ink;
+-reg [DELAY-2:0] body_pipe,border_pipe,button_pipe,ink_pipe;
+-wire body=bounds && dx<16 && dy<24 && {1'b0,dx[3:0]}<=({1'b0,dy[4:1]}+5'd1);
+-wire border=body && (dx[3:0]<2 || dy[4:0]>21 || {dx[3:0],1'b0}>=dy[4:0]);
+-always @(posedge clk or posedge rst)begin
+- if(rst)begin visible<=0;navigation_visible<=0;dx<=0;dy<=0;bounds<=0;button<=0;button_ink<=0;
+-  body_pipe<=0;border_pipe<=0;button_pipe<=0;ink_pipe<=0;
+- end else begin
+-  if(frame_tick)begin visible<=enable;navigation_visible<=navigation_enable;end
+-  dx<=x-{1'b0,cursor_x};dy<=y-{1'b0,cursor_y};
+-  bounds<=visible && de && x>={1'b0,cursor_x} && y>={1'b0,cursor_y};
+-  button<=visible && de && ((x>=1152 && x<1256 && y>=24 && y<64) || (navigation_visible && next_button));
+-  // Three horizontal menu lines and a simple frame remain readable at 720p.
+-  button_ink<=(x>=1180 && x<1228 && ((y>=34 && y<38)||(y>=44 && y<48)||(y>=54 && y<58))) || (navigation_visible && next_button && next_ink);
+-  body_pipe<={body_pipe[DELAY-3:0],body};border_pipe<={border_pipe[DELAY-3:0],border};
+-  button_pipe<={button_pipe[DELAY-3:0],button};ink_pipe<={ink_pipe[DELAY-3:0],button_ink};
+- end
+-end
+-assign rgb_out=body_pipe[DELAY-2] ? (border_pipe[DELAY-2] ? 24'h101820:24'hffffff):
+- button_pipe[DELAY-2] ? (ink_pipe[DELAY-2] ? 24'hffffff:24'h205f7a):rgb_in;
+-endmodule
++// Relative TJC touchpad. All state uses the existing 75 MHz pixel clock.
++// Only an unmoved short press/release generates a click; lost releases expire.
++module photo_touchpad #(
++ parameter integer CLK_HZ=75000000,
++ parameter integer TAP_MIN_MS=20,TAP_MAX_MS=250,CONTACT_TIMEOUT_MS=180
++)(
++ input clk,rst,enable,frame_tick,sample_valid,sample_down,
++ input [9:0] sample_x,input [8:0] sample_y,
++ output reg [10:0] cursor_x,output reg [9:0] cursor_y,
++ output reg click,output reg contact
++);
++localparam integer MS_CLKS=CLK_HZ/1000;
++reg [16:0] ms_count;
++wire ms_tick=ms_count==MS_CLKS-1;
++reg [7:0] age,quiet;
++reg moved;
++reg [9:0] last_x,origin_x;
++reg [8:0] last_y,origin_y;
++reg [10:0] pos_x;reg [9:0] pos_y;
++wire signed [11:0] dx=$signed({2'b00,sample_x})-$signed({2'b00,last_x});
++wire signed [10:0] dy=$signed({2'b00,sample_y})-$signed({2'b00,last_y});
++wire signed [12:0] nx=$signed({2'b00,pos_x})+($signed({dx[11],dx})<<<1);
++wire signed [11:0] ny=$signed({2'b00,pos_y})+($signed({dy[10],dy})<<<1);
++wire signed [10:0] origin_dx=$signed({1'b0,sample_x})-$signed({1'b0,origin_x});
++wire signed [9:0] origin_dy=$signed({1'b0,sample_y})-$signed({1'b0,origin_y});
++wire far_x=origin_dx>11'sd8 || origin_dx< -11'sd8;
++wire far_y=origin_dy>10'sd8 || origin_dy< -10'sd8;
++always @(posedge clk or posedge rst)begin
++ if(rst)begin
++  ms_count<=0;age<=0;quiet<=0;moved<=0;contact<=0;click<=0;
++  last_x<=0;last_y<=0;origin_x<=0;origin_y<=0;
++  pos_x<=640;pos_y<=360;cursor_x<=640;cursor_y<=360;
++ end else begin
++  ms_count<=ms_tick ? 0:ms_count+1'b1;click<=0;
++  if(frame_tick)begin cursor_x<=pos_x;cursor_y<=pos_y;end
++  if(!enable)begin contact<=0;age<=0;quiet<=0;moved<=0;end
++  else begin
++   if(ms_tick && contact)begin
++    if(age!=255)age<=age+1'b1;
++    if(quiet>=CONTACT_TIMEOUT_MS-1)begin contact<=0;moved<=1;end
++    else quiet<=quiet+1'b1;
++   end
++   if(sample_valid)begin
++    quiet<=0;
++    if(sample_down)begin
++     last_x<=sample_x;last_y<=sample_y;
++     if(!contact)begin
++      contact<=1;origin_x<=sample_x;origin_y<=sample_y;age<=0;moved<=0;
++     end else begin
++      // Gain 2 is a shift, with saturation rather than coordinate wrap.
++      pos_x<=nx<0 ? 11'd0:nx>1279 ? 11'd1279:nx[10:0];
++      pos_y<=ny<0 ? 10'd0:ny>719 ? 10'd719:ny[9:0];
++      if(far_x || far_y)moved<=1;
++     end
++    end else begin
++     contact<=0;
++     if(contact && !moved && !far_x && !far_y && age>=TAP_MIN_MS && age<TAP_MAX_MS)
++      click<=1;
++    end
++   end
++  end
++ end
++end
++endmodule
++
++// Raster cursor and settings launcher, aligned with the existing 26-clock RGB.
++// No RAM, multiplier, extra video latency, or SDRAM traffic.
++module photo_pointer_overlay #(parameter DELAY=26,NAVIGATION_BUTTON=1)(
++ input clk,rst,frame_tick,enable,de,navigation_enable,input [11:0] x,input [10:0] y,
++ input [10:0] cursor_x,input [9:0] cursor_y,
++ input [23:0] rgb_in,output [23:0] rgb_out
++);
++reg visible,navigation_visible;
++wire next_button=x>=1192 && x<1256 && y>=328 && y<392;
++wire next_ink=(x>=1208 && x<1224 && y>=356 && y<364) ||
++ (x>=1224 && x<1232 && y>=344 && y<376) ||
++ (x>=1232 && x<1240 && y>=352 && y<368) ||
++ (x>=1240 && x<1244 && y>=356 && y<364);
++reg [11:0] dx;reg [10:0] dy;reg bounds,button,button_ink;
++reg [DELAY-2:0] body_pipe,border_pipe,button_pipe,ink_pipe;
++wire body=bounds && dx<16 && dy<24 && {1'b0,dx[3:0]}<=({1'b0,dy[4:1]}+5'd1);
++wire border=body && (dx[3:0]<2 || dy[4:0]>21 || {dx[3:0],1'b0}>=dy[4:0]);
++always @(posedge clk or posedge rst)begin
++ if(rst)begin visible<=0;navigation_visible<=0;dx<=0;dy<=0;bounds<=0;button<=0;button_ink<=0;
++  body_pipe<=0;border_pipe<=0;button_pipe<=0;ink_pipe<=0;
++ end else begin
++  if(frame_tick)begin visible<=enable;navigation_visible<=navigation_enable;end
++  dx<=x-{1'b0,cursor_x};dy<=y-{1'b0,cursor_y};
++  bounds<=visible && de && x>={1'b0,cursor_x} && y>={1'b0,cursor_y};
++  button<=visible && de && ((x>=1152 && x<1256 && y>=24 && y<64) || (NAVIGATION_BUTTON && navigation_visible && next_button));
++  // Three horizontal menu lines and a simple frame remain readable at 720p.
++  button_ink<=(x>=1180 && x<1228 && ((y>=34 && y<38)||(y>=44 && y<48)||(y>=54 && y<58))) || (NAVIGATION_BUTTON && navigation_visible && next_button && next_ink);
++  body_pipe<={body_pipe[DELAY-3:0],body};border_pipe<={border_pipe[DELAY-3:0],border};
++  button_pipe<={button_pipe[DELAY-3:0],button};ink_pipe<={ink_pipe[DELAY-3:0],button_ink};
++ end
++end
++assign rgb_out=body_pipe[DELAY-2] ? (border_pipe[DELAY-2] ? 24'h101820:24'hffffff):
++ button_pipe[DELAY-2] ? (ink_pipe[DELAY-2] ? 24'hffffff:24'h205f7a):rgb_in;
++endmodule
+diff --git a/5.0project/common/top_photo_a.v b/5.0project/common/top_photo_a.v
+--- a/5.0project/common/top_photo_a.v
++++ b/5.0project/common/top_photo_a.v
+@@ -117,10 +117,11 @@
+  .sample_valid(touch_valid),.sample_down(touch_down),.sample_x(touch_x),.sample_y(touch_y),
+  .cursor_x(cursor_x),.cursor_y(cursor_y),.click(pointer_click),.contact(pointer_contact));
+ wire pointer_menu_click=pointer_click && pointer_enabled && cursor_x>=1152 && cursor_x<1256 && cursor_y>=24 && cursor_y<64;
++localparam THUMBNAIL_X=1096,THUMBNAIL_Y=315;
+ wire pointer_navigation_enable=pointer_enabled && !settings_mode && !award_active && !award_loading && count>1;
+-wire pointer_next_click=pointer_click && pointer_navigation_enable &&
+- ((cursor_x>=1192 && cursor_x<1256 && cursor_y>=328 && cursor_y<392) ||
+-  (thumbnail_visible && cursor_x>=1086 && cursor_x<1250 && cursor_y>=514 && cursor_y<620));
++wire pointer_next_click=pointer_click && pointer_navigation_enable && thumbnail_visible &&
++ cursor_x>=THUMBNAIL_X-2 && cursor_x<THUMBNAIL_X+162 &&
++ cursor_y>=THUMBNAIL_Y-14 && cursor_y<THUMBNAIL_Y+92;
+ wire pointer_row_click=pointer_click && pointer_enabled && settings_mode && cursor_x>=64 && cursor_x<864 && cursor_y>=144 && cursor_y<592;
+ wire [9:0] pointer_row_y=cursor_y-10'd144;
+ // Isolate context/hit decoding from the settings controller's update priority.
+@@ -265,7 +266,10 @@
+ wire [11:0] raster_x21,raster_x26,raster_x34;
+ wire [10:0] raster_y21,raster_y26,raster_y34;
+ wire raster_valid21,raster_valid26,raster_valid34;
+-assign thumbnail_blank=raster_valid26 && raster_y26>=11'd720;
++// Stop admitting long preview turns 256 pixels before blanking ends.
++// Already-owned turns drain normally; the display FIFO reserve still wins.
++assign thumbnail_blank=raster_valid26 && raster_y26>=11'd720 &&
++ !(raster_y26==11'd749 && raster_x26>=12'd1394);
+ wire [8:0] raster_ui_y;
+ photo_raster_delay #(.DELAY(21),.SCALE_Y(1)) raster21(.clk(pixel_clk),.rst(rst_pixel),.x(raster_x21),.y(raster_y21),.valid(raster_valid21),.y_two_thirds(raster_ui_y));
+ photo_raster_delay #(.DELAY(26)) raster26(.clk(pixel_clk),.rst(rst_pixel),.x(raster_x26),.y(raster_y26),.valid(raster_valid26));
+@@ -459,14 +463,14 @@
+  .frame_ready(display_valid && started),.active(boot_active),.rgb(boot_rgb));
+ wire [23:0] pointer_rgb;
+ wire [23:0] thumbnail_rgb;
+-photo_thumbnail_overlay #(.Y(528),.DELAY(1),.SEPARATE_DISPLAY(1)) preview(.clk(pixel_clk),.rst(rst_image_pixel),.frame_tick(blank_start),
++photo_thumbnail_overlay #(.X(THUMBNAIL_X),.Y(THUMBNAIL_Y),.DELAY(1),.SEPARATE_DISPLAY(1)) preview(.clk(pixel_clk),.rst(rst_image_pixel),.frame_tick(blank_start),
+  .enable(preview_enable_q),
+  .display_enable(!settings_updating && !transition_active),.read_busy(thumbnail_read_busy),
+  .cache_valid(thumbnail_cache_valid),.cache_slot(thumbnail_cache_slot),.identity({1'b0,thumbnail_id,thumbnail_cache_slot}),
+  .de(raster_de26),.x(raster_x26),.y(raster_y26),.request(thumbnail_request),.slot(thumbnail_slot),.cancel(thumbnail_cancel),
+  .done(thumbnail_done),.data(thumbnail_data),.address(thumbnail_address),.visible(thumbnail_visible),
+  .rgb_in(playback_rgb),.rgb_out(thumbnail_rgb));
+-photo_pointer_overlay #(.DELAY(5)) pointer_osd(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),
++photo_pointer_overlay #(.DELAY(5),.NAVIGATION_BUTTON(0)) pointer_osd(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),
+  .enable(pointer_enabled),.navigation_enable(pointer_nav_display_q),.de(raster_de21),.x(raster_x21),.y(raster_y21),.cursor_x(cursor_x),.cursor_y(cursor_y),
+  .rgb_in(thumbnail_rgb),.rgb_out(pointer_rgb));
+ assign feature_rgb=boot_active ? boot_rgb:pointer_rgb;

@@ -141,7 +141,9 @@ sd_card_top #(.SPI_LOW_SPEED_DIV(248),.SPI_HIGH_SPEED_DIV(2),.READ_MULTIBLOCK(1)
  .sd_init_done(initialized),.init_stage(),.sd_sec_read(read_owner!=0),.sd_sec_read_addr(read_address),
  .sd_sec_read_data(byte_data),.sd_sec_read_data_valid(byte_valid),.sd_sec_read_end(sector_end),
  .sd_sec_write(1'b0),.sd_sec_write_addr(32'd0),.sd_sec_write_data(8'd0),.sd_sec_write_data_req(),.sd_sec_write_end());
-photo_dlt_reader dlt(.clk(clk),.rst(rst || abort_op),.start(load_launch && directory_dlt[load_image]),
+// The FIFO's full input provides backpressure. Four clocks retain pipeline
+// headroom without the old sixteen-clock delay between decoded halfwords.
+photo_dlt_reader #(.PIXEL_GAP(4)) dlt(.clk(clk),.rst(rst || abort_op),.start(load_launch && directory_dlt[load_image]),
  .start_sector(load_sector),.ready(dlt_ready),.done(dlt_done),.error(dlt_error),
  .write_req(dlt_write_req),.write_ack(write_ack),.full(full),.pixel_valid(dlt_pixel_valid),.pixel(dlt_pixel),
  .req(dlt_req),.sector(dlt_sector),.byte_valid(byte_valid && read_owner==3),.byte_data(byte_data),.block_end(sector_end && read_owner==3));

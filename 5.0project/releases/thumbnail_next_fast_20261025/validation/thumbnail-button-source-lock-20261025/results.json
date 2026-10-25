@@ -1,0 +1,16 @@
+{
+  "base": "transfer-speed candidate based on 390690f",
+  "cases": [
+    {
+      "test": "source_lock",
+      "passed": true,
+      "seconds": 0.17,
+      "inputs_sha256": {
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\tests\\tb_thumbnail_source_lock.v": "0e19ebcdd27fed3994d95da64271aefbeda55e39ddefe36d40885a8879fcb8d3",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\common\\photo_cached_control_a.v": "61b4163849ac8eea1c643df2cd1537dacf83234961501b71b038eb3c9f29aed3",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\common\\photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df"
+      },
+      "log_sha256": "8298155653fd2d84592c6b161563f69cbc1fc628c669f3ecf23546e76ab555e4"
+    }
+  ]
+}
