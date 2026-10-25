@@ -1,0 +1,25 @@
+{
+  "format": "SXDLT005",
+  "version": 5,
+  "reference_commit": "3ac3c59",
+  "reference_asset_sha256": "6ba3b06f56978615f436e680fd459e7113bceba6317dbe9fe1ab42d936358c27",
+  "bytes": 2375680,
+  "sha256": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5",
+  "resolution": [
+    1280,
+    720
+  ],
+  "light_frames": 120,
+  "light_precision_bits": 8,
+  "cycle_display_frames": 360,
+  "light_rows": 68,
+  "light_raw_words": 326400,
+  "sparse_used_words": 215192,
+  "tail_words": 230400,
+  "tail_offset": 363520,
+  "transport_words": 691200,
+  "lossless": true,
+  "raw_light_sha256": "40ee204d14c4e0884f0bb74c7828d7cc7a0afd765a43fa78e1b4b91a98c61f4d",
+  "tagged_plate_sha256": "ef2f901b482f1a11befe8dd92fb4a0337a7d40d286a0f3c1f94156cb38842422",
+  "bootstrap_decoded_crc32": "DA44354C"
+}

@@ -1,0 +1,3 @@
+PASS early-data model APPLY_ALIGN=          0: 4096 words, 16 bursts, first/last word, FIFO wrap, 100/50/75MHz; baseline error at0=a5000001, aligned clean
+PASS early-data model APPLY_ALIGN=          1: 4096 words, 16 bursts, first/last word, FIFO wrap, 100/50/75MHz; baseline error at0=00000000, aligned clean
+E:\Codex\Downloads\qiansai\5.0project\tests\tb_read_data_align.v:86: $finish called at 505025250 (1ps)

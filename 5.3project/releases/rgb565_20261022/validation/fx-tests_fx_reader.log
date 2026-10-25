@@ -1,0 +1,2 @@
+PASS integrated showcase reader: 110 frames / 563200 exact RGB565 words, all eleven geometries, both directions, old/new endpoints, local alpha and lighting; 830720 SDRAM requests
+E:\Codex\Downloads\qiansai\5.2project\tests\fx11_water\tb_fx_reader.v:36: $finish called at 8908290 (1s)

@@ -1,0 +1,2 @@
+PASS lossless startup palette: 600204 exact RGB/control comparisons, all 11 colours, delays 1/2/5/21/26, both loading modes and reset
+E:\Codex\Downloads\qiansai\cooperate\3.1Project\tests\fx11_water\tb_boot.v:41: $finish called at 1000340000 (1ps)

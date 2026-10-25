@@ -1,0 +1,109 @@
+standard
+***Report Model: top_photo_b Device: EG4S20BG256***
+
+IO Statistics
+#IO                        48   out of    188   25.53%
+  #input                    7
+  #output                  41
+  #inout                    0
+
+LUT Statistics
+#Total_luts              9210
+  #lut4                  7782
+  #lut5                  1428
+  #lut6                     0
+  #lut5_mx41                0
+  #lut4_alu1b               0
+
+Utilization Statistics
+#lut                    12308   out of  19600   62.80%
+#reg                     8964   out of  19600   45.73%
+#bram                      47   out of     64   73.44%
+  #bram9k                  47
+  #fifo9k                   0
+#bram32k                    9   out of     16   56.25%
+#dsp                       10   out of     29   34.48%
+#pad                       48   out of    188   25.53%
+  #ireg                     4
+  #oreg                    23
+  #treg                     0
+#pll                        2   out of      4   50.00%
+#gclk                       2   out of     16   12.50%
+
+Report Hierarchy Area:
++--------------------------------------------------------------------------------------------------------------------------------+
+|Instance                        |Module                                            |lut     |ripple  |seq     |bram    |dsp     |
++--------------------------------------------------------------------------------------------------------------------------------+
+|top                             |top_photo_b                                       |10810   |1498    |8991    |56      |10      |
+|  audio_analysis                |photo_av_metadata_b                               |1387    |160     |883     |15      |1       |
+|    fft                         |saixian_av_fft                                    |1133    |100     |736     |13      |1       |
+|      capture_ram               |saixian_av_ram                                    |0       |0       |0       |2       |0       |
+|      display_ram               |saixian_av_ram                                    |0       |0       |0       |1       |0       |
+|      energy_ram                |saixian_av_ram                                    |0       |0       |0       |2       |0       |
+|      fft_ram                   |saixian_av_ram                                    |34      |0       |0       |4       |0       |
+|      hann_rom                  |saixian_av_ram                                    |8       |0       |0       |1       |0       |
+|      metadata_ram              |saixian_av_ram                                    |47      |0       |0       |2       |0       |
+|      twiddle_rom               |saixian_av_ram                                    |2       |0       |0       |1       |0       |
+|    wave                        |saixian_av_wave                                   |148     |12      |58      |2       |0       |
+|      wave_ram                  |saixian_av_ram                                    |1       |0       |0       |2       |0       |
+|  audio_link                    |photo_audio_spi_b                                 |268     |6       |196     |0       |0       |
+|  audio_processing              |photo_audio_processing_b                          |1949    |301     |1102    |4       |2       |
+|    cue                         |photo_audio_cue_samples                           |365     |46      |157     |0       |1       |
+|    pending_pages               |photo_page_type_queue                             |27      |0       |10      |0       |0       |
+|    repair                      |saixian_audio_repair                              |1266    |212     |775     |4       |1       |
+|      history_ram               |saixian_repair_history_ram                        |1       |0       |0       |4       |0       |
+|  av_publish_sync               |photo_event_sync                                  |0       |0       |3       |0       |0       |
+|  av_sample_sync                |photo_event_sync                                  |0       |0       |3       |0       |0       |
+|  ctrl                          |photo_control_b                                   |780     |30      |674     |0       |0       |
+|    port                        |photo_uart                                        |303     |21      |377     |0       |0       |
+|  media                         |photo_sd_cache                                    |4438    |494     |3977    |27      |3       |
+|    audio_fifo                  |photo_audio_fifo                                  |60      |30      |44      |19      |0       |
+|      hybrid$head               |photo_audio_word_ram                              |2       |0       |0       |4       |0       |
+|      hybrid$tail               |photo_audio_word_ram                              |3       |0       |0       |15      |0       |
+|    audio_stream                |photo_sd_audio_stream                             |214     |21      |145     |0       |0       |
+|    bmp                         |bmp_read                                          |1897    |241     |1581    |6       |3       |
+|      dlt_header                |photo_dlt_header                                  |141     |0       |328     |0       |0       |
+|      header_parser             |saixian_media_header                              |85      |0       |108     |0       |0       |
+|      u_scaler                  |saixian_load_scaler                               |698     |128     |576     |6       |3       |
+|    dlt                         |photo_dlt_reader                                  |956     |92      |1187    |2       |0       |
+|      header                    |photo_dlt_header                                  |146     |0       |328     |0       |0       |
+|    packing                     |photo_color_pack                                  |37      |0       |50      |0       |0       |
+|    sd                          |sd_card_top                                       |408     |41      |242     |0       |0       |
+|      sd_card_cmd_m0            |sd_card_cmd                                       |174     |15      |66      |0       |0       |
+|      sd_card_sec_read_write_m0 |sd_card_sec_read_write                            |161     |17      |135     |0       |0       |
+|      spi_master_m0             |spi_master                                        |73      |9       |41      |0       |0       |
+|  processing                    |photo_b_processing                                |918     |358     |786     |6       |4       |
+|    adjust                      |saixian_picture_adjust_pipe                       |212     |134     |219     |0       |3       |
+|    auxiliary                   |water_pack                                        |71      |41      |92      |0       |0       |
+|    enhance                     |saixian_adaptive_enhance                          |362     |130     |309     |4       |1       |
+|    output_queue                |photo_audio_word_ram                              |35      |0       |0       |2       |0       |
+|    packing                     |photo_color_pack                                  |38      |0       |50      |0       |0       |
+|    style                       |saixian_hmi_color_style                           |16      |16      |0       |0       |0       |
+|  rl                            |dual_still_reset_sync                             |1       |0       |3       |0       |0       |
+|  sa                            |photo_event_sync                                  |0       |0       |3       |0       |0       |
+|  sd                            |photo_event_sync                                  |0       |0       |3       |0       |0       |
+|  ss                            |photo_event_sync                                  |0       |0       |3       |0       |0       |
+|  status                        |photo_status                                      |85      |9       |53      |0       |0       |
+|  store                         |frame_store                                       |553     |130     |882     |4       |0       |
+|    ram                         |sdram                                             |100     |13      |481     |0       |0       |
+|      u2_ram                    |sdr_as_ram                                        |100     |13      |481     |0       |0       |
+|        u1_init_ref             |sdr_init_ref                                      |36      |13      |96      |0       |0       |
+|        u2_wrrd                 |sdr_wrrd                                          |64      |0       |385     |0       |0       |
+|    rw                          |frame_read_write                                  |451     |117     |363     |4       |0       |
+|      frame_fifo_read_m0        |frame_fifo_read                                   |124     |40      |88      |0       |0       |
+|      frame_fifo_write_m0       |frame_fifo_write                                  |159     |37      |87      |0       |0       |
+|      read_buf                  |rfifo_32_32_512                                   |61      |20      |94      |2       |0       |
+|        ram_inst                |ram_infer_rfifo_32_32_512                         |0       |0       |0       |2       |0       |
+|        rd_to_wr_cross_inst     |fifo_cross_domain_addr_process_al_rfifo_32_32_512 |16      |0       |36      |0       |0       |
+|        wr_to_rd_cross_inst     |fifo_cross_domain_addr_process_al_rfifo_32_32_512 |16      |0       |36      |0       |0       |
+|      write_buf                 |wfifo_32_32_512                                   |71      |20      |94      |2       |0       |
+|        ram_inst                |ram_infer_wfifo_32_32_512                         |0       |0       |0       |2       |0       |
+|        rd_to_wr_cross_inst     |fifo_cross_domain_addr_process_al_wfifo_32_32_512 |16      |0       |36      |0       |0       |
+|        wr_to_rd_cross_inst     |fifo_cross_domain_addr_process_al_wfifo_32_32_512 |16      |0       |36      |0       |0       |
+|  tx                            |photo_link_sender                                 |323     |6       |135     |0       |0       |
+|  u_link_pll                    |builtin_link_pll                                  |0       |0       |0       |0       |0       |
+|  u_sys_pll                     |sys_pll                                           |0       |0       |0       |0       |0       |
+|  av_reset_sync                 |dual_still_reset_sync                             |0       |0       |3       |0       |0       |
+|  rm                            |dual_still_reset_sync                             |0       |0       |3       |0       |0       |
+|  rs                            |dual_still_reset_sync                             |0       |0       |3       |0       |0       |
++--------------------------------------------------------------------------------------------------------------------------------+

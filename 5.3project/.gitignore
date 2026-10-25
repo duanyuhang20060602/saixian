@@ -1,0 +1,17 @@
+__pycache__/
+*.vvp
+*.db
+*.dmp
+*.bit
+*.zip
+*.log
+*.logw
+*.area
+*.timing
+*.ts
+*_Runs/
+tests/results/*.hex
+tests/results/*.ppm
+/delivery_page_audio_interval/
+/delivery_fx_page_audio/
+tests/fx_audio_results/*.hex

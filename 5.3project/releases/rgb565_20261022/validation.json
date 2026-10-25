@@ -1,0 +1,1207 @@
+{
+  "version": "5.2-rgb565-only-20261022",
+  "hardware_validation": "pending",
+  "requires_matched_pair": true,
+  "pixel_storage_format": "RGB565",
+  "preserved_baseline": {
+    "root": "E:\\Codex\\Downloads\\qiansai\\5.1project",
+    "file_count": 669,
+    "all_original_hashes_verified": true,
+    "5_0_also_verified": true
+  },
+  "changes": {
+    "removed": "RGB888 packing/unpacking, colour-mode commands and menu row, format switching/reset/CDC, high-colour cache restrictions, A legacy RGB888 framebuffer reader and read mux.",
+    "memory": "B horizontal scaler line buffers store exact RGB565 words at 16 bits; expand after synchronous RAM before vertical interpolation. The existing 8192-frame hybrid PCM FIFO is unchanged from 5.1.",
+    "preserved": "A HDMI/touch wiring, B preprocessing and AV2 envelope offload, 11 transitions, sparse dwell ripples, trophy spotlights and light tail, BMP24 decoding, audio and thumbnail preview.",
+    "protocol": "Existing 19-bit settings field retains bit 18 reserved zero; unsupported format requests are rejected. Native frames and extended RGB565 auxiliary/award payload lengths are preserved.",
+    "fifo": "A retains the 1024-word display FIFO because the water reader emits an atomic 640-word row and reserves 32 words; reducing to 512 would violate its admission contract."
+  },
+  "resources_before": {
+    "a": {
+      "lut": 17460,
+      "reg": 11695,
+      "bram": 60,
+      "bram32k": 16,
+      "dsp": 24
+    },
+    "b": {
+      "lut": 13244,
+      "reg": 9226,
+      "bram": 50,
+      "bram32k": 12,
+      "dsp": 10
+    }
+  },
+  "resources_after": {
+    "a": {
+      "lut": 16847,
+      "reg": 11444,
+      "bram": 60,
+      "bram32k": 16,
+      "dsp": 24
+    },
+    "b": {
+      "lut": 12790,
+      "reg": 9070,
+      "bram": 47,
+      "bram32k": 9,
+      "dsp": 10
+    }
+  },
+  "resource_deltas": {
+    "a": {
+      "lut": -613,
+      "reg": -251,
+      "bram": 0,
+      "bram32k": 0,
+      "dsp": 0
+    },
+    "b": {
+      "lut": -454,
+      "reg": -156,
+      "bram": -3,
+      "bram32k": -3,
+      "dsp": 0
+    }
+  },
+  "mslices_after": {
+    "a": 4585,
+    "b": 3636
+  },
+  "timing_ns": {
+    "a": {
+      "SWNS": 0.147,
+      "STNS": 0.0,
+      "HWNS": 0.022,
+      "HTNS": 0.0
+    },
+    "b": {
+      "SWNS": 0.114,
+      "STNS": 0.0,
+      "HWNS": 0.022,
+      "HTNS": 0.0
+    }
+  },
+  "rtl_changes": {
+    "common/photo_b_processing.v": {
+      "before_sha256": "1c255fbd9ae3924c0a4941e50a71a58e0c58c52c1f95fcd62dc7605525d016da",
+      "after_sha256": "1de68b3fedb2e7c75a687280f97f90b095a277455c928f887c456c792af19ca9"
+    },
+    "common/photo_cached_control_a.v": {
+      "before_sha256": "8c98401f97291e12f17f0444737fffefa1cd5ffebdbc8819ba01454b3fa4eaea",
+      "after_sha256": "c4f471603979aac9dadb5901da15ed8c00a684e27e1e28c89d821c0a481263b2"
+    },
+    "common/photo_color_format.v": {
+      "before_sha256": "f4dbd9d53bdea9303cdcf7f9f9a3c6af2614e1b001a23695f0347e1adaa31be0",
+      "after_sha256": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649"
+    },
+    "common/photo_control.v": {
+      "before_sha256": "f4fa85eb259b03f24ee05b5de9530d2f064243a1153617c3385f1c6398526cb3",
+      "after_sha256": "ae23329605f7f53bc02aa86acfa3d3c45ac9b54a93ccb53db88f4fb8bd635957"
+    },
+    "common/photo_link.v": {
+      "before_sha256": "b5220867ab286874518d2918f7e1640e2829535fbdfdbfc8f022529e3cca530a",
+      "after_sha256": "6ca5781c2c9916c9445ba6d7c682a1f06b56b327d0f8ea5e166cd9f338fed118"
+    },
+    "common/photo_sd_cache.v": {
+      "before_sha256": "d59b2f67413ddf3b17e8cd3d230e8f3d4e15fec534c755b1004e969092e5bcdd",
+      "after_sha256": "39b1b2033aa037116642d4e0e4d93288dc9657f3febdf37f11c0baa87a3c7b18"
+    },
+    "common/photo_settings_overlay.v": {
+      "before_sha256": "781d173173333e41a7a7dc05ccad340cfebefcced74d9a242d47916393609cb5",
+      "after_sha256": "28e19071deea442b93102d7d4aa839ba93b252b757ae853e5ebd7c83df3707f8"
+    },
+    "common/photo_thumbnail.v": {
+      "before_sha256": "f4703597dca2ddc6b3addf73e3810072cdde6b827c816138271a4f9dcb517d41",
+      "after_sha256": "6b45b0675ef4c0a7e3777d4fea264ae5f4b08c52d3da67b7c74c557f57d7ef35"
+    },
+    "common/photo_unified_settings_controller.v": {
+      "before_sha256": "f0eab33923e7cc80a081af70d141a283189aa5f3163a305532540906958e70b5",
+      "after_sha256": "a2b7444b42f071dc800ea8927dfe6d7d45abcb71b7d23e16f1bdcd03b179938b"
+    },
+    "common/saixian_hmi_uart.v": {
+      "before_sha256": "2c040152d6381f82ba34d6ef9933d4e08ac72d2eb60549a5289f9d35d7db5b00",
+      "after_sha256": "cd27507bad545dc4ae0f04b275e78af524ce4200e216f311f8564f81f400a219"
+    },
+    "common/top_photo_a.v": {
+      "before_sha256": "e420c955f3b21a8258ec3628744493dbf7d23c44af6ae45532cb6dca11b28e93",
+      "after_sha256": "f66e916589c37df9d244cdf9af32c0e6792534372ec592748373d45b4da9b1ba"
+    },
+    "common/top_photo_b.v": {
+      "before_sha256": "f65927d873703ecbeec254cb080f8f11cda6e1e3e46a72d8aed07b6e014f7186",
+      "after_sha256": "0f5a5d1cc4a8bcecc4ee289f042d824c7c6c5b64b9f4fd5d3917db588896df47"
+    },
+    "common/photo_sd/bmp_read.v": {
+      "before_sha256": "46f0bf35ccc771937f763e80e9ddfa4c55a2d79cd59ff12c57b0f8bfa2e250a7",
+      "after_sha256": "5b058f84a66e355fc1c03d1b7145d7d8f4a320801e2391f4bf1ef1ef3925c7c8"
+    },
+    "src/board_a/td_project/PHOTO_BOARD_A.al": {
+      "before_sha256": "5cf71ce34f73509aec61e6a36afe8b7feb1dcc8a5c6a7c80c417eb25c70ad565",
+      "after_sha256": "7975a9aad8ca087fe46f7bd56d13a7df6200091aa72542e40483694bfa33b041"
+    },
+    "src/board_a/td_project/sources.json": {
+      "before_sha256": "bfa44b326f182921de744dd58daead5f291f0964d95e381c24c08c93f97d3531",
+      "after_sha256": "46baff365355cb07958d1c5019395af516ed4e26958208437a3512f9b9e56829"
+    },
+    "src/board_a/user_source/hdl_source/frame_pixels.v": {
+      "before_sha256": "5563971ac0fc20c038a89c0615546dd9fb883ae769a14f4d45cb27cd804cb10d",
+      "after_sha256": "0b45d4a61c0eac7cdff33fa0d84f8670fe1dc732fedf44a4baa16e022eed369e"
+    },
+    "src/board_a/user_source/hdl_source/frame_store.v": {
+      "before_sha256": "3cfbdaa8764a62ff950f18e6838d3f2c64dd9c849f3e7f3b796336ca3765fcae",
+      "after_sha256": "8753d64bd47c6ed588e13a32a5b831b9aaab5457cf5583bc4f8f73e0f02c2d91"
+    },
+    "src/board_a/user_source/hdl_source/SD/frame_fifo_write.v": {
+      "before_sha256": "45a916cf077aa38e9725e32705e4b5a076828be9c9a4c460c21736e32b44ee09",
+      "after_sha256": "2d77247259a858f1a752748d721c3db422b0be5c1d70a2ce6dc828a7dfa6a020"
+    },
+    "src/board_a/user_source/hdl_source/SD/frame_read_write.v": {
+      "before_sha256": "02c0b640c01477ea8ebcaf2201f0da8106dc84f297d73e35b85220ca2e5c8d86",
+      "after_sha256": "bc86f0d36dd660e97922ccb86a671412cfd41787d0454fd4330e43470b261adf"
+    },
+    "src/board_b/td_project/PHOTO_BOARD_B.al": {
+      "before_sha256": "5b1510ecb70d7baeb6689790f7113f1b6336bc806680193a704ead8aaccda9a0",
+      "after_sha256": "3c4536240d98dc5aba5eb2870a26cf6e84a0a09929da1aabce02be13827b30d0"
+    },
+    "src/board_b/user_source/hdl_source/frame_store.v": {
+      "before_sha256": "712f5cc92c8b8d6c6d9fc2a987040be867ced34c4864d201f3aabe7dc3449954",
+      "after_sha256": "ae0841b1294b2cd1b3ee783dd4a53afadbe06e25478aa5118ee5ceafb5adca8a"
+    },
+    "src/board_b/user_source/hdl_source/SD/frame_fifo_read.v": {
+      "before_sha256": "4d024cc949f4d021ab16fe89134f6c446ea6f2ccae957d952e7aab9a747eb52f",
+      "after_sha256": "d963d4c6101eae2ee7ee5c119da783ac1508d9e5fc4b13df5c5fc232319000d0"
+    },
+    "src/board_b/user_source/hdl_source/SD/frame_fifo_write.v": {
+      "before_sha256": "cae0788ca240f21f6898c2bc75270df44e919e7cdc97d79834b2c38e1567a2a2",
+      "after_sha256": "17e09f2f5ef05210fbea011b447fea269d5e3896edbde84bb39e945be13ce6d6"
+    },
+    "src/board_b/user_source/hdl_source/SD/frame_read_write.v": {
+      "before_sha256": "c05d2a32ffcddbf66515d964e010fd3df33bd043822012e186b17d9e9cf727c6",
+      "after_sha256": "1f3cf38e143c20906064a359da4a7738bc5aea5eec392c2329a761e218105a34"
+    }
+  },
+  "tests": [
+    {
+      "test": "award_control",
+      "passed": true,
+      "seconds": 2.52,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_award_v5_control.v": "6c64225eee8e1a71de1b3277184c0e8fb2123873e4903069a02d2c27d18dc1c9",
+        "common/photo_cached_control_a.v": "c4f471603979aac9dadb5901da15ed8c00a684e27e1e28c89d821c0a481263b2",
+        "common/photo_control.v": "ae23329605f7f53bc02aa86acfa3d3c45ac9b54a93ccb53db88f4fb8bd635957",
+        "common/photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df",
+        "common/photo_link.v": "6ca5781c2c9916c9445ba6d7c682a1f06b56b327d0f8ea5e166cd9f338fed118"
+      },
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\award_control.log",
+      "log_sha256": "f10b7ac2f0e3315356c738e89033cfb64c5b2d9c9afa8b5de40862ddb7ff8f84",
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/rgb565_20261022/validation/thumbnail-tests_award_control.log"
+    },
+    {
+      "test": "award_width",
+      "passed": true,
+      "seconds": 31.41,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_award_width.v": "de8b840f4d14f81416081b53b0d76026a5d37fcb7e335a393818a8e01cf2d89a",
+        "common/award_fx.v": "f4e31098dcc4a2c38ecd1c0eae01fe2989814fa61bb95c10d529e6f153c05482",
+        "common/award_sprite_rom.v": "b8fb7656be0428d515bb44c1bb2737f57e2fecf3b1fd80ee38a667be618a21c3",
+        "tests/reference/thumbnail/award_fx.v": "7d510d609d423b81c20d153bb31374bbef9d264685a8cf836685c75b10eb7d26"
+      },
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\award_width.log",
+      "log_sha256": "62064d13c91d88058050c31fc075ff9a9a96a6a8afa2a1f55545394e0d0bcd43",
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/rgb565_20261022/validation/thumbnail-tests_award_width.log"
+    },
+    {
+      "test": "bandwidth565",
+      "passed": true,
+      "seconds": 189.61,
+      "defines": [
+        "THUMBNAIL_SIM",
+        "WATER_SIM",
+        "THUMBNAIL_RGB565"
+      ],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_bandwidth.v": "37d23891040336593f3a4f13e34d440b7eda00280a0ded8c833a39a606e77f9d",
+        "common/photo_thumbnail.v": "6b45b0675ef4c0a7e3777d4fea264ae5f4b08c52d3da67b7c74c557f57d7ef35",
+        "common/photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795",
+        "common/photo_award_memory.v": "0421eb047bc5a1654f78c3670b75f6f2d0931fe3832d18a2c8c72d0c4d87ce91",
+        "src/board_a/user_source/hdl_source/frame_store.v": "8753d64bd47c6ed588e13a32a5b831b9aaab5457cf5583bc4f8f73e0f02c2d91",
+        "src/board_a/user_source/hdl_source/SD/frame_read_write.v": "bc86f0d36dd660e97922ccb86a671412cfd41787d0454fd4330e43470b261adf",
+        "src/board_a/user_source/hdl_source/SD/frame_fifo_write.v": "2d77247259a858f1a752748d721c3db422b0be5c1d70a2ce6dc828a7dfa6a020",
+        "src/board_a/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "src/board_a/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+        "common/fluid/water_drop_small.v": "256019f9db84e617f6acbb2d60efcba636d2949343115e510c68be4d00bacea0",
+        "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_priority_map.v": "f646b1f41b25eddaec072533e1dffd4d1ced9738fd51121c1baec7861f31c100",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_blend.v": "907f59518cfa02cbea456923c57ae7402551dd5e8a7fd8c7a748cfc40b9c7a24",
+        "common/fluid/water_cache.v": "162653dbe2c0ead67ca65fe689bfa3b21e711dd6d5556de698c758a2ac7afafe",
+        "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb"
+      },
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\bandwidth565.log",
+      "log_sha256": "cb45892fa0a77c4a194de032b337ae2a940f2901d45b1209735ee0cfffaddd96",
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/rgb565_20261022/validation/thumbnail-tests_bandwidth565.log"
+    },
+    {
+      "test": "blanking",
+      "passed": true,
+      "seconds": 20.7,
+      "defines": [
+        "THUMBNAIL_SIM"
+      ],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_blanking.v": "e02d1c3b190e7f91a89122e7541a473bdf8a31aae5261226883ca15feaf3dd16",
+        "common/photo_thumbnail.v": "6b45b0675ef4c0a7e3777d4fea264ae5f4b08c52d3da67b7c74c557f57d7ef35",
+        "common/photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795"
+      },
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\blanking.log",
+      "log_sha256": "71efd7bd2fbacd41869aadf07f58e97c9216d67378636e25210387081fae10ee",
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/rgb565_20261022/validation/thumbnail-tests_blanking.log"
+    },
+    {
+      "test": "control",
+      "passed": true,
+      "seconds": 0.27,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_control.v": "87b28af4133ea1d8decab661b8278fd9d2a62c4bae18d1c56e06b11ac511c68b",
+        "common/photo_cached_control_a.v": "c4f471603979aac9dadb5901da15ed8c00a684e27e1e28c89d821c0a481263b2",
+        "common/photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df"
+      },
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\control.log",
+      "log_sha256": "8c2d737de37ea6900534109d42accb2879394f0adfc98ac0e507ae4e7e1a1ab8",
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/rgb565_20261022/validation/thumbnail-tests_control.log"
+    },
+    {
+      "test": "edge_eram",
+      "passed": true,
+      "seconds": 115.08,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_edge_equivalence.v": "69abe992a7f1a7839552459c4e8eb96801f64a081584c1957098029e838b089b",
+        "common/fluid/water_edge.v": "e710bbd4e90cada1011848b4429f40629cc8c4bfc14ecee5bd643de5cf1c5f79",
+        "tests/reference/thumbnail/water_edge.v": "05f9facc4c643b0a652b20402034f48891bc985f956228ad3f2cd77ee77c85b8",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "src/board_a/user_source/hdl_source/IP/water_edge_weights.mif": "1ba4dae4767feaeef087e147b6342e9e0a856f160cf06d9186948f6a272a12fc",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\edge_weights.hex": "ae5e6ea212b2fc2a0f85a6873afef3ab93d7323acd223f6cfa88993268a35b2c",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\edge_eram_include\\ip_init_map.vh": "51bebcf03d44d5fa8e30e769f4708d069946fb46bb3cc411424d9407269ed850"
+      },
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\edge_eram.log",
+      "log_sha256": "441ac52d4eea4c0b0e2fa2af67c223b6dcbc561ebe8b8462c33b2e0ea84d5ed7",
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/rgb565_20261022/validation/thumbnail-tests_edge_eram.log"
+    },
+    {
+      "test": "memory",
+      "passed": true,
+      "seconds": 2.42,
+      "defines": [
+        "THUMBNAIL_SIM"
+      ],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_memory.v": "8187d9a545b6151db23183866d7bfa77a0d9dec48dc96c89c0c49514a4a4bac1",
+        "common/photo_thumbnail.v": "6b45b0675ef4c0a7e3777d4fea264ae5f4b08c52d3da67b7c74c557f57d7ef35"
+      },
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\memory.log",
+      "log_sha256": "5854278c9ba4c01d2a1df08ad0bdf7dc2956532e99d906f68eadbf74903c896a",
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/rgb565_20261022/validation/thumbnail-tests_memory.log"
+    },
+    {
+      "test": "menu_geometry",
+      "passed": true,
+      "seconds": 239.2,
+      "defines": [
+        "TOUCHSCREEN_SIM"
+      ],
+      "inputs_sha256": {
+        "tests/tb_menu_geometry.v": "0e1cb53bcddcff650bc9be24695c9fc4810015078603f7abb4693d272c8cebad",
+        "common/photo_settings_overlay.v": "28e19071deea442b93102d7d4aa839ba93b252b757ae853e5ebd7c83df3707f8",
+        "tests/reference/thumbnail/photo_settings_overlay.v": "242c6c8b6ac6e0b85fb1efe032159f07c013a7679f4feccb0a69a1d65bc1b9b9",
+        "tests/touchscreen_menu_font.v": "12fda21482b92b9b53b2db223dfd64334b6ec345a9345944381ffa64f7fd80bf",
+        "common/photo_menu_font.mif": "2bc93d7d132dcd858edf436d5c55e73896996cf89a2d224cbd8f78bf337d4c5d",
+        "tests/touchscreen_results/menu_font.hex": "ba163be9b68bed0aa7c67eaaf81c5806136eba6c20b8efa27cf19495bdb94858",
+        "src/board_a/user_source/hdl_source/photo_menu_text_lookup.mif": "6bd358ea5b82f7a65629595a1f4415d67d02936c2e7ecb704e6166dbfc6441b1",
+        "src/board_a/user_source/hdl_source/photo_menu_text_lookup.hex": "754b5d6f555a8118b10d149314378f63d485fa63d13c0c3c8f6a2b9eb94864b9"
+      },
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\menu_geometry.log",
+      "log_sha256": "f845bf1ae310dd533d4dd5baf969cfa972390edcbfaa0a12e61d64ad84bbd5b6",
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/rgb565_20261022/validation/thumbnail-tests_menu_geometry.log"
+    },
+    {
+      "test": "overlay",
+      "passed": true,
+      "seconds": 0.08,
+      "defines": [
+        "THUMBNAIL_SIM"
+      ],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_overlay.v": "832c6bcab7377a984cf0235e87839d1dba015538907b393f4e3d0e41442275b0",
+        "common/photo_thumbnail.v": "6b45b0675ef4c0a7e3777d4fea264ae5f4b08c52d3da67b7c74c557f57d7ef35"
+      },
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\overlay.log",
+      "log_sha256": "63eb1e4b1b6de6d2419a69b15fc41a449ad4bffd3da90031cbbbc9793d837460",
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/rgb565_20261022/validation/thumbnail-tests_overlay.log"
+    },
+    {
+      "test": "phase",
+      "passed": true,
+      "seconds": 0.91,
+      "defines": [
+        "THUMBNAIL_SIM"
+      ],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_phase.v": "4fbc19c6a9d11d3121f6c7b8535bc56d43b30f150d82fca2bc90bc5271966635",
+        "common/photo_thumbnail.v": "6b45b0675ef4c0a7e3777d4fea264ae5f4b08c52d3da67b7c74c557f57d7ef35",
+        "common/photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795"
+      },
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\phase.log",
+      "log_sha256": "e0788c0982dd79c8e41077a9e78ce630d19daea097116088127229b1794b3ea5",
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/rgb565_20261022/validation/thumbnail-tests_phase.log"
+    },
+    {
+      "test": "touch",
+      "passed": true,
+      "seconds": 17.08,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_touch.v": "bfa7b1b822ede3b15da5b82b54f534ef934b249ee4758719c6d779f9e4fe8b31",
+        "common/top_photo_a.v": "f66e916589c37df9d244cdf9af32c0e6792534372ec592748373d45b4da9b1ba",
+        "common/saixian_hmi_uart.v": "cd27507bad545dc4ae0f04b275e78af524ce4200e216f311f8564f81f400a219",
+        "common/photo_touchpad.v": "3cc8c9b46b9b206b0c37353823ca9635cbde5cd9f77058a9a45664061bfdb956",
+        "common/photo_unified_settings_controller.v": "a2b7444b42f071dc800ea8927dfe6d7d45abcb71b7d23e16f1bdcd03b179938b",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\hardware_shells.v": "c4ac4199b3b1c528c4640f6ec077b90ac474782e4a751ee1ecd33e2f7dbfb279"
+      },
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\touch.log",
+      "log_sha256": "dd56642c64f8d853443cffd0267b48b9f7e7a311f02ab3f07e780b786a0d2451",
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/rgb565_20261022/validation/thumbnail-tests_touch.log"
+    },
+    {
+      "test": "vendor",
+      "passed": true,
+      "seconds": 4.98,
+      "defines": [],
+      "inputs_sha256": {
+        "tests/tb_thumbnail_memory.v": "8187d9a545b6151db23183866d7bfa77a0d9dec48dc96c89c0c49514a4a4bac1",
+        "common/photo_thumbnail.v": "6b45b0675ef4c0a7e3777d4fea264ae5f4b08c52d3da67b7c74c557f57d7ef35",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\vendor_include\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\thumbnail-tests\\vendor.log",
+      "log_sha256": "5854278c9ba4c01d2a1df08ad0bdf7dc2956532e99d906f68eadbf74903c896a",
+      "suite": "thumbnail-tests",
+      "saved_log": "releases/rgb565_20261022/validation/thumbnail-tests_vendor.log"
+    },
+    {
+      "test": "av_link",
+      "passed": true,
+      "seconds": 53.52,
+      "inputs_sha256": {
+        "tests/tb_resource_av_link.v": "4ab5bca95df9a02663b6fe721367e04692e32a93ea7bb9d51b12c56f1a7f094d",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "common/photo_av_metadata.v": "ac49f27edce4408f9fee0da1aa67bf60b76bde19790a7e8aea1337faafd236ad",
+        "common/photo_av_receiver.v": "2fd185ece16d7569545eceb4b94d575b560e5288c9a2b4b6683ecb98af3fede7",
+        "tests/resource_av_analysis_stub.v": "c5ab247d2c3563db343b7567e216a54549e1a7b8ddbc4381d10ccc3d6480d89a",
+        "tests/av_bram_model.v": "b18886a5c572acf0aabfcb37cc7aab704c15526cd79193fb0b5b1fa49b7540a6",
+        "tools/test_resource_allocation.py": "e48f2ef26548bdacdcde8ea216c80ce8b33c1ca321adbb04492397af33367ace"
+      },
+      "defines": [],
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\resource-tests\\av_link.log",
+      "log_sha256": "c149958009e1a1616408da7320682bf1717b63a1452fe7dba6f41c4efc516a6a",
+      "inputs_unchanged": true,
+      "suite": "resource-tests",
+      "saved_log": "releases/rgb565_20261022/validation/resource-tests_av_link.log"
+    },
+    {
+      "test": "delay",
+      "passed": true,
+      "seconds": 36.89,
+      "inputs_sha256": {
+        "tests/tb_eram_video_delay.v": "5aa6f8565e66556eb4915bf81bd3e46c00bfdb8213c1fb0065c151f253c6509a",
+        "common/photo_display_pipe.v": "e6ba29eb4142b690a5abb9be5b07c0b880040736485cdbeb1013f040559718c3",
+        "tests/reference/award_v5/photo_display_pipe.v": "4cd9c09a2f814c7abfd3b86b30b6996b8cf23f53ba46dafc850fc4e438b00700",
+        "tools/test_resource_allocation.py": "e48f2ef26548bdacdcde8ea216c80ce8b33c1ca321adbb04492397af33367ace"
+      },
+      "defines": [
+        "ERAM_SIM"
+      ],
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\resource-tests\\delay.log",
+      "log_sha256": "966c5768dc2e830417ec5b013b4ee773daf617b6ec76f6545585552060236106",
+      "inputs_unchanged": true,
+      "suite": "resource-tests",
+      "saved_log": "releases/rgb565_20261022/validation/resource-tests_delay.log"
+    },
+    {
+      "test": "delay_vendor",
+      "passed": true,
+      "seconds": 55.59,
+      "inputs_sha256": {
+        "tests/tb_eram_video_delay.v": "5aa6f8565e66556eb4915bf81bd3e46c00bfdb8213c1fb0065c151f253c6509a",
+        "common/photo_display_pipe.v": "e6ba29eb4142b690a5abb9be5b07c0b880040736485cdbeb1013f040559718c3",
+        "tests/reference/award_v5/photo_display_pipe.v": "4cd9c09a2f814c7abfd3b86b30b6996b8cf23f53ba46dafc850fc4e438b00700",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\resource-tests\\vendor_dram_plain.v": "32d2eab62e3c1e3685da9153140d7c49de35d26c456010708444576754491ae0",
+        "tools/test_resource_allocation.py": "e48f2ef26548bdacdcde8ea216c80ce8b33c1ca321adbb04492397af33367ace",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\sim_release\\eg4\\eg_logic_dram.v": "b620cebfe67f8829df3b737d1f75072b5f42bae7a2396b36616e85aa3cc9ea1e"
+      },
+      "defines": [],
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\resource-tests\\delay_vendor.log",
+      "log_sha256": "966c5768dc2e830417ec5b013b4ee773daf617b6ec76f6545585552060236106",
+      "inputs_unchanged": true,
+      "suite": "resource-tests",
+      "saved_log": "releases/rgb565_20261022/validation/resource-tests_delay_vendor.log"
+    },
+    {
+      "test": "hybrid_fifo",
+      "passed": true,
+      "seconds": 5.33,
+      "inputs_sha256": {
+        "tests/tb_ip_audio_fifo.v": "727f62143901ed4c21a1406abf7b1955f0662f44cdf4e6482394546c512f423a",
+        "tests/reference/award_v5/photo_audio_fifo.v": "a81b1c7522511965092ffd63ff95c1534801b9b35b658930d10d2b0d334f71fa",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "tools/test_resource_allocation.py": "e48f2ef26548bdacdcde8ea216c80ce8b33c1ca321adbb04492397af33367ace"
+      },
+      "defines": [],
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\resource-tests\\hybrid_fifo.log",
+      "log_sha256": "b52f914685cee49017c549152468361fbf501f3b0d8e6946139c4e4f23f6298b",
+      "inputs_unchanged": true,
+      "suite": "resource-tests",
+      "saved_log": "releases/rgb565_20261022/validation/resource-tests_hybrid_fifo.log"
+    },
+    {
+      "test": "metadata",
+      "passed": true,
+      "seconds": 1.06,
+      "inputs_sha256": {
+        "tests/tb_resource_metadata.v": "dbb5393c89f91df66889a66b4610c04b183edf0515d0845182f4b1d64552864a",
+        "common/photo_av_metadata.v": "ac49f27edce4408f9fee0da1aa67bf60b76bde19790a7e8aea1337faafd236ad",
+        "common/photo_av_receiver.v": "2fd185ece16d7569545eceb4b94d575b560e5288c9a2b4b6683ecb98af3fede7",
+        "common/audio_ui/saixian_audio_visualizer.v": "7563a700a7cc89c04351d9fb55049c77adcf78e0807133ef501a51e6d041894d",
+        "tests/av_bram_model.v": "b18886a5c572acf0aabfcb37cc7aab704c15526cd79193fb0b5b1fa49b7540a6",
+        "tools/test_resource_allocation.py": "e48f2ef26548bdacdcde8ea216c80ce8b33c1ca321adbb04492397af33367ace",
+        "common/audio_ui/saixian_av_hann_half.hex": "fc9247268b83a9aca0d5f6022efa586c98c9102fa304ffec024f4cd562375081",
+        "common/audio_ui/saixian_av_twiddle_serial.hex": "dc321b9f2e3779a52b27467170a829039be71b054742e259beb53ffa3c5782f0"
+      },
+      "defines": [],
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\resource-tests\\metadata.log",
+      "log_sha256": "36e6ca8d7a699011c79f8e89800a8b6c6d832a084c79bf7ff366bf3520106aa1",
+      "inputs_unchanged": true,
+      "suite": "resource-tests",
+      "saved_log": "releases/rgb565_20261022/validation/resource-tests_metadata.log"
+    },
+    {
+      "test": "typed_protocol",
+      "passed": true,
+      "seconds": 0.61,
+      "inputs_sha256": {
+        "tests/tb_fx_protocol.v": "9d891960c9d0fdaf50f9def9221ee189617c07ad7f056775abe29c9d4f09077d",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "tools/test_resource_allocation.py": "e48f2ef26548bdacdcde8ea216c80ce8b33c1ca321adbb04492397af33367ace"
+      },
+      "defines": [
+        "VICTORY_SIM"
+      ],
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\resource-tests\\typed_protocol.log",
+      "log_sha256": "51ebdbe696cf4272707f0d03de99677470687711b506bf0f1168f184c74935de",
+      "inputs_unchanged": true,
+      "suite": "resource-tests",
+      "saved_log": "releases/rgb565_20261022/validation/resource-tests_typed_protocol.log"
+    },
+    {
+      "test": "rgb565_award_link",
+      "passed": true,
+      "seconds": 73.89,
+      "inputs_sha256": {
+        "tests/tb_award_v5_link.v": "ad01e3559b0bb676699c19b6a3e3682b4375018fbbaa4a087c50bcc84a1bfed6",
+        "common/photo_link.v": "6ca5781c2c9916c9445ba6d7c682a1f06b56b327d0f8ea5e166cd9f338fed118",
+        "tools/test_rgb565.py": "bf52fce5e4f9fe6334dba29c1d5f9cd2195855146ba2a5feb0201a25c25bca44",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_award_link\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_award_link.log",
+      "log_sha256": "b76003aece718183998d8271aad75689b916a89f6b4474c71cafaa596e3bbd69",
+      "suite": "rgb565-tests",
+      "saved_log": "releases/rgb565_20261022/validation/rgb565-tests_rgb565_award_link.log"
+    },
+    {
+      "test": "rgb565_award_sdram",
+      "passed": true,
+      "seconds": 480.55,
+      "inputs_sha256": {
+        "tests/tb_award_v5_sdram_link.v": "157b0d1cc4319673e99b3c5881a0f81b1200d588b4d61bb1ff194c8236a8a679",
+        "src/board_b/user_source/hdl_source/frame_store.v": "ae0841b1294b2cd1b3ee783dd4a53afadbe06e25478aa5118ee5ceafb5adca8a",
+        "src/board_b/user_source/hdl_source/SD/frame_read_write.v": "1f3cf38e143c20906064a359da4a7738bc5aea5eec392c2329a761e218105a34",
+        "src/board_b/user_source/hdl_source/SD/frame_fifo_read.v": "d963d4c6101eae2ee7ee5c119da783ac1508d9e5fc4b13df5c5fc232319000d0",
+        "src/board_b/user_source/hdl_source/SD/frame_fifo_write.v": "17e09f2f5ef05210fbea011b447fea269d5e3896edbde84bb39e945be13ce6d6",
+        "src/board_b/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "src/board_b/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+        "common/photo_link.v": "6ca5781c2c9916c9445ba6d7c682a1f06b56b327d0f8ea5e166cd9f338fed118",
+        "common/photo_spotlight_player.v": "7c7bdefb355098208883a71d2eb1138c0e67f3d28a68eb2a5c4a2dae3bac6152",
+        "common/photo_award_memory.v": "0421eb047bc5a1654f78c3670b75f6f2d0931fe3832d18a2c8c72d0c4d87ce91",
+        "tools/test_rgb565.py": "bf52fce5e4f9fe6334dba29c1d5f9cd2195855146ba2a5feb0201a25c25bca44",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_award_sdram\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_award_sdram\\award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_award_sdram\\award_file.hex": "055731d3803478b8955b4ab76cc11b447aad47ac67d908f47a0a06b40fb41077",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_award_sdram\\light_golden.hex": "41fabdd702bd9435ebaad67b28c18365cfe29442e4df925fe5a6e9e50296bacc",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_award_sdram\\light_raw.hex": "f9306eb3216a0986b05e5151c1a2a16a9a2abc51058e336295ff2ec06f0a77d5",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_award_sdram\\light_tail.hex": "17aa3ee96bbb2b71e19be2bc3d388870d59ad6ea1d8808e100bcf9f936156dbd",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_award_sdram\\water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_award_sdram\\water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_award_sdram\\water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_award_sdram\\water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_award_sdram\\water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_award_sdram\\water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_award_sdram\\water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_award_sdram\\water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_award_sdram\\water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_award_sdram\\water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3"
+      },
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_award_sdram.log",
+      "log_sha256": "cda84bf69602b0eaed8ba33c9f4f79110e7e5d37fa8d78e24be084922991c454",
+      "suite": "rgb565-tests",
+      "saved_log": "releases/rgb565_20261022/validation/rgb565-tests_rgb565_award_sdram.log"
+    },
+    {
+      "test": "rgb565_equivalence",
+      "passed": true,
+      "seconds": 2.64,
+      "inputs_sha256": {
+        "tests/tb_rgb565_equivalence.v": "e7f79fbd67619e09562c85bdc350cdcb24d15f55eaa6b45076811fdc99386f0a",
+        "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+        "tests/reference/rgb565/photo_color_format.v": "7ca4743317914328da696154ed48157b3333cee777ceb21e0d06fc8be47ec1b8",
+        "src/board_a/user_source/hdl_source/frame_pixels.v": "0b45d4a61c0eac7cdff33fa0d84f8670fe1dc732fedf44a4baa16e022eed369e",
+        "tests/reference/rgb565/frame_pixels.v": "25f2cbe7ad71cbbdca10ac86ec0bb7657561eb2b805f576c5346325cedbbcbc4",
+        "tools/test_rgb565.py": "bf52fce5e4f9fe6334dba29c1d5f9cd2195855146ba2a5feb0201a25c25bca44",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_equivalence\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_equivalence.log",
+      "log_sha256": "0b758864f47e6550abbfae5a42b514ae60b7a10ab32945a3dfc808b3852eda51",
+      "suite": "rgb565-tests",
+      "saved_log": "releases/rgb565_20261022/validation/rgb565-tests_rgb565_equivalence.log"
+    },
+    {
+      "test": "rgb565_link_abort",
+      "passed": true,
+      "seconds": 0.17,
+      "inputs_sha256": {
+        "tests/tb_research_link_abort.v": "1a1587611a60f3b0331a19d9e5a3efb6a78d3a5967963a6ea1a2271907257190",
+        "common/photo_link.v": "6ca5781c2c9916c9445ba6d7c682a1f06b56b327d0f8ea5e166cd9f338fed118",
+        "tools/test_rgb565.py": "bf52fce5e4f9fe6334dba29c1d5f9cd2195855146ba2a5feb0201a25c25bca44",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_link_abort\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_link_abort.log",
+      "log_sha256": "1dd10d53310dccc1a7655d79b3da267599f695663d28950f82af923286bbc30b",
+      "suite": "rgb565-tests",
+      "saved_log": "releases/rgb565_20261022/validation/rgb565-tests_rgb565_link_abort.log"
+    },
+    {
+      "test": "rgb565_processing",
+      "passed": true,
+      "seconds": 15.62,
+      "inputs_sha256": {
+        "tests/tb_ip_processing.v": "6aec94149213a9df73058fccf691a6b097ba2a66acacf8611a5ce159e121993c",
+        "tests/reference/award_v5/photo_b_processing.v": "5b8845a29a747cb43b46525e4dc72f79d65a558b0dbb6a0bf12e2672288a0b8a",
+        "tests/reference/rgb565/photo_color_format.v": "7ca4743317914328da696154ed48157b3333cee777ceb21e0d06fc8be47ec1b8",
+        "common/photo_b_processing.v": "1de68b3fedb2e7c75a687280f97f90b095a277455c928f887c456c792af19ca9",
+        "common/photo_processing.v": "fa835d951d02eedce197444ef59bcad4a578ad1b7ca1739f77b41a2af171ea38",
+        "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+        "common/fluid/water_pack.v": "27e4478f5b79973a01697cde029955b7bff6b7b5fb038bc2e8cf25e54c497960",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "tools/test_rgb565.py": "bf52fce5e4f9fe6334dba29c1d5f9cd2195855146ba2a5feb0201a25c25bca44",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_processing\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_processing.log",
+      "log_sha256": "f20958d0eeab4ce5342a8c61e190e410bbe9ec6daecb951937084219dd32398d",
+      "suite": "rgb565-tests",
+      "saved_log": "releases/rgb565_20261022/validation/rgb565-tests_rgb565_processing.log"
+    },
+    {
+      "test": "rgb565_scaler",
+      "passed": true,
+      "seconds": 125.3,
+      "inputs_sha256": {
+        "tests/tb_ip_scaler.v": "ba455c8654eff93f31daeb05ddfcfdfdb3980595118ec97d9dc9f96a69f1e879",
+        "common/photo_sd/bmp_read.v": "5b058f84a66e355fc1c03d1b7145d7d8f4a320801e2391f4bf1ef1ef3925c7c8",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "tools/test_rgb565.py": "bf52fce5e4f9fe6334dba29c1d5f9cd2195855146ba2a5feb0201a25c25bca44",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_scaler\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_scaler.log",
+      "log_sha256": "85e074705113ecd53a23ab07f6230c29cae15f495d6a23c08df5a4eba9822275",
+      "suite": "rgb565-tests",
+      "saved_log": "releases/rgb565_20261022/validation/rgb565-tests_rgb565_scaler.log"
+    },
+    {
+      "test": "rgb565_settings",
+      "passed": true,
+      "seconds": 0.11,
+      "inputs_sha256": {
+        "tests/tb_rgb565_settings.v": "296eddc80868b580b72f0759c1a67e4a29ae558dce77016b276f9233e5dafe86",
+        "common/photo_unified_settings_controller.v": "a2b7444b42f071dc800ea8927dfe6d7d45abcb71b7d23e16f1bdcd03b179938b",
+        "tools/test_rgb565.py": "bf52fce5e4f9fe6334dba29c1d5f9cd2195855146ba2a5feb0201a25c25bca44",
+        "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_settings\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\rgb565-tests\\rgb565_settings.log",
+      "log_sha256": "26799e314ce84a26226c5b4e540a7ad5de51181eb12f21d85ccd5609a045dca8",
+      "suite": "rgb565-tests",
+      "saved_log": "releases/rgb565_20261022/validation/rgb565-tests_rgb565_settings.log"
+    },
+    {
+      "test": "tb_audio_transport_repair",
+      "passed": true,
+      "seconds": 18.06,
+      "inputs_unchanged": true,
+      "inputs_sha256": {
+        "common/audio_ui/photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1",
+        "common/audio_ui/saixian_audio_repair.v": "6e0f69fc62861a59754a4da766fbba4c5c5b9f7b7f93f08082f6c3eef8ffb694",
+        "common/photo_audio_features.v": "b1d380c3f1f89afde07ab941b691bdfa4be23226ee880ab84dd782957ebc37d3",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "tests/tb_audio_transport_repair.v": "434ec0c3cebe69cce255cbcfe7f6d219a3aa1b1718740ff14a2bd02da08062ee"
+      },
+      "log_sha256": "f9e2a9e46276078ddc11071f3254ff329d8a4a3c331ad729270846017bd85eee",
+      "suite": "uart-tests",
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\uart-tests\\tb_audio_transport_repair.log",
+      "saved_log": "releases/rgb565_20261022/validation/uart-tests_tb_audio_transport_repair.log"
+    },
+    {
+      "test": "tb_boot_audio_sync",
+      "passed": true,
+      "seconds": 41.8,
+      "inputs_unchanged": true,
+      "inputs_sha256": {
+        "common/audio_ui/photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1",
+        "common/audio_ui/saixian_audio_repair.v": "6e0f69fc62861a59754a4da766fbba4c5c5b9f7b7f93f08082f6c3eef8ffb694",
+        "common/photo_audio_features.v": "b1d380c3f1f89afde07ab941b691bdfa4be23226ee880ab84dd782957ebc37d3",
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "common/photo_boot_screen.v": "394fee66adf031a9dc2bc65233181765058e631e7456171500546fdeafa10d14",
+        "tests/tb_boot_audio_sync.v": "1bcac0451d9b86d1f16d95d34a92180e782a6c07f107633ba17ab615f4217c3d"
+      },
+      "log_sha256": "606a482392c54a467c055838e4eea91d7906c80e1824a1bfc062541d3fe53147",
+      "suite": "uart-tests",
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\uart-tests\\tb_boot_audio_sync.log",
+      "saved_log": "releases/rgb565_20261022/validation/uart-tests_tb_boot_audio_sync.log"
+    },
+    {
+      "test": "tb_v4_audio_rate",
+      "passed": true,
+      "seconds": 4.08,
+      "inputs_unchanged": true,
+      "inputs_sha256": {
+        "common/photo_audio_link.v": "1bf064c19162537ce76c40b8664bdd1aef605c6711ccffc78672687d6a15e6ab",
+        "tests/tb_v4_audio_rate.v": "f080ab87c10d3a59093966dabb592779a82f356f52776a71261ab3cb16dd4ee9"
+      },
+      "log_sha256": "5afee3da9e89834b5bd08df93c17df0a05d0c2b6812f9ad4fadaab8cfc9b3630",
+      "suite": "uart-tests",
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\uart-tests\\tb_v4_audio_rate.log",
+      "saved_log": "releases/rgb565_20261022/validation/uart-tests_tb_v4_audio_rate.log"
+    },
+    {
+      "test": "tb_v4_uart_equivalence",
+      "passed": true,
+      "seconds": 39.2,
+      "inputs_unchanged": true,
+      "inputs_sha256": {
+        "common/photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df",
+        "tests/reference/v4_port/photo_uart.v": "8ab6334a3af1f5015c4dccad344f05c6a5f8f7d6d8da7727aed64f6ae2f7badd",
+        "tests/tb_v4_uart_equivalence.v": "740d73e9b84fea9453e53fdba1c6953a1f628e1c2f3a5e19299a6e251537077c"
+      },
+      "log_sha256": "2687b99b8d9783cce6c17047b29c7b1d5df5d7a207c27393689999d5f46122c6",
+      "suite": "uart-tests",
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\uart-tests\\tb_v4_uart_equivalence.log",
+      "saved_log": "releases/rgb565_20261022/validation/uart-tests_tb_v4_uart_equivalence.log"
+    },
+    {
+      "test": "cache",
+      "passed": true,
+      "seconds": 0.33,
+      "inputs_sha256": {
+        "common/fluid/water_cache.v": "162653dbe2c0ead67ca65fe689bfa3b21e711dd6d5556de698c758a2ac7afafe",
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "tests/fx11_water/tb_cache.v": "49114dd61d5a2ed8aa60a39227cbb73e6a3a2055306101c1bbe0737a3873e5d6",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "6cb6c6ec21a980acdec47a7c54e3fe72b0382f0ad452449f4191d0c5bfe1b91d",
+      "suite": "fx-tests",
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\cache.log",
+      "saved_log": "releases/rgb565_20261022/validation/fx-tests_cache.log"
+    },
+    {
+      "test": "controls",
+      "passed": true,
+      "seconds": 0.17,
+      "inputs_sha256": {
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "common/photo_unified_settings_controller.v": "a2b7444b42f071dc800ea8927dfe6d7d45abcb71b7d23e16f1bdcd03b179938b",
+        "common/saixian_hmi_uart.v": "cd27507bad545dc4ae0f04b275e78af524ce4200e216f311f8564f81f400a219",
+        "tests/fx11_water/tb_controls.v": "a60881f6651d7b5f0347abbdf83ff8d0dc1c07fb696c7678a96acaaeca01bdff",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "47cb58b03b02be48e0961132a01cd9a55912d04b0de32496dc473dad75ad9007",
+      "suite": "fx-tests",
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\controls.log",
+      "saved_log": "releases/rgb565_20261022/validation/fx-tests_controls.log"
+    },
+    {
+      "test": "effects",
+      "passed": true,
+      "seconds": 40.44,
+      "inputs_sha256": {
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_priority_map.v": "f646b1f41b25eddaec072533e1dffd4d1ced9738fd51121c1baec7861f31c100",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "tests/fx11_water/tb_effects.v": "ee55448f8dceb5b634a1a2b29ecfddeb743b34dad4688b1d795e0884af5bad4e",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "082633b4a78c6d175ceed2eb144b507331abd6bac415edcd10a0a76f5f6e965a",
+      "suite": "fx-tests",
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\effects.log",
+      "saved_log": "releases/rgb565_20261022/validation/fx-tests_effects.log"
+    },
+    {
+      "test": "fx_reader",
+      "passed": true,
+      "seconds": 162.5,
+      "inputs_sha256": {
+        "common/fluid/water_blend.v": "907f59518cfa02cbea456923c57ae7402551dd5e8a7fd8c7a748cfc40b9c7a24",
+        "common/fluid/water_cache.v": "162653dbe2c0ead67ca65fe689bfa3b21e711dd6d5556de698c758a2ac7afafe",
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_drop_small.v": "256019f9db84e617f6acbb2d60efcba636d2949343115e510c68be4d00bacea0",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_priority_map.v": "f646b1f41b25eddaec072533e1dffd4d1ced9738fd51121c1baec7861f31c100",
+        "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+        "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "tests/fx11_water/sdram_contract.v": "87fffbfb31d081a35e76eddeb169aff6f420b726c63879198da8e2c17ba9ea3b",
+        "tests/fx11_water/tb_fx_reader.v": "6daeba055349d1fa886400c53ca17d7fc6e2cfb29950725b6c94628cd3677ca1",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "812058d211a0f63dcdfee400c030803f22f22aee4ce06c366cf6a8a451e4cc74",
+      "suite": "fx-tests",
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\fx_reader.log",
+      "saved_log": "releases/rgb565_20261022/validation/fx-tests_fx_reader.log"
+    },
+    {
+      "test": "math",
+      "passed": true,
+      "seconds": 10.28,
+      "inputs_sha256": {
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_drop_small.v": "256019f9db84e617f6acbb2d60efcba636d2949343115e510c68be4d00bacea0",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "tests/fx11_water/tb_math.v": "152a5b3df66bba6d67aae5e9d1b3cab46841f1c4f53d850546e47f0e32d38476",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "c8d0f063c12e939662e366348229126851a8d847bf47354ad0490092849bf1a9",
+      "suite": "fx-tests",
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\math.log",
+      "saved_log": "releases/rgb565_20261022/validation/fx-tests_math.log"
+    },
+    {
+      "test": "reader",
+      "passed": true,
+      "seconds": 3.62,
+      "inputs_sha256": {
+        "common/fluid/water_blend.v": "907f59518cfa02cbea456923c57ae7402551dd5e8a7fd8c7a748cfc40b9c7a24",
+        "common/fluid/water_cache.v": "162653dbe2c0ead67ca65fe689bfa3b21e711dd6d5556de698c758a2ac7afafe",
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_drop_small.v": "256019f9db84e617f6acbb2d60efcba636d2949343115e510c68be4d00bacea0",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_priority_map.v": "f646b1f41b25eddaec072533e1dffd4d1ced9738fd51121c1baec7861f31c100",
+        "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+        "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "tests/fx11_water/sdram_contract.v": "87fffbfb31d081a35e76eddeb169aff6f420b726c63879198da8e2c17ba9ea3b",
+        "tests/fx11_water/tb_reader.v": "ba9f8e66d7eec1ec0040a0a7fcd49f0e21ef82ffd97ace8db7f9b8591e614308",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "6acb6f5ed00c60cc735c146d52cd47aaab160a6529577773f99d1d438317e273",
+      "suite": "fx-tests",
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\reader.log",
+      "saved_log": "releases/rgb565_20261022/validation/fx-tests_reader.log"
+    },
+    {
+      "test": "scene",
+      "passed": true,
+      "seconds": 0.12,
+      "inputs_sha256": {
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_scene.v": "ea6c180517f8c8916884f74f23c1db5a2005bc2cd9373dfcfe4e0faf1c590330",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "tests/fx11_water/tb_scene.v": "d5d5b9629cdc109a2e40635e146d087c971de40fffd00a67fdec2fec909c0d5a",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "8c7befb85f79b3fb5147f17a7650175dd032f182261f4b87d71c8266ae06de6b",
+      "suite": "fx-tests",
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\scene.log",
+      "saved_log": "releases/rgb565_20261022/validation/fx-tests_scene.log"
+    },
+    {
+      "test": "transition",
+      "passed": true,
+      "seconds": 0.24,
+      "inputs_sha256": {
+        "common/fluid/water_column_recip.mif": "453ae240a882ddcf8eb8a667735ff2873e29ede739fb43dd058b75f7aa19a96c",
+        "common/fluid/water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "common/fluid/water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "common/fluid/water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "common/fluid/water_fx_recip.mif": "758f921b298570bc50425015bcdf4025357c3025070553dd9c33c67f52a11035",
+        "common/fluid/water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "common/fluid/water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "common/fluid/water_inverse16.mif": "1e5f25f502d64b6117e8bd8ff92dd3542ef54001358029860a9d294540098500",
+        "common/fluid/water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "common/fluid/water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "common/fluid/water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "common/saixian_transition.v": "0db761825a5ca1a810f64b10757b83ba7e3cb4f371a9785441c2a477af321227",
+        "tests/fx11_water/tb_transition.v": "9b036b10466e213a53806633ee29145d94c2888641bf97e9a0b6d4da746cd09b",
+        "tests/reference/fx11_water/effects_reference.py": "224add7eca60578c4475900b703d56b1e47f3a36cf90a2b29601ccf2c48c4ac4",
+        "tests/reference/fx11_water/reference.py": "71c846c5f00994dbd2f06979a0df4b7fc90c142356f68b38cd56198b13574619",
+        "tools/fx11_vectors.py": "1bde1e8917e4515e46614aa144aa2cc21ba5d92866663d3f86958c9da06d296c",
+        "tools/test_fx11_water.py": "0b774fb6ad105ee4bb5067c21396cb45344f3bebe2fb3198629a920d16f3d378"
+      },
+      "external_inputs_sha256": {},
+      "stimuli_sha256": {
+        "effects_vectors.txt": "dbe3f66ce8f75d3043e9b593910cd9d09f0bfc979f65e5ece7a59c9e0ece4676",
+        "fx_reader_vectors.txt": "6f73a48e3998548842ade6b0b8d36c93c9b81c7a5e02cc6cbbb381ebbd59ab03",
+        "math_vectors.txt": "eeb0cfea62190996730166aa0c7f5dc78e2285989312c97f7a3ca82ac8a9c32e",
+        "reader_vectors.txt": "16d4dfca166b8de009b836a0289b16472ac635006bf8951138cc08ea238cae22",
+        "frame_checksums.hex": "4813087c89e50f925810cb967b1b990260800a3061c11ba67f420a541fde21cd"
+      },
+      "inputs_unchanged": true,
+      "log_sha256": "721dd0ff949b767fc27e7427f781f4e2276957eedd6a45efd08a5495299dd46c",
+      "suite": "fx-tests",
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\fx-tests\\transition.log",
+      "saved_log": "releases/rgb565_20261022/validation/fx-tests_transition.log"
+    },
+    {
+      "test": "native_bus",
+      "passed": true,
+      "inputs_unchanged": true,
+      "seconds": 300.3,
+      "inputs_sha256": {
+        "tests/tb_award_v5_bus.v": "7c660f7f8fda2100eea34889e5791c1285ecc041efb84465fa069006619147e0",
+        "common/photo_spotlight_player.v": "7c7bdefb355098208883a71d2eb1138c0e67f3d28a68eb2a5c4a2dae3bac6152",
+        "common/photo_award_memory.v": "0421eb047bc5a1654f78c3670b75f6f2d0931fe3832d18a2c8c72d0c4d87ce91",
+        "common/fluid/water_drop_small.v": "256019f9db84e617f6acbb2d60efcba636d2949343115e510c68be4d00bacea0",
+        "common/fluid/water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+        "common/fluid/water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "common/fluid/water_priority_map.v": "f646b1f41b25eddaec072533e1dffd4d1ced9738fd51121c1baec7861f31c100",
+        "common/fluid/water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "common/fluid/water_blend.v": "907f59518cfa02cbea456923c57ae7402551dd5e8a7fd8c7a748cfc40b9c7a24",
+        "common/fluid/water_cache.v": "162653dbe2c0ead67ca65fe689bfa3b21e711dd6d5556de698c758a2ac7afafe",
+        "common/fluid/water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb",
+        "src/board_a/user_source/hdl_source/SD/frame_read_write.v": "bc86f0d36dd660e97922ccb86a671412cfd41787d0454fd4330e43470b261adf",
+        "src/board_a/user_source/hdl_source/SD/frame_fifo_write.v": "2d77247259a858f1a752748d721c3db422b0be5c1d70a2ce6dc828a7dfa6a020",
+        "src/board_a/user_source/hdl_source/IP/afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "src/board_a/user_source/hdl_source/IP/afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+        "tools/test_award_v5.py": "903afeadcffbb7d32327c651d3485baeb3a1bdd4c9ea251520624c020c13a371",
+        "tools/prepare_award_v5.py": "c3da10065a19caf91d66a859fcf87f3f537c68d45d645d3cd27c3aa971d71e32",
+        "award_media/AWARD720.DLT": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5"
+      },
+      "external_inputs_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.2project\\tests\\reference\\accepted_v3\\AWARD720.DLT": "6ba3b06f56978615f436e680fd459e7113bceba6317dbe9fe1ab42d936358c27",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\sim_release\\eg4\\eg_logic_dram.v": "b620cebfe67f8829df3b737d1f75072b5f42bae7a2396b36616e85aa3cc9ea1e"
+      },
+      "stimuli_sha256": {
+        "award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+        "award_file.hex": "055731d3803478b8955b4ab76cc11b447aad47ac67d908f47a0a06b40fb41077",
+        "light_golden.hex": "41fabdd702bd9435ebaad67b28c18365cfe29442e4df925fe5a6e9e50296bacc",
+        "light_raw.hex": "f9306eb3216a0986b05e5151c1a2a16a9a2abc51058e336295ff2ec06f0a77d5",
+        "light_tail.hex": "17aa3ee96bbb2b71e19be2bc3d388870d59ad6ea1d8808e100bcf9f936156dbd",
+        "water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3"
+      },
+      "log_sha256": "6ad83eceaa0fdddb9b49be3c757be16f14d010e1423b9debcb0115516ca05469",
+      "suite": "award-tests",
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\award-tests\\native_bus.log",
+      "saved_log": "releases/rgb565_20261022/validation/award-tests_native_bus.log"
+    },
+    {
+      "test": "reader",
+      "passed": true,
+      "inputs_unchanged": true,
+      "seconds": 408.33,
+      "inputs_sha256": {
+        "tests/tb_award_v5_reader.v": "36fec2c55fc5ae98f72defefa698693547efee23288a9d8a7b90960444ef5994",
+        "common/photo_sd/photo_dlt_reader.v": "ec84458bc7160f3ad1031925c9e5ce7f748b6df95e46c465578b1af5296e2411",
+        "common/photo_sd/photo_dlt_header.v": "de847966c33258984f35ee4422220c828e92ad0d34283150e5204ba267762ce3",
+        "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+        "tools/test_award_v5.py": "903afeadcffbb7d32327c651d3485baeb3a1bdd4c9ea251520624c020c13a371",
+        "tools/prepare_award_v5.py": "c3da10065a19caf91d66a859fcf87f3f537c68d45d645d3cd27c3aa971d71e32",
+        "award_media/AWARD720.DLT": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5"
+      },
+      "external_inputs_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.2project\\tests\\reference\\accepted_v3\\AWARD720.DLT": "6ba3b06f56978615f436e680fd459e7113bceba6317dbe9fe1ab42d936358c27"
+      },
+      "stimuli_sha256": {
+        "award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+        "award_file.hex": "055731d3803478b8955b4ab76cc11b447aad47ac67d908f47a0a06b40fb41077",
+        "light_golden.hex": "41fabdd702bd9435ebaad67b28c18365cfe29442e4df925fe5a6e9e50296bacc",
+        "light_raw.hex": "f9306eb3216a0986b05e5151c1a2a16a9a2abc51058e336295ff2ec06f0a77d5",
+        "light_tail.hex": "17aa3ee96bbb2b71e19be2bc3d388870d59ad6ea1d8808e100bcf9f936156dbd",
+        "water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3"
+      },
+      "log_sha256": "4be2739a8a68f4aba0f9cf7a5ad80adbd307e18f0a08d3aacc0a987b53000ec4",
+      "suite": "award-tests",
+      "log": "E:\\Codex\\Work\\rgb565-only-20261022\\award-tests\\reader.log",
+      "saved_log": "releases/rgb565_20261022/validation/award-tests_reader.log"
+    }
+  ],
+  "removed_sources": [
+    "src/board_a/user_source/hdl_source/SD/frame_fifo_read.v"
+  ],
+  "files_sha256": {
+    "board_a_build.json": "111af352c45c2a242a2bf9d5082571b89827ff0b6e543e74b9fa968d650d0776",
+    "board_b_build.json": "f0668023a68ce604c39702fbe87105790842cf9d136275b9e7f0f5abf7ac0f85",
+    "PHOTO_BOARD_A_5_2.bit": "c3c95cbd0a729eafe5a43fdc90afba54db42169c91b3b0f880d110208b006050",
+    "PHOTO_BOARD_A_gate.area": "8c630054614e483559de33ec7f12132c1fdd90679397d51a316c873354a69aba",
+    "PHOTO_BOARD_A_phy.area": "9de7934c0ca1c747ef16f536bc46238811ebbe19f7f1fe2ed55c8415b8a3c7d3",
+    "PHOTO_BOARD_A_pr.timing": "cd2088e6393c5f3c8028e66af6777958fa39868342c40ec9207343178014c81d",
+    "PHOTO_BOARD_B_5_2.bit": "9914856ab9a7b9746c4d7b265c3d9b9654bba3c96db21aef0c6355e2bd2c03ff",
+    "PHOTO_BOARD_B_gate.area": "7ec19db6d91d7309ea9a02872b2fddb8694fc1fe4c88e7cb74d3d44f2c7c9ce8",
+    "PHOTO_BOARD_B_phy.area": "2136f16c3acd5a1020adee6b7e6b3e8785fc0791187d4b70b6a4a24575572d7e",
+    "PHOTO_BOARD_B_pr.timing": "de25446769a60d85e819eb5864a6e953e17737fde7541eba97dbbdd82628973e",
+    "validation/award-tests_native_bus.log": "6ad83eceaa0fdddb9b49be3c757be16f14d010e1423b9debcb0115516ca05469",
+    "validation/award-tests_reader.log": "4be2739a8a68f4aba0f9cf7a5ad80adbd307e18f0a08d3aacc0a987b53000ec4",
+    "validation/fx-tests_cache.log": "6cb6c6ec21a980acdec47a7c54e3fe72b0382f0ad452449f4191d0c5bfe1b91d",
+    "validation/fx-tests_controls.log": "47cb58b03b02be48e0961132a01cd9a55912d04b0de32496dc473dad75ad9007",
+    "validation/fx-tests_effects.log": "082633b4a78c6d175ceed2eb144b507331abd6bac415edcd10a0a76f5f6e965a",
+    "validation/fx-tests_fx_reader.log": "812058d211a0f63dcdfee400c030803f22f22aee4ce06c366cf6a8a451e4cc74",
+    "validation/fx-tests_math.log": "c8d0f063c12e939662e366348229126851a8d847bf47354ad0490092849bf1a9",
+    "validation/fx-tests_reader.log": "6acb6f5ed00c60cc735c146d52cd47aaab160a6529577773f99d1d438317e273",
+    "validation/fx-tests_scene.log": "8c7befb85f79b3fb5147f17a7650175dd032f182261f4b87d71c8266ae06de6b",
+    "validation/fx-tests_transition.log": "721dd0ff949b767fc27e7427f781f4e2276957eedd6a45efd08a5495299dd46c",
+    "validation/resource-tests_av_link.log": "c149958009e1a1616408da7320682bf1717b63a1452fe7dba6f41c4efc516a6a",
+    "validation/resource-tests_delay.log": "966c5768dc2e830417ec5b013b4ee773daf617b6ec76f6545585552060236106",
+    "validation/resource-tests_delay_vendor.log": "966c5768dc2e830417ec5b013b4ee773daf617b6ec76f6545585552060236106",
+    "validation/resource-tests_hybrid_fifo.log": "b52f914685cee49017c549152468361fbf501f3b0d8e6946139c4e4f23f6298b",
+    "validation/resource-tests_metadata.log": "36e6ca8d7a699011c79f8e89800a8b6c6d832a084c79bf7ff366bf3520106aa1",
+    "validation/resource-tests_typed_protocol.log": "51ebdbe696cf4272707f0d03de99677470687711b506bf0f1168f184c74935de",
+    "validation/rgb565-tests_rgb565_award_link.log": "b76003aece718183998d8271aad75689b916a89f6b4474c71cafaa596e3bbd69",
+    "validation/rgb565-tests_rgb565_award_sdram.log": "cda84bf69602b0eaed8ba33c9f4f79110e7e5d37fa8d78e24be084922991c454",
+    "validation/rgb565-tests_rgb565_equivalence.log": "0b758864f47e6550abbfae5a42b514ae60b7a10ab32945a3dfc808b3852eda51",
+    "validation/rgb565-tests_rgb565_link_abort.log": "1dd10d53310dccc1a7655d79b3da267599f695663d28950f82af923286bbc30b",
+    "validation/rgb565-tests_rgb565_processing.log": "f20958d0eeab4ce5342a8c61e190e410bbe9ec6daecb951937084219dd32398d",
+    "validation/rgb565-tests_rgb565_scaler.log": "85e074705113ecd53a23ab07f6230c29cae15f495d6a23c08df5a4eba9822275",
+    "validation/rgb565-tests_rgb565_settings.log": "26799e314ce84a26226c5b4e540a7ad5de51181eb12f21d85ccd5609a045dca8",
+    "validation/thumbnail-tests_award_control.log": "f10b7ac2f0e3315356c738e89033cfb64c5b2d9c9afa8b5de40862ddb7ff8f84",
+    "validation/thumbnail-tests_award_width.log": "62064d13c91d88058050c31fc075ff9a9a96a6a8afa2a1f55545394e0d0bcd43",
+    "validation/thumbnail-tests_bandwidth565.log": "cb45892fa0a77c4a194de032b337ae2a940f2901d45b1209735ee0cfffaddd96",
+    "validation/thumbnail-tests_blanking.log": "71efd7bd2fbacd41869aadf07f58e97c9216d67378636e25210387081fae10ee",
+    "validation/thumbnail-tests_control.log": "8c2d737de37ea6900534109d42accb2879394f0adfc98ac0e507ae4e7e1a1ab8",
+    "validation/thumbnail-tests_edge_eram.log": "441ac52d4eea4c0b0e2fa2af67c223b6dcbc561ebe8b8462c33b2e0ea84d5ed7",
+    "validation/thumbnail-tests_memory.log": "5854278c9ba4c01d2a1df08ad0bdf7dc2956532e99d906f68eadbf74903c896a",
+    "validation/thumbnail-tests_menu_geometry.log": "f845bf1ae310dd533d4dd5baf969cfa972390edcbfaa0a12e61d64ad84bbd5b6",
+    "validation/thumbnail-tests_overlay.log": "63eb1e4b1b6de6d2419a69b15fc41a449ad4bffd3da90031cbbbc9793d837460",
+    "validation/thumbnail-tests_phase.log": "e0788c0982dd79c8e41077a9e78ce630d19daea097116088127229b1794b3ea5",
+    "validation/thumbnail-tests_touch.log": "dd56642c64f8d853443cffd0267b48b9f7e7a311f02ab3f07e780b786a0d2451",
+    "validation/thumbnail-tests_vendor.log": "5854278c9ba4c01d2a1df08ad0bdf7dc2956532e99d906f68eadbf74903c896a",
+    "validation/uart-tests_tb_audio_transport_repair.log": "f9e2a9e46276078ddc11071f3254ff329d8a4a3c331ad729270846017bd85eee",
+    "validation/uart-tests_tb_boot_audio_sync.log": "606a482392c54a467c055838e4eea91d7906c80e1824a1bfc062541d3fe53147",
+    "validation/uart-tests_tb_v4_audio_rate.log": "5afee3da9e89834b5bd08df93c17df0a05d0c2b6812f9ad4fadaab8cfc9b3630",
+    "validation/uart-tests_tb_v4_uart_equivalence.log": "2687b99b8d9783cce6c17047b29c7b1d5df5d7a207c27393689999d5f46122c6"
+  }
+}

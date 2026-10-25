@@ -1,0 +1,34 @@
+[
+  {
+    "test": "eram_contract",
+    "passed": true,
+    "inputs_unchanged": true,
+    "seconds": 33.8,
+    "inputs_sha256": {
+      "tests/tb_eram_video_delay.v": "5aa6f8565e66556eb4915bf81bd3e46c00bfdb8213c1fb0065c151f253c6509a",
+      "tests/reference/award_v5/photo_display_pipe.v": "4cd9c09a2f814c7abfd3b86b30b6996b8cf23f53ba46dafc850fc4e438b00700",
+      "common/photo_display_pipe.v": "486e1dfd8daac50f40675171178ef8437c67b7d25615c43e1a89b03d4619d841",
+      "common/photo_award_render.v": "ccfabc867794a10488a5eaff9ffed86c03d9b0933f7138e975122186d03b7bce",
+      "tools/test_eram_delay.py": "b1085a238b0444756f4a53492eecbff68b7bfa8870aed4aa8c063bc93240ce6c"
+    },
+    "external_inputs_sha256": {},
+    "log_sha256": "30b49a6b303ee84d878346c2e89be8811ff6dcd6868f9fff05eed3f3f9d2044b"
+  },
+  {
+    "test": "eram_vendor_model",
+    "passed": true,
+    "inputs_unchanged": true,
+    "seconds": 53.08,
+    "inputs_sha256": {
+      "tests/tb_eram_video_delay.v": "5aa6f8565e66556eb4915bf81bd3e46c00bfdb8213c1fb0065c151f253c6509a",
+      "tests/reference/award_v5/photo_display_pipe.v": "4cd9c09a2f814c7abfd3b86b30b6996b8cf23f53ba46dafc850fc4e438b00700",
+      "common/photo_display_pipe.v": "486e1dfd8daac50f40675171178ef8437c67b7d25615c43e1a89b03d4619d841",
+      "common/photo_award_render.v": "ccfabc867794a10488a5eaff9ffed86c03d9b0933f7138e975122186d03b7bce",
+      "tools/test_eram_delay.py": "b1085a238b0444756f4a53492eecbff68b7bfa8870aed4aa8c063bc93240ce6c"
+    },
+    "external_inputs_sha256": {
+      "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95"
+    },
+    "log_sha256": "30b49a6b303ee84d878346c2e89be8811ff6dcd6868f9fff05eed3f3f9d2044b"
+  }
+]

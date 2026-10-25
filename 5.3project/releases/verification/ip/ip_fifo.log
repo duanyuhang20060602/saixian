@@ -1,0 +1,3 @@
+PASS configured 2048-sample PCM FIFO: 82010 exact reads, full/empty/wrap/reset and simultaneous read/write
+PASS configured 8192-sample PCM FIFO: 88154 exact reads, full/empty/wrap/reset and simultaneous read/write
+E:\Codex\Downloads\qiansai\cooperate\3.1Project\tests\tb_ip_audio_fifo.v:33: $finish called at 1800140000 (1ps)

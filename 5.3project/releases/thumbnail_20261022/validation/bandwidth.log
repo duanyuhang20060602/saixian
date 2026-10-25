@@ -1,0 +1,2 @@
+PASS concurrent SDRAM COLOR=1: 691200 exact main words, 14400 preview pixels, zero underflow, no steady preview SDRAM traffic, background words=16719
+E:\Codex\Work\thumbnail-5.0-20261021-172807\counter-source\tests\tb_thumbnail_bandwidth.v:64: $finish called at 17818357540 (1ps)

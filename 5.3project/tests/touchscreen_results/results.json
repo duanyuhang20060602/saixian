@@ -1,0 +1,148 @@
+[
+  {
+    "test": "tb_award_v5_control",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_award_v5_control.v": "447972c5ad12f136d809e70fbbd9aec04f286064e6ffd607e98222ee02805eda",
+      "common/photo_cached_control_a.v": "5978d5cec49546b9f45cf6de09e19367fb4000537d31ee1019d13fc1c4a8da54",
+      "common/photo_control.v": "27a341863d68d28c0b11141310c6ff9a13ae39e53c880313354dd447fe79f5ad",
+      "common/photo_uart.v": "fe87579e83c8233f5ee8e6fe3668d8914eddb977fba826d0fd2bd4a81201d82e",
+      "common/photo_link.v": "b5220867ab286874518d2918f7e1640e2829535fbdfdbfc8f022529e3cca530a"
+    }
+  },
+  {
+    "test": "tb_timer_equivalence",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_timer_equivalence.v": "58cb5163e0eb8dc138cd9d17aacaf3c5fb26af131a6c8300a6688dc177b8492e",
+      "common/photo_cached_control_a.v": "5978d5cec49546b9f45cf6de09e19367fb4000537d31ee1019d13fc1c4a8da54",
+      "tests/touchscreen_timer_reference.v": "f37adf2761417f274d887fae46f0e9a84b5123d74a86388a888361665ed6843e",
+      "common/photo_uart.v": "fe87579e83c8233f5ee8e6fe3668d8914eddb977fba826d0fd2bd4a81201d82e"
+    }
+  },
+  {
+    "test": "tb_spotlight_product",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_spotlight_product.v": "f807e08567502411e3cc0867b8e80523b30df57ff2b197be4aafe4fc98ae85fd",
+      "common/photo_spotlight_player.v": "7c7bdefb355098208883a71d2eb1138c0e67f3d28a68eb2a5c4a2dae3bac6152"
+    }
+  },
+  {
+    "test": "tb_resolution_position",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_resolution_position.v": "53263a740f0af1068f58f4e349b8a6cfd0ff2eb87d074aa523008906a2bd56a9",
+      "common/audio_ui/saixian_osd_overlay.v": "6c889c7d6da3adc00b41d7a29dac35de4c32b60717e7e93b9f3b36a4667d2598"
+    }
+  },
+  {
+    "test": "tb_next_button",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_next_button.v": "69a9f611630ff3d5323c52f46744a25fc2435fb7f70c23e42fa7536d267ba3f0",
+      "common/photo_touchpad.v": "3cc8c9b46b9b206b0c37353823ca9635cbde5cd9f77058a9a45664061bfdb956"
+    }
+  },
+  {
+    "test": "tb_touch_menu",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_touch_menu.v": "d56aa4eb24bd2117d2edd14632399cf15b3282bda95b9cc50ddfc13077129f5f",
+      "common/photo_settings_overlay.v": "50d219f8f1fc855a05b25c8bd1f6c07e085b02b3ed55b2d754bb458fa2391739",
+      "tests/touchscreen_menu_reference.v": "080ee25bb671fbe61909c3a9a74c46061484b65ae7ddb84617c1a68d12055147",
+      "tests/touchscreen_menu_font.v": "12fda21482b92b9b53b2db223dfd64334b6ec345a9345944381ffa64f7fd80bf",
+      "common/photo_menu_font.mif": "2bc93d7d132dcd858edf436d5c55e73896996cf89a2d224cbd8f78bf337d4c5d",
+      "tests/touchscreen_results/menu_font.hex": "ba163be9b68bed0aa7c67eaaf81c5806136eba6c20b8efa27cf19495bdb94858",
+      "src/board_a/user_source/hdl_source/photo_menu_text_lookup.hex": "754b5d6f555a8118b10d149314378f63d485fa63d13c0c3c8f6a2b9eb94864b9",
+      "src/board_a/user_source/hdl_source/photo_menu_text_lookup.mif": "6bd358ea5b82f7a65629595a1f4415d67d02936c2e7ecb704e6166dbfc6441b1"
+    }
+  },
+  {
+    "test": "tb_touch_top",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_touch_top.v": "d69cfc0279e5946ef38cc5580d56943fced78876bc407ba3c1e30cfd1d0c19ef",
+      "common/top_photo_a.v": "9976a143fc616079eec785ac7222db76e3965ea0fbbb95cb9e485ef659d87747",
+      "common/saixian_hmi_uart.v": "2c040152d6381f82ba34d6ef9933d4e08ac72d2eb60549a5289f9d35d7db5b00",
+      "common/photo_touchpad.v": "3cc8c9b46b9b206b0c37353823ca9635cbde5cd9f77058a9a45664061bfdb956",
+      "common/photo_unified_settings_controller.v": "f0eab33923e7cc80a081af70d141a283189aa5f3163a305532540906958e70b5",
+      "tests/touchscreen_results/top_hardware_shells.v": "c97a16d3be7e9ceb6ce3604fa1cba89d132bc0052cc4378178293e0689cbfb02"
+    }
+  },
+  {
+    "test": "tb_pointer_settings",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_pointer_settings.v": "0d0482574f77e47876b735240f3336ebf71ec73df2d2e16c76333ffdaf737ba4",
+      "common/photo_unified_settings_controller.v": "f0eab33923e7cc80a081af70d141a283189aa5f3163a305532540906958e70b5"
+    }
+  },
+  {
+    "test": "tb_pointer_overlay",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_pointer_overlay.v": "b57d0f4721fa979220c9531df7889d7f5c62832c7530859301f66fc25fffb6cb",
+      "common/photo_touchpad.v": "3cc8c9b46b9b206b0c37353823ca9635cbde5cd9f77058a9a45664061bfdb956"
+    }
+  },
+  {
+    "test": "tb_pointer_overlay_short",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_pointer_overlay_short.v": "8c7db968f9b5062d6bc8e19c031ba386d51a01075e9cd15847914b8a1ea25784",
+      "common/photo_touchpad.v": "3cc8c9b46b9b206b0c37353823ca9635cbde5cd9f77058a9a45664061bfdb956"
+    }
+  },
+  {
+    "test": "tb_pointer_composed",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_pointer_composed.v": "d9582337ad5bd62c29a9867bdd3655232f7137dd03d0721902632de831222721",
+      "common/photo_touchpad.v": "3cc8c9b46b9b206b0c37353823ca9635cbde5cd9f77058a9a45664061bfdb956",
+      "common/photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795"
+    }
+  },
+  {
+    "test": "tb_hmi",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_hmi.v": "c3c51d898e2d41e18861a5b18a4d20982b0d834dd2cccbcb783165df4831b20a",
+      "common/saixian_hmi_uart.v": "2c040152d6381f82ba34d6ef9933d4e08ac72d2eb60549a5289f9d35d7db5b00"
+    }
+  },
+  {
+    "test": "tb_v50_controls",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_v50_controls.v": "c9e2ac9fc13c49cc5ba5dbd32574e36d8f11dc409196627fd36582e489000dbd",
+      "common/saixian_hmi_uart.v": "2c040152d6381f82ba34d6ef9933d4e08ac72d2eb60549a5289f9d35d7db5b00",
+      "common/photo_unified_settings_controller.v": "f0eab33923e7cc80a081af70d141a283189aa5f3163a305532540906958e70b5"
+    }
+  },
+  {
+    "test": "tb_touch_uart",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_touch_uart.v": "1feca22c0efb5648d4a77593fb41f637624afabe0b53906bd0d4dff477f32c86",
+      "common/saixian_hmi_uart.v": "2c040152d6381f82ba34d6ef9933d4e08ac72d2eb60549a5289f9d35d7db5b00"
+    }
+  },
+  {
+    "test": "tb_touch_experiment",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_touch_experiment.v": "5058ca9b79d609a6eaa2fa1f9089d92cc624b48d5c32178a6c4505db7f51e0db",
+      "common/saixian_hmi_uart.v": "2c040152d6381f82ba34d6ef9933d4e08ac72d2eb60549a5289f9d35d7db5b00",
+      "common/photo_touchpad.v": "3cc8c9b46b9b206b0c37353823ca9635cbde5cd9f77058a9a45664061bfdb956"
+    }
+  },
+  {
+    "test": "tb_touchpad",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_touchpad.v": "20f4bc83c83cea24cf9f3f6347ec3a337e0cc6a0f459c0c12370341a0a42242c",
+      "common/photo_touchpad.v": "3cc8c9b46b9b206b0c37353823ca9635cbde5cd9f77058a9a45664061bfdb956"
+    }
+  }
+]

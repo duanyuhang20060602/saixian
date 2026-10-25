@@ -1,0 +1,2 @@
+PASS timer encoding: 60000 cycle comparisons, 16 states, timeout boundaries and wraparound
+E:\Codex\Downloads\qiansai\5.0project\tests\tb_timer_equivalence.v:80: $finish called at 600036000 (1ps)

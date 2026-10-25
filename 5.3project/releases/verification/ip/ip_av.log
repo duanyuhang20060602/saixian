@@ -1,0 +1,7 @@
+WARNING: E:\Codex\Downloads\qiansai\cooperate\3.1Project\tests\ip_vendor_ram_adapter.v:27: $readmemh: The behaviour for reg[...] mem[N:0]; $readmemh("...", mem); changed in the 1364-2005 standard. To avoid ambiguity, use mem[0:N] or explicit range parameters $readmemh("...", mem, start, stop);. Defaulting to 1364-2005 behavior.
+WARNING: E:\Codex\Downloads\qiansai\cooperate\3.1Project\tests\ip_vendor_ram_adapter.v:27: $readmemh: The behaviour for reg[...] mem[N:0]; $readmemh("...", mem); changed in the 1364-2005 standard. To avoid ambiguity, use mem[0:N] or explicit range parameters $readmemh("...", mem, start, stop);. Defaulting to 1364-2005 behavior.
+FFT scenario 0 band15=55 band24=48 max=55
+FFT scenario 1 band15=58 band24=0 max=58
+FFT scenario 2 band15=0 band24=0 max=0
+PASS real FFT stereo bands, antiphase, DC rejection, 256 stereo extrema
+E:\Codex\Work\cooperate-ip-global\tests\tb_ip_av.v:46: $finish called at 22322950000 (1ps)
