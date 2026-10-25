@@ -1,12 +1,14 @@
-// A static 112x63 RGB565 preview is generated from the accepted next-photo
-// cache during vertical blanking. Sample the centers of the uniform 80/7-pixel cells.
-module photo_thumbnail_memory(
+// Sample 112x63 cell centres from a completed RGB565 photo. One aligned
+// 64-word turn supplies every centre that lies in that block, amortizing
+// SDRAM response/recovery overhead without allocating another pixel buffer.
+module photo_thumbnail_memory #(parameter BURST_WORDS=64)(
  input clk,rst,init_done,refresh,busy,frame_busy,allow_access,other_request,
  output request,claim,read_command,output [20:0] address,
  input response_valid,input [31:0] response,
  input video_clk,video_request,video_cancel,video_blank,input [1:0] video_slot,
  output reg video_done,input [12:0] video_address,output [15:0] video_data
 );
+localparam BW=$clog2(BURST_WORDS);
 function [20:0] base;
  input [1:0] slot;
  begin case(slot)0:base=0;1:base=21'd1048576;default:base=21'd0;endcase end
@@ -16,65 +18,74 @@ reg [1:0] state;
 (* async_reg="true" *)reg [2:0] job_sync;
 (* async_reg="true" *)reg [1:0] slot_meta,slot_sync;
 (* async_reg="true" *)reg cancel_meta,cancel_sync,blank_meta,blank_sync;
-reg job_seen,active;
+reg job_seen,active,samples_done,block_done;
 reg [6:0] column;reg [5:0] row;
 reg [2:0] column_phase,row_phase;reg [12:0] cache_index;
 reg [20:0] pixel_address;
-reg [2:0] issued;reg [1:0] received;reg [3:0] recovery;
-// Source x,y=floor((80*n+40)/7). Accumulate word steps and the
-// half-word selector, avoiding pixel-clock division and DSP resources.
-// Last sampled word offset is 637; each next row starts at word offset 2.
+reg [20-BW:0] block_address;
+reg [BW:0] issued;reg [BW-1:0] received;reg [3:0] recovery;
 wire [20:0] pixel_step=column==111 ?
  (row_phase>=4 ? 21'd7045:21'd6405):(column_phase>=2 ? 21'd6:21'd5);
 assign request=active && blank_sync && !cancel_sync && allow_access && !other_request;
 assign claim=state!=IDLE;
-assign read_command=state==READ && issued<4 && !refresh;
-// Every owned turn is an aligned four-word burst. Upper bits never carry.
-assign address={pixel_address[20:2],issued[1:0]};
-wire write_sample=state==READ && response_valid && received==pixel_address[1:0];
-// The remainder selects the correct RGB565 pixel within the source word.
+assign read_command=state==READ && issued<BURST_WORDS && !refresh;
+assign address={block_address,issued[BW-1:0]};
+// Samples advance monotonically inside a block. Latch its end once rather
+// than compare the whole SDRAM address on every returned word.
+wire [BW+2:0] next_sample_offset={3'b000,pixel_address[BW-1:0]}+
+ (column_phase>=2 ? 7'd6:7'd5);
+wire leave_block=column==111 || next_sample_offset>=BURST_WORDS;
+wire write_sample=state==READ && response_valid && !samples_done && !block_done &&
+ received==pixel_address[BW-1:0];
 wire [15:0] sample=column_phase>=4 ? response[15:0]:response[31:16];
 photo_thumbnail_cache cache(.write_clk(clk),.write_enable(write_sample),.write_address(cache_index),.write_data(sample),
  .read_clk(video_clk),.read_address(video_address),.read_data(video_data));
 always @(posedge clk or posedge rst)
  if(rst)begin
   state<=IDLE;job_sync<=0;slot_meta<=0;slot_sync<=0;cancel_meta<=0;cancel_sync<=0;blank_meta<=0;blank_sync<=0;
-  job_seen<=0;active<=0;column<=0;row<=0;pixel_address<=0;
+  job_seen<=0;active<=0;samples_done<=0;block_done<=0;column<=0;row<=0;pixel_address<=0;block_address<=0;
   issued<=0;received<=0;recovery<=0;video_done<=0;column_phase<=6;row_phase<=5;cache_index<=0;
  end else begin
   job_sync<={job_sync[1:0],video_request};slot_meta<=video_slot;slot_sync<=slot_meta;
   cancel_meta<=video_cancel;cancel_sync<=cancel_meta;blank_meta<=video_blank;blank_sync<=blank_meta;
+  // Advance only when this response contains the next exact sample. Other
+  // words in the same burst are discarded; no image quality is reduced.
+  if(write_sample)begin
+   if(leave_block)block_done<=1;
+   if(row==62 && column==111)samples_done<=1;
+   else begin
+    pixel_address<=pixel_address+pixel_step;cache_index<=cache_index+1'b1;
+    if(column==111)begin
+     column<=0;row<=row+1'b1;column_phase<=6;
+     row_phase<=row_phase>=4 ? row_phase-3'd4:row_phase+3'd3;
+    end else begin
+     column<=column+1'b1;
+     column_phase<=column_phase>=2 ? column_phase-3'd2:column_phase+3'd5;
+    end
+   end
+  end
   case(state)
    IDLE:if(job_sync[2]!=job_seen)begin
-    job_seen<=job_sync[2];active<=!cancel_sync;
+    job_seen<=job_sync[2];active<=!cancel_sync;samples_done<=0;
     column<=0;row<=0;pixel_address<=base(slot_sync)+21'd3202;
     column_phase<=6;row_phase<=5;cache_index<=0;
     if(cancel_sync)video_done<=job_sync[2];
    end else if(active && cancel_sync)begin active<=0;video_done<=job_seen;end
    else if(request && init_done && !refresh && !busy && !frame_busy)begin
-    state<=READ;issued<=0;received<=0;
+    state<=READ;issued<=0;received<=0;block_done<=0;block_address<=pixel_address[20:BW];
    end
    READ:begin
     if(read_command)issued<=issued+1'b1;
     if(response_valid)begin
      received<=received+1'b1;
-     if(received==3)begin state<=RECOVER;recovery<=0;end
+     if(received==BURST_WORDS-1)begin state<=RECOVER;recovery<=0;end
     end
    end
    RECOVER:if(recovery==10)begin
     state<=IDLE;
-    if(row==62 && column==111)begin active<=0;video_done<=job_seen;end
-    else begin
-     pixel_address<=pixel_address+pixel_step;
-     cache_index<=cache_index+1'b1;
-     if(column==111)begin
-      column<=0;row<=row+1'b1;column_phase<=6;
-      row_phase<=row_phase>=4 ? row_phase-3'd4:row_phase+3'd3;
-     end else begin
-      column<=column+1'b1;
-      column_phase<=column_phase>=2 ? column_phase-3'd2:column_phase+3'd5;
-     end
-    end
+    // A cancellation is acknowledged only after every issued response and
+    // recovery clock drained. The source slot stays pinned until then.
+    if(samples_done || cancel_sync)begin active<=0;video_done<=job_seen;end
    end else recovery<=recovery+1'b1;
    default:state<=IDLE;
   endcase
@@ -183,6 +194,8 @@ always @*case(ty)
 endcase
 wire ink=heading && x>=X+4 && x<X+28 && y>=Y-10 && y<Y-3 && letters[23-tx];
 wire [23:0] rgb={data[15:11],data[15:13],data[10:5],data[10:9],data[4:0],data[4:2]};
-assign rgb_out=visible && border ? 24'h52c4ff:visible && ink ? 24'hffffff:
- visible && heading ? 24'h10283c:visible && image_area ? rgb:rgb_in;
+// Select the local colour before the single visibility gate. Explicit areas
+// preserve clipped/edge layouts as well as the production right-side panel.
+wire [23:0] panel_rgb=border ? 24'h52c4ff:heading ? (ink ? 24'hffffff:24'h10283c):rgb;
+assign rgb_out=visible && (border || heading || image_area) ? panel_rgb:rgb_in;
 endmodule

@@ -89,12 +89,15 @@ reg frame_extended,frame_relief;wire [20:0] final_count=frame_relief ? 21'd19701
 reg [2:0] state;reg [20:0] count;reg [15:0] first;reg [31:0] crc;
 reg ack_meta,ack_sync,fin_meta,fin_sync,fin_seen;reg [2:0] settle;
 reg ready_reg;
+// Accept the next high half while the preceding complete word drains.
+// The odd half still waits until no unconsumed complete word is pending.
+wire can_receive=state==RECEIVE && !full && (!write_en || !count[0]);
 // Return a registered ready on the falling edge, so it has half a clock
 // to reach B before its rising-edge decision. A uses that same advertised
 // permission at the following rising edge; a pending word can be held full.
 always @(negedge clk or posedge rst)
- if(rst)ready_reg<=0;else ready_reg<=state==RECEIVE && !full && !write_en;
-assign ready=LEGACY_TIMING ? (state==RECEIVE && !full && !write_en):ready_reg;
+ if(rst)ready_reg<=0;else ready_reg<=can_receive;
+assign ready=LEGACY_TIMING ? (can_receive):ready_reg;
 assign armed=state==RECEIVE;assign busy=state!=IDLE;assign frame_crc=ENABLE_CRC ? ~crc:32'd0;
 always @(posedge clk or posedge rst)begin
  if(rst)begin frame_relief<=0;frame_extended<=0;state<=IDLE;count<=0;first<=0;crc<=32'hffffffff;write_req<=0;write_en<=0;write_data<=0;done<=0;fault<=0;fault_detail<=0;ack_meta<=0;ack_sync<=0;fin_meta<=0;fin_sync<=0;fin_seen<=0;settle<=0;end

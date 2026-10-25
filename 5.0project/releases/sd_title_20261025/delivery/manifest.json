@@ -1,0 +1,162 @@
+{
+  "base_commit": "6901498b70d02bc61a894e229879605287c6a47d",
+  "hardware_validation": "pending",
+  "passed_current_cases": 16,
+  "config": {
+    "filename": "TITLE.BIN",
+    "bytes": 1024,
+    "maximum_characters": 16,
+    "version": 1,
+    "shared_title_and_ticker": true,
+    "glyph_range": [
+      96,
+      111
+    ],
+    "scan_limit_bytes": 536870912,
+    "filesystem_parser": false,
+    "update": "Use the tool to update the same existing SD file in place, then restart both boards."
+  },
+  "reused_verified_cases": [
+    "memory",
+    "overlay",
+    "cancel",
+    "pointer",
+    "arrow_removed",
+    "new_phase",
+    "touch",
+    "source_lock"
+  ],
+  "patch_apply_verified": true,
+  "boards": [
+    {
+      "board": "a",
+      "resources": {
+        "lut": 18275,
+        "reg": 12458,
+        "bram": 64,
+        "bram32k": 16,
+        "dsp": 29
+      },
+      "resource_delta": {
+        "lut": 183,
+        "reg": 59,
+        "bram": 0,
+        "bram32k": 0,
+        "dsp": 0
+      },
+      "timing_ns": {
+        "SWNS": 0.063,
+        "STNS": 0.0,
+        "HWNS": 0.027,
+        "HTNS": 0.0
+      },
+      "bit_sha256": "c6dae0901151c3763872c6af67148cbb6944bcfe9ed9281cfc3181b45fa0e310"
+    },
+    {
+      "board": "b",
+      "resources": {
+        "lut": 15383,
+        "reg": 10300,
+        "bram": 46,
+        "bram32k": 12,
+        "dsp": 14
+      },
+      "resource_delta": {
+        "lut": 209,
+        "reg": 222,
+        "bram": 2,
+        "bram32k": 0,
+        "dsp": 0
+      },
+      "timing_ns": {
+        "SWNS": 0.133,
+        "STNS": 0.0,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      },
+      "bit_sha256": "fac51a89854d9977530fed54d96d640e1033abbfd7d11f2fe8dd176f64ed5c99"
+    }
+  ],
+  "source_files_sha256": {
+    "5.0project/common/audio_ui/saixian_font_rom.v": "70f3d43ad5728a35227402439eefa3dbfe1f8918096af1eea41d17c056a07494",
+    "5.0project/common/audio_ui/saixian_osd_overlay.v": "e37404d19a1493c00718e2d4e43e6c3f77823a26cbafd5196ff756ed90858211",
+    "5.0project/common/fluid/water_priority_map.v": "a0758d83706f533f70804eeebba99a40fa11233ece2f228833ccef9a8ea36ea6",
+    "5.0project/common/photo_award_render.v": "ed40fe67d9890bd6671d37c24d8b1ae20c4b6a54a57d860c83b68eea5569b2e6",
+    "5.0project/common/photo_cached_control_a.v": "cd804cf6301774b1bbcc2190b3c231abbf340ac9d523f624b7c8ab1a5d4093f1",
+    "5.0project/common/photo_control.v": "725efb5004cec74c0e9b15d4b0395e8ba2224d7f0a6ba27e05c810e59ba37230",
+    "5.0project/common/photo_sd_cache.v": "381c818bf3896db793743b15ebe9388f42f33b789ad6d674cf33d7cff318484b",
+    "5.0project/common/photo_sd_title_store.v": "dacc48d4a16fceaa01bc9f0dee86881abd3da420cbdc07273ea8733102ad6484",
+    "5.0project/common/top_photo_a.v": "d350ab5b75bced64077318674ba696ff02b4ecc582b28e3fd2dbd5215eca39e3",
+    "5.0project/common/top_photo_b.v": "9a7c97b6c6bd62087d7e6b4dcd0b2b605e6d36246e880577433c0e3be6f40c6f",
+    "5.0project/sd_config/README.md": "ea2556b6eb31ab4020c9ba457ef42796ac984cf496a5ca7d53dce38cdcaaaa15",
+    "5.0project/sd_config/TITLE.BIN": "51eb608944a934756517668e2411ae846603bdb0e6efcbf480b0d7169deccdb9",
+    "5.0project/sd_config/TITLE.txt": "927fdb9dfa5d4cd5bc9577faa02558e5c3a1eb97bc28e717ab73a39267db9184",
+    "5.0project/src/board_b/td_project/PHOTO_BOARD_B.al": "c02bb6c5a3f81f7ee86f14d974a98a23e3630af3e575f9a99f18d075c8064818",
+    "5.0project/src/board_b/td_project/sources.json": "53a38948a8cb36f4310acbac83213cf31eed502bbd01a242d1df089e87b35349",
+    "5.0project/tests/reference/sd_title/photo_award_notice.v": "6edb5dbb36b3ae4a5e572a07b7ec46e976fc05c37d3f8af61788e08031c3c04e",
+    "5.0project/tests/reference/sd_title/saixian_osd_overlay.v": "ed2b15a978294d7d9160fedb4494984c1d7645ba448324f32420fb6cc7624eed",
+    "5.0project/tests/reference/sd_title/water_priority_map.v": "d07affe40d94da2ef9cb66c73a958505c78e28a871979a26955b85a6a69bdfff",
+    "5.0project/tests/tb_sd_title_concurrent.v": "5350692c08353e5107ec888a5447d8670a3108469b0f94f27e1044350f22c281",
+    "5.0project/tests/tb_sd_title_first_word.v": "166b4334e7cd075531c03c01f0ef309e709810989a5afd3bb800b03a1720aed1",
+    "5.0project/tests/tb_sd_title_map_equivalence.v": "4377eb0f40805468ebda76c8708b1f58c91bd16d29ae677ac08f09884513713d",
+    "5.0project/tests/tb_sd_title_media.v": "418ed7439d5fb6ce6a70a627913ee0a0fe21ef608dafdd8f14d7f39aa849ffca",
+    "5.0project/tests/tb_sd_title_notice_equivalence.v": "bc9265ab1d69683bc12ed78170b9dd4d3a330a04389b4d271e422b07aac4a168",
+    "5.0project/tests/tb_sd_title_osd.v": "90ef5d62418fd46b05b1daafce940a70b39ead8a3cd3956a7818670f7ead33ea",
+    "5.0project/tests/tb_sd_title_protocol.v": "81e76809f91664f7b9951d415c87163580e7f565c87dc6fef6eadda7818662ad",
+    "5.0project/tests/tb_sd_title_store.v": "bc67277225c176b8391aee743902196fc48fb1d5652a05f9d6755dbc1f9ba35a",
+    "5.0project/tests/title_font_ram_model.v": "5645c2efe210627dad2e9d131a1a400751b0794b31719ceb3d70b80c6b6e0e87",
+    "5.0project/tools/configure_projects.py": "5757bb4f7408f595025a512ed1704293e70615c5f813d8334edb1b8a3eb0ba2f",
+    "5.0project/tools/configure_sd_title.cmd": "3a9fc34add9b61b16cc9570042dde02ffec3feac1d87f58d273de68a538af8b4",
+    "5.0project/tools/configure_sd_title.py": "f6c93dd5664b089a41effbb92baec57b9c127da5a1a5e2627cf6fe6b273902ac",
+    "5.0project/tools/test_sd_title.py": "68b24404cf81b86ab31305d269461c214de52da1c43e0d9c241d5e65dd3d6884",
+    "5.0project/tools/test_sd_title_concurrent.py": "658b6faa2a9d3308da33cebbd938e0bf840c2786638619ab0452c4b11b3dfa9a",
+    "5.0project/tools/test_sd_title_first_word.py": "cdc87c35cba094d9323f08bd93a8c27f4c0c95316716074a3c0399dd012a881f",
+    "5.0project/tools/test_sd_title_map_equivalence.py": "949c16cb57a921f8d8c61e626a8e183a983566347187073054a92ac04d71ba12",
+    "5.0project/tools/test_sd_title_media.py": "3c64649ca32acdb1ab7097207197a4ee2ab8b258ff23f805ebcb6e26f633c4fa",
+    "5.0project/tools/test_sd_title_notice_equivalence.py": "856475a08e744f17f6b27a80f28b8d3abb1e8b12e10618cdf007d635ccc4f1a0",
+    "5.0project/tools/test_sd_title_osd.py": "6f1d0f751c0dea406a1c9bbcc8324a7b9c0a4f52f8f612c95f76b8e333692ff7"
+  },
+  "files_sha256": {
+    "baseline_thumbnail_manifest.json": "2816e147ac5edc1290ec0a741eebcc72a288b8af34af73188d83d2e030c1fbfd",
+    "README.md": "94b7a53a3f18b411b147b938a55ef1c35a613ec3b6b4b058804ec17abaf21255",
+    "SD_TITLE_FROM_6901498.patch": "a7248efd963bcb77592506dc73906261b41750d675f859eafd279849de0496d1",
+    "board_a/PHOTO_BOARD_A_phy.area": "5ed99aa1ddeabcce682fed5a07f5b27b4ab42f5b5c695950f8bdefdddffb7b3c",
+    "board_a/PHOTO_BOARD_A_pr.timing": "85493a3cd26ab32b90193ec64dc70ef036d396ed4f91dc7c22cd68cd386ee697",
+    "board_a/PHOTO_BOARD_A_SD_TITLE_CANDIDATE.bit": "c6dae0901151c3763872c6af67148cbb6944bcfe9ed9281cfc3181b45fa0e310",
+    "board_a/result.json": "fcdb257f809973f84d9d132975b24d249aee2049cf9727a6fc71e5df81fb2828",
+    "board_b/PHOTO_BOARD_B_phy.area": "12da08bffe6f470ff77279b758c38c0361b42f8878a7ff3073c1381fda8cbff5",
+    "board_b/PHOTO_BOARD_B_pr.timing": "8786f16f7c8fbe3d0b33d416aefab94e8784f2be62feac32e4437a9ff3d31011",
+    "board_b/PHOTO_BOARD_B_SD_TITLE_CANDIDATE.bit": "fac51a89854d9977530fed54d96d640e1033abbfd7d11f2fe8dd176f64ed5c99",
+    "board_b/result.json": "e3cfd34f738f730b0f3302d66f3253da6e3dc0f32c24fde77f227f767caa11d1",
+    "title_tool/configure_sd_title.cmd": "3a9fc34add9b61b16cc9570042dde02ffec3feac1d87f58d273de68a538af8b4",
+    "title_tool/configure_sd_title.py": "f6c93dd5664b089a41effbb92baec57b9c127da5a1a5e2627cf6fe6b273902ac",
+    "title_tool/README.md": "ea2556b6eb31ab4020c9ba457ef42796ac984cf496a5ca7d53dce38cdcaaaa15",
+    "title_tool/TITLE.BIN": "51eb608944a934756517668e2411ae846603bdb0e6efcbf480b0d7169deccdb9",
+    "title_tool/TITLE.txt": "927fdb9dfa5d4cd5bc9577faa02558e5c3a1eb97bc28e717ab73a39267db9184",
+    "validation/sd-title-aligned-osd-20261025/osd.log": "e548db4649261f2a5b7e1556ca7e400b53d942dcf472ea57d714b0b9e8041b6f",
+    "validation/sd-title-aligned-osd-20261025/results.json": "f8d807c7f23097678b133e161138193265f0f800725927d58e2b915d26f26abc",
+    "validation/sd-title-aligned-tests-20261025/protocol.log": "4e9147f33d4db27fb9b8b59b217cdbcd80235346315332955084adf27a4410ed",
+    "validation/sd-title-aligned-tests-20261025/results.json": "48522bb89c464c941c21cf3778f9a32b8b5dbf8093c51d88240b912b1e604a75",
+    "validation/sd-title-aligned-tests-20261025/store.log": "0c13943aeac94850b00aea5bcb8de6d8a477570a5914bccbca0ff41fa23c37d8",
+    "validation/sd-title-first-word-20261025/first_word.log": "a065ccf74ed31c85ff80e39ec60e929b89e0d0573f971ecb516abba4c316e2cb",
+    "validation/sd-title-first-word-20261025/results.json": "78db4de30dc25e50a23c15d698b6d52a3250b7a74312aa0e1cc1506930e1f821",
+    "validation/sd-title-map-equivalence-20261025/map_equivalence.log": "2cbf8f24a1cc8bdfe4819e465d4c89a36a0916257deb693f1e8919b43da1c160",
+    "validation/sd-title-map-equivalence-20261025/results.json": "073eccdb1f74525b585a741e83db4f2caa2d8a400d104e52cc36a6e0ce040c8f",
+    "validation/sd-title-notice-equivalence-r2-20261025/notice_equivalence.log": "f3ae3d0ea4b255602d5c16ed3611348dc3c7660c7a42bb138a775c6cfec6d16f",
+    "validation/sd-title-notice-equivalence-r2-20261025/results.json": "5b5ddb010fa1f262e8134bbafb2eb4259226db76f5fa1da0a0bcdef127a5babd",
+    "validation/sd-title-retimed-concurrent-20261025/concurrent.log": "0b0ff2318e983c5fded340ae38cffccfcacbd61861db3f49d0693afb244d23a7",
+    "validation/sd-title-retimed-concurrent-20261025/results.json": "b6b5dbb9fcc814f3d66f517034f7c89bfb58c3feaa36abdc0d7a647258e5ab64",
+    "validation/sd-title-retimed-media-20261025/media.log": "e38f48fb6474e3a65715137a19bfeccbbc958b12de4d99e021b48e0c17739f7b",
+    "validation/sd-title-retimed-media-20261025/results.json": "f274eaf7742d7df82ad2fb4751e0290810fb0d3a6c8bcd75fd3c42540eadd031",
+    "validation/sd-title-source-lock-20261025/results.json": "a9be8fa2c1c9a2555be8db007a509908d0e798be3b99b8dd5b51a01d0e5e9a9d",
+    "validation/sd-title-source-lock-20261025/source_lock.log": "8298155653fd2d84592c6b161563f69cbc1fc628c669f3ecf23546e76ab555e4",
+    "validation/sd-title-thumbnail-unit-20261025/arrow_removed.log": "033087a4371697ceb7c9549258377968763861f5c5ed366b46437a590279f5d7",
+    "validation/sd-title-thumbnail-unit-20261025/cancel.log": "7b94dd7b515aedb5cd945633e1dc6a6b75687e8c7aac1183aa1f63d268484e03",
+    "validation/sd-title-thumbnail-unit-20261025/memory.log": "6bf55e52a99b564c90e5ff17f79a5675d170bc4a0e0bc4be5560407c25a1d3e0",
+    "validation/sd-title-thumbnail-unit-20261025/new_phase.log": "210333d91ab9ba9f08269eed6e6f8ae07af518ba577e5b624b62e8a8c7e9a6f2",
+    "validation/sd-title-thumbnail-unit-20261025/overlay.log": "f62dd0b3f03df53d26c005ed77a8438eb0895e251457f8ab0368995bc54ceda9",
+    "validation/sd-title-thumbnail-unit-20261025/pointer.log": "fc7e992279c63e3b1051ba9f76fe80d3c5561636c7960bc7dcf69e2048c842ee",
+    "validation/sd-title-thumbnail-unit-20261025/results.json": "2a2da770d2c5fa2e3b1fb6a1d165a5d9844d1f6e0ffce2ed936fcf41c76d179b",
+    "validation/sd-title-thumbnail-unit-20261025/touch.log": "d10ac4bc468c6b3966ebba87e1d45ee6f7a8db04f7f970d2565cceef8bc9f3a7"
+  }
+}

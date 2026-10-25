@@ -50,7 +50,7 @@ for role,top in [('board_a','top_photo_a'),('board_b','top_photo_b')]:
     paths=[p for p in paths if Path(p).name not in excluded | replacements]
     shared=['photo_color_format.v','photo_uart.v','photo_link.v','photo_control.v','photo_status.v',top+'.v']
     if role=='board_a':shared+=['photo_audio_link.v','photo_audio_features.v','audio_ui/photo_audio_cue_samples.v','audio_ui/saixian_event_controller.v','audio_ui/saixian_osd_overlay.v','audio_ui/saixian_font_rom.v','audio_vendor/audio_arc_calculate.v','audio_vendor/hdmi_1_4b_transmitter_core_wrapper.enc.v','photo_settings_overlay.v','photo_unified_settings_controller.v','photo_menu_font.v','photo_cached_control_a.v','saixian_transition.v','photo_processing.v','photo_display_pipe.v','saixian_hmi_uart.v','saixian_key_debounce.v','photo_auto_advance.v']
-    else:shared+=['photo_audio_link.v','photo_audio_features.v','audio_ui/photo_audio_cue_samples.v','photo_sd_audio_stream.v','photo_sd_cache.v','photo_processing.v','photo_b_processing.v']
+    else:shared+=['photo_audio_link.v','photo_audio_features.v','audio_ui/photo_audio_cue_samples.v','photo_sd_audio_stream.v','photo_sd_cache.v','photo_sd_title_store.v','photo_processing.v','photo_b_processing.v']
     shared+=['photo_av_receiver.v' if role=='board_a' else 'photo_av_metadata.v']
     shared+=['fluid/'+p.name for p in sorted((ROOT/'common/fluid').glob('*.v')) if p.name!='water_pack.v'] if role=='board_a' else ['fluid/water_pack.v']
     if role=='board_b':shared+=['audio_ui/saixian_audio_visualizer.v','audio_ui/saixian_audio_repair.v']

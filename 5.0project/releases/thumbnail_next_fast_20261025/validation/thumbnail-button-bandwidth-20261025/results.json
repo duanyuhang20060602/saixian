@@ -1,0 +1,32 @@
+{
+  "base": "transfer-speed candidate based on 390690f",
+  "cases": [
+    {
+      "test": "bandwidth",
+      "passed": true,
+      "seconds": 454.08,
+      "inputs_sha256": {
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\thumbnail-button-bandwidth-20261025\\bandwidth.v": "bb286391934a20baa9a2cb79a660c90c652085a910ca2403c403a48a94bdcd2f",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\common\\photo_thumbnail.v": "d9d390cbc745cedce4d5f56148b16d07db9885701cf14f5ad4562fa81c240f3d",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\common\\photo_award_memory.v": "1be0c8ecc7fe974b7eb9f294883cea34c8db0acdd00ead25e31996f6b13a0185",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\common\\photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\src\\board_a\\user_source\\hdl_source\\frame_store.v": "588633043fc3645057e2cbebed7614a5ad853a585bac29eaa24d267ffa954cce",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\src\\board_a\\user_source\\hdl_source\\SD\\frame_read_write.v": "bc86f0d36dd660e97922ccb86a671412cfd41787d0454fd4330e43470b261adf",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\src\\board_a\\user_source\\hdl_source\\SD\\frame_fifo_write.v": "2d77247259a858f1a752748d721c3db422b0be5c1d70a2ce6dc828a7dfa6a020",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\src\\board_a\\user_source\\hdl_source\\IP\\afifo_32_16_256.v": "c1d591f3a32c7996961650b96327424be2c42fea8fb9eaa1c8460f7c5170d2bd",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\src\\board_a\\user_source\\hdl_source\\IP\\afifo_16_32_256.v": "2a6b5deb519e5bfa5cabb54afdad2c23212cfc9ab3fde49c652468da364d15f8",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\common\\fluid\\water_drop_small.v": "d31aa747c19bacf87400d55f9b5786712b2c3120985874a44842952bdc9c3e00",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\common\\fluid\\water_reader.v": "3a46e9b2b60c70da251089e22c9e00f7c0d181b6cf3b5f500253e7e82613a0fb",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\common\\fluid\\water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\common\\fluid\\water_priority_map.v": "8a1680b4734b41dc00f92c7721931381925b3526dcf87b00a3d63999c83a8e8b",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\common\\fluid\\water_surface.v": "bcb7647d09c24aecbd3e5fae7c601ae7c6ee934202db3cab9050bc8c215ad8f3",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\common\\fluid\\water_blend.v": "02b9ac8df414a7252263e6dc4f863bbc801e09dd793f7e85dd3282b8bc41b3d7",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\common\\fluid\\water_cache.v": "1634fa246c169facdba844c5e255efed7363a5bceb1954bd45ef5db851fce33a",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\common\\fluid\\water_reconstruct.v": "3fcca273af8c2f7bc89bef731494c5ed180fc95173b8944c9315fa581670f2cb",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\tests\\ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95"
+      },
+      "log_sha256": "52a31ccdcdf408cfcdade92d697df20e0fcff29e788094e76a6c43177def2597"
+    }
+  ]
+}

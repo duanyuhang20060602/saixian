@@ -1,0 +1,18 @@
+{
+  "cases": [
+    {
+      "test": "media_wiring",
+      "passed": true,
+      "seconds": 0.2,
+      "inputs_sha256": {
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\tests\\tb_sd_title_media.v": "418ed7439d5fb6ce6a70a627913ee0a0fe21ef608dafdd8f14d7f39aa849ffca",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\photo_sd_cache.v": "381c818bf3896db793743b15ebe9388f42f33b789ad6d674cf33d7cff318484b",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\photo_sd_title_store.v": "dacc48d4a16fceaa01bc9f0dee86881abd3da420cbdc07273ea8733102ad6484",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\sd-title-retimed-media-20261025\\hardware_shells.v": "59d15606a3710d1f25a5bcd67445a96271e8347e20f4817928c93706a88a2380",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\tools\\test_sd_title_media.py": "3c64649ca32acdb1ab7097207197a4ee2ab8b258ff23f805ebcb6e26f633c4fa",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\sd-title-retimed-media-20261025\\title_records.hex": "89a17a358ace5b5e9416f35e2a1c4628b1df676d70a405a984570b4fad94be6b"
+      },
+      "log_sha256": "e38f48fb6474e3a65715137a19bfeccbbc958b12de4d99e021b48e0c17739f7b"
+    }
+  ]
+}

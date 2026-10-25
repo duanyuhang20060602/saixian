@@ -1,0 +1,16 @@
+{
+  "cases": [
+    {
+      "test": "notice_equivalence",
+      "passed": true,
+      "seconds": 4.03,
+      "inputs_sha256": {
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\tests\\tb_sd_title_notice_equivalence.v": "bc9265ab1d69683bc12ed78170b9dd4d3a330a04389b4d271e422b07aac4a168",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\photo_award_render.v": "ed40fe67d9890bd6671d37c24d8b1ae20c4b6a54a57d860c83b68eea5569b2e6",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\tests\\reference\\sd_title\\photo_award_notice.v": "6edb5dbb36b3ae4a5e572a07b7ec46e976fc05c37d3f8af61788e08031c3c04e",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\tools\\test_sd_title_notice_equivalence.py": "856475a08e744f17f6b27a80f28b8d3abb1e8b12e10618cdf007d635ccc4f1a0"
+      },
+      "log_sha256": "f3ae3d0ea4b255602d5c16ed3611348dc3c7660c7a42bb138a775c6cfec6d16f"
+    }
+  ]
+}

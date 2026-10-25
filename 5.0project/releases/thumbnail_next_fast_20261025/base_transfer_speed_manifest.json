@@ -1,0 +1,108 @@
+{
+  "upstream": "390690f91f6e49e8124064843a32f0515ded91ad",
+  "hardware_validation": "pending",
+  "link": {
+    "baseline_cycles": 3079,
+    "optimized_cycles": 2056,
+    "speedup": 1.497568093385214,
+    "clock_hz": 25000000,
+    "bytes": 4096
+  },
+  "dlt": {
+    "baseline_cycles": 327528,
+    "optimized_cycles": 278568,
+    "speedup": 1.17575600930473,
+    "system_clock_hz": 100000000,
+    "spi_clock_hz": 25000000,
+    "bytes": 8192,
+    "scope": "Opaque DLT tail path seeded after header/bootstrap; 25MHz byte spacing, 16 sectors, exact word/FIFO checks. Real card command/token waits are not measured."
+  },
+  "excluded_cases": [
+    {
+      "test": "dlt_16",
+      "status": "timeout",
+      "timeout_seconds": 900,
+      "passed": false,
+      "reason": "Complete old-pace simulation exceeded the local wall-clock limit; excluded from performance comparisons."
+    }
+  ],
+  "scope": "Two product RTL files changed: continuous complete-word receive and DLT PIXEL_GAP 16 to 4. Runtime SD SPI remains 25MHz; initialization and media formats unchanged.",
+  "passed_cases": 17,
+  "patch_apply_verified": true,
+  "boards": [
+    {
+      "board": "a",
+      "timing_ns": {
+        "SWNS": 0.117,
+        "STNS": 0.0,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      },
+      "resources": {
+        "lut": 18142,
+        "reg": 12386,
+        "bram": 64,
+        "bram32k": 16,
+        "dsp": 29
+      },
+      "bit": {
+        "path": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\transfer-speed-build-20261025\\builds\\board_a\\project\\src\\board_a\\td_project\\PHOTO_BOARD_A.bit",
+        "sha256": "1b6083b69e936f39dcd8e6ad17f9fafc614e395b7917cbc3e4b910fd5c6f946e"
+      }
+    },
+    {
+      "board": "b",
+      "timing_ns": {
+        "SWNS": 0.101,
+        "STNS": 0.0,
+        "HWNS": 0.021,
+        "HTNS": 0.0
+      },
+      "resources": {
+        "lut": 15174,
+        "reg": 10078,
+        "bram": 44,
+        "bram32k": 12,
+        "dsp": 14
+      },
+      "bit": {
+        "path": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\transfer-speed-b-build-20261025\\builds\\board_b\\project\\src\\board_b\\td_project\\PHOTO_BOARD_B.bit",
+        "sha256": "0b3ce6d9b456a0b8c57031bc2f5f21d2f4d7acf70645946b05dd73cc51af2d02"
+      }
+    }
+  ],
+  "files_sha256": {
+    "README.txt": "97cceb47460ed0cd3990c14063a741695fb300ef18ddb3744dce28b2f1c60eb9",
+    "TRANSFER_SPEED_390690f.patch": "36266dd1881dd1bb00442a8dc695fa41165701f7bbe05188f4553c543876fd51",
+    "board_a/PHOTO_BOARD_A_phy.area": "03bf0a5c5914a778845e6fd89e11cab4928d7120a1c61c8d08c15eab5238c3ff",
+    "board_a/PHOTO_BOARD_A_pr.timing": "0fb83ebbfe3ac39d24ceb07538c7a6d49a09afafad2e0d88d90c418898399270",
+    "board_a/PHOTO_BOARD_A_TRANSFER_SPEED_CANDIDATE.bit": "1b6083b69e936f39dcd8e6ad17f9fafc614e395b7917cbc3e4b910fd5c6f946e",
+    "board_a/result.json": "f9fa23a42fd3b9eefba4101466c7b020388dd77119f9e08f09bc5795571ef827",
+    "board_b/PHOTO_BOARD_B_phy.area": "b228c83e03e10eab2a724296bc839d3b28686bc0ea29ab1e419129a4a0c30d6f",
+    "board_b/PHOTO_BOARD_B_pr.timing": "43ab64f8a526b2ce1c7d154cc7910cf02801447f79c8b4bc421026e1ed0d70fe",
+    "board_b/PHOTO_BOARD_B_TRANSFER_SPEED_CANDIDATE.bit": "0b3ce6d9b456a0b8c57031bc2f5f21d2f4d7acf70645946b05dd73cc51af2d02",
+    "board_b/result.json": "4b6bedc797973cd1171d4092ba083a899bb536fe00ab050644fff34cabd499cb",
+    "validation/transfer-speed-dlt-fifo-tests-20261025/dlt_fifo_guard.log": "5a92a61ddea9d7ca86eecfec2d362a8dc91343e5a3e84c95e547047a1f364c29",
+    "validation/transfer-speed-dlt-fifo-tests-20261025/results.json": "bf909242e317d0a51f3607c5ea13f72470a985c7ca55292c84e953ebd5fc1ea8",
+    "validation/transfer-speed-dlt-tests-20261025/dlt_4.log": "fa4aa7b13d980820f9c11f1fdb84a5873dcaadc0c2db75e606a4de6ee844661b",
+    "validation/transfer-speed-dlt-tests-20261025/results.json": "3c0375b9d411642c070f92bef11d8af072364db75d2c801429df335fa3412ca0",
+    "validation/transfer-speed-native-tests-20261025/native_packet.log": "34f5b0257083f7d15f690e1982beefb39a3d53605e79a2ef4a2de4bb63d3b078",
+    "validation/transfer-speed-native-tests-20261025/results.json": "6465b8bf1cc5e24eb88c5932fba8baa1a75e6ebeb8936e0510540780e116b10a",
+    "validation/transfer-speed-sector-tests-20261025/results.json": "f01b1351713eb2cda6930870b84fc2f8d16ae99d13d8a5749815daf4def37822",
+    "validation/transfer-speed-sector-tests-20261025/sector_pipeline.log": "3bc90dae74dbbce481f261e9a0161e65f3a44ff39c3433a5d37c9752172ff2cd",
+    "validation/transfer-speed-tests-r2-20261025/abort.log": "2d844ec36a923289ab87793e292af28a230d7b5faea8424600a5b78823fcd96e",
+    "validation/transfer-speed-tests-r2-20261025/delayed_pins.log": "7cdb249b5e899b43f7bbe19381f40e6712a2ed21555711e9be44b15a2bd9cc0e",
+    "validation/transfer-speed-tests-r2-20261025/link_0_0.log": "21363a88ccc30be42d5aab79edc9a3085f02b9966d76e989f0baaa807627fa91",
+    "validation/transfer-speed-tests-r2-20261025/link_0_0_before.log": "21363a88ccc30be42d5aab79edc9a3085f02b9966d76e989f0baaa807627fa91",
+    "validation/transfer-speed-tests-r2-20261025/link_0_1.log": "9f22233c807c8fb4620098fd09fc2729300f58c15b6ed4bbb8d2ffe42b56c022",
+    "validation/transfer-speed-tests-r2-20261025/link_0_1_before.log": "9f22233c807c8fb4620098fd09fc2729300f58c15b6ed4bbb8d2ffe42b56c022",
+    "validation/transfer-speed-tests-r2-20261025/link_1_0.log": "a71098090338aaaf5e53e7e71aa9f85809255d59e08d0d07957493795d42c95e",
+    "validation/transfer-speed-tests-r2-20261025/link_1_0_before.log": "f568d95fea38f0575aea48c3cc5497d0cd3689f6c77e42c446113cff3a893c56",
+    "validation/transfer-speed-tests-r2-20261025/link_1_1.log": "dfa74056315cc558142689c75564074e2d77993364c5066c5552de724ddcdc90",
+    "validation/transfer-speed-tests-r2-20261025/link_1_1_before.log": "6d65ed4381474550aee77cd34786b93fafb53a38a14156fd2779a6d46c923fe8",
+    "validation/transfer-speed-tests-r2-20261025/native_fifo.log": "1c7d434225c8051af356228e06bcbda2dc6ae9a3cbbfe2c8bbf4fdd8e982623f",
+    "validation/transfer-speed-tests-r2-20261025/results.json": "2f9454a53a1e24bbed386a098fc6e79f311f0ec75aaa22d44ddc4947ad5a20a1",
+    "validation/transfer-speed-tests-r2-20261025/sd_actual_divider.log": "31baca7d42b5c9d4890532ae78611c4e8acfc1aa5c911dc8e579900b6fcb0ab9",
+    "validation/transfer-speed-tests-r2-20261025/sd_spi_contract.log": "dfa998a2f9832fc21b0d5d185cd89bc6128d8a7bf7f246cc5713562b39164b3e"
+  }
+}

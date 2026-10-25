@@ -117,10 +117,11 @@ photo_touchpad pointer(.clk(pixel_clk),.rst(rst_pixel),.enable(pointer_enabled),
  .sample_valid(touch_valid),.sample_down(touch_down),.sample_x(touch_x),.sample_y(touch_y),
  .cursor_x(cursor_x),.cursor_y(cursor_y),.click(pointer_click),.contact(pointer_contact));
 wire pointer_menu_click=pointer_click && pointer_enabled && cursor_x>=1152 && cursor_x<1256 && cursor_y>=24 && cursor_y<64;
+localparam THUMBNAIL_X=1096,THUMBNAIL_Y=315;
 wire pointer_navigation_enable=pointer_enabled && !settings_mode && !award_active && !award_loading && count>1;
-wire pointer_next_click=pointer_click && pointer_navigation_enable &&
- ((cursor_x>=1192 && cursor_x<1256 && cursor_y>=328 && cursor_y<392) ||
-  (thumbnail_visible && cursor_x>=1086 && cursor_x<1250 && cursor_y>=514 && cursor_y<620));
+wire pointer_next_click=pointer_click && pointer_navigation_enable && thumbnail_visible &&
+ cursor_x>=THUMBNAIL_X-2 && cursor_x<THUMBNAIL_X+162 &&
+ cursor_y>=THUMBNAIL_Y-14 && cursor_y<THUMBNAIL_Y+92;
 wire pointer_row_click=pointer_click && pointer_enabled && settings_mode && cursor_x>=64 && cursor_x<864 && cursor_y>=144 && cursor_y<592;
 wire [9:0] pointer_row_y=cursor_y-10'd144;
 // Isolate context/hit decoding from the settings controller's update priority.
@@ -225,7 +226,8 @@ photo_switch_timing #(.CLK_HZ(75000000),.PHASES(2)) timing_probe(.clk(pixel_clk)
  .running(timing_running),.valid(timing_valid),.first_ms(timing_wait_ms),.second_ms(timing_effect_ms),.third_ms(),.total_ms(timing_total_ms));
 photo_switch_timing_display #(.CLK_HZ(75000000),.PAGES(3)) timing_display(.clk(pixel_clk),.rst(rst_pixel),.running(timing_running),
  .first_ms(timing_wait_ms),.second_ms(timing_effect_ms),.third_ms(20'd0),.total_ms(timing_total_ms),.seg_sel(timing_seg_sel),.seg_data(timing_seg_data));
-photo_cached_control_a #(.CHECK_FRAME_CRC(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.EARLY_THUMBNAIL(1),.RELIEF_CONTROL(1)) ctrl(.receive_relief(receive_relief),.receive_award(receive_award),.receive_fluid(receive_fluid),.settings_mode(photo_focus),.settings_state(image_settings),.settings_updating(settings_updating),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
+wire title_word_valid;wire [6:0] title_word_index;wire [31:0] title_word_data;wire [4:0] title_word_length,title_length;
+photo_cached_control_a #(.TITLE_SD(1),.CHECK_FRAME_CRC(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.EARLY_THUMBNAIL(1),.RELIEF_CONTROL(1)) ctrl(.title_word_valid(title_word_valid),.title_word_index(title_word_index),.title_word_data(title_word_data),.title_word_length(title_word_length),.receive_relief(receive_relief),.receive_award(receive_award),.receive_fluid(receive_fluid),.settings_mode(photo_focus),.settings_state(image_settings),.settings_updating(settings_updating),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
  .thumbnail_read_busy(thumbnail_read_busy),.thumbnail_read_slot(thumbnail_slot),
  .timing_begin(timing_begin),.timing_present(timing_present),.timing_commit(timing_commit),.timing_cancel(timing_cancel),
  .award_toggle(photo_award_event),.relief_toggle(photo_relief_event),.relief_available(relief_available),.award_available(award_available),.award_scan_complete(award_scan_complete),.award_loading(award_loading),.award_notice(award_notice),.last_transfer_error(last_transfer_error),
@@ -265,7 +267,10 @@ photo_audio_spi_a #(.STARTUP_SYNC(1),.FIFO_AW(11),.FIFO_RAM32_HEAD(2048),.EXTEND
 wire [11:0] raster_x21,raster_x26,raster_x34;
 wire [10:0] raster_y21,raster_y26,raster_y34;
 wire raster_valid21,raster_valid26,raster_valid34;
-assign thumbnail_blank=raster_valid26 && raster_y26>=11'd720;
+// Stop admitting long preview turns 256 pixels before blanking ends.
+// Already-owned turns drain normally; the display FIFO reserve still wins.
+assign thumbnail_blank=raster_valid26 && raster_y26>=11'd720 &&
+ !(raster_y26==11'd749 && raster_x26>=12'd1394);
 wire [8:0] raster_ui_y;
 photo_raster_delay #(.DELAY(21),.SCALE_Y(1)) raster21(.clk(pixel_clk),.rst(rst_pixel),.x(raster_x21),.y(raster_y21),.valid(raster_valid21),.y_two_thirds(raster_ui_y));
 photo_raster_delay #(.DELAY(26)) raster26(.clk(pixel_clk),.rst(rst_pixel),.x(raster_x26),.y(raster_y26),.valid(raster_valid26));
@@ -383,10 +388,10 @@ always @(posedge pixel_clk or posedge rst_pixel)begin
   ui_de<=raster_de21 && !settings_render_mode;end
 end
 wire [10:0] ui_font_addr;wire [15:0] ui_font_bits;
-saixian_font_rom ui_font(.clk(pixel_clk),.glyph_id(ui_font_addr[10:4]),.row(ui_font_addr[3:0]),.bits(ui_font_bits));
+saixian_font_rom #(.TITLE_SD(1)) ui_font(.word_valid(title_word_valid),.word_index(title_word_index),.word_data(title_word_data),.word_length(title_word_length),.rst(rst_pixel),.frame_tick(blank_start),.title_length(title_length),.clk(pixel_clk),.glyph_id(ui_font_addr[10:4]),.row(ui_font_addr[3:0]),.bits(ui_font_bits));
 reg [10:0] ticker_x;
 always @(posedge pixel_clk or posedge rst_pixel)
- if(rst_pixel)ticker_x<=0;else if(blank_start)ticker_x<=ticker_x>=864 ? 0:ticker_x+1'b1;
+ if(rst_pixel)ticker_x<=0;else if(blank_start)ticker_x<=ticker_x>=(title_length==0 ? 11'd864:11'd640+{1'b0,title_length,5'b0}) ? 0:ticker_x+1'b1;
 // Analyze the same post-mix, post-volume PCM delivered to HDMI.
 wire [9:0] visual_x=ui_x-10'd64;
 wire [6:0] visual_height,visual_peak;wire [31:0] visual_wave;
@@ -396,11 +401,11 @@ photo_av_metadata_a #(.EDGE_METADATA(1)) visual_cache(.clk(pixel_clk),.rst(rst_p
  .word_index(av_word_index),.word_data(av_word),.available(av_available),
  .read_band(visual_x[8:4]),.read_index(visual_x[8:1]),.height(visual_height),.peak(visual_peak),.extrema(visual_wave),
  .fft_valid(visual_fft_valid),.wave_valid(visual_wave_valid));
-saixian_osd_overlay #(.SHOW_SOURCE_RESOLUTION(0)) music_event_ui(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),.de_i(ui_de),
+saixian_osd_overlay #(.SHOW_SOURCE_RESOLUTION(0),.SHARED_TITLE(1)) music_event_ui(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),.de_i(ui_de),
  .x_i(ui_x),.y_i(ui_y),.rgb_in_i(ui_rgb),.display_valid(display_valid || music_count!=0 || !carousel_mode),
  .loading_phase(3'd0),.state(event_state),.project_id(carousel_mode ? project_select:event_project),
  .minutes(event_minutes),.seconds(event_seconds),.countdown_value(countdown_value),.ticker_x(ticker_x),
- .ticker_text_length(5'd0),.title_text_length(5'd0),.font_addr(ui_font_addr),.font_bits(ui_font_bits),.font_ready(1'b1),
+ .ticker_text_length(title_length),.title_text_length(title_length),.font_addr(ui_font_addr),.font_bits(ui_font_bits),.font_ready(1'b1),
  .source_width_bcd(16'd0),.source_height_bcd(16'd0),.error_code(3'd0),
  .visual_height(visual_height),.visual_peak(visual_peak),.visual_wave(visual_wave),
  .visual_fft_valid(visual_fft_valid),.visual_wave_valid(visual_wave_valid),
@@ -459,14 +464,14 @@ photo_boot_screen #(.VIDEO_DELAY(26),.MIN_FRAMES(90),.STAGED_LOADING(1)) boot_sc
  .frame_ready(display_valid && started),.active(boot_active),.rgb(boot_rgb));
 wire [23:0] pointer_rgb;
 wire [23:0] thumbnail_rgb;
-photo_thumbnail_overlay #(.Y(528),.DELAY(1),.SEPARATE_DISPLAY(1)) preview(.clk(pixel_clk),.rst(rst_image_pixel),.frame_tick(blank_start),
+photo_thumbnail_overlay #(.X(THUMBNAIL_X),.Y(THUMBNAIL_Y),.DELAY(1),.SEPARATE_DISPLAY(1)) preview(.clk(pixel_clk),.rst(rst_image_pixel),.frame_tick(blank_start),
  .enable(preview_enable_q),
  .display_enable(!settings_updating && !transition_active),.read_busy(thumbnail_read_busy),
  .cache_valid(thumbnail_cache_valid),.cache_slot(thumbnail_cache_slot),.identity({1'b0,thumbnail_id,thumbnail_cache_slot}),
  .de(raster_de26),.x(raster_x26),.y(raster_y26),.request(thumbnail_request),.slot(thumbnail_slot),.cancel(thumbnail_cancel),
  .done(thumbnail_done),.data(thumbnail_data),.address(thumbnail_address),.visible(thumbnail_visible),
  .rgb_in(playback_rgb),.rgb_out(thumbnail_rgb));
-photo_pointer_overlay #(.DELAY(5)) pointer_osd(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),
+photo_pointer_overlay #(.DELAY(5),.NAVIGATION_BUTTON(0)) pointer_osd(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),
  .enable(pointer_enabled),.navigation_enable(pointer_nav_display_q),.de(raster_de21),.x(raster_x21),.y(raster_y21),.cursor_x(cursor_x),.cursor_y(cursor_y),
  .rgb_in(thumbnail_rgb),.rgb_out(pointer_rgb));
 assign feature_rgb=boot_active ? boot_rgb:pointer_rgb;

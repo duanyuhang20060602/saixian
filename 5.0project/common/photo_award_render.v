@@ -76,116 +76,82 @@ endmodule
 // The small combinational banner adds no video latency or font RAM.
 module photo_award_notice(input clk,rst,input [2:0] notice,input [11:0] x,input [10:0] y,
  input [23:0] rgb_in,output [23:0] rgb_out);
-reg notice_visible;
+reg notice_visible;reg [2:0] notice_code;
 wire box=notice_visible && x>=16 && x<280 && y>=16 && y<48;
 wire letters=x>=24 && x<264 && y>=22 && y<36;
-wire [11:0] dx=x-24;wire [10:0] dy=y-22;
-reg [2:0] notice_code;reg [7:0] ch;reg [34:0] glyph;reg ink;
-// The message has only four fixed alternatives. Select the character
-// directly; a 120-bit variable barrel shift is unnecessary on every pixel.
-function [7:0] notice_character;input[2:0] code;input[3:0] position;begin
- notice_character=0;
- case(code)
- 1:case(position)
-  0:notice_character=8'h41;
-  1:notice_character=8'h57;
-  2:notice_character=8'h41;
-  3:notice_character=8'h52;
-  4:notice_character=8'h44;
-  5:notice_character=8'h20;
-  6:notice_character=8'h4c;
-  7:notice_character=8'h4f;
-  8:notice_character=8'h41;
-  9:notice_character=8'h44;
-  10:notice_character=8'h49;
-  11:notice_character=8'h4e;
-  12:notice_character=8'h47;
-  13:notice_character=8'h20;
-  14:notice_character=8'h20;
-  default:notice_character=0;
+// Subtracting 24 modulo one 16-pixel cell only flips this column bit.
+wire [2:0] column={~x[3],x[2:1]};
+// Select compact glyph IDs directly from raw half-cell positions. This
+// removes the X subtraction before the character mux, the 35-bit glyph
+// mux and the row*5+column barrel index. No state or pixel latency is added.
+function [3:0] notice_glyph;input [2:0] code;input [5:0] half_cell;begin
+ notice_glyph=0;case(code)
+ 1:case(half_cell)
+  6'd3,6'd4,6'd7,6'd8,6'd19,6'd20:notice_glyph=4'd3;
+  6'd5,6'd6:notice_glyph=4'd4;
+  6'd9,6'd10:notice_glyph=4'd5;
+  6'd11,6'd12,6'd21,6'd22:notice_glyph=4'd6;
+  6'd15,6'd16:notice_glyph=4'd7;
+  6'd17,6'd18:notice_glyph=4'd8;
+  6'd23,6'd24:notice_glyph=4'd9;
+  6'd25,6'd26:notice_glyph=4'd10;
+  6'd27,6'd28:notice_glyph=4'd11;
+  default:notice_glyph=0;
  endcase
- 2:case(position)
-  0:notice_character=8'h41;
-  1:notice_character=8'h57;
-  2:notice_character=8'h41;
-  3:notice_character=8'h52;
-  4:notice_character=8'h44;
-  5:notice_character=8'h20;
-  6:notice_character=8'h4e;
-  7:notice_character=8'h4f;
-  8:notice_character=8'h54;
-  9:notice_character=8'h20;
-  10:notice_character=8'h46;
-  11:notice_character=8'h4f;
-  12:notice_character=8'h55;
-  13:notice_character=8'h4e;
-  14:notice_character=8'h44;
-  default:notice_character=0;
+ 2:case(half_cell)
+  6'd3,6'd4,6'd7,6'd8:notice_glyph=4'd3;
+  6'd5,6'd6:notice_glyph=4'd4;
+  6'd9,6'd10:notice_glyph=4'd5;
+  6'd11,6'd12,6'd31,6'd32:notice_glyph=4'd6;
+  6'd17,6'd18,6'd25,6'd26:notice_glyph=4'd8;
+  6'd15,6'd16,6'd29,6'd30:notice_glyph=4'd10;
+  6'd19,6'd20:notice_glyph=4'd12;
+  6'd23,6'd24:notice_glyph=4'd13;
+  6'd27,6'd28:notice_glyph=4'd14;
+  default:notice_glyph=0;
  endcase
- 3:case(position)
-  0:notice_character=8'h41;
-  1:notice_character=8'h57;
-  2:notice_character=8'h41;
-  3:notice_character=8'h52;
-  4:notice_character=8'h44;
-  5:notice_character=8'h20;
-  6:notice_character=8'h45;
-  7:notice_character=8'h52;
-  8:notice_character=8'h52;
-  9:notice_character=8'h4f;
-  10:notice_character=8'h52;
-  11:notice_character=8'h20;
-  12:notice_character=8'h20;
-  13:notice_character=8'h20;
-  14:notice_character=8'h20;
-  default:notice_character=0;
+ 3:case(half_cell)
+  6'd3,6'd4,6'd7,6'd8:notice_glyph=4'd3;
+  6'd5,6'd6:notice_glyph=4'd4;
+  6'd9,6'd10,6'd17,6'd18,6'd19,6'd20,6'd23,6'd24:notice_glyph=4'd5;
+  6'd11,6'd12:notice_glyph=4'd6;
+  6'd21,6'd22:notice_glyph=4'd8;
+  6'd15,6'd16:notice_glyph=4'd15;
+  default:notice_glyph=0;
  endcase
- 4:case(position)
-  0:notice_character=8'h50;
-  1:notice_character=8'h48;
-  2:notice_character=8'h4f;
-  3:notice_character=8'h54;
-  4:notice_character=8'h4f;
-  5:notice_character=8'h20;
-  6:notice_character=8'h45;
-  7:notice_character=8'h52;
-  8:notice_character=8'h52;
-  9:notice_character=8'h4f;
-  10:notice_character=8'h52;
-  11:notice_character=8'h20;
-  12:notice_character=8'h20;
-  13:notice_character=8'h20;
-  14:notice_character=8'h20;
-  default:notice_character=0;
+ 4:case(half_cell)
+  6'd3,6'd4:notice_glyph=4'd1;
+  6'd5,6'd6:notice_glyph=4'd2;
+  6'd17,6'd18,6'd19,6'd20,6'd23,6'd24:notice_glyph=4'd5;
+  6'd7,6'd8,6'd11,6'd12,6'd21,6'd22:notice_glyph=4'd8;
+  6'd9,6'd10:notice_glyph=4'd12;
+  6'd15,6'd16:notice_glyph=4'd15;
+  default:notice_glyph=0;
  endcase
- default:notice_character=0;
- endcase
+ default:notice_glyph=0;endcase
 end endfunction
+wire [3:0] glyph_id=notice_glyph(notice_code,x[8:3]);
+reg [4:0] row_bits;
+// Y starts at 22: its raw row codes are 3,4,5,6,7,0,1.
+always @*case({glyph_id,y[3:1]})
+ 7'd72,7'd76,7'd77,7'd78,7'd79,7'd96,7'd97,7'd100,7'd101,7'd102,7'd103:row_bits=5'b00100;
+ 7'd27,7'd65,7'd67,7'd89,7'd91,7'd113:row_bits=5'b01110;
+ 7'd8,7'd9,7'd15,7'd56,7'd59,7'd60,7'd61,7'd62,7'd63,7'd93,7'd104,7'd105,7'd108,7'd109,7'd111,7'd120,7'd124,7'd125,7'd127:row_bits=5'b10000;
+ 7'd12,7'd13,7'd16,7'd17,7'd19,7'd20,7'd21,7'd23,7'd24,7'd25,7'd28,7'd29,7'd31,7'd33,7'd35,7'd36,7'd37,7'd41,7'd44,7'd45,7'd48,7'd52,7'd53,7'd54,7'd55,7'd64,7'd68,7'd69,7'd70,7'd71,7'd81,7'd83,7'd88,7'd92,7'd95,7'd112,7'd115,7'd116,7'd117,7'd118,7'd119:row_bits=5'b10001;
+ 7'd40:row_bits=5'b10010;
+ 7'd80,7'd87:row_bits=5'b10011;
+ 7'd47:row_bits=5'b10100;
+ 7'd38,7'd39,7'd86:row_bits=5'b10101;
+ 7'd94:row_bits=5'b10111;
+ 7'd84,7'd85:row_bits=5'b11001;
+ 7'd32:row_bits=5'b11011;
+ 7'd11,7'd14,7'd43,7'd46,7'd49,7'd51,7'd110,7'd126:row_bits=5'b11110;
+ 7'd22,7'd30,7'd57,7'd73,7'd75,7'd99,7'd107,7'd121,7'd123:row_bits=5'b11111;
+ default:row_bits=0;endcase
+wire ink=letters && column<5 && row_bits[4-column];
 always @(posedge clk or posedge rst)begin
  if(rst)begin notice_code<=0;notice_visible<=0;end
  else begin notice_code<=notice;notice_visible<=notice!=0;end
-end
-always @*begin
- ch=notice_character(notice_code,dx[7:4]);
- case(ch)
-  "P":glyph=35'b11110_10001_10001_11110_10000_10000_10000;
-  "H":glyph=35'b10001_10001_10001_11111_10001_10001_10001;
-  "A":glyph=35'b01110_10001_10001_11111_10001_10001_10001;
-  "W":glyph=35'b10001_10001_10001_10101_10101_11011_10001;
-  "R":glyph=35'b11110_10001_10001_11110_10100_10010_10001;
-  "D":glyph=35'b11110_10001_10001_10001_10001_10001_11110;
-  "L":glyph=35'b10000_10000_10000_10000_10000_10000_11111;
-  "O":glyph=35'b01110_10001_10001_10001_10001_10001_01110;
-  "I":glyph=35'b11111_00100_00100_00100_00100_00100_11111;
-  "N":glyph=35'b10001_11001_11001_10101_10011_10011_10001;
-  "G":glyph=35'b01110_10001_10000_10111_10001_10001_01110;
-  "T":glyph=35'b11111_00100_00100_00100_00100_00100_00100;
-  "F":glyph=35'b11111_10000_10000_11110_10000_10000_10000;
-  "U":glyph=35'b10001_10001_10001_10001_10001_10001_01110;
-  "E":glyph=35'b11111_10000_10000_11110_10000_10000_11111;
-  default:glyph=0;
- endcase
- ink=letters && dx[3:1]<5 && glyph[34-(dy[3:1]*5+dx[3:1])];
 end
 assign rgb_out=box ? (ink ? 24'hffffff:24'h202020):rgb_in;
 endmodule

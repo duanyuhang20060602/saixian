@@ -1,0 +1,28 @@
+{
+  "cases": [
+    {
+      "test": "map_equivalence",
+      "passed": true,
+      "seconds": 42.23,
+      "inputs_sha256": {
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\tests\\tb_sd_title_map_equivalence.v": "4377eb0f40805468ebda76c8708b1f58c91bd16d29ae677ac08f09884513713d",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\fluid\\water_priority_map.v": "a0758d83706f533f70804eeebba99a40fa11233ece2f228833ccef9a8ea36ea6",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\fluid\\water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\tests\\reference\\sd_title\\water_priority_map.v": "d07affe40d94da2ef9cb66c73a958505c78e28a871979a26955b85a6a69bdfff",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\fluid\\water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\fluid\\water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\fluid\\water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\fluid\\water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\fluid\\water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\fluid\\water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\fluid\\water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\fluid\\water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\fluid\\water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\fluid\\water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\fluid\\water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\tools\\test_sd_title_map_equivalence.py": "949c16cb57a921f8d8c61e626a8e183a983566347187073054a92ac04d71ba12"
+      },
+      "log_sha256": "2cbf8f24a1cc8bdfe4819e465d4c89a36a0916257deb693f1e8919b43da1c160"
+    }
+  ]
+}

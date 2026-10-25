@@ -1,0 +1,111 @@
+{
+  "upstream": "390690f91f6e49e8124064843a32f0515ded91ad",
+  "base_transfer_manifest_sha256": "eaf6fa19737396856b0128af938adfe0c2040d29e0ba54622835e1f13bcbb885",
+  "hardware_validation": "pending",
+  "thumbnail": {
+    "source_size": [
+      112,
+      63
+    ],
+    "display_size": [
+      160,
+      90
+    ],
+    "display_origin": [
+      1096,
+      315
+    ],
+    "hitbox": [
+      1094,
+      301,
+      1258,
+      407
+    ],
+    "legacy_arrow_enabled": false,
+    "burst_words": 64,
+    "baseline_burst_words": 4,
+    "baseline_frame_boundaries": 7,
+    "optimized_frame_boundaries": 3,
+    "baseline_read_words": 28224,
+    "optimized_read_words": 40320,
+    "baseline_bus_turns": 7056,
+    "optimized_bus_turns": 630,
+    "measured_scope": "Same completed next-photo cache and real 1650x750/75MHz raster model; excludes SD read and link wait. Final publication stays frame-boundary gated."
+  },
+  "passed_current_cases": 12,
+  "patch_apply_verified": true,
+  "board_b_reused": true,
+  "board_b_inputs_match": true,
+  "boards": [
+    {
+      "board": "a",
+      "resources": {
+        "lut": 18092,
+        "reg": 12399,
+        "bram": 64,
+        "bram32k": 16,
+        "dsp": 29
+      },
+      "timing_ns": {
+        "SWNS": 0.159,
+        "STNS": 0.0,
+        "HWNS": 0.027,
+        "HTNS": 0.0
+      },
+      "bit": {
+        "path": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\thumbnail-button-r2-seed7-20261025\\builds\\board_a\\project\\src\\board_a\\td_project\\PHOTO_BOARD_A.bit",
+        "sha256": "51d0dbcd117e295f59aa0ccee3c6e71b0b6416a63f93b77ffb9f39293d3f554a"
+      }
+    },
+    {
+      "board": "b",
+      "resources": {
+        "lut": 15174,
+        "reg": 10078,
+        "bram": 44,
+        "bram32k": 12,
+        "dsp": 14
+      },
+      "timing_ns": {
+        "SWNS": 0.101,
+        "STNS": 0.0,
+        "HWNS": 0.021,
+        "HTNS": 0.0
+      },
+      "bit": {
+        "path": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\transfer-speed-b-build-20261025\\builds\\board_b\\project\\src\\board_b\\td_project\\PHOTO_BOARD_B.bit",
+        "sha256": "0b3ce6d9b456a0b8c57031bc2f5f21d2f4d7acf70645946b05dd73cc51af2d02"
+      }
+    }
+  ],
+  "files_sha256": {
+    "base_transfer_speed_manifest.json": "eaf6fa19737396856b0128af938adfe0c2040d29e0ba54622835e1f13bcbb885",
+    "README.txt": "0c27d9d83e640fc32462727712f4618b2ce3a05d9532cb6eee7a04c74c13bdf1",
+    "THUMBNAIL_NEXT_FAST_FROM_390690f.patch": "6cd91f8aed6eb537a574d820a901085cd1214c7db5cb4dce0aa374046965a270",
+    "board_a/PHOTO_BOARD_A_phy.area": "7bd71a4c6d44716c4ba7c4dedf15641c88f3d411c6892e1db3a28cfd90144d68",
+    "board_a/PHOTO_BOARD_A_pr.timing": "bfdda241d7cd863b4a9da0b33e54b2d0224a30583f6c2d9cdb4bdda792026378",
+    "board_a/PHOTO_BOARD_A_THUMBNAIL_NEXT_FAST.bit": "51d0dbcd117e295f59aa0ccee3c6e71b0b6416a63f93b77ffb9f39293d3f554a",
+    "board_a/result.json": "0d133046970c5166e6a4615f671a15db384d3945d936c3686ac8dcdb5ae95ddc",
+    "board_b/PHOTO_BOARD_B_phy.area": "b228c83e03e10eab2a724296bc839d3b28686bc0ea29ab1e419129a4a0c30d6f",
+    "board_b/PHOTO_BOARD_B_pr.timing": "43ab64f8a526b2ce1c7d154cc7910cf02801447f79c8b4bc421026e1ed0d70fe",
+    "board_b/PHOTO_BOARD_B_TRANSFER_SPEED_CANDIDATE.bit": "0b3ce6d9b456a0b8c57031bc2f5f21d2f4d7acf70645946b05dd73cc51af2d02",
+    "board_b/result.json": "4b6bedc797973cd1171d4092ba083a899bb536fe00ab050644fff34cabd499cb",
+    "validation/thumbnail-button-bandwidth-20261025/bandwidth.log": "52a31ccdcdf408cfcdade92d697df20e0fcff29e788094e76a6c43177def2597",
+    "validation/thumbnail-button-bandwidth-20261025/results.json": "df595a6e501132b816b7d6217c7750ba657e08d2645d49d7158e7b0ddf2415c5",
+    "validation/thumbnail-button-blanking-20261025/blanking_after.log": "c869cc35941fa8cbf24034efbc0931bbc2aa7d1764d4d14a6381af4ba685a964",
+    "validation/thumbnail-button-blanking-20261025/blanking_before.log": "c4c4e5acbfebb94014c6cd41c685d5889ffae07c1462a9e0a9da3e28115c7c6b",
+    "validation/thumbnail-button-blanking-20261025/results.json": "0d3489226711500c913771a3c2e0d18fa993ef21e350b819bf458395f17a5045",
+    "validation/thumbnail-button-live-bandwidth-20261025/live_bandwidth.log": "ff4f4420c27e7f2b4867cc91624ebcefd287427a8660b2496ed833088880f5e2",
+    "validation/thumbnail-button-live-bandwidth-20261025/results.json": "a2db4e2ab62dcb87b51ce6523ffd9923036d8e4c83cf797d17908a03caf09d1d",
+    "validation/thumbnail-button-source-lock-20261025/results.json": "4b20ec453a9599d3f76753cfbe6b823b3db45bdd67e6453fb628a7b3e6e51488",
+    "validation/thumbnail-button-source-lock-20261025/source_lock.log": "8298155653fd2d84592c6b161563f69cbc1fc628c669f3ecf23546e76ab555e4",
+    "validation/thumbnail-button-unit-r2-20261025/arrow_removed.log": "033087a4371697ceb7c9549258377968763861f5c5ed366b46437a590279f5d7",
+    "validation/thumbnail-button-unit-r2-20261025/cancel.log": "7b94dd7b515aedb5cd945633e1dc6a6b75687e8c7aac1183aa1f63d268484e03",
+    "validation/thumbnail-button-unit-r2-20261025/memory.log": "6bf55e52a99b564c90e5ff17f79a5675d170bc4a0e0bc4be5560407c25a1d3e0",
+    "validation/thumbnail-button-unit-r2-20261025/new_phase.log": "210333d91ab9ba9f08269eed6e6f8ae07af518ba577e5b624b62e8a8c7e9a6f2",
+    "validation/thumbnail-button-unit-r2-20261025/overlay.log": "f62dd0b3f03df53d26c005ed77a8438eb0895e251457f8ab0368995bc54ceda9",
+    "validation/thumbnail-button-unit-r2-20261025/pointer.log": "fc7e992279c63e3b1051ba9f76fe80d3c5561636c7960bc7dcf69e2048c842ee",
+    "validation/thumbnail-button-unit-r2-20261025/results.json": "f3512b5abb46c93df1257e77f37fc03d76c29dc4cd5c9c0998598b753e0c4e37",
+    "validation/thumbnail-button-unit-r2-20261025/touch.log": "269bea6d18f768501f433752248e270426935f015f74a24274cfdd77ea2fa4f4"
+  }
+}

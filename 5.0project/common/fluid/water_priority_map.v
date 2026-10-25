@@ -132,9 +132,15 @@ wire[150:0] delayed_packet=tags[3] ? token1:token0;
 // four-clock metadata boundary, with no bank mux on the geometry path.
 wire[150:0] retiring_packet=tags[2] ? token1:token0;
 reg[150:0] packet_c;
+reg geometry_c;
 always @(posedge clk)begin
- if(rst)packet_c<=0;
- else packet_c<={retiring_packet[150:1],tokens[2]};
+ if(rst)begin packet_c<=0;geometry_c<=0;end
+ else begin
+  packet_c<={retiring_packet[150:1],tokens[2]};
+  // The enabled/progress fields cross this same metadata boundary.
+  // Decode the common endpoint bypass once before geometry and alpha.
+  geometry_c<=retiring_packet[2] && retiring_packet[77:69]!=0 && retiring_packet[77:69]!=256;
+ end
 end
 always @(posedge clk)begin
  tags<={tags[2:0],write_slot};tokens<={tokens[2:0],valid&&!rst};
@@ -365,7 +371,7 @@ always @*begin
  if(e0 && r0 && (fx0==3 || fx0==4 || fx0==5 || fx0==8))begin
   a=17'sd1279-a;b=17'sd1279-b;
  end
- if(!e0||p0==0||p0==256)begin
+ if(!geometry_c)begin
   a={wx0,1'b0};b=px0;mix=e0 ? p0:0;darkness=0;glint=0;
  end
 end

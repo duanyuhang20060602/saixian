@@ -1,0 +1,30 @@
+{
+  "base": "transfer-speed candidate based on 390690f",
+  "cases": [
+    {
+      "test": "blanking_before",
+      "passed": true,
+      "seconds": 210.05,
+      "inputs_sha256": {
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\thumbnail-button-blanking-20261025\\blank_before.v": "c1965872c4a3866e466583d7ed6c6cf7acb3071ad4bd50bfea93e527ea94c9c4",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\thumbnail-button-blanking-20261025\\thumbnail_before.v": "7be5bad53571dc4dd79e2ad1de31a2eb5f703e029c759508d446935ce5172e59",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\common\\photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795"
+      },
+      "log_sha256": "c4c4e5acbfebb94014c6cd41c685d5889ffae07c1462a9e0a9da3e28115c7c6b",
+      "frame_boundaries": 7,
+      "reused_verified_inputs": true
+    },
+    {
+      "test": "blanking_after",
+      "passed": true,
+      "seconds": 87.86,
+      "inputs_sha256": {
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\thumbnail-button-blanking-20261025\\blank_after.v": "5b616e8368381578d9fcb128cf356537ebc527e8aa49a7d4cedec8393f2663d3",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\common\\photo_thumbnail.v": "d9d390cbc745cedce4d5f56148b16d07db9885701cf14f5ad4562fa81c240f3d",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-thumbnail-button-20261025\\5.0project\\common\\photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795"
+      },
+      "log_sha256": "c869cc35941fa8cbf24034efbc0931bbc2aa7d1764d4d14a6381af4ba685a964",
+      "frame_boundaries": 3
+    }
+  ]
+}
