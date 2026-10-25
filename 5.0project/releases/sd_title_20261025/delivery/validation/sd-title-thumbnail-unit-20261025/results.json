@@ -1,0 +1,80 @@
+{
+  "base": "transfer-speed candidate based on 390690f",
+  "cases": [
+    {
+      "test": "memory",
+      "passed": true,
+      "seconds": 59.78,
+      "inputs_sha256": {
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\sd-title-thumbnail-unit-20261025\\memory.v": "13bfec875bedf9a7b690659b7ff70841fb016e5b6c97a8bace9a33195241556a",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-20261025\\5.0project\\common\\photo_thumbnail.v": "d9d390cbc745cedce4d5f56148b16d07db9885701cf14f5ad4562fa81c240f3d"
+      },
+      "log_sha256": "6bf55e52a99b564c90e5ff17f79a5675d170bc4a0e0bc4be5560407c25a1d3e0"
+    },
+    {
+      "test": "overlay",
+      "passed": true,
+      "seconds": 0.17,
+      "inputs_sha256": {
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-20261025\\5.0project\\tests\\tb_thumbnail_overlay.v": "a6e557569ed1f587892e077356b8e10bc7957de19ed855641ab31f27f2fc4d36",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-20261025\\5.0project\\common\\photo_thumbnail.v": "d9d390cbc745cedce4d5f56148b16d07db9885701cf14f5ad4562fa81c240f3d"
+      },
+      "log_sha256": "f62dd0b3f03df53d26c005ed77a8438eb0895e251457f8ab0368995bc54ceda9"
+    },
+    {
+      "test": "cancel",
+      "passed": true,
+      "seconds": 0.14,
+      "inputs_sha256": {
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-20261025\\5.0project\\tests\\tb_thumbnail_early_cancel.v": "83299089b27d56a27619947cec5c4ec166ad11005e70dcd3cc82ae8b0cc78610",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-20261025\\5.0project\\common\\photo_thumbnail.v": "d9d390cbc745cedce4d5f56148b16d07db9885701cf14f5ad4562fa81c240f3d"
+      },
+      "log_sha256": "7b94dd7b515aedb5cd945633e1dc6a6b75687e8c7aac1183aa1f63d268484e03"
+    },
+    {
+      "test": "pointer",
+      "passed": true,
+      "seconds": 1.11,
+      "inputs_sha256": {
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-20261025\\5.0project\\tests\\tb_pointer_overlay.v": "b57d0f4721fa979220c9531df7889d7f5c62832c7530859301f66fc25fffb6cb",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-20261025\\5.0project\\common\\photo_touchpad.v": "c29700dcfde3ef60713af7db8cfc1ae9fdfa44363cb2bf6d69c464062e0e54ca"
+      },
+      "log_sha256": "fc7e992279c63e3b1051ba9f76fe80d3c5561636c7960bc7dcf69e2048c842ee"
+    },
+    {
+      "test": "arrow_removed",
+      "passed": true,
+      "seconds": 0.31,
+      "inputs_sha256": {
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-20261025\\5.0project\\tests\\tb_thumbnail_arrow_removed.v": "52e0f6bde6fd033f24c049001797d5b699f32a4aa9e250fbcd8462f1785263f5",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-20261025\\5.0project\\common\\photo_touchpad.v": "c29700dcfde3ef60713af7db8cfc1ae9fdfa44363cb2bf6d69c464062e0e54ca"
+      },
+      "log_sha256": "033087a4371697ceb7c9549258377968763861f5c5ed366b46437a590279f5d7"
+    },
+    {
+      "test": "new_phase",
+      "passed": true,
+      "seconds": 7.55,
+      "inputs_sha256": {
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-20261025\\5.0project\\tests\\tb_thumbnail_button_phase.v": "7602535c061c5d47bf4540d9a48438a15eb47cc5d3642280761a8bf32020d295",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-20261025\\5.0project\\common\\photo_thumbnail.v": "d9d390cbc745cedce4d5f56148b16d07db9885701cf14f5ad4562fa81c240f3d",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-20261025\\5.0project\\common\\photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795"
+      },
+      "log_sha256": "210333d91ab9ba9f08269eed6e6f8ae07af518ba577e5b624b62e8a8c7e9a6f2"
+    },
+    {
+      "test": "touch",
+      "passed": true,
+      "seconds": 192.45,
+      "inputs_sha256": {
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-20261025\\5.0project\\tests\\tb_thumbnail_button_touch.v": "258ae37162d410235f345e16c3c8f8d9b896f70273546a1669644fd817518e21",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-20261025\\5.0project\\common\\top_photo_a.v": "d350ab5b75bced64077318674ba696ff02b4ecc582b28e3fd2dbd5215eca39e3",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-20261025\\5.0project\\common\\saixian_hmi_uart.v": "22c726a0f74a84790ebd05f594ddca31360af6d5dc010a2f404d8c22d547b666",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-20261025\\5.0project\\common\\photo_touchpad.v": "c29700dcfde3ef60713af7db8cfc1ae9fdfa44363cb2bf6d69c464062e0e54ca",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-20261025\\5.0project\\common\\photo_unified_settings_controller.v": "a2b7444b42f071dc800ea8927dfe6d7d45abcb71b7d23e16f1bdcd03b179938b",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\sd-title-thumbnail-unit-20261025\\hardware_shells.v": "5dd51560f189b8d6ce7acf5c7b043325ed0da099f788057f6ff4fab31f5156ae"
+      },
+      "log_sha256": "d10ac4bc468c6b3966ebba87e1d45ee6f7a8db04f7f970d2565cceef8bc9f3a7"
+    }
+  ]
+}

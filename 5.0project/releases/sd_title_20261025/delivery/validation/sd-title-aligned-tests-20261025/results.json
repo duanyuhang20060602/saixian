@@ -1,0 +1,36 @@
+{
+  "host_records_passed": true,
+  "cases": [
+    {
+      "test": "store",
+      "passed": true,
+      "seconds": 0.61,
+      "inputs_sha256": {
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\tests\\tb_sd_title_store.v": "bc67277225c176b8391aee743902196fc48fb1d5652a05f9d6755dbc1f9ba35a",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\photo_sd_title_store.v": "dacc48d4a16fceaa01bc9f0dee86881abd3da420cbdc07273ea8733102ad6484",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\tools\\test_sd_title.py": "68b24404cf81b86ab31305d269461c214de52da1c43e0d9c241d5e65dd3d6884",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\tools\\configure_sd_title.py": "f6c93dd5664b089a41effbb92baec57b9c127da5a1a5e2627cf6fe6b273902ac",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\sd-title-aligned-tests-20261025\\title_records.hex": "89a17a358ace5b5e9416f35e2a1c4628b1df676d70a405a984570b4fad94be6b"
+      },
+      "log_sha256": "0c13943aeac94850b00aea5bcb8de6d8a477570a5914bccbca0ff41fa23c37d8"
+    },
+    {
+      "test": "protocol",
+      "passed": true,
+      "seconds": 50.03,
+      "inputs_sha256": {
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\tests\\tb_sd_title_protocol.v": "81e76809f91664f7b9951d415c87163580e7f565c87dc6fef6eadda7818662ad",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\tests\\title_font_ram_model.v": "5645c2efe210627dad2e9d131a1a400751b0794b31719ceb3d70b80c6b6e0e87",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\photo_cached_control_a.v": "cd804cf6301774b1bbcc2190b3c231abbf340ac9d523f624b7c8ab1a5d4093f1",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\photo_control.v": "725efb5004cec74c0e9b15d4b0395e8ba2224d7f0a6ba27e05c810e59ba37230",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\photo_sd_title_store.v": "dacc48d4a16fceaa01bc9f0dee86881abd3da420cbdc07273ea8733102ad6484",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\common\\audio_ui\\saixian_font_rom.v": "70f3d43ad5728a35227402439eefa3dbfe1f8918096af1eea41d17c056a07494",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\tools\\test_sd_title.py": "68b24404cf81b86ab31305d269461c214de52da1c43e0d9c241d5e65dd3d6884",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-sd-title-retimed-20261025\\5.0project\\tools\\configure_sd_title.py": "f6c93dd5664b089a41effbb92baec57b9c127da5a1a5e2627cf6fe6b273902ac",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\sd-title-aligned-tests-20261025\\title_records.hex": "89a17a358ace5b5e9416f35e2a1c4628b1df676d70a405a984570b4fad94be6b"
+      },
+      "log_sha256": "4e9147f33d4db27fb9b8b59b217cdbcd80235346315332955084adf27a4410ed"
+    }
+  ]
+}

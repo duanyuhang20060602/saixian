@@ -1,0 +1,5 @@
+progress: 32 font words
+progress: 64 font words
+progress: 96 font words
+progress: 128 font words
+PASS SD CRC and single-RAM title store through real full-duplex UART/CRC, lost ACK retry, duplicate suppression, all 256 font rows, blanking-only publication, unchanged fallback glyphs and frame-edge restart isolation
