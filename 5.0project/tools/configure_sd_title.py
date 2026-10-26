@@ -1,4 +1,4 @@
-"""Compile one shared title to two checksummed SD scan records (no FPGA rebuild)."""
+"""Generate independent top-left title and bottom ticker SD font records."""
 from pathlib import Path
 import argparse, os, struct, zlib
 
@@ -89,10 +89,10 @@ def main():
         import tkinter as tk
         from tkinter import simpledialog, filedialog, messagebox
         root = tk.Tk(); root.withdraw()
-        title = simpledialog.askstring('SD 卡文字设置', '请输入标题（1～16 个字）：', initialvalue='100米', parent=root)
+        title = simpledialog.askstring('SD 卡文字设置', '左上角标题（1～16 个字）：\n请输入你要显示的新标题。', initialvalue='标题测试', parent=root)
         if title is None:
             return
-        ticker = simpledialog.askstring('SD 卡文字设置', '请输入底部滚动文字（1～16 个字）：', initialvalue='欢迎参加运动会', parent=root)
+        ticker = simpledialog.askstring('SD 卡文字设置', '底部滚动文字（1～16 个字）：', initialvalue='底部独立文字', parent=root)
         if ticker is None:
             return
         output = filedialog.asksaveasfilename(parent=root, initialfile='TITLE2.BIN', defaultextension='.BIN')
@@ -104,7 +104,10 @@ def main():
         except (ValueError, OSError) as exc:
             messagebox.showerror('SD title', str(exc), parent=root)
             return
-        messagebox.showinfo('SD 卡文字设置', '独立文字配置已生成。后续请选择 SD 卡上的同一个 TITLE2.BIN 原位更新，然后重启两块板。', parent=root)
+        messagebox.showinfo('SD 卡文字设置',
+            f'已保存：{output}\n\n左上角标题：{title}\n底部滚动文字：{ticker}\n\n'
+            '请确认保存到 B 板 SD 卡上的同一个 TITLE2.BIN，再将两块板一起断电重启。\n'
+            '使用原示例的“100米”会与默认标题相同，看不出变化。', parent=root)
     else:
         text = args.text if args.text is not None else args.text_file.read_text(encoding='utf-8-sig').rstrip('\r\n')
         data, _ = compile_title(text, args.font)

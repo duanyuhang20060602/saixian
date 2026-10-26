@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "title": "标题测试",
+  "ticker": "底部独立文字",
+  "captures": [
+    {
+      "bank": "title",
+      "verified_pixels": 4096
+    },
+    {
+      "bank": "ticker",
+      "verified_pixels": 6144
+    }
+  ],
+  "hardware_validation": "pending",
+  "inputs_sha256": {
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\title-pixels-20261026-r1\\pixels.v": "ea4ba523de8812b4ca0eaddf27824a31982ca2312e990447cf7a837a415dcd20",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\tests\\ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+    "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_cached_control_a.v": "81b4837355235582fec6a82a9b7f06f9fbfe82431b5e5d9ba7315245caa3ba26",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_control.v": "264c8b5a3559c15f26f6c3a7c847d96a1ae7067877fc782adb634abde45935d9",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_sd_title_store.v": "c501d919aa698b75b8b110f05abb6cca5727df175ebd507e2ff2ecb0f782e66d",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\audio_ui\\saixian_font_rom.v": "77f9e0c7453cc497aa4e11a039877edfd5406c2be8bc7006fb066ec23bc6e0c6",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\audio_ui\\saixian_osd_overlay.v": "070254e83c0166be6e4db43a06c03a1b33cd07d3d96af5fb49517a228381d984"
+  }
+}

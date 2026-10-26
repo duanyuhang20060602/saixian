@@ -226,8 +226,8 @@
     "sd_config/compact_menu_labels.json": "25cc6feee024c7f203f760b944e205eb186f7115fed6ab2a5398173b641fbf1f",
     "sd_config/TITLE.BIN": "51eb608944a934756517668e2411ae846603bdb0e6efcbf480b0d7169deccdb9",
     "sd_config/TITLE.txt": "927fdb9dfa5d4cd5bc9577faa02558e5c3a1eb97bc28e717ab73a39267db9184",
-    "sd_config/TITLE2.BIN": "f0f421232676152b7ba995b1b391adb9ff83a6cf72780da787f32b4393882bbb",
-    "sd_config/\u4f7f\u7528\u8bf4\u660e.txt": "c629474658d1e0eff889b6609bedb18cf8c04b7b1134c52d8d7580bbd934d601",
+    "sd_config/TITLE2.BIN": "a3cdc981dec9b184335f47293b1be2c7f4649bf347435c424bef11bddf011674",
+    "sd_config/\u4f7f\u7528\u8bf4\u660e.txt": "53326aaa67af95ad50aab8f7b8764455ed171bd15512f1aa98ee5e83ee2cee57",
     "src/board_a/td_project/award_sprite_packed.hex": "9d0d1416efc92fbc13ce8e7635bf7fa0b52fb11ed4c146c8f75e91ea9c511d17",
     "src/board_a/td_project/award_sprite_packed.mif": "de8843e74205a9f7c176ad514e7fdc5061c626f4e04835c2a60d7e5111d3e60c",
     "src/board_a/td_project/build_board.tcl": "e16c8262a4a617313d27842ac780829f43cc2a1daed4dce3b078c283345ca278",
@@ -715,7 +715,7 @@
     "tools/color_ripple_reference.py": "d938c46e24ef2645a997af6cea649ae8c3b54766691bc7163c38aea0f8d4acfa",
     "tools/configure_projects.py": "d0f6866fe7913e7833fffd493219f300abb1fa019b91f039643ac2921f1d96c0",
     "tools/configure_sd_title.cmd": "3a9fc34add9b61b16cc9570042dde02ffec3feac1d87f58d273de68a538af8b4",
-    "tools/configure_sd_title.py": "d1421baeda3044ea8ae1450aa64f4d287bca4d5358135a6740a6c2a742b04f63",
+    "tools/configure_sd_title.py": "5ff3a63fd89706f28c330ab075d09ed92de163076aa90b856bcb391e8ed89197",
     "tools/convert_audio_to_aud.py": "47256493cb004c16e35876c72e20503f0c9d5ceb7d19eaa6bb01f5d730384b40",
     "tools/finalize_award.py": "ef315c1b5dcc6e3c178513869ed48791b4e0ed48f822160844d36b3288d7a977",
     "tools/finalize_award_v3.py": "80a207db971ead6e0e68aff64d381a64ac7b8335a53bf6894e004821453b8d37",
@@ -828,7 +828,16 @@
     "tools/test_visual_fx.py": "194a736b5661bc6272a5a9c1d46233323c731ecf69c6a33f0fbdab2884760e30",
     "tools/validation.py": "d156773da31b1490d64a859ca52f52c780871943fb4503aed407b79ef1083531",
     "tools/verify_dlt.py": "fe3bfc4dafa6c521a6423d5ef8f808a8736c85866e2a4d3d942516ed4787382a",
-    "tools/verify_saved_project.py": "25c4fe45b5d17fc624005ed005fbdf3434c4a1b67e57fb0bfcd03fdfdb041aed"
+    "tools/verify_saved_project.py": "187a65451753ef2807bd45554f621e975b85ed57b5969d7567acf22520647c75",
+    "tools/test_title_pixels.py": "494b1db5d2755b26ff555ed145c344100bdb18d2b29d8a4ed2d1b49d18db9931",
+    "HARDWARE_STATUS_20261026.md": "7de4bfe8ecf649bfc285cb5fa8bd5b78b7bdf04f8f41c8e8100a3d2d697001d3",
+    "\u6807\u9898\u4fee\u6539\u9a8c\u8bc1\u8bf4\u660e.txt": "3a5fe5e4125f37b977ea2d97a09436e36366465b313722e2a74da63da129f906",
+    "releases/title_configuration_20261026/results.json": "daaaec53a23713f8e3a655062f42d00f98e944e8c1da01fd972c2a817c538c65",
+    "releases/title_configuration_20261026/pixels.log": "3bfb2673a7c45a73bb29c37cfa7bd75206a6eb30d1344dc01e5c9ee9e8dbb5ee",
+    "releases/title_configuration_20261026/title.png": "2a0a17c879da017b49f62ba5f44cfc7c46adcd91b1264c5e771f70e5aa707c93",
+    "releases/title_configuration_20261026/ticker.png": "a63138f88a7c860ecc68f7062154ac7da303904d5b81f3ff5bf473d22528b3ce",
+    "releases/title_configuration_20261026/pixels.v": "ea4ba523de8812b4ca0eaddf27824a31982ca2312e990447cf7a837a415dcd20",
+    "releases/title_configuration_20261026/title_records.hex": "7437937cf6d6dfce535f9a879a4f0feec232e8bf28613e862372847d61f9e80b"
   },
   "release_files": {
     "releases/PHOTO_BOARD_A_5_0.bit": "8b0471d59b0ee1c153945c1fdca2be4e72b08f4a00065c535af4e83a365d70ff",
@@ -845,6 +854,13 @@
     }
   ],
   "saved_rtl_files": 403,
-  "current_recorded_test_count": 19,
-  "hardware_validation": "pending"
+  "current_recorded_test_count": 20,
+  "hardware_validation": "pending",
+  "configuration_revision": "distinct-title-example-20261026",
+  "title_configuration_validation": {
+    "passed": true,
+    "record": "releases/title_configuration_20261026/results.json",
+    "hardware_validation": "pending",
+    "firmware_changed": false
+  }
 }

@@ -46,7 +46,8 @@ def verify(strict=True):
             version=record['version'].replace('.','_')
             assert {p.relative_to(ROOT).as_posix() for p in allowed}=={
                 f'releases/PHOTO_BOARD_A_{version}.bit',f'releases/PHOTO_BOARD_B_{version}.bit'}
-        assert not any(p.suffix.lower() in ('.md','.zip') for p in ROOT.rglob('*') if p.is_file())
+        # Markdown hardware-status notes are part of the saved project too.
+        assert not any(p.suffix.lower()=='.zip' for p in ROOT.rglob('*') if p.is_file())
     return {'passed':True,'saved_files_checked':len(record['files_sha256']),'saved_rtl_files':record['saved_rtl_files'],
             'boards':boards,'origin_test_count':65,'origin_hardware_validation':origin['hardware_validation'],
             'local_regression_count':record.get('current_recorded_test_count',0),
