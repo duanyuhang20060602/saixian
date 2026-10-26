@@ -1,0 +1,9 @@
+{
+  "exact_stereo_outputs": 50000,
+  "max_integer_error": 0,
+  "bypass_delay_samples": 1183,
+  "bypass_delay_ms": 24.645833333333332,
+  "modes_tested": 5,
+  "input_spacing_clocks": 700,
+  "clear_test_zero_samples": 2400
+}
