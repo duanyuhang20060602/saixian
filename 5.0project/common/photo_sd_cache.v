@@ -1,8 +1,8 @@
 `timescale 1ns/1ps
 // Six-entry directory, two external SDRAM slots. A locked transmit slot is never a
 // load destination. Neighbour prefetch runs while the link consumes its slot.
-module photo_sd_cache #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=1048575,FRAME_WORDS=460800,FORWARD_ONLY=0,DISPLAY_PIN=0,EARLY_PREFETCH=0,TITLE_SD=0)(
- output title_ready,output [4:0] title_length,input [6:0] title_address,output [31:0] title_data,
+module photo_sd_cache #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=1048575,FRAME_WORDS=460800,FORWARD_ONLY=0,DISPLAY_PIN=0,EARLY_PREFETCH=0,TITLE_SD=0,INDEPENDENT_TEXT=0)(
+ output title_ready,output [4:0] title_length,input [6+INDEPENDENT_TEXT:0] title_address,output [31:0] title_data,
  input display_valid,input [2:0] display_image,input prefetch_pause,
  input audio_packet_active,input audio_request_valid,input [7:0] requested_audio_epoch,input [2:0] requested_audio_track,
  output reg [7:0] active_audio_epoch,output reg [2:0] active_audio_track,audio_count,
@@ -33,7 +33,7 @@ wire [3:0] bmp_state;wire [31:0] bmp_read_addr;wire bmp_read_req;
 wire sector_end,byte_valid,scaler_fault;wire [7:0] byte_data;
 reg [1:0] read_owner;reg read_settle;reg [31:0] read_address;
 generate if(TITLE_SD)begin:title_storage
-photo_sd_title_store title_store(.clk(clk),.rst(rst),
+photo_sd_title_store #(.INDEPENDENT_TEXT(INDEPENDENT_TEXT)) title_store(.clk(clk),.rst(rst),
  .valid(TITLE_SD && byte_valid && read_owner==1),.data(byte_data),
  .sector_end(sector_end && read_owner==1),.ready(title_ready),.length(title_length),
  .address(title_address),.word(title_data));

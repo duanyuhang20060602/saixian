@@ -1,4 +1,4 @@
-module saixian_osd_overlay #(parameter SHOW_SOURCE_RESOLUTION=1,SHARED_TITLE=0)(
+module saixian_osd_overlay #(parameter SHOW_SOURCE_RESOLUTION=1,SHARED_TITLE=0,INDEPENDENT_TEXT=0)(
     input  wire        clk,
     input  wire        rst,
     input  wire        frame_tick,
@@ -93,7 +93,10 @@ wire [11:0] ticker_width = (ticker_text_length == 0) ? 12'd224 :
                            {2'b0,ticker_text_length,5'b0};
 wire [11:0] ticker_local_x = {2'b0, x} + ticker_width - {1'b0, ticker_x};
 wire [10:0] title_scroll_x;
-wire [10:0] title_local_x = SHARED_TITLE ? (title_text_length<=4 ? {1'b0,x}-11'd20:ticker_local_x[10:0]-11'd20) : {1'b0,x}+11'd108-title_scroll_x;
+// Independent contents reuse the existing ticker phase. Its shortest period
+// is 672 pixels, covering every 16-character header plus the 128-pixel window.
+// Use the header's own width so a short ticker cannot hide long-title glyphs.
+wire [10:0] title_local_x = INDEPENDENT_TEXT ? (title_text_length<=4 ? {1'b0,x}-11'd20:{1'b0,x}-11'd20+{1'b0,title_text_length,5'b0}-title_scroll_x) : SHARED_TITLE ? (title_text_length<=4 ? {1'b0,x}-11'd20:ticker_local_x[10:0]-11'd20) : {1'b0,x}+11'd108-title_scroll_x;
 // 75% of the underlying photograph; only trace/peak pixels are opaque.
 function [7:0] background_channel;
  input [7:0] value;begin background_channel=(value>>1)+(value>>2);end
@@ -394,7 +397,7 @@ always @* begin
             local_x = ticker_local_x[9:0];
             font_col = local_x[4:1];
             font_row = (y - 9'd432) >> 1;
-            glyph_id = (SHARED_TITLE ? 7'd96:7'd88) + ticker_local_x[9:5];
+            glyph_id = (INDEPENDENT_TEXT ? 7'd112:SHARED_TITLE ? 7'd96:7'd88) + ticker_local_x[9:5];
             text_region = 1'b1;
             text_color = 24'hFFD166;
         end else if ((state == ST_CAROUSEL) && (ticker_text_length == 0) &&

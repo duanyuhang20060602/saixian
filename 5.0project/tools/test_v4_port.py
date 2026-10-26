@@ -38,7 +38,7 @@ def main():
     iv = Path(os.environ.get('IVERILOG', 'C:/iverilog/bin/iverilog.exe'))
     vvp = iv.with_name('vvp.exe')
     environment = os.environ.copy()
-    temp = Path('E:/Codex/Temp/cooperate-v4-port-tests')
+    temp = Path(os.environ.get('SAIXIAN_TEMP_ROOT', ROOT.parent/'temp'))
     temp.mkdir(parents=True, exist_ok=True)
     environment.update(TEMP=str(temp), TMP=str(temp), TMPDIR=str(temp))
     report = out/'results.json'

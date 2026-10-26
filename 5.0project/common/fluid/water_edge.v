@@ -3,14 +3,15 @@
 
 // smoothed at frame boundaries and never drives the water-wave scheduler.
 
-module water_edge #(parameter EXTERNAL_ENVELOPE=0,SHARED_WEIGHT=0)(input clk,rst,frame_tick,music_drive,pcm_valid,
+module water_edge #(parameter EXTERNAL_ENVELOPE=0,SHARED_WEIGHT=0,EARLY_WEIGHT=0)(input clk,rst,frame_tick,music_drive,pcm_valid,
 
  input signed[15:0] pcm_left,pcm_right,input[10:0] x,input[9:0] y,
 
  input de,sof,eol,input[23:0] rgb,input[5:0] darkness,input[7:0] external_target,
 
  output reg de_out,sof_out,eol_out,output reg[23:0] rgb_out,output reg[7:0] level,
- input [7:0] shared_weight,output [6:0] weight_address);
+ input [7:0] shared_weight,output [6:0] weight_address,
+ input [10:0] weight_x,input [9:0] weight_y);
 
 reg[18:0] envelope;wire signed[16:0] sum=$signed({pcm_left[15],pcm_left})+$signed({pcm_right[15],pcm_right});
 
@@ -62,9 +63,21 @@ wire[10:0] distance=xd<yd ? xd:yd;
 // taking the minimum: only seven bits are relevant to the ROM, avoiding the
 // wide subtract/compare chain on the synchronous RAM address setup path.
 // Screen-outside coordinates retain the original zero-distance behavior.
-wire[6:0] border_x=x<76 ? x[6:0]:x>=1280 ? 7'd0:x>=1204 ? 7'd127-x[6:0]:7'd127;
-wire[6:0] border_y=y<76 ? y[6:0]:y>=720 ? 7'd0:y>=644 ? 7'd79-y[6:0]:7'd127;
-wire[6:0] border_address=border_x<border_y ? border_x:border_y;
+wire [10:0] query_x=EARLY_WEIGHT ? weight_x:x;
+wire [9:0] query_y=EARLY_WEIGHT ? weight_y:y;
+wire[6:0] border_x=query_x<76 ? query_x[6:0]:query_x>=1280 ? 7'd0:query_x>=1204 ? 7'd127-query_x[6:0]:7'd127;
+wire[6:0] border_y=query_y<76 ? query_y[6:0]:query_y>=720 ? 7'd0:query_y>=644 ? 7'd79-query_y[6:0]:7'd127;
+// The production raster supplies coordinates one clock before RGB. Register
+// the two axis distances there; minimum/ROM access then retains the original
+// weight cycle and the five-cycle output without a long coordinate-to-RAM path.
+reg [6:0] border_x_q,border_y_q;
+always @(posedge clk)begin
+ if(rst)begin border_x_q<=0;border_y_q<=0;end
+ else begin border_x_q<=border_x;border_y_q<=border_y;end
+end
+wire [6:0] selected_x=EARLY_WEIGHT ? border_x_q:border_x;
+wire [6:0] selected_y=EARLY_WEIGHT ? border_y_q:border_y;
+wire[6:0] border_address=selected_x<selected_y ? selected_x:selected_y;
 
 assign weight_address=border_address;
 wire [7:0] weight;reg inside_edge;

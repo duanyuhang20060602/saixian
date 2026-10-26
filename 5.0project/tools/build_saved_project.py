@@ -3,6 +3,7 @@ from pathlib import Path
 import argparse,datetime,json,os,re,shutil
 from build_v4_port import ROOT,build,digest,inputs
 from verify_saved_project import verify
+from prepare_compact_menu import verify as verify_compact_menu
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--board',choices=('a','b','both'),default='both')
     parser.add_argument('--work',type=Path);parser.add_argument('--td-root',type=Path)
@@ -10,6 +11,7 @@ def main():
     # Integrity verification checks the frozen snapshot; ordinary rebuilds
     # validate current paths and permit intentional source-code changes.
     verify(strict=args.verify_only)
+    verify_compact_menu()
     if args.board in ('a','both'):
         from prepare_menu_edge_rom import verify as verify_packed_rom
         verify_packed_rom()

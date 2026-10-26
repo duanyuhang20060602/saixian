@@ -1,0 +1,89 @@
+[
+  {
+    "test": "shared_menu_edge_pipeline_native",
+    "passed": true,
+    "seconds": 422.45,
+    "inputs_sha256": {
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\compact-edge-r1\\pipeline.v": "70ca241a9d3151f6213be8366ece71fbfe94d28cfb4f3d3c25d01422614c7021",
+      "common/photo_settings_overlay.v": "c77cf2f68ee99ed1987b2d7c47db60488d6e525c1b6303c3fee0f9eb239d5a55",
+      "tests/reference/shared_rom/photo_settings_overlay.v": "7e8ca724b14325dc0b6892bc7adc4eb9e7252b0a8ec01d0700ce9d660c722baa",
+      "common/fluid/water_edge.v": "c68a5c0975a1d8f1fab0d1cc8e3bec1c94aed018ad06be2635d5f90a6d71e5e9",
+      "common/photo_menu_font.v": "94a4207afc7b269b013c8065e627bad4831fe064000f2ae8232b5f9778b43bc9",
+      "tests/reference/shared_rom/water_edge.v": "182d60e2f8e2bde211da70193838af074f4228e8caef827030b10d0ce0ed49d7",
+      "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+      "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\compact-edge-r1\\runner.py": "071936acb17e7c65cea83d86a7698379d5629dd5f7a972dcbf92672f2d1bc055",
+      "tools/prepare_menu_edge_rom.py": "ada9713241f6ffce3f4f017633740f2203a8244bacf1b4a3c9850dc405dce62c",
+      "tests/reference/shared_rom/source.json": "26e88788c748434a426c4c28ad83403de5fbe59fc4e051297b5c2a0725326f36",
+      "common/photo_compact_menu_font.mif": "1dcea8d5995e87956dfdcee470dd78ee27286e4e8e8d6afddbd207c1ce61e5ae",
+      "src/board_a/user_source/hdl_source/photo_menu_text_lookup.hex": "754b5d6f555a8118b10d149314378f63d485fa63d13c0c3c8f6a2b9eb94864b9",
+      "src/board_a/user_source/hdl_source/photo_menu_text_lookup.mif": "6bd358ea5b82f7a65629595a1f4415d67d02936c2e7ecb704e6166dbfc6441b1",
+      "src/board_a/user_source/hdl_source/photo_menu_edge_weights.hex": "1370c2b976f0295e87dbd23b89ff11a5caf0f17b3e35c8680e9c2fb9caadafc1",
+      "src/board_a/user_source/hdl_source/photo_menu_edge_weights.mif": "e8509b51754be28da44b425fd296174e58903b6be4ef8ebebe70b2ef4410636e",
+      "src/board_a/user_source/hdl_source/IP/water_edge_weights.mif": "1ba4dae4767feaeef087e147b6342e9e0a856f160cf06d9186948f6a272a12fc",
+      "common/photo_menu_font.mif": "2bc93d7d132dcd858edf436d5c55e73896996cf89a2d224cbd8f78bf337d4c5d",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\compact-edge-r1\\ip_init_map.vh": "0e318cae4e8dd6bb0478003c4a9a86e53052c0b6f5ef950954c04f474d7196c7"
+    },
+    "external_inputs_sha256": {
+      "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95"
+    },
+    "stimuli_sha256": {
+      "compact_font.hex": "52c176f25fc52ba7f7c6cef36c4516bb7232ded44ea7aa66515185f9ad0c3ded",
+      "edge_weights.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+      "menu_edge.hex": "1370c2b976f0295e87dbd23b89ff11a5caf0f17b3e35c8680e9c2fb9caadafc1",
+      "menu_font.hex": "ba163be9b68bed0aa7c67eaaf81c5806136eba6c20b8efa27cf19495bdb94858",
+      "menu_map.hex": "156667c6ceeffc8be451beb685d46777f08963b289e854b353093e92a9952d5d",
+      "src/board_a/user_source/hdl_source/photo_menu_edge_weights.hex": "1370c2b976f0295e87dbd23b89ff11a5caf0f17b3e35c8680e9c2fb9caadafc1",
+      "src/board_a/user_source/hdl_source/photo_menu_text_lookup.hex": "754b5d6f555a8118b10d149314378f63d485fa63d13c0c3c8f6a2b9eb94864b9",
+      "ip_init_map.vh": "0e318cae4e8dd6bb0478003c4a9a86e53052c0b6f5ef950954c04f474d7196c7"
+    },
+    "log": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\compact-edge-r1\\pipeline_native.log",
+    "log_sha256": "870466787994779f66fff1e373b28e871f206a67e200dc6a37839a37ba132297",
+    "flags": []
+  },
+  {
+    "test": "shared_menu_edge_pipeline_pcm",
+    "passed": true,
+    "seconds": 424.36,
+    "inputs_sha256": {
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\compact-edge-r1\\pipeline.v": "70ca241a9d3151f6213be8366ece71fbfe94d28cfb4f3d3c25d01422614c7021",
+      "common/photo_settings_overlay.v": "c77cf2f68ee99ed1987b2d7c47db60488d6e525c1b6303c3fee0f9eb239d5a55",
+      "tests/reference/shared_rom/photo_settings_overlay.v": "7e8ca724b14325dc0b6892bc7adc4eb9e7252b0a8ec01d0700ce9d660c722baa",
+      "common/fluid/water_edge.v": "c68a5c0975a1d8f1fab0d1cc8e3bec1c94aed018ad06be2635d5f90a6d71e5e9",
+      "common/photo_menu_font.v": "94a4207afc7b269b013c8065e627bad4831fe064000f2ae8232b5f9778b43bc9",
+      "tests/reference/shared_rom/water_edge.v": "182d60e2f8e2bde211da70193838af074f4228e8caef827030b10d0ce0ed49d7",
+      "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+      "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\compact-edge-r1\\runner.py": "071936acb17e7c65cea83d86a7698379d5629dd5f7a972dcbf92672f2d1bc055",
+      "tools/prepare_menu_edge_rom.py": "ada9713241f6ffce3f4f017633740f2203a8244bacf1b4a3c9850dc405dce62c",
+      "tests/reference/shared_rom/source.json": "26e88788c748434a426c4c28ad83403de5fbe59fc4e051297b5c2a0725326f36",
+      "common/photo_compact_menu_font.mif": "1dcea8d5995e87956dfdcee470dd78ee27286e4e8e8d6afddbd207c1ce61e5ae",
+      "src/board_a/user_source/hdl_source/photo_menu_text_lookup.hex": "754b5d6f555a8118b10d149314378f63d485fa63d13c0c3c8f6a2b9eb94864b9",
+      "src/board_a/user_source/hdl_source/photo_menu_text_lookup.mif": "6bd358ea5b82f7a65629595a1f4415d67d02936c2e7ecb704e6166dbfc6441b1",
+      "src/board_a/user_source/hdl_source/photo_menu_edge_weights.hex": "1370c2b976f0295e87dbd23b89ff11a5caf0f17b3e35c8680e9c2fb9caadafc1",
+      "src/board_a/user_source/hdl_source/photo_menu_edge_weights.mif": "e8509b51754be28da44b425fd296174e58903b6be4ef8ebebe70b2ef4410636e",
+      "src/board_a/user_source/hdl_source/IP/water_edge_weights.mif": "1ba4dae4767feaeef087e147b6342e9e0a856f160cf06d9186948f6a272a12fc",
+      "common/photo_menu_font.mif": "2bc93d7d132dcd858edf436d5c55e73896996cf89a2d224cbd8f78bf337d4c5d",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\compact-edge-r1\\ip_init_map.vh": "0e318cae4e8dd6bb0478003c4a9a86e53052c0b6f5ef950954c04f474d7196c7"
+    },
+    "external_inputs_sha256": {
+      "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95"
+    },
+    "stimuli_sha256": {
+      "compact_font.hex": "52c176f25fc52ba7f7c6cef36c4516bb7232ded44ea7aa66515185f9ad0c3ded",
+      "edge_weights.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+      "menu_edge.hex": "1370c2b976f0295e87dbd23b89ff11a5caf0f17b3e35c8680e9c2fb9caadafc1",
+      "menu_font.hex": "ba163be9b68bed0aa7c67eaaf81c5806136eba6c20b8efa27cf19495bdb94858",
+      "menu_map.hex": "156667c6ceeffc8be451beb685d46777f08963b289e854b353093e92a9952d5d",
+      "src/board_a/user_source/hdl_source/photo_menu_edge_weights.hex": "1370c2b976f0295e87dbd23b89ff11a5caf0f17b3e35c8680e9c2fb9caadafc1",
+      "src/board_a/user_source/hdl_source/photo_menu_text_lookup.hex": "754b5d6f555a8118b10d149314378f63d485fa63d13c0c3c8f6a2b9eb94864b9",
+      "ip_init_map.vh": "0e318cae4e8dd6bb0478003c4a9a86e53052c0b6f5ef950954c04f474d7196c7"
+    },
+    "log": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\compact-edge-r1\\pipeline_pcm.log",
+    "log_sha256": "856fea4a5fb083e17ea4bd66291a13fe1f0bde4c4383dc47cdf73cdcd415c59b",
+    "flags": [
+      "-P",
+      "tb.EXTERNAL=0"
+    ]
+  }
+]

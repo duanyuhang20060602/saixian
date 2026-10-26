@@ -42,6 +42,14 @@ initial begin
  tap();if(dut.auto_interval_seconds!=6 || dut.setting_item!=13)$fatal(1,"touch interval increase");
  touch(200,100,1);touch(50,100,1);touch(50,100,0);
  tap();if(dut.auto_interval_seconds!=5)$fatal(1,"touch interval decrease");
+ // Reach the new fifteenth row through the actual UART gesture and hit test.
+ touch(100,100,1);touch(250,116,1);touch(250,116,0);
+ if(dut.cursor_x!=600 || dut.cursor_y!=608)$fatal(1,"drag to sync row");
+ tap();if(!dut.music_sync_enable || dut.setting_item!=14)$fatal(1,"touch sync enable");
+ touch(200,100,1);touch(50,100,1);touch(50,100,0);
+ tap();if(dut.music_sync_enable)$fatal(1,"touch sync disable");
+ touch(100,100,1);touch(100,84,1);touch(100,84,0);
+ if(dut.cursor_x!=300 || dut.cursor_y!=576)$fatal(1,"restore pointer after sync row");
  touch(100,308,1);touch(100,100,1);touch(100,100,0);
  cmd(0);if(dut.pointer_enabled)$fatal(1,"disable command");
  tap();if(dut.volume!=5)$fatal(1,"disabled touch must not edit");
