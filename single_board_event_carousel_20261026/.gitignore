@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+results/tmp/
+results/tests/*.vvp
+results/tests/*.ppm
+!delivery/SAIXIAN_EVENT_CAROUSEL_SINGLE_20261026.bit
+!delivery/SAIXIAN_EVENT_CAROUSEL_SINGLE_pr.timing

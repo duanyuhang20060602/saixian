@@ -1,0 +1,2 @@
+PASS control: selection, durations, countdown, scores, freeze, alerts, tie, lock, cap, cancel
+D:\qiansai\saixian_event_carousel_single_20261026\tests\tb_match_control.v:33: $finish called at 28866000 (1ps)

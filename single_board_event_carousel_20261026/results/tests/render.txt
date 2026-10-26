@@ -1,0 +1,14 @@
+PASS rendered                         home.ppm:      921600 pixels
+PASS rendered                        teams.ppm:      921600 pixels
+PASS rendered                     schedule.ppm:      921600 pixels
+PASS rendered                    no_result.ppm:      921600 pixels
+PASS rendered                        setup.ppm:      921600 pixels
+PASS rendered                    countdown.ppm:      921600 pixels
+PASS rendered                      running.ppm:      921600 pixels
+PASS rendered                       paused.ppm:      921600 pixels
+PASS rendered                     winner_a.ppm:      921600 pixels
+PASS rendered                      summary.ppm:      921600 pixels
+PASS rendered                  last_result.ppm:      921600 pixels
+PASS rendered                          tie.ppm:      921600 pixels
+PASS atomic frame publication
+D:\qiansai\saixian_event_carousel_single_20261026\tests\tb_match_render.v:44: $finish called at 148500820000 (1ps)

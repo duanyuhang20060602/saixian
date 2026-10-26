@@ -1,0 +1,2 @@
+# Preserve the exact bytes used for the qualified FPGA build and SHA256 records.
+* -text

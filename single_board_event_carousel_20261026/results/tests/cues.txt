@@ -1,0 +1,2 @@
+PASS audio cues: 48 kHz cadence, countdown/start/pause/resume/finish audible PCM
+D:\qiansai\saixian_event_carousel_single_20261026\tests\tb_match_cues.v:23: $finish called at 3500086000 (1ps)

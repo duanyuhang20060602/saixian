@@ -1,0 +1,398 @@
+{
+  "product": "赛显单板：赛事轮播、比分与原工程奖杯组合版",
+  "date": "2026-10-26",
+  "device": "EG4S20BG256",
+  "hardware_validation": "pending user acceptance",
+  "scope": "Built-in event pages, shared match state and result, original trophy derivative ROM; HDMI_A; no TF image filters",
+  "build": {
+    "status": "passed",
+    "seed": 3,
+    "hardware_validation": "pending",
+    "timing_ns": {
+      "SWNS": 0.106,
+      "STNS": 0.0,
+      "HWNS": 0.024,
+      "HTNS": 0.0
+    },
+    "resources": {
+      "lut": {
+        "used": 4437,
+        "total": 19600
+      },
+      "reg": {
+        "used": 2614,
+        "total": 19600
+      },
+      "bram": {
+        "used": 24,
+        "total": 64
+      },
+      "bram32k": {
+        "used": 9,
+        "total": 16
+      },
+      "dsp": {
+        "used": 3,
+        "total": 29
+      }
+    },
+    "bit_sha256": "9afbb7d2216b8ac1b915743437a1a26dc96c04a008aa479d1c3afda9ad5880e6",
+    "seconds": 180.11
+  },
+  "source_hashes": {
+    "project/src/user_source/constraints_source/.edid_debug_bak.cwc": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "project/src/user_source/constraints_source/edid_debug.cwc": "6716411e2346de08976e0ad8ed2e09eb93bdc0f60efc31bf75ba70e6cebe1f95",
+    "project/src/user_source/constraints_source/pin.adc": "b5c916c70d5c489ddcbdea522538d1e83cb30019c36859e3da957eb71cf91112",
+    "project/src/user_source/constraints_source/timing.sdc": "9f264656eb08853550fd5a11779240e7846f9d57c07754f6ddc65ccb0d785a4b",
+    "project/src/user_source/hdl_source/audio_arc_calculate.v": "552d8d86afd237666b30ae08f31247808e89eb024efde5efc670b82eb617a7dc",
+    "project/src/user_source/hdl_source/delta_decoder.v": "4414492eb4dda617c461e0585ef23f21487842dd9c893cf691a995967f3f6f99",
+    "project/src/user_source/hdl_source/delta_loader.v": "bdf5b725e905456f22813a3fa4b6c038f38502c2b7b2d28f86c7788e9009f17c",
+    "project/src/user_source/hdl_source/delta_memory.v": "4ddcad490aa4c15683488bd99085c504af652ff1473d9247a1b3515cfef1f708",
+    "project/src/user_source/hdl_source/delta_player.v": "349f04137f75984c2ce71242312b4ff795973d5285aa2cc76f21b0cb08248703",
+    "project/src/user_source/hdl_source/delta_read_capture.v": "60af35a688fcc77e2dc2a9f0b40d31def4488cf0a2c7cd2d01646b7d6e590f6a",
+    "project/src/user_source/hdl_source/delta_video.v": "9917bd6ce5260ddc92e93a27cae05174bf29818767d947f3f3b877b63cac2829",
+    "project/src/user_source/hdl_source/event_flow.v": "66af21400d5d8f9fd22577710e4517c876d2bfad107e5fe067f4a28b7ed0395b",
+    "project/src/user_source/hdl_source/event_trophy_rom.v": "55361234b9faa7546739df374763e77afbb77fb56acbf15941eed1317ffdf31a",
+    "project/src/user_source/hdl_source/hdmi_audio_tone_i2s_64fs.v": "729cb1635091b7630e5b68306e9f51fff4e3e06bae8ce08cc3d7323b3fb9d5cf",
+    "project/src/user_source/hdl_source/hdmi_audio_tone_pcm_scale.v": "0ff1ab2b39e1294c3aae814bf5a252c47c284c2cdb9568adf02d3c6cfd8ddd0b",
+    "project/src/user_source/hdl_source/hdmi_phy_warpper.v": "416b082b0987001bdbc0a7e20a557cb8fb1dca34e25dc881e6d28a8cb3cf4300",
+    "project/src/user_source/hdl_source/I2S_receiver.v": "08904598b42c2e1a4836cd9fb3293bc6c791ea2f79e35c7663a33127dc97f47b",
+    "project/src/user_source/hdl_source/key_remove_shakes.v": "8832f59e7ba94bfb8cf31e4f5a772ef7177d5257a5a2532d53cbfa1d9b7f5cd9",
+    "project/src/user_source/hdl_source/lane_lvds_10_1.v": "de9529321354f04837e051d0ec1681cf44783d4be3284703a788e081147500bc",
+    "project/src/user_source/hdl_source/match_control.v": "67614d01b8b0cc4bcce9f08947c501ca507348f7e1ebdf5a4c4cb5ed4afa1fdc",
+    "project/src/user_source/hdl_source/match_font.hex": "e9296d42e9c3ebe1b55bbebb4956e09fa033d1220ddecb0e35fec2aa9594a3ac",
+    "project/src/user_source/hdl_source/match_render.v": "b00508334dcf191c6a56f333413dd23217a6bcc7563cf97ddcd9a8c10dd340bb",
+    "project/src/user_source/hdl_source/match_text.vh": "1255156dc3c7479a4b527b8918e3b48c49c818a86d6fd4e4a11ceb82d31f391b",
+    "project/src/user_source/hdl_source/match_top.v": "fda2f8ed24691391540c8d392e04df292dfebaa647fc742d429c994cb15fdf9a",
+    "project/src/user_source/hdl_source/saixian_audio_cue.v": "5db719e5f504fc09693f871eac80a5c2be5fd3f5c09df82b247c9c64b1a3d6ee",
+    "project/src/user_source/hdl_source/saixian_audio_pitch.v": "bf7b688668420d1b612854df991ad86c8de7d4726a68ca4fda258d48d39d9b74",
+    "project/src/user_source/hdl_source/saixian_audio_repair.v": "e174fad350ee2721fd84079a76acd3715d4d066ce79f69e57edf19cb16505c27",
+    "project/src/user_source/hdl_source/saixian_audio_visualizer.v": "c1b7e32bc4251c7342d033eac5199e44817e901043b90ff010a400905689d392",
+    "project/src/user_source/hdl_source/saixian_av_bands.hex": "4702e3ac7e7f57c6713eeff51518b138e3118a7b25dccbfdde7536c0765a08c0",
+    "project/src/user_source/hdl_source/saixian_av_decimator.v": "b33cb557a71ea6f390275c4844f9da5a68975ad7ad66bd7186bae4dea4f78801",
+    "project/src/user_source/hdl_source/saixian_av_font.hex": "b5fc8a9d0267b1ae6abdb19c166cfdb8a12fa01f524f76a596e1afe9da35fa11",
+    "project/src/user_source/hdl_source/saixian_av_hann.hex": "5eaffd7e744a45605bea00b2ea1eab0f2bd9ea847e22a206b65cc58b86415ca3",
+    "project/src/user_source/hdl_source/saixian_av_hann.hex_0_0.mif": "296c489ff82c7364e376f0e0e1ac71dd50393338340877c2fb167e5ffd16e651",
+    "project/src/user_source/hdl_source/saixian_av_hann.hex_1_0.mif": "5206ea36abf0870dc884cb7b065818fb4dabea236533896347066839f23c379d",
+    "project/src/user_source/hdl_source/saixian_av_hann_half.hex": "f50b163745d330b2fcbf880329fbdca32687c3248a0cb04a50db065eb4fc2bbd",
+    "project/src/user_source/hdl_source/saixian_av_hann_half.hex_0_0.mif": "296c489ff82c7364e376f0e0e1ac71dd50393338340877c2fb167e5ffd16e651",
+    "project/src/user_source/hdl_source/saixian_av_twiddle.hex": "6f121c61cd09663fd49253e5033669621e8ffed933f4e5a7ea6386a81496b6d4",
+    "project/src/user_source/hdl_source/saixian_av_twiddle.hex_0_0.mif": "77e13f09f821ac5a47631a9b0ccb10efdddc3056dc029a8652271fb93c49c8a2",
+    "project/src/user_source/hdl_source/saixian_av_twiddle.hex_0_1.mif": "b326057387290a339eec8d18a92f9e2b2c4568906fecce5d1e7218104243e020",
+    "project/src/user_source/hdl_source/saixian_av_twiddle_quarter.hex": "1efa8d121103db139e3e317fc71420424096b2c508db79bc43c99f587cb9d420",
+    "project/src/user_source/hdl_source/saixian_av_twiddle_quarter.hex.mif": "028cf045f1eb111267fb96a3e68f08e009d00884069d74663a3d2e233bd40f54",
+    "project/src/user_source/hdl_source/saixian_av_twiddle_serial.hex": "ef2bec2daff0b152caa33e063944cd5a17ee1d73c797cbe8228ed6902ec9602e",
+    "project/src/user_source/hdl_source/saixian_av_twiddle_serial.hex_0_0.mif": "1d8e699d900f2f4ad40d1c50c89e4acb085895987736cd3511006019de917c77",
+    "project/src/user_source/hdl_source/saixian_battle_result_fx_pipelined.v": "8d8afbd056636d15fe4dd022aeeca5d603ff4c84a09c9a76cb184a65c0d89f47",
+    "project/src/user_source/hdl_source/saixian_event_controller.v": "c27a9a51687b5ad7b45e9fa7a17a20b259cfe84cbd950efaf3a4a5e0dd6bb5c2",
+    "project/src/user_source/hdl_source/saixian_font_rom.mif": "34a61e394e4b341e520d111bffa50e2a50f57e6ab7122f4e2bea1e199ee1e4db",
+    "project/src/user_source/hdl_source/saixian_font_rom.v": "2a5bc4cd025e27832872ea01bbe77b2c02d24dad16a852bcdbd31f835ba74183",
+    "project/src/user_source/hdl_source/saixian_hmi_uart.v": "d2775b075f4800ddad7dc4f3ace8b27355b6ef4d18348e3d5712c02822ff617f",
+    "project/src/user_source/hdl_source/saixian_key_debounce.v": "0ce5ef658b14de16b3d74c81c055ebfadaa7276d9f73aec02417329c80648968",
+    "project/src/user_source/hdl_source/saixian_osd_overlay.v": "c2f964a9b2e72b78ca769d3fe1f342d58ad4e2867d44e7134be2d39df0fa2dd2",
+    "project/src/user_source/hdl_source/saixian_red_victory_atlas.hex": "4c41b51c2186809a23878c74318c2004c49d3a3c5d5de6c9242ef393c7445048",
+    "project/src/user_source/hdl_source/saixian_red_victory_atlas.mif": "4a87535589a3d3de8544c265c494ccc1e31994b8ea1dd9682e7e4c53c557aead",
+    "project/src/user_source/hdl_source/saixian_shared_video_fifo.v": "01a0edeec11dbdc54ffa026b9dafd40530aa031a7d19b8ad51b4320853c55635",
+    "project/src/user_source/hdl_source/saixian_sprint_atlas.hex": "06b7061b752038edca8a1a2b5fdac8d398e45ad8b96dd2ebd199844a127fef5f",
+    "project/src/user_source/hdl_source/saixian_sprint_atlas.mif": "a19b48d639fe20d46284654139205c07ac6d2337f1a118dc58c58ce94f75f5e1",
+    "project/src/user_source/hdl_source/saixian_sprint_atlas_dict.hex": "a3ab78e4b771ab60f5f4f562420e4fd068159fa9386ef515a92b9eba0f812d24",
+    "project/src/user_source/hdl_source/saixian_sprint_atlas_dict.mif": "33c7b9173195e93014b7402f3b74102c4bfe5fee39f99975a8dbcc9a7612971e",
+    "project/src/user_source/hdl_source/saixian_sprint_atlas_index.hex": "f57d811a65bc84c393420d3e28a417ad4c7aeb597617d14bd402fa254352a05a",
+    "project/src/user_source/hdl_source/saixian_sprint_atlas_index_hi.hex": "7793ec26266091b608b5ebf3452773d7f61465f606e9c102bb474caa69eab11a",
+    "project/src/user_source/hdl_source/saixian_sprint_atlas_index_hi.mif": "3c752dff3d075310f4478c4d5536e92ff5fd935f145335a79d513853e15915c2",
+    "project/src/user_source/hdl_source/saixian_sprint_atlas_index_lo.hex": "b00b35943ceb4822e0dc0a27e908b9884252ee90bf4def0a5cc8196ab0b5ede4",
+    "project/src/user_source/hdl_source/saixian_sprint_atlas_index_lo.mif": "1b262844c6c0183dfaf67f0a33e202eff8578c4b70df8361adabcdad2e46db4b",
+    "project/src/user_source/hdl_source/saixian_tf_animation.v": "1816d9eac42de091e913427d84732c4eded403c1782ca8935dc76e8b139cdb03",
+    "project/src/user_source/hdl_source/saixian_tf_preload.v": "1962bbf890b8c0b73b8e1b68de30fe5a1266bad6216f4d445167e796a1c2ce6e",
+    "project/src/user_source/hdl_source/saixian_transition.v": "6b6dd2635e27256bb1d8ee1f6013ea6255964f194d7d4de41fc9a2a2882eb283",
+    "project/src/user_source/hdl_source/saixian_victory_atlas.hex": "a56ae9dfda3d56243c739b3803d493d75db4a2a53e75aca1f6105bb356c16ec6",
+    "project/src/user_source/hdl_source/saixian_victory_atlas.mif": "5a3db45187bb04339fdab4845cc40c163066fb564e45e24c331720bb25a70587",
+    "project/src/user_source/hdl_source/saixian_victory_atlas_dict.hex": "b605d6844826498ae17d83f5bba49a1f35e5b9843b585339c901e485301e042e",
+    "project/src/user_source/hdl_source/saixian_victory_atlas_dict.mif": "aa2e9e47fe7ee9ef8e813998739e3367c08b80596328d5caca2575b4e5697bc3",
+    "project/src/user_source/hdl_source/saixian_victory_atlas_index.hex": "7e4f049bc8d36ce70d3ecbea92cf68a217395d375be84ab256a80a9c311b8b25",
+    "project/src/user_source/hdl_source/saixian_victory_atlas_index_hi.hex": "93a6020336c09a2ca392ebdea7c27897128409690c2ce100bb9c687e041f4d4b",
+    "project/src/user_source/hdl_source/saixian_victory_atlas_index_hi.mif": "2a946255e79ced155072bb2f6e568a0624a86f9ed3635fa6d917c9cf829ce5f8",
+    "project/src/user_source/hdl_source/saixian_victory_atlas_index_lo.hex": "3e5ff0f6feedbf89bc053ee5014b3caa5d2d7b9134066e9d4e84588a16b6dda4",
+    "project/src/user_source/hdl_source/saixian_victory_atlas_index_lo.mif": "b615d173a6f3158ecb63c53b82db7a9267f7d15898be53adef15dc1bca99e1c4",
+    "project/src/user_source/hdl_source/saixian_video_tracker.v": "de67ec82b13cb1bf49e6e399c70a09a9b5b462bc88fe3453d204f6c7c7510997",
+    "project/src/user_source/hdl_source/startup_pulse.v": "396e1e56febb8028339e646bc2f06b83e07ab11ef840e447422fb941956741c9",
+    "project/src/user_source/hdl_source/top_tf_hdmi_audio.v": "eebb09394f2555f14fe3871ff8c0ab6c831b2d092dcb4d89ca1c0bb8880f09d6",
+    "project/src/user_source/hdl_source/trophy_0.hex": "689967e30d79d430ee50b84376d853382793485585042638edda009455f1110f",
+    "project/src/user_source/hdl_source/trophy_0.mif": "0d4f93537a640a3cb661041f53ce5cd2e6f1f2ce1b6b66e9032510d1cc65d412",
+    "project/src/user_source/hdl_source/trophy_1.hex": "592395d997ffcb6064e53efb3894bae4b58c68177b2d7ee727d38e6ba797dc18",
+    "project/src/user_source/hdl_source/trophy_1.mif": "8534ca789eeab1af39b5588df8d039349d41f267bd3db052a69b3e82cc752747",
+    "project/src/user_source/hdl_source/trophy_2.hex": "7316d1c0c3d232f7e366153ae61d692e5ee754c2ac49dd9a1db311bd3179ec2d",
+    "project/src/user_source/hdl_source/trophy_2.mif": "325b675938e4eb28c8460493fcc8c1a3bf5cdcaf378f81bbd020b2d5d3cee92b",
+    "project/src/user_source/hdl_source/trophy_3.hex": "9424dbe0ab4130e8acf8d1623a768c0f6f756278f5bad6413ede1fa64ac9a6cd",
+    "project/src/user_source/hdl_source/trophy_3.mif": "6e50e7dcbbb190ae2638e9eefdd4504e2fdd253dd7d5d321dbd4c28e7e81e12a",
+    "project/src/user_source/hdl_source/trophy_4.hex": "0ea7782e0608f362900a5ce7306cf2cb7b7a00ca3c856c80ef5f64f7885093d1",
+    "project/src/user_source/hdl_source/trophy_4.mif": "d38cffafbb80f520c70ac930d418ab66416b05800819e8b86ca72ced7645d87e",
+    "project/src/user_source/hdl_source/trophy_5.hex": "824b0d8cd2672e6a0fcd5e36610e5a4fd2169adbe1846bab8c7da0771fd19356",
+    "project/src/user_source/hdl_source/trophy_5.mif": "512e52e08be27da77eb03f42775606fc71bfdc72ceedca833e1626d2dc5503ea",
+    "project/src/user_source/hdl_source/trophy_6.hex": "1f4bc8d9f74c7df02b97d101350fb547ecf8f0164e22ed5c0f333683f9997221",
+    "project/src/user_source/hdl_source/trophy_6.mif": "f5162eeb88ac4b401caaf0b971681c6e34bb5646b6076c94edec5e07d1c8643c",
+    "project/src/user_source/hdl_source/trophy_7.hex": "0764cf5a6e5d50d0c1139435c49d008369c60171d0c11565df0325babf9f3181",
+    "project/src/user_source/hdl_source/trophy_7.mif": "48b098f39e25c7477254a7f44ff0c24d537e9eb88356ef21be44e81e5a279086",
+    "project/src/user_source/hdl_source/trophy_8.hex": "622e7c61c2ab0fa8832ffb73cf21a01ec25bc308698940e9518c8f33c3ec8949",
+    "project/src/user_source/hdl_source/trophy_8.mif": "0934d6da92321f788bee0310f13556e66502872ecc36798d51c3052a5150ee22",
+    "project/src/user_source/hdl_source/trophy_palette.vh": "e93ea0959c8dc40be8dcdd2bc3b63d511b712576329612d7f0174c111010930d",
+    "project/src/user_source/hdl_source/video_rgb_to_axis_640x480.v": "3c60c7774979aabbaa6e07570c40d0111d03c4c7f7955644d556a102fb819b4c",
+    "project/src/user_source/hdl_source/video_source_test.v": "39cc05c9684a594d4254d11e66e97344053ab75bdb00f3f5a301643fd7aadbfc",
+    "project/src/user_source/ip_source/pll.ipc": "5d632bad332785258c35ca41ce2b4a2a550e6bfd75be0b63a3f72403ca2ce11e",
+    "project/src/user_source/ip_source/pll.v": "202799f886f12cfc1d837afa932328b636c6c3dee70167be68c084133647b39c",
+    "project/src/user_source/ip_source/pll.vhd": "a8166865b5aef9caaee525d4633aa1dec4172244a7bbff239e0d658c0ca775e4",
+    "project/src/user_source/hdl_source/hdmi1.4b_transmitter_core/hdmi_1_4b_transmitter_core_wrapper.enc.v": "867e0b0bdd874bc383d00918c9e1be3fe01edf41f343b6a0d73e262776596a63",
+    "project/src/user_source/hdl_source/include/global_def.v": "db5b9b6f6a08e7b8ea0d9709f1595da17dc86061e94576fc3ccdee733a94efd2",
+    "project/src/user_source/hdl_source/include/sdr_as_ram.enc.v": "767dbdfbd83d42223b77dfa7deab42ce8216a8fd6f6cb41b7e7593d9a345ba57",
+    "project/src/user_source/hdl_source/include/sdr_init_ref.enc.v": "7f9f9fe090c896b4fcfd0f61c97e65183e1d231edaeae879a122d56d5f86761c",
+    "project/src/user_source/hdl_source/include/sdr_wrrd.enc.v": "c7d7fe07d75f66aa88d9f986b3006319c995162434f104f9990664b374cdfdd2",
+    "project/src/user_source/hdl_source/IP/afifo_16_256.tcl": "5807155b00f2f749328339e01a85b4bb836f91598286dd167513836b60af33db",
+    "project/src/user_source/hdl_source/IP/afifo_16_256.v": "dab43a76a35e21df4064a25edb940699b041427d70bae89cc03c5280b7bf4bf8",
+    "project/src/user_source/hdl_source/IP/afifo_16_256.vhd": "50d6d10017b63e1ce5a77bad4a80e9a3de81402909d30ca0818674a1887eb46d",
+    "project/src/user_source/hdl_source/IP/afifo_16_256_sim.v": "55b81ab3aa699902b6f11fe766658b852e0740844879a942dca81cd57b40f729",
+    "project/src/user_source/hdl_source/IP/afifo_16_32_256.ipc": "9df57c0b914f2f6222f88e356528947224fddb866be2468f1391c26d4e60d371",
+    "project/src/user_source/hdl_source/IP/afifo_16_32_256.tcl": "5807155b00f2f749328339e01a85b4bb836f91598286dd167513836b60af33db",
+    "project/src/user_source/hdl_source/IP/afifo_16_32_256.v": "acee22723ed0bc9029b6f40879d52734b645466cdb9fae7919297263e7858e55",
+    "project/src/user_source/hdl_source/IP/afifo_32_16_256.ipc": "a74955dc68a02bbfb36780127008c4737ec80e0888a4648e98e6eac9f5d2c349",
+    "project/src/user_source/hdl_source/IP/afifo_32_16_256.tcl": "5807155b00f2f749328339e01a85b4bb836f91598286dd167513836b60af33db",
+    "project/src/user_source/hdl_source/IP/afifo_32_16_256.v": "a02e29293fe7ac8198a4fb74c08ddb637a76f756966919931ee4a9acf77e9f32",
+    "project/src/user_source/hdl_source/IP/sdram.ipc": "c3092876d4a66739dfc52cbda4fe84eab75099218f65db7e7d922c41dee1c201",
+    "project/src/user_source/hdl_source/IP/sdram.v": "1487e8583bbf52fe6d079a2854c10ebff2e569a3872a9088c1c9717ba14d17fe",
+    "project/src/user_source/hdl_source/IP/sdram.vhd": "853170e99291fb6b2b1bf3f5f20cd1dd0cc723052864147810b674e18cd70705",
+    "project/src/user_source/hdl_source/IP/sys_pll.ipc": "5199d4459b3437892ed6be21a62f7528d3ce534bd9b1001a84e42074122266fe",
+    "project/src/user_source/hdl_source/IP/sys_pll.v": "e06175af354747970d18fe6b3439ef74ccf0d2bbb88dcd3a63a0dca7ed87bd16",
+    "project/src/user_source/hdl_source/IP/sys_pll.vhd": "0ba7e030d4e3d459d6e411a037b731700f4cb259be92b2e444b4deba10d301d2",
+    "project/src/user_source/hdl_source/IP/video_pll.ipc": "b717f646067025a69b4021ed85adeeb6531fad881bce5a49fcb2171ccf401076",
+    "project/src/user_source/hdl_source/IP/video_pll.v": "9886237a689328f4c36b33f54ef1d4df0d5571277eeba8837013091d0119e142",
+    "project/src/user_source/hdl_source/IP/video_pll.vhd": "4c23a8a81b28c81bed4834e1e9a757db01eebd360c7fe3a7066f8f8f7b6a36c4",
+    "project/src/user_source/hdl_source/python/1.wav": "0e6f8f626a0215a85dfcc94e431abab32e6828dbcb64249b7d4ff47721e7b2fd",
+    "project/src/user_source/hdl_source/python/audio_1khz_24bit_48deep.mif": "dcc918e3b442485a933831368567962bb39dc1060b1bcfada16033e050be34ed",
+    "project/src/user_source/hdl_source/python/audio_1khz_24bit_48deep.mif.dath": "e0f242a837b58f810813e1d6da5495473c4fa16dd6b283c30ec91b608b05ab85",
+    "project/src/user_source/hdl_source/python/audio_sine_24bit_48deep_scale8.mif": "aa20e68905fc41a094cf37e218489d3745eb6e46c62dabe772547961a7db64cf",
+    "project/src/user_source/hdl_source/python/audio_sine_24bit_48deep_scale8.mif.dath": "04a6ea5a31be7ffebfdef11a6afb06de17ef367b4b6600ec29c248246d639f02",
+    "project/src/user_source/hdl_source/python/song_48k.mif": "27a4b3b80627ec650d3b6f01b82a21badf7a8508d7a5e75827abf6b2de3579b9",
+    "project/src/user_source/hdl_source/python/song_48k.mif.dath": "34d7db62bc4e6b794f1970bec7ebf2ff504763069437445a095b8cf5da3cff58",
+    "project/src/user_source/hdl_source/python/wav_to_mif.py": "70c06ae300bdaaa840f009af002805558fc4f309136db1d46e68285d2bcbd750",
+    "project/src/user_source/hdl_source/rom/i2s_rom_player_single_pll_fix64_rom_ip.v": "f8e7c9c56c6a21154580e030dada604572d89a1e75e8945125b2ea0dd4b3094b",
+    "project/src/user_source/hdl_source/SD/ax_debounce.v": "93aa6dd38051250cc7f777c88466ac180afe9bcdce7838b9ea506455d8cbc9b8",
+    "project/src/user_source/hdl_source/SD/bmp_read.v": "ad483110c340a8d352c6ea1e7a8f5ab529cf61fe53788f29e70da816e1d6c1a9",
+    "project/src/user_source/hdl_source/SD/color_bar.v": "afe1f56714ec58d2477ba1717e5a36c5a0da5fe5c07d70d11aa5ace710c4b152",
+    "project/src/user_source/hdl_source/SD/frame_fifo_read.v": "d5a6e81c181839453763898718ff551a4c98d54e92979f6c3004502c156b3ce2",
+    "project/src/user_source/hdl_source/SD/frame_fifo_write.v": "7d16f58b25895f1b882a14b4579cdf8306ac8773006f7123052e4c311456cd1a",
+    "project/src/user_source/hdl_source/SD/frame_read_write.v": "3363f94a1c5e0463208da6b32c37e7111fc3c8a05c6d4ba305d5e6961e2c2f73",
+    "project/src/user_source/hdl_source/SD/saixian_media_header.v": "f8092e34232ab7d5a379903b7f8602168ca3b89d5397d8a222c55ba45332271e",
+    "project/src/user_source/hdl_source/SD/sdram.v": "2d985c2477384e677c25714241e1a50206def8916aa03189a5b313b2d22dfc99",
+    "project/src/user_source/hdl_source/SD/sd_card_bmp.v": "0cf56ac82459433e0d8611faeaea43aa799a975f392c9cbf58fb530fd7120a23",
+    "project/src/user_source/hdl_source/SD/sd_card_cmd.v": "1a59839c2f2c22670a69a24b94e551a30c53c8f52acc170816b63db30a28d08c",
+    "project/src/user_source/hdl_source/SD/sd_card_sec_read_write.v": "928b1714098046907b392b4253abca4b8204a20e3d3eb218792926069a3b1ad4",
+    "project/src/user_source/hdl_source/SD/sd_card_top.v": "2eb44743f198fa8b6a34c09f2421c580ebc1c8169da658e0a93dbd399cfa1441",
+    "project/src/user_source/hdl_source/SD/seg_decoder.v": "4592b6e4d2e9e8b7e4ab5266d850d30e43537ab9c4157d4221e3f8dfd342decd",
+    "project/src/user_source/hdl_source/SD/seg_scan.v": "63b95ca9fe3d59b075092980f6649c12d22756542710781b0e96f1252839903a",
+    "project/src/user_source/hdl_source/SD/spi_master.v": "37f7a21144fa5cca3cc5c3b5f68a5ad40b3108336b600e45a1367734ac61403c",
+    "project/src/user_source/hdl_source/SD/video_define.v": "98ca66de22f15bc5b5a2ef535c415c18dd018d9ce5c9f318b97ac3214d34d4e6",
+    "project/src/user_source/hdl_source/SD/video_delay.v": "68d599f9ae6794f80441cd90d5bcb39b0cc75f3383c7b8a88da628be635b349d",
+    "project/src/user_source/hdl_source/SD/video_timing_data.v": "d10d1ef84f45e37500988ed17a78d16390290be0ddcb6b6997d941075fd2390c",
+    "project/src/user_source/hdl_source/test/design_top_i2s_test_pll.v": "b6396c3e90c67d7e8aad8c83bfa8a1aa0b826db8f74a26936549cae57e86668c",
+    "project/src/user_source/hdl_source/test/i2s_test_tone_gen_pll.v": "7614d4ca84c007a568e798b7c8cbc31eadd8a064bee53101194df13edb71e02f",
+    "project/src/td_project/SAIXIAN_EVENT_CAROUSEL_SINGLE.al": "e878e9551aa5df5a90e04025a6e04ef2275ed6b59dc1853d0fdcee79bd1d1098",
+    "project/src/td_project/build_match.tcl": "2575b67ced8c0e0e311e220fced93192463d2a4347828549317d55370e418933",
+    "project/src/td_project/key2_tf_flow.tcl": "d1a5d4291706dac224cc33008d8945e79ed2eb1adf8ce86cca46be564975bade",
+    "project/src/td_project/match_font.hex": "e9296d42e9c3ebe1b55bbebb4956e09fa033d1220ddecb0e35fec2aa9594a3ac",
+    "project/src/td_project/match_text.vh": "1255156dc3c7479a4b527b8918e3b48c49c818a86d6fd4e4a11ceb82d31f391b",
+    "project/src/td_project/trophy_palette.vh": "e93ea0959c8dc40be8dcdd2bc3b63d511b712576329612d7f0174c111010930d",
+    "project/src/td_project/trophy_0.mif": "0d4f93537a640a3cb661041f53ce5cd2e6f1f2ce1b6b66e9032510d1cc65d412",
+    "project/src/td_project/trophy_1.mif": "8534ca789eeab1af39b5588df8d039349d41f267bd3db052a69b3e82cc752747",
+    "project/src/td_project/trophy_2.mif": "325b675938e4eb28c8460493fcc8c1a3bf5cdcaf378f81bbd020b2d5d3cee92b",
+    "project/src/td_project/trophy_3.mif": "6e50e7dcbbb190ae2638e9eefdd4504e2fdd253dd7d5d321dbd4c28e7e81e12a",
+    "project/src/td_project/trophy_4.mif": "d38cffafbb80f520c70ac930d418ab66416b05800819e8b86ca72ced7645d87e",
+    "project/src/td_project/trophy_5.mif": "512e52e08be27da77eb03f42775606fc71bfdc72ceedca833e1626d2dc5503ea",
+    "project/src/td_project/trophy_6.mif": "f5162eeb88ac4b401caaf0b971681c6e34bb5646b6076c94edec5e07d1c8643c",
+    "project/src/td_project/trophy_7.mif": "48b098f39e25c7477254a7f44ff0c24d537e9eb88356ef21be44e81e5a279086",
+    "project/src/td_project/trophy_8.mif": "0934d6da92321f788bee0310f13556e66502872ecc36798d51c3052a5150ee22"
+  },
+  "tests": [
+    {
+      "test": "control",
+      "passed": true,
+      "prior_run_log_sha256": "ad6a5ee42de078c10c4e589e1bbaba6661c14b92310229e3576cabbacedda99f",
+      "log_sha256": "ad6a5ee42de078c10c4e589e1bbaba6661c14b92310229e3576cabbacedda99f",
+      "testbench_sha256": "330087d7e366373ae913563ed1eee752487b3956c73b8e6c0ffd8d439f8a7fe4"
+    },
+    {
+      "test": "keys",
+      "passed": true,
+      "prior_run_log_sha256": "d118479fb00d3520ba619ed4fd5f90068cf05ab21b3319b90eecc56e30de7a53",
+      "log_sha256": "d118479fb00d3520ba619ed4fd5f90068cf05ab21b3319b90eecc56e30de7a53",
+      "testbench_sha256": "8e5c88fd17148843a3f707e3d0177a6c8859510637e5e003ca8ca19c9639bfd2"
+    },
+    {
+      "test": "flow",
+      "passed": true,
+      "prior_run_log_sha256": "fcab0d73be1ef6eab62a3344d4106ec8ffc0f6bfba05946c4d04a152fc6f22f8",
+      "log_sha256": "fcab0d73be1ef6eab62a3344d4106ec8ffc0f6bfba05946c4d04a152fc6f22f8",
+      "testbench_sha256": "fd2e0eed0111194b13d70a4f0a3797d49aa464497ae83cec217ef2f02e8c008b"
+    },
+    {
+      "test": "trophy",
+      "passed": true,
+      "seconds": 0.65,
+      "log_sha256": "d382263f8938dd2d8fa06c5bd9f64cb870c8b4b21ceca776c095cb5ad83b45ee",
+      "testbench_sha256": "e4c5729305c5d01f1bbb1969f05d1a1e9132d44de42f0c39964efa12181ac35c"
+    },
+    {
+      "test": "render",
+      "passed": true,
+      "seconds": 211.96,
+      "log_sha256": "9e15832edd7bf494ea88ad2e56035d3a83401ab3a8f1667f6bc71e54dc0e4b7c",
+      "testbench_sha256": "279c91dced02bc1ed72b3c9b11a7c3fe71971d85d434573c800daed29f958802"
+    },
+    {
+      "test": "axis",
+      "passed": true,
+      "seconds": 14.52,
+      "log_sha256": "8a16b0696cc7bc07ef7d98dfdead8ef2c0059c672f8c53b3407353e69e4aa465",
+      "testbench_sha256": "a8a9696d728992d62bc4672caa791bf43a04306b91f9a0229c5b71c584f3d0b4"
+    },
+    {
+      "test": "cues",
+      "passed": true,
+      "prior_run_log_sha256": "2a802defa7eddc85bdd5c39607a71a81d2d05456d1e64e77241cd544183bbfe8",
+      "log_sha256": "2a802defa7eddc85bdd5c39607a71a81d2d05456d1e64e77241cd544183bbfe8",
+      "testbench_sha256": "e5c4d24e85f41b7238c880e28f7f5ebfae2782014af3d776fadbd19dc17046ac"
+    }
+  ],
+  "pipeline_pixel_equivalence": {
+    "passed": true,
+    "unchanged_scenes": [
+      "countdown",
+      "home",
+      "last_result",
+      "no_result",
+      "paused",
+      "running",
+      "schedule",
+      "setup",
+      "teams",
+      "tie",
+      "winner_a"
+    ],
+    "summary_header": "Intentionally changed from award title to results title"
+  },
+  "trophy_source": {
+    "source": "D:\\qiansai\\saixian_shared_rom_5_0_20261026\\5.0project\\award_media\\RELIEF720.DLT",
+    "source_sha256": "0513e891be150866f5ff5d26ec37ca1bb11b09c636a73eb04440b6d5ee8db025",
+    "source_angles": [
+      0,
+      3,
+      6,
+      9,
+      12,
+      15,
+      18,
+      21
+    ],
+    "preview_size": [
+      96,
+      96
+    ],
+    "display_size": [
+      384,
+      384
+    ],
+    "palette": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        218,
+        202,
+        183
+      ],
+      [
+        202,
+        180,
+        151
+      ],
+      [
+        195,
+        161,
+        115
+      ],
+      [
+        180,
+        154,
+        118
+      ],
+      [
+        177,
+        138,
+        81
+      ],
+      [
+        171,
+        123,
+        52
+      ],
+      [
+        159,
+        126,
+        77
+      ],
+      [
+        154,
+        114,
+        50
+      ],
+      [
+        150,
+        105,
+        33
+      ],
+      [
+        144,
+        95,
+        18
+      ],
+      [
+        128,
+        93,
+        32
+      ],
+      [
+        121,
+        82,
+        17
+      ],
+      [
+        114,
+        72,
+        8
+      ],
+      [
+        95,
+        65,
+        14
+      ],
+      [
+        63,
+        39,
+        4
+      ]
+    ],
+    "light": "fixed offline light; no live relighting",
+    "bank_words": 2048,
+    "bank_count": 9
+  },
+  "dual_board_code": "unchanged; integration plan in the usage document",
+  "delivery_sha256": {
+    "RTL画面预览.png": "9f63e315aed49a6a8fe62041e100500ab72a7a8657bce98256a598a6f78d52e0",
+    "SAIXIAN_EVENT_CAROUSEL_SINGLE_20261026.bit": "9afbb7d2216b8ac1b915743437a1a26dc96c04a008aa479d1c3afda9ad5880e6",
+    "SAIXIAN_EVENT_CAROUSEL_SINGLE_phy.area": "0b26e1afe4952d76353c3fcd51dfec1db1b3e44fb7977a2c2378713bd4bb5ba4",
+    "SAIXIAN_EVENT_CAROUSEL_SINGLE_pr.timing": "2a05de016b9dd9dd948216d7d7917695bb67562698d57951d146c612215997a6",
+    "组合方案与使用说明.md": "1407a0381f5d6edfd602ebda48a8a2bba8099c359e4a1144d52ccc64c3ff56bd",
+    "赛事首页.png": "712da631bc0d00f9e8d821854e8af7fd7abec3b12d12e123059f272461d00e23",
+    "赛后颁奖.png": "c79d0130b4fe270d2234ef0717b17acb929797acacec64a1e8c081adfb4e24cf"
+  }
+}

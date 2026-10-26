@@ -1,0 +1,2 @@
+PASS event flow: lobby, configuration, shared teams, live scores, original award stage, summary, saved result, next round, tie and cancel
+D:\qiansai\saixian_event_carousel_single_20261026\tests\tb_event_flow.v:32: $finish called at 4526000 (1ps)
