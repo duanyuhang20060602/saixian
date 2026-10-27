@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "rebalance_receiver",
+  "validation_group": "rebalance_release",
+  "passed": true,
+  "rerun_this_revision": false,
+  "seconds": 0.16
+}

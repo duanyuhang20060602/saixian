@@ -111,12 +111,12 @@ def build(board, work, mapped_from=None, checkpoint_stage='gate'):
     if physical_strategy:
         catalog = td_root/'doc/strategies/official_strategy_ph1.json'
         strategies = json.loads(catalog.read_text(encoding='utf-8'))
-        strategy_base = {'TimingUltraEmbeddedCompactRoute':'TimingUltra','MacroTimingExtra':'MacroTiming','MacroTimingEmbedded':'MacroTiming','TimingUltraEmbeddedCleanRoute':'TimingUltra','TimingUltraNoPadSplit':'TimingUltra','TimingUltraEmbedded':'TimingUltra','TimingUltraEmbeddedExtra':'TimingUltra','TimingUltraEmbeddedNoSwap':'TimingUltra','TimingMediumEmbedded':'TimingMedium','TimingMediumEmbeddedReset':'TimingMedium','CongestionEmbedded':'CongestionHigh'}.get(physical_strategy,physical_strategy)
+        strategy_base = {'TimingUltraEmbeddedCompactRoute':'TimingUltra','MacroTimingEmbeddedCleanRoute':'MacroTiming','MacroTimingExtra':'MacroTiming','MacroTimingEmbedded':'MacroTiming','TimingUltraEmbeddedCleanRoute':'TimingUltra','TimingUltraNoPadSplit':'TimingUltra','TimingUltraEmbedded':'TimingUltra','TimingUltraEmbeddedExtra':'TimingUltra','TimingUltraEmbeddedNoSwap':'TimingUltra','TimingMediumEmbedded':'TimingMedium','TimingMediumEmbeddedReset':'TimingMedium','CongestionEmbedded':'CongestionHigh'}.get(physical_strategy,physical_strategy)
         strategy = dict(strategies[strategy_base])
         strategy['params'] = list(strategy['params'])
-        if physical_strategy in ('TimingUltraEmbeddedCompactRoute','TimingUltraEmbeddedCleanRoute','TimingUltraNoPadSplit','TimingUltraEmbedded','TimingUltraEmbeddedExtra','TimingUltraEmbeddedNoSwap','TimingMediumEmbedded','TimingMediumEmbeddedReset','MacroTimingEmbedded','CongestionEmbedded'):
+        if physical_strategy in ('TimingUltraEmbeddedCompactRoute','TimingUltraEmbeddedCleanRoute','TimingUltraNoPadSplit','TimingUltraEmbedded','TimingUltraEmbeddedExtra','TimingUltraEmbeddedNoSwap','TimingMediumEmbedded','TimingMediumEmbeddedReset','MacroTimingEmbedded','MacroTimingEmbeddedCleanRoute','CongestionEmbedded'):
             strategy['params'] += [{'step':'place','param':'split_data_from_clock','val':'off'}]
-        if physical_strategy in ('TimingUltraEmbeddedCompactRoute','TimingUltraEmbeddedCleanRoute','TimingUltraEmbedded','TimingUltraEmbeddedExtra','TimingUltraEmbeddedNoSwap','TimingMediumEmbedded','TimingMediumEmbeddedReset','MacroTimingEmbedded','CongestionEmbedded'):
+        if physical_strategy in ('TimingUltraEmbeddedCompactRoute','TimingUltraEmbeddedCleanRoute','TimingUltraEmbedded','TimingUltraEmbeddedExtra','TimingUltraEmbeddedNoSwap','TimingMediumEmbedded','TimingMediumEmbeddedReset','MacroTimingEmbedded','MacroTimingEmbeddedCleanRoute','CongestionEmbedded'):
             # The post-place crit_path_opt zigzag pass queries external-pad
             # coordinates on embedded SDRAM pads (ARC-8011/PHY-8105).
             strategy['params'] += [{'step':'place','param':'crit_path_opt','val':'off'},
@@ -129,7 +129,7 @@ def build(board, work, mapped_from=None, checkpoint_stage='gate'):
             strategy['params'] += [{'step':'route','param':'postrt_opt_extra_round','val':'8'}]
         if physical_strategy == 'TimingUltraEmbeddedNoSwap':
             strategy['params'] += [{'step':'route','param':'swap_pin','val':'off'}]
-        if physical_strategy in ('TimingUltraEmbeddedCleanRoute','TimingUltraEmbeddedCompactRoute'):
+        if physical_strategy in ('TimingUltraEmbeddedCleanRoute','TimingUltraEmbeddedCompactRoute','MacroTimingEmbeddedCleanRoute'):
             # Preserve placement/timing checks; avoid the tool's failing
             # post-route ECO reconstruction and maximize route cleanup.
             strategy['params'] += [{'step':'route','param':'post_route_opt','val':'off'},

@@ -227,7 +227,10 @@ photo_switch_timing #(.CLK_HZ(75000000),.PHASES(2)) timing_probe(.clk(pixel_clk)
 photo_switch_timing_display #(.CLK_HZ(75000000),.PAGES(3)) timing_display(.clk(pixel_clk),.rst(rst_pixel),.running(timing_running),
  .first_ms(timing_wait_ms),.second_ms(timing_effect_ms),.third_ms(20'd0),.total_ms(timing_total_ms),.seg_sel(timing_seg_sel),.seg_data(timing_seg_data));
 wire title_word_valid;wire [6:0] title_word_index;wire [31:0] title_word_data;wire [4:0] title_word_length,title_length;
-photo_cached_control_a #(.TITLE_SD(1),.CHECK_FRAME_CRC(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.EARLY_THUMBNAIL(1),.RELIEF_CONTROL(1)) ctrl(.title_word_valid(title_word_valid),.title_word_index(title_word_index),.title_word_data(title_word_data),.title_word_length(title_word_length),.receive_relief(receive_relief),.receive_award(receive_award),.receive_fluid(receive_fluid),.settings_mode(photo_focus),.settings_state(image_settings),.settings_updating(settings_updating),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
+wire [31:0] hmi_session,hmi_word;wire [52:0] hmi_status_bus;
+wire hmi_ack_valid,hmi_reset_request,hmi_begin,hmi_word_valid,hmi_commit;
+wire [7:0] hmi_ack_token;wire [1:0] hmi_word_index;
+photo_cached_control_a #(.TITLE_SD(1),.CHECK_FRAME_CRC(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.EARLY_THUMBNAIL(1),.RELIEF_CONTROL(1)) ctrl(.hmi_session(hmi_session),.title_word_valid(title_word_valid),.title_word_index(title_word_index),.title_word_data(title_word_data),.title_word_length(title_word_length),.receive_relief(receive_relief),.receive_award(receive_award),.receive_fluid(receive_fluid),.settings_mode(photo_focus),.settings_state(image_settings),.settings_updating(settings_updating),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
  .thumbnail_read_busy(thumbnail_read_busy),.thumbnail_read_slot(thumbnail_slot),
  .timing_begin(timing_begin),.timing_present(timing_present),.timing_commit(timing_commit),.timing_cancel(timing_cancel),
  .award_toggle(photo_award_event),.relief_toggle(photo_relief_event),.relief_available(relief_available),.award_available(award_available),.award_scan_complete(award_scan_complete),.award_loading(award_loading),.award_notice(award_notice),.last_transfer_error(last_transfer_error),
@@ -258,7 +261,9 @@ wire relief_enable=award_active && current==7;
 wire relief_available_spi,relief_begin,relief_word_valid,relief_finish,relief_commit,relief_sent;
 wire [31:0] relief_descriptor,relief_sent_descriptor,relief_word;wire [8:0] relief_word_index;
 wire wall_we;wire [7:0] wall_wa,wall_ra;wire [23:0] wall_wd,wall_rgb;
-photo_audio_spi_a #(.REMOTE_RELIEF(1),.STARTUP_SYNC(1),.FIFO_AW(11),.FIFO_RAM32_HEAD(2048),.EXTENDED_AV(1),.PAGE_CUE(1),.TYPED_PAGE(1)) audio_link(
+photo_audio_spi_a #(.REMOTE_HMI(1),.REMOTE_RELIEF(1),.STARTUP_SYNC(1),.FIFO_AW(11),.FIFO_RAM32_HEAD(2048),.EXTENDED_AV(1),.PAGE_CUE(1),.TYPED_PAGE(1)) audio_link(
+ .hmi_session(hmi_session),.hmi_status(hmi_status_bus),.hmi_ack_valid(hmi_ack_valid),.hmi_ack_token(hmi_ack_token),.hmi_reset_request(hmi_reset_request),
+ .hmi_begin(hmi_begin),.hmi_word_valid(hmi_word_valid),.hmi_word_index(hmi_word_index),.hmi_word(hmi_word),.hmi_commit(hmi_commit),
  .relief_enable(relief_enable),.relief_available(relief_available_spi),.relief_descriptor(relief_descriptor),
  .relief_begin(relief_begin),.relief_word_valid(relief_word_valid),.relief_finish(relief_finish),.relief_commit(relief_commit),
  .relief_sent(relief_sent),.relief_sent_descriptor(relief_sent_descriptor),.relief_word_index(relief_word_index),.relief_word(relief_word),
@@ -347,11 +352,17 @@ hdmi_1_4b_transmitter_core_wrapper #(.DEVICE("EG"),.HTOTAL(1650),.HSA(40),.HFP(1
  .I_axis_s_user(edge_sof),.I_axis_s_valid(edge_de),.I_axis_s_last(edge_last),.I_axis_s_data(edge_rgb),.O_axis_s_ready(axis_ready),
  .I_audio_valid(audio_sample_valid),.I_audio_left_data(audio_left),.I_audio_right_data(audio_right),.I_acr_valid(acr_valid),.I_acr_cts(acr_cts),.I_acr_n(acr_n),.O_video_locked(hdmi_video_locked),
  .O_ddc_scl(HDMI_DDC_SCL),.IO_ddc_sda(HDMI_DDC_SDA),.O_ch0_tmds_data(blue),.O_ch1_tmds_data(green),.O_ch2_tmds_data(red),.O_clk_tmds_data(hdmi_clock_data));
-saixian_hmi_status_tx #(.CLK_FREQ_HZ(75000000),.ENHANCEMENT_FEEDBACK(1)) screen_tx(.clk(pixel_clk),.rst(rst_pixel),.image_count(count),
- .audio_count(music_count),.error_code(error>7 ? 3'd7:error[2:0]),.initializing(count==0),.page_id(page_id),
- .refresh_request(page_notify || setting_valid || reset_defaults),.sharpness(sharpness),.brightness(brightness),.contrast(contrast),
- .saturation(saturation),.volume(volume),.invert(invert),.vintage(vintage),.enhancement(enhancement),.event_state(event_state),.minutes(event_minutes),.seconds(event_seconds),
- .uart_tx(hmi_uart_tx),.command_sent_pulse());
+// The B formatter sees a coherent status snapshot. Refresh is a toggle so
+// short button/touch pulses survive transport latency.
+reg hmi_refresh_toggle;
+always @(posedge pixel_clk or posedge rst_pixel)
+ if(rst_pixel)hmi_refresh_toggle<=0;
+ else if(page_notify || setting_valid || reset_defaults)hmi_refresh_toggle<=~hmi_refresh_toggle;
+assign hmi_status_bus={hmi_refresh_toggle,count,music_count,(error>7 ? 3'd7:error[2:0]),count==0,page_id,
+ sharpness,brightness,contrast,saturation,volume,invert,vintage,enhancement,event_state,event_minutes,event_seconds};
+photo_hmi_relay_a #(.CHUNK_BYTES(8)) screen_tx(.clk(pixel_clk),.rst(rst_pixel),.session(hmi_session),
+ .packet_begin(hmi_begin),.word_valid(hmi_word_valid),.word_index(hmi_word_index),.word_data(hmi_word),.commit(hmi_commit),
+ .ack_valid(hmi_ack_valid),.ack_token(hmi_ack_token),.reset_request(hmi_reset_request),.uart_tx(hmi_uart_tx));
 // Image enhancement/adjustment is already performed on B. Keep the
 // established 2+15+4=21 clocks without a second neutral processing engine.
 reg [1:0] de_pipe;reg [10:0] x0,x1;reg [9:0] y0,y1;

@@ -17,7 +17,7 @@ photo_control_b #(.CHECK_FRAME_CRC(0),.CLK_HZ(1152000),.FRAME_BYTES(64)) b(
 initial begin
  force a.got=got;force a.incoming=incoming;force a.tx_busy=1'b1;force b.tx_busy=1'b1;
  repeat(4)@(negedge clk);rst=0;
- a.state=7;a.session=32'h789;a.request_seq=9;a.target=0;b.state=6;
+ a.state=7;a.session=32'h789;a.request_seq=9;a.target=0;b.state_flags=(11'd1<<6);
  done=1;@(negedge clk);done=0;raw_crc=32'hffffffff;
  incoming={8'd6,32'h789,16'd9,8'd0,8'd0,32'd64,32'h12345678,8'd0,16'd0};got=1;
  @(negedge clk);got=0;repeat(3)@(negedge clk);

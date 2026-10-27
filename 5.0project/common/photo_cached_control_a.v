@@ -9,7 +9,7 @@ module photo_cached_control_a #(
  input settings_mode,input [18:0] settings_state,output settings_updating,
  input award_toggle,relief_toggle,output reg award_available,award_scan_complete,relief_available,
  output award_loading,output reg [2:0] award_notice,output reg [3:0] last_transfer_error,
- output reg [3:0] first_transfer_origin,first_transfer_error,
+ output [3:0] first_transfer_origin,first_transfer_error,
  input clk,rst,uart_rx,output uart_tx,input previous,next,
  input [1:0] active_slot,new_slot,input transition_active,commit_toggle,
  output reg [1:0] receive_slot,output reg arm_toggle,abort_toggle,
@@ -22,7 +22,9 @@ module photo_cached_control_a #(
  output reg [15:0] current_source_width,current_source_height,
  output reg timing_begin,timing_present,timing_commit,output timing_cancel,
  input thumbnail_read_busy,input [1:0] thumbnail_read_slot
+,output [31:0] hmi_session
 );
+
 localparam TIME_HZ=CLK_HZ/TIMER_SCALE;
 localparam HELLO_SEND=0,HELLO_WAIT=1,IDLE=2,GET=3,WAIT_BEGIN=4,ARM=5,
  READY=6,RECEIVE=7,ACCEPT=8,STORE=9,COMMIT=10,NACK=11,FAILED=12,WAIT_SETTINGS=13,WAIT_CONTEXT=14,WAIT_CANCEL=15;
@@ -95,7 +97,8 @@ always @(posedge clk or posedge rst)
  else kind_match_q<={kind==8'd18,kind==8'd17,kind==8'd16,kind==8'd15,kind==8'd14,kind==8'd13,kind==8'd12,kind==8'd11,kind==8'd10,kind==8'd9,kind==8'd8,kind==8'd7,kind==8'd6,kind==8'd5,kind==8'd4,kind==8'd3,kind==8'd2,kind==8'd1,kind==8'd0};
 // end REGISTERED_PACKET_KIND
 assign timing_cancel=award_toggle || relief_command || settings_dirty || refresh_pending || state_flags[FAILED] || (got && kind_match_q[10]);
-reg [31:0] session,uptime;reg [15:0] request_seq;
+reg [31:0] session,uptime;
+assign hmi_session=session;reg [15:0] request_seq;
 // Encode a cleared timer with one registered bit. The control FSM drives
 // only this bit instead of a reset mux on all 32 counter bits. Reading
 // timer still returns zero in the very cycle that a clear is committed.
@@ -184,17 +187,23 @@ wire first_rx_fault=state_flags[RECEIVE] && !response_error && rx_fault;
 wire first_crc=state_flags[RECEIVE] && !response_error && !rx_fault && done_seen && end_seen && CHECK_FRAME_CRC && received_crc!=expected_crc;
 wire first_rx_timeout=state_flags[RECEIVE] && !response_error && !rx_fault && !(done_seen && end_seen) && timeout5;
 wire first_event=first_remote || first_begin_timeout || first_arm_timeout || first_rx_fault || first_crc || first_rx_timeout;
-wire [3:0] first_origin_value=({4{first_remote}} & 4'd1) |
- ({4{first_begin_timeout || first_rx_timeout}} & 4'd4) |
- ({4{first_arm_timeout}} & 4'd5) | ({4{first_rx_fault}} & 4'd2) | ({4{first_crc}} & 4'd3);
-wire [3:0] first_error_value=({4{first_remote}} & incoming[19:16]) |
- ({4{first_begin_timeout}} & 4'd1) | ({4{first_arm_timeout}} & 4'd2) |
- ({4{first_rx_fault}} & 4'd3) | ({4{first_crc}} & 4'd4) | ({4{first_rx_timeout}} & 4'd5);
+// Record the mutually exclusive reason before encoding its diagnostic value.
+// This keeps the settings comparator out of a second shared event/encode mux.
+// Outputs remain on the original clock edge, including clear/reset priority.
+reg [5:0] first_reason;
+reg [3:0] first_remote_error;
+assign first_transfer_origin={1'b0,(first_reason[1] || first_reason[2] || first_reason[5]),
+ (first_reason[3] || first_reason[4]),(first_reason[0] || first_reason[2] || first_reason[4])};
+assign first_transfer_error=({4{first_reason[0]}} & first_remote_error) |
+ ({4{first_reason[1]}} & 4'd1) | ({4{first_reason[2]}} & 4'd2) |
+ ({4{first_reason[3]}} & 4'd3) | ({4{first_reason[4]}} & 4'd4) |
+ ({4{first_reason[5]}} & 4'd5);
 always @(posedge clk or posedge rst)begin
- if(rst)begin first_transfer_origin<=0;first_transfer_error<=0;end
- else if(next || award_toggle || relief_command)begin first_transfer_origin<=0;first_transfer_error<=0;end
- else if(!(got && kind_match_q[10]) && first_transfer_origin==0 && first_event)begin
-  first_transfer_origin<=first_origin_value;first_transfer_error<=first_error_value;
+ if(rst)begin first_reason<=0;first_remote_error<=0;end
+ else if(next || award_toggle || relief_command)begin first_reason<=0;first_remote_error<=0;end
+ else if(!(got && kind_match_q[10]) && first_reason==0)begin
+  first_reason<={first_rx_timeout,first_crc,first_rx_fault,first_arm_timeout,first_begin_timeout,first_remote};
+  if(first_remote)first_remote_error<=incoming[19:16];
  end
 end
 assign debug_state=state;

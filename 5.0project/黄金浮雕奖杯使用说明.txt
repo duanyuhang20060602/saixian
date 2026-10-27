@@ -1,3 +1,5 @@
+当前配套固件采用串口屏任务迁移，两板需一起烧录。最新分工、资源与验证见 串口屏任务迁移说明.txt；以下保留此前修订记录。
+
 当前配套固件已合入 TF 标题与双板重分工，请优先查看 双板重分工与TF标题说明.txt。以下为此前修订记录。
 
 当前固件增加彩色水波轮播，最新烧录、操作、资源和验证请见 彩色水波轮播说明.txt。以下保留此前修订说明。
@@ -37,13 +39,13 @@ HDMI 输出沿用 1280×720，奖杯显示区域仍为 576×576。杯身源素�
 验证与源码
 本次固件的电脑编译、资源、时序和仿真记录见 releases/merged_thumbnail_resource_20261025/validation.json。
 本次新增固件仍需上板复验；此前 5.0 实板通过是原有版本的验收结果。
-新素材完整读取、逐像素显示及 SDRAM 仲裁测试：python -B tools/test_relief_bus.py --out E:/Codex/Work/relief-bus-check
-控制、串口屏和新旧素材目录测试：python -B tools/test_relief_controls.py --out E:/Codex/Work/relief-control-check
-新旧播放器跨时钟切换与读取归属测试：python -B tools/test_relief_render.py --out E:/Codex/Work/relief-render-check
-共享缓存六帧逐点对比：python -B tools/test_relief_shared_cache.py --asset award_media/RELIEF720.DLT --out E:/Codex/Work/relief-shared-check
-原彩带全部 120 帧行解码验证：python -B tools/test_relief_shared_rows.py --out E:/Codex/Work/relief-old-rows
+新素材完整读取、逐像素显示及 SDRAM 仲裁测试：python -B tools/test_relief_bus.py --out LOCAL_ARTIFACT/relief-bus-check
+控制、串口屏和新旧素材目录测试：python -B tools/test_relief_controls.py --out LOCAL_ARTIFACT/relief-control-check
+新旧播放器跨时钟切换与读取归属测试：python -B tools/test_relief_render.py --out LOCAL_ARTIFACT/relief-render-check
+共享缓存六帧逐点对比：python -B tools/test_relief_shared_cache.py --asset award_media/RELIEF720.DLT --out LOCAL_ARTIFACT/relief-shared-check
+原彩带全部 120 帧行解码验证：python -B tools/test_relief_shared_rows.py --out LOCAL_ARTIFACT/relief-old-rows
 重新编译：沿用 build_saixian.ps1 -Board Both。
-离线美术源文件保留在 E:/Codex/Work/saixian-relief-integration-20261023/artwork；本次工作记录在 E:/Codex/Work/saixian-relief-native-20261024，打包入口 tools/prepare_relief.py（额外依赖 OpenEXR）。
+离线美术源文件保留在 LOCAL_ARTIFACT/artwork；本次工作记录在 LOCAL_ARTIFACT/saixian-relief-native-20261024，打包入口 tools/prepare_relief.py（额外依赖 OpenEXR）。
 
 模型连接修订 / joined-model-20261024
 修复四根杯颈支撑杆、两侧把手及金色背脊、八条装饰肋线的连接。全部 24 个角度重新渲染并打包。此修订只更新 RELIEF720.DLT，搭配 gold-relief-native-bright-20261024 固件使用；已烧录该新版的两块板无需再次烧录。

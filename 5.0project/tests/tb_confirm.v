@@ -12,14 +12,16 @@ integer releases=0;
 always @(posedge clk)if(release_slot)releases=releases+1;
 task inject;
  input [7:0] kind;input [31:0] session;input [15:0] seq;input [7:0] image;input [31:0] crc;
- begin @(negedge clk);payload={kind,session,seq,image,8'd0,32'd64,crc,8'd0,16'd0};valid=1;
+ begin @(negedge clk);payload={kind,session,seq,image,8'd0,32'd64,crc,8'd0,16'd0};
+ // Real UART payload settles during the CRC bytes before received pulses.
+ repeat(2)@(negedge clk);valid=1;
  @(negedge clk);valid=0;repeat(3)@(negedge clk);end
 endtask
 initial begin
  force b.got=valid;force b.incoming=payload;
  repeat(4)@(negedge clk);rst=0;
  // Seed a transaction after the END message; all subsequent updates are RTL.
- b.session=32'h789;b.request_seq=16'd9;b.media_target=3'd4;b.completed_crc=32'h12345678;b.state=8;
+ b.session=32'h789;b.request_seq=16'd9;b.media_target=3'd4;b.completed_crc=32'h12345678;b.state_flags=(11'd1<<8);
  inject(7,'h788,9,4,'h12345678);if(b.state!=8)$fatal(1,"wrong session accepted");
  inject(7,'h789,8,4,'h12345678);if(b.state!=8)$fatal(1,"old sequence accepted");
  inject(7,'h789,9,3,'h12345678);if(b.state!=8)$fatal(1,"wrong image accepted");

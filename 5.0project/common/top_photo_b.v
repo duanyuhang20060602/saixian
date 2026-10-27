@@ -69,7 +69,30 @@ always @(posedge sd_clk or posedge rst_sd)
  else begin av_data_meta<=av_data;av_data_sync<=av_data_meta;end
 photo_av_metadata_b #(.EDGE_METADATA(1)) audio_analysis(.clk(mem_clk),.rst(av_analysis_rst),
  .pcm_sent(av_pcm_valid),.snapshot(av_snapshot_event),.pcm(av_pcm_sync),.address(av_address_sync),.data(av_data));
-photo_audio_spi_b #(.REMOTE_RELIEF(1),.CATALOG_STATUS(1),.EXTENDED_AV(1),.PAGE_CUE(1),.TYPED_PAGE(1)) audio_link(
+wire [31:0] hmi_session,hmi_header;wire [52:0] hmi_status;
+wire [95:0] hmi_payload;wire hmi_enabled,hmi_ack_valid,hmi_restart;
+wire [7:0] hmi_ack_token,hmi_byte_data;wire hmi_byte_valid,hmi_byte_ready,hmi_command_done;
+// Register the session predicate before distributing the formatter reset.
+// The 32-bit comparison must not drive every byte-buffer reset pin directly.
+reg hmi_rst;
+always @(posedge sd_clk or posedge rst_sd)
+ if(rst_sd)hmi_rst<=1;else hmi_rst<=!hmi_enabled || hmi_restart;
+wire hmi_refresh;reg hmi_refresh_seen;
+always @(posedge sd_clk or posedge rst_sd)
+ if(rst_sd)hmi_refresh_seen<=0;else hmi_refresh_seen<=hmi_status[52];
+assign hmi_refresh=hmi_refresh_seen!=hmi_status[52];
+saixian_hmi_status_tx #(.CLK_FREQ_HZ(100000000),.ENHANCEMENT_FEEDBACK(1),.BYTE_STREAM(1)) screen_format(
+ .clk(sd_clk),.rst(hmi_rst),.image_count(hmi_status[51:49]),.audio_count(hmi_status[48:46]),
+ .error_code(hmi_status[45:43]),.initializing(hmi_status[42]),.page_id(hmi_status[41:39]),.refresh_request(hmi_refresh),
+ .sharpness(hmi_status[38:37]),.brightness(hmi_status[36:33]),.contrast(hmi_status[32:29]),.saturation(hmi_status[28:25]),.volume(hmi_status[24:21]),
+ .invert(hmi_status[20]),.vintage(hmi_status[19]),.enhancement(hmi_status[18:17]),.event_state(hmi_status[16:13]),
+ .minutes(hmi_status[12:6]),.seconds(hmi_status[5:0]),.uart_tx(),.command_sent_pulse(hmi_command_done),
+ .byte_valid(hmi_byte_valid),.byte_data(hmi_byte_data),.byte_ready(hmi_byte_ready));
+photo_hmi_chunk_b #(.CHUNK_BYTES(8)) screen_chunks(.clk(sd_clk),.rst(hmi_rst),.byte_valid(hmi_byte_valid),.byte_data(hmi_byte_data),.byte_ready(hmi_byte_ready),
+ .command_done(hmi_command_done),.ack_valid(hmi_ack_valid),.ack_token(hmi_ack_token),.header(hmi_header),.payload(hmi_payload));
+photo_audio_spi_b_offload #(.REMOTE_HMI(1),.REMOTE_RELIEF(1),.CATALOG_STATUS(1),.EXTENDED_AV(1),.PAGE_CUE(1),.TYPED_PAGE(1)) audio_link(
+ .hmi_session(hmi_session),.hmi_header(hmi_header),.hmi_payload(hmi_payload),.hmi_status(hmi_status),.hmi_enabled(hmi_enabled),
+ .hmi_ack_valid(hmi_ack_valid),.hmi_ack_token(hmi_ack_token),.hmi_restart(hmi_restart),
  .relief_ready(relief_response_valid),.relief_descriptor(relief_response_descriptor),.relief_data(relief_response_data),.relief_address(relief_address),
  .relief_request(relief_request),.relief_query(relief_query),.page_valid(audio_page_valid),.page_style(audio_page_style),.page_ready(audio_page_ready),.page_cue_count(audio_page_cue_count),.catalog_complete(award_scan_complete),.clk(sd_clk),.rst(rst_sd),.spi_sclk(audio_sclk),.spi_cs(audio_cs),.spi_mosi(audio_mosi),.spi_miso(audio_miso),.packet_active(audio_packet_active),
  .active_epoch(active_audio_epoch),.active_track(active_audio_track),.track_count(audio_count),.switching(audio_switching),
@@ -158,7 +181,7 @@ photo_switch_timing #(.CLK_HZ(100000000),.PHASES(3)) timing_probe(.clk(sd_clk),.
 photo_switch_timing_display #(.CLK_HZ(100000000),.PAGES(4)) timing_display(.clk(sd_clk),.rst(rst_sd),.running(timing_running),
  .first_ms(timing_prepare_ms),.second_ms(timing_handshake_ms),.third_ms(timing_send_ms),.total_ms(timing_total_ms),.seg_sel(timing_seg_sel),.seg_data(timing_seg_data));
 photo_event_sync sd(.clk(sd_clk),.rst(rst_sd),.toggle(sent_toggle),.pulse(sent_sd));
-photo_control_b #(.TITLE_SD(1),.CHECK_FRAME_CRC(1),.SEND_SOURCE_SIZE(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.RELIEF_CONTROL(1)) ctrl(.title_ready(title_ready),.title_length(title_length),.title_data(title_data),.title_address(title_address),.clk(sd_clk),.rst(rst_sd),.uart_rx(control_rx),.uart_tx(control_tx),
+photo_control_b #(.TITLE_SD(1),.CHECK_FRAME_CRC(1),.SEND_SOURCE_SIZE(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.RELIEF_CONTROL(1)) ctrl(.hmi_session(hmi_session),.title_ready(title_ready),.title_length(title_length),.title_data(title_data),.title_address(title_address),.clk(sd_clk),.rst(rst_sd),.uart_rx(control_rx),.uart_tx(control_tx),
  .timing_begin(timing_begin),.timing_ready(timing_ready),.timing_send(timing_send),.timing_done(timing_done),.timing_cancel(timing_cancel),
  .display_valid(display_pin_valid),.display_image(display_pin_image),.prefetch_pause(prefetch_pause),
  .relief_available(relief_available && directory_ready),.award_available(award_available && directory_ready),.award_scan_complete(award_scan_complete),

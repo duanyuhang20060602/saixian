@@ -10,7 +10,7 @@ photo_control_b #(.CLK_HZ(921600),.TITLE_SD(1)) b(.clk(clk),.rst(rst),.uart_rx(1
  .media_ready(1'b0),.media_slot(2'd0),.media_error(4'd0),.media_source_width(16'd1280),.media_source_height(16'd720),.tx_done(1'b0),.tx_crc(32'd0));
 initial begin
  $readmemh("first_word_records.hex",records);
- repeat(5)@(negedge clk);rst=0;b.state=2;b.session=1;b.announced_count=1;
+ repeat(5)@(negedge clk);rst=0;b.state_flags=11'd1<<2;b.session=1;b.announced_count=1;
  for(i=0;i<1024;i=i+1)begin
   @(negedge clk);valid=1;data=records[i];
   if(i%512==511)begin @(negedge clk);valid=0;ending=1;@(negedge clk);ending=0;end

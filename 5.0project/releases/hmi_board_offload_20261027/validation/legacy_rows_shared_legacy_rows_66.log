@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "shared_legacy_rows",
+  "validation_group": "legacy_rows",
+  "passed": true,
+  "rerun_this_revision": false,
+  "seconds": 180.09
+}

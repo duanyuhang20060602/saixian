@@ -55,7 +55,7 @@ def main():
    actual=np.loadtxt(result,dtype=np.int64);expected=ref.model(source,modes,True)
    if not np.array_equal(actual,expected):
     bad=np.argwhere(actual!=expected);i,col=bad[0];raise AssertionError((name,int(i),int(col),actual[i].tolist(),expected[i].tolist()))
-   measurements={'exact_stereo_frames':n,'max_integer_error':0,'modes':5,'reference_commit':'c2d2df8008c93f9a89308007c882d9093a808e06','production_history_ram32_blocks':6,'dry_history_frames':2048,'filtered_history_frames':4096,'native_vendor_ram':name=='native_model','clear_zero_frames':2400}
+   measurements={'exact_stereo_frames':n,'max_integer_error':0,'modes':5,'reference_commit':'c2d2df8008c93f9a89308007c882d9093a808e06','ring_ram32_lanes_parameter':8,'compact_dry':True,'dry_history_frames':1153,'filtered_history_frames':4096,'native_vendor_ram':name=='native_model','clear_zero_frames':2400}
    log+='PASS exact independent release fixed-point model, all PCM/mode/ramp/phase/ready fields\n'
   for p,h in hashes.items():assert sha(Path(p) if Path(p).is_absolute() else ROOT/p)==h,'Input changed: '+p
   logpath=out/(name+'.log');logpath.write_text(log,encoding='utf-8');print(name+': '+log[-2200:],flush=True)

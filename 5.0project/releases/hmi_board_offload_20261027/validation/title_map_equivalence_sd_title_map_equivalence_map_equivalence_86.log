@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "sd_title_map_equivalence_map_equivalence",
+  "validation_group": "title_map_equivalence",
+  "passed": true,
+  "rerun_this_revision": false,
+  "seconds": 20.58
+}

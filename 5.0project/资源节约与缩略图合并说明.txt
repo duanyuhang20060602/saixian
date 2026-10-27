@@ -1,3 +1,5 @@
+当前配套固件采用串口屏任务迁移，两板需一起烧录。最新分工、资源与验证见 串口屏任务迁移说明.txt；以下保留此前修订记录。
+
 当前配套固件已合入 TF 标题与双板重分工，请优先查看 双板重分工与TF标题说明.txt。以下为此前修订记录。
 
 当前固件增加彩色水波轮播，最新烧录、操作、资源和验证请见 彩色水波轮播说明.txt。以下保留此前修订说明。
@@ -30,5 +32,5 @@ A 建立/保持余量 +0.135/+0.022 ns，B +0.101/+0.021 ns；两板建立/保�
 旧链路测试漏接素材模式输入的问题已在旧基线复现并补齐测试连接；没有通过改动生产协议去迁就无效的测试输入。测试中的 SDRAM 控制响应模型和软件显示参考不能代替实板。
 本次两板均已重新编译，烧录 releases/PHOTO_BOARD_A_5_0.bit 和 releases/PHOTO_BOARD_B_5_0.bit。本轮固件仍需实板确认，不能用旧 5.0 的验收结果代替。
 HDMI 1280×720、杯身 576×576、24 个角度、10 帧换角度、12 时钟光照显示延迟及奖杯专用两倍曝光曲线保持现有设置。TF 素材无需重新生成；使用连接修复版 RELIEF720.DLT，SHA256 0513e891be150866f5ff5d26ec37ca1bb11b09c636a73eb04440b6d5ee8db025。若卡中还不是该版，仍需先覆盖对应素材；本轮没有声称已改写 F 盘。
-本地原版备份 E:/Codex/Work/saixian-resource-save-20261024/baseline/5.0project；合并、测试和编译工作目录 E:/Codex/Work/saixian-merged-thumbnail-resource-20261025。
+本地原版备份 LOCAL_ARTIFACT/5.0project；合并、测试和编译工作目录 LOCAL_ARTIFACT/saixian-merged-thumbnail-resource-20261025。
 重新编译：python -B tools/build_saved_project.py --board both。

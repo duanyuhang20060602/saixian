@@ -640,7 +640,8 @@ endmodule
 module saixian_hmi_status_tx #(
     parameter integer CLK_FREQ_HZ = 75_000_000,
     parameter integer BAUD_RATE = 115_200,
-    parameter integer ENHANCEMENT_FEEDBACK = 0
+    parameter integer ENHANCEMENT_FEEDBACK = 0,
+    parameter integer BYTE_STREAM = 0
 )(
     input wire clk, rst,
     input wire [2:0] image_count,
@@ -657,7 +658,8 @@ module saixian_hmi_status_tx #(
     input wire [6:0] minutes,
     input wire [5:0] seconds,
     output reg uart_tx,
-    output reg command_sent_pulse
+    output reg command_sent_pulse,
+    output wire byte_valid, output wire [7:0] byte_data, input wire byte_ready
 );
 localparam integer CLKS_PER_BIT = CLK_FREQ_HZ / BAUD_RATE;
 localparam [1:0] TX_IDLE=0, TX_START=1, TX_DATA=2, TX_STOP=3;
@@ -676,6 +678,8 @@ reg [5:0] message_len, prepared_len, byte_index;
 wire [4:0] next_byte_index=byte_index[4:0]+5'd1;
 reg [2:0] bit_index;
 reg [7:0] shift_byte;
+assign byte_valid=BYTE_STREAM && tx_state==TX_DATA;
+assign byte_data=shift_byte;
 reg [6:0] minutes_snapshot;
 reg [5:0] seconds_snapshot;
 reg [3:0] state_snapshot;
@@ -1211,18 +1215,29 @@ always @(posedge clk or posedge rst) begin
                     prefix_length<=prefix_len;suffix_length<=prepared_len-prefix_len-3;message_len<=prepared_len;
                     next_field<=next_field+1'b1;byte_index<=0;
                     shift_byte<=(active_page==1 ? 8'h73 : active_page==2 ? 8'h67 : 8'h68);bit_index<=0;
-                    baud_count<=0;uart_tx<=0;tx_state<=TX_START;
+                    baud_count<=0;uart_tx<=BYTE_STREAM ? 1'b1:1'b0;tx_state<=TX_START;
                 end else if(refresh_pending || (refresh_count==0 && active_page!=1)) begin
                     refresh_pending<=0;
                     next_field<=0;
                     minutes_snapshot<=minutes;seconds_snapshot<=seconds;state_snapshot<=event_state;
                 end
             end
-            TX_START: if(baud_count==CLKS_PER_BIT-1) begin
+            TX_START: if(BYTE_STREAM) tx_state<=TX_DATA;
+            else if(baud_count==CLKS_PER_BIT-1) begin
                 baud_count<=0;uart_tx<=shift_byte[0];shift_byte<=shift_byte>>1;
                 bit_index<=0;tx_state<=TX_DATA;
             end else baud_count<=baud_count+1'b1;
-            TX_DATA: if(baud_count==CLKS_PER_BIT-1) begin
+            TX_DATA: if(BYTE_STREAM) begin
+                if(byte_ready) begin
+                    if(byte_index+1'b1<message_len) begin
+                        if(byte_index+1'b1<prefix_length) shift_byte<=prefix_byte;
+                        else if(byte_index+1'b1<prefix_length+suffix_length)
+                            begin shift_byte<=message_suffix[47:40];message_suffix<={message_suffix[39:0],8'd0};end
+                        else shift_byte<=8'hff;
+                        byte_index<=byte_index+1'b1;tx_state<=TX_START;
+                    end else begin command_sent_pulse<=1;tx_state<=TX_IDLE;end
+                end
+            end else if(baud_count==CLKS_PER_BIT-1) begin
                 baud_count<=0;
                 if(bit_index==7) begin uart_tx<=1;tx_state<=TX_STOP;end
                 else begin uart_tx<=shift_byte[0];shift_byte<=shift_byte>>1;bit_index<=bit_index+1'b1;end
@@ -1233,7 +1248,7 @@ always @(posedge clk or posedge rst) begin
                     if(byte_index+1'b1<prefix_length)
                         shift_byte<=prefix_byte;
                     else if(byte_index+1'b1<prefix_length+suffix_length)
-                        shift_byte<=message_suffix[47-((byte_index+1'b1-prefix_length)*8) -: 8];
+                        begin shift_byte<=message_suffix[47:40];message_suffix<={message_suffix[39:0],8'd0};end
                     else shift_byte<=8'hff;
                     byte_index<=byte_index+1'b1;uart_tx<=0;tx_state<=TX_START;
                 end else begin uart_tx<=1;command_sent_pulse<=1;tx_state<=TX_IDLE;end

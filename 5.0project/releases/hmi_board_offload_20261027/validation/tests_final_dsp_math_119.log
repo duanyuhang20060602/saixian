@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "dsp_math",
+  "validation_group": "tests_final",
+  "passed": true,
+  "rerun_this_revision": false,
+  "seconds": 19.17
+}

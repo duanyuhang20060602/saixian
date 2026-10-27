@@ -1,3 +1,5 @@
+当前配套固件采用串口屏任务迁移，两板需一起烧录。最新分工、资源与验证见 串口屏任务迁移说明.txt；以下保留此前修订记录。
+
 5.0 双板重分工与 TF 卡题目 / rebalance-sd-title-20261025
 
 烧录 releases/PHOTO_BOARD_A_5_0.bit 和 releases/PHOTO_BOARD_B_5_0.bit，必须成对更新。现有照片、音乐、AWARD720.DLT 和连接修复后的 RELIEF720.DLT 内容不变，本轮不改写 F 盘。
@@ -19,4 +21,4 @@ B LUT 16357/19600，REG 11050/19600，RAM9K 57/64，RAM32K 16/16，DSP 16/29，M
 A 建立/保持余量 +0.157/+0.022ns，B +0.054/+0.022ns；总违例为零，时钟/引脚/时序约束不变。新增协议和标题也占用控制资源；不宣称所有 A 资源指标都同时下降。
 当前新跑通过记录 71，核对输入一致而沿用 37，合计 108。不计入已失效或被取代的历史通过记录。证据见 releases/rebalance_sd_title_20261025/validation.json。原生 DSP、全部材质光源、完整 720p 像素、四时钟 SPI 与音频、缓存共享、坏包、场景重入、UART/SD 标题、缩略图和转场都在独立参考下验证。
 这是本次编译与仿真结果，实板验收仍待重新烧录确认。以前 5.0 的实板通过不替代本次验收。
-备份及构建目录：E:/Codex/Work/saixian-rebalance-20261025。重新编译：python -B tools/build_saved_project.py --board both。
+备份及构建目录：LOCAL_ARTIFACT/saixian-rebalance-20261025。重新编译：python -B tools/build_saved_project.py --board both。

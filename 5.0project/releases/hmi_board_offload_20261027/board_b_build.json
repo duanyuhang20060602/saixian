@@ -1,0 +1,31 @@
+{
+  "board": "b",
+  "status": "passed",
+  "hardware_validation": "pending",
+  "resources": {
+    "lut": 17070,
+    "reg": 11578,
+    "bram": 58,
+    "bram32k": 16,
+    "dsp": 16
+  },
+  "timing_ns": {
+    "SWNS": 0.13,
+    "STNS": 0.0,
+    "HWNS": 0.022,
+    "HTNS": 0.0
+  },
+  "physical_mslices": 4746,
+  "place_seed_override": "11",
+  "physical_strategy": {
+    "name": "MacroTimingEmbeddedCleanRoute"
+  },
+  "synthesis_strategy": {
+    "name": "AreaOptimizeHigh"
+  },
+  "bit": {
+    "path": "releases/PHOTO_BOARD_B_5_0.bit",
+    "sha256": "c25492093eecd35256ddc0c012ad86693c764b8a781158a73aa2efe989a55f81"
+  },
+  "report_scope": "Qualified final numerical summary only; raw logs and machine-specific provenance are retained locally."
+}

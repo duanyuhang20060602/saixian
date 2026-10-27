@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "bus_native",
+  "validation_group": "remote_bus",
+  "passed": true,
+  "rerun_this_revision": false,
+  "seconds": 337.06
+}

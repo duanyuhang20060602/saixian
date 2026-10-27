@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "sd_title_osd_osd",
+  "validation_group": "title_osd",
+  "passed": true,
+  "rerun_this_revision": false,
+  "seconds": 21.12
+}

@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "shared_menu_edge_pipeline_sim",
+  "validation_group": "shared_rom_final",
+  "passed": true,
+  "rerun_this_revision": false,
+  "seconds": 119.41
+}

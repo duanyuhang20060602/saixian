@@ -1,0 +1,7 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "color_noise_memory",
+  "validation_group": "color_memory",
+  "passed": true,
+  "rerun_this_revision": false
+}

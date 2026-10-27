@@ -69,5 +69,6 @@
   "../../../common/photo_relief_remote_tables.v",
   "../../../common/photo_relief_tables_compact_a.v",
   "../../../common/photo_relief_decode_cache.v",
-  "../../../common/photo_award_math_bank.v"
+  "../../../common/photo_award_math_bank.v",
+  "../../../common/photo_hmi_remote.v"
 ]

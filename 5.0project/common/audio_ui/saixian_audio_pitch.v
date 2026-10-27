@@ -18,7 +18,7 @@ localparam IDLE=0,F_WRITE=1,F_READ=2,F_GET=3,F_WAIT_L=4,F_SET_R=5,
     MAC_SET=12,MAC_WAIT=13,MAC_DONE=14,
     C_REF0=15,C_REF1=16,C_REF2=17,C_TGT0=18,C_TGT1=19,C_TGT2=20,
     I_COEFF=21,I_WAIT0=22,I_STEP0=23,I_WAIT1=24,I_STEP1=25,I_WAIT2=26,I_DONE=27,
-    C_ABS=28,C_SUM=29,C_SCORE=30,I_SELECT=31,I_PART=32;
+    C_ABS=28,C_SUM=29,C_SCORE=30,I_SELECT=31,I_PART=32,MAC_CLIP=33,MAC_SELECT=34;
 reg [5:0] state;
 reg [5:0] fir_head,fir_anchor,tap;
 reg [6:0] fir_count;
@@ -116,22 +116,26 @@ wire signed [27:0] phase_step=28'sd65536-$signed({10'd0,ratio});
 assign ready=fill>=2304 && startup_gain==256 && active_mode==requested_mode && wet_gain==desired_gain;
 reg signed [15:0] dry_l,dry_r;
 reg signed [15:0] head_a_l,head_a_r,head_b_l,head_b_r,wet_l,wet_r,mix_l,mix_r,ramped_l;
-reg [3:0] operation;
+reg [5:0] operation_flags;
+wire mac_heads=|operation_flags[1:0],mac_blend=|operation_flags[3:2];
 reg signed [15:0] mac_base;
 // The cubic path always enters operation 4. Select the two stereo sources
 // before their one shared subtractor, rather than selecting four differences.
-wire mac_right=operation[0];
+wire mac_right=|(operation_flags & 6'b101010);
 wire signed[15:0] mac_head_a=mac_right ? head_a_r:head_a_l;
 wire signed[15:0] mac_head_b=mac_right ? head_b_r:head_b_l;
 wire signed[15:0] mac_dry=mac_right ? dry_r:dry_l;
 wire signed[15:0] mac_wet=mac_right ? wet_r:wet_l;
 wire signed[15:0] mac_mix=mac_right ? mix_r:mix_l;
-wire signed[15:0] mac_source_a=operation<6 ? mac_head_b:operation<8 ? mac_dry:16'sd0;
-wire signed[15:0] mac_source_b=operation<6 ? mac_head_a:operation<8 ? mac_wet:mac_mix;
+wire signed[15:0] mac_source_a=mac_heads ? mac_head_b:mac_blend ? mac_dry:16'sd0;
+wire signed[15:0] mac_source_b=mac_heads ? mac_head_a:mac_blend ? mac_wet:mac_mix;
 wire signed[17:0] mac_difference=difference(mac_source_a,mac_source_b);
-wire signed[17:0] mac_gain=operation<6 ? $signed({1'b0,head_weight}):
-                                      operation<8 ? $signed({1'b0,wet_gain}):$signed({1'b0,startup_gain,8'd0});
+wire signed[17:0] mac_gain=mac_heads ? $signed({1'b0,head_weight}):
+                                      mac_blend ? $signed({1'b0,wet_gain}):$signed({1'b0,startup_gain,8'd0});
 wire signed [38:0] mac_value=$signed(mac_base)+((product+39'sd32768)>>>16);
+// Separate the exact wide rounded sum from saturation and destination muxes.
+// Six extra clocks per 48kHz stereo frame fit the original sample budget.
+reg signed [38:0] mac_sum;
 function signed [17:0] difference;
     input signed [15:0] a,b;
     begin difference=$signed({{2{b[15]}},b})-$signed({{2{a[15]}},a});end
@@ -478,7 +482,7 @@ always @(posedge clk or posedge rst) begin
         dl<=0;dr<=0;distance_reg<=0;score_total<=0;
 
         mul_a<=0;mul_b<=0;product_l<=0;input_l<=0;input_r<=0;
-        center_l<=0;center_r<=0;filtered_l<=0;filtered_r<=0;read_slot<=0;operation<=0;
+        center_l<=0;center_r<=0;filtered_l<=0;filtered_r<=0;read_slot<=0;operation_flags<=0;
         dry_l<=0;dry_r<=0;head_a_l<=0;head_a_r<=0;head_b_l<=0;head_b_r<=0;
         wet_l<=0;wet_r<=0;mix_l<=0;mix_r<=0;ramped_l<=0;mac_base<=0;
     end else if(clear) begin
@@ -605,7 +609,7 @@ always @(posedge clk or posedge rst) begin
                     0:head_a_l<=clip(interp_value);1:head_a_r<=clip(interp_value);
                     2:head_b_l<=clip(interp_value);3:head_b_r<=clip(interp_value);
                 endcase
-                if(interp_channel==3) begin operation<=4;state<=MAC_SET;end
+                if(interp_channel==3) begin operation_flags<=6'd1;state<=MAC_SELECT;end
                 else begin interp_channel<=interp_channel+1'b1;state<=I_SELECT;end
             end
             // Background stereo SAD search, +/-64 samples, 16 points at stride 4.
@@ -638,19 +642,27 @@ always @(posedge clk or posedge rst) begin
                     read_addr<=anchor_ref-{6'd0,corr_tap,2'b0}-12'd4;state<=C_REF0;
                 end
             end
+            // The cubic partials are dead after the final I_DONE. Reuse
+            // them for MAC operands, cutting source selection/subtraction
+            // away from the shared DSP input mux without adding word registers.
+            MAC_SELECT:begin
+                partial_20<=mac_difference;partial_21<=mac_gain;mac_base<=mac_source_a;
+                state<=MAC_SET;
+            end
             MAC_SET:begin
-                mac_base<=mac_source_a;mul_a<=mac_difference;mul_b<=mac_gain;
+                mul_a<=partial_20;mul_b<=partial_21[17:0];
                 state<=MAC_WAIT;
             end
             MAC_WAIT:state<=MAC_DONE;
-            MAC_DONE:begin
-                case(operation)
-                    4:wet_l<=clip(mac_value);5:wet_r<=clip(mac_value);
-                    6:mix_l<=clip(mac_value);7:mix_r<=clip(mac_value);
-                    8:ramped_l<=clip(mac_value);
-                    9:begin
+            MAC_DONE:begin mac_sum<=mac_value;state<=MAC_CLIP;end
+            MAC_CLIP:begin
+                (* parallel_case *) case(1'b1)
+                    operation_flags[0]:wet_l<=clip(mac_sum);operation_flags[1]:wet_r<=clip(mac_sum);
+                    operation_flags[2]:mix_l<=clip(mac_sum);operation_flags[3]:mix_r<=clip(mac_sum);
+                    operation_flags[4]:ramped_l<=clip(mac_sum);
+                    operation_flags[5]:begin
                         left_out<=fill>=2304 ? ramped_l : 16'sd0;
-                        right_out<=fill>=2304 ? clip(mac_value) : 16'sd0;
+                        right_out<=fill>=2304 ? clip(mac_sum) : 16'sd0;
                         out_valid<=1;write_index<=write_index+1'b1;
                         phase<=active_mode==0 ? 27'd0 : phase+phase_step;
                         if(corr_busy && active_mode==requested_mode) begin
@@ -658,7 +670,7 @@ always @(posedge clk or posedge rst) begin
                         end else begin corr_busy<=0;state<=IDLE;end
                     end
                 endcase
-                if(operation!=9) begin operation<=operation+1'b1;state<=MAC_SET;end
+                if(!operation_flags[5]) begin operation_flags<=operation_flags<<1;state<=MAC_SELECT;end
             end
             default:state<=IDLE;
         endcase

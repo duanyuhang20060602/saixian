@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "typed_protocol",
+  "validation_group": "compat_audio",
+  "passed": true,
+  "rerun_this_revision": true,
+  "seconds": 0.75
+}
