@@ -1,5 +1,3 @@
-当前配套固件采用串口屏任务迁移，两板需一起烧录。最新分工、资源与验证见 串口屏任务迁移说明.txt；以下保留此前修订记录。
-
 历史修订说明：当前固件、资源和操作以 资源节约与缩略图合并说明.txt 为准。
 
 5.0 精细光照与 DSP 复用优化 / gold-relief-fine-light-20261024
@@ -28,5 +26,5 @@ A 板烧录 releases/PHOTO_BOARD_A_5_0.bit。B 板位流与上一版一致，无
 验证
 使用供应商原生乘法器模型，穷举 4096 组有符号输入、262144 组红/蓝/增益组合，覆盖全部 16384 组绿/增益组合；检查通道隔离、同步复位和一个时钟延迟。
 完整像素、SDRAM 读写、原彩带兼容和新旧动画切换的当前记录见 releases/relief_lightopt_20261024/validation.json。
-可重跑精度对照：python -B tools/test_relief_lighting_precision.py --out LOCAL_ARTIFACT/light-precision --baseline <上一版5.0project目录> --vectors <本版relief_golden.hex>
-工作备份与候选目录保留在 LOCAL_ARTIFACT/saixian-relief-lightopt-20261024。
+可重跑精度对照：python -B tools/test_relief_lighting_precision.py --out E:/Codex/Work/light-precision --baseline <上一版5.0project目录> --vectors <本版relief_golden.hex>
+工作备份与候选目录保留在 E:/Codex/Work/saixian-relief-lightopt-20261024。

@@ -1,8 +1,17 @@
-module water_scene(input clk,rst,frame_tick,display_valid,transition_active,
+module water_scene #(parameter POINTER_CENTER=0)(input clk,rst,frame_tick,display_valid,transition_active,
+ input pointer_enabled,input[10:0] pointer_x,input[9:0] pointer_y,
  input wave_enable,manual_drop,input[8:0] progress,output[76:0] cfg);
 reg[8:0] dwell;reg[7:0] age0,age1;reg[23:0] radius0,radius1;
 reg[10:0] cx0,cx1;reg[9:0] cy0,cy1;reg[15:0] step0,step1;reg[2:0] sequence;
 reg transition_d,pending_manual;
+reg[10:0] transition_x;reg[9:0] transition_y;
+always @(posedge clk)begin
+ if(rst)begin transition_x<=640;transition_y<=360;end
+ else if(frame_tick && !transition_active)begin
+  transition_x<=pointer_enabled ? (pointer_x>1279 ? 11'd1279:pointer_x):11'd640;
+  transition_y<=pointer_enabled ? (pointer_y>719 ? 10'd719:pointer_y):10'd360;
+ end
+end
 function[36:0] point;input[2:0] n;begin case(n)
 0:point={11'd998,10'd454,16'd3604};1:point={11'd346,10'd432,16'd3400};
 2:point={11'd717,10'd547,16'd3020};3:point={11'd1062,10'd497,16'd3832};
@@ -10,7 +19,7 @@ function[36:0] point;input[2:0] n;begin case(n)
 6:point={11'd346,10'd475,16'd3454};default:point={11'd986,10'd504,16'd3636};endcase end endfunction
 wire on0=wave_enable&&age0<85&&!transition_active;
 wire on1=wave_enable&&age1<85&&!transition_active;
-assign cfg={on0,on1,cx0,cx1,cy0,cy1,radius0[19:8],radius1[19:8],progress};
+assign cfg={on0,on1,(POINTER_CENTER && transition_active ? transition_x:cx0),cx1,(POINTER_CENTER && transition_active ? transition_y:cy0),cy1,radius0[19:8],radius1[19:8],progress};
 always @(posedge clk)begin
  if(rst)begin dwell<=0;age0<=255;age1<=255;radius0<=0;radius1<=0;cx0<=0;cx1<=0;cy0<=0;cy1<=0;step0<=0;step1<=0;sequence<=0;transition_d<=0;pending_manual<=0;end
  else begin

@@ -48,6 +48,21 @@ always @* begin
   default:next_byte=tx_crc[7:0];
  endcase
 end
+function [15:0] crc_nibble;
+ input [15:0] c;input [3:0] b;reg [15:0] t;integer j;
+ begin t=c^{b,12'd0};for(j=0;j<4;j=j+1)t=t[15] ? (t<<1)^16'h1021:t<<1;crc_nibble=t;end
+endfunction
+// A byte boundary is at least ten clocks apart, including DIV=1.
+// Compute its CRC during those clocks, with no extra serial latency.
+reg [15:0] tx_crc_half,tx_crc_next;reg [3:0] tx_crc_low;
+always @(posedge clk or posedge rst)begin
+ if(rst)begin tx_crc_half<=0;tx_crc_next<=0;tx_crc_low<=0;end
+ else begin
+  tx_crc_half<=crc_nibble(tx_crc,next_byte[7:4]);
+  tx_crc_low<=next_byte[3:0];
+  tx_crc_next<=crc_nibble(tx_crc_half,tx_crc_low);
+ end
+end
 always @(posedge clk or posedge rst)begin
  if(rst)begin tx_bits<=10'h3ff;tx_count<=0;tx_bit<=0;tx_pos<=0;tx_payload<=0;tx_crc<=16'hffff;tx_active<=0;end
  else if(!tx_active)begin
@@ -60,7 +75,7 @@ always @(posedge clk or posedge rst)begin
    else begin
     tx_pos<=tx_pos+1'b1;
     if(tx_pos>=1 && tx_pos<21)begin
-     tx_crc<=crc_byte(tx_crc,next_byte);
+     tx_crc<=tx_crc_next;
     end
     tx_bits<={1'b1,next_byte,1'b0};
    end

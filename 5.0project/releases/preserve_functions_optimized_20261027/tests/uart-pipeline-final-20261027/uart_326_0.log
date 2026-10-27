@@ -1,0 +1,2 @@
+PASS UART exact every cycle: DIV=326 PULSE=0 clocks=2675828
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\tb_uart_pipeline_exact.v:27: $finish called at 26758370000 (1ps)

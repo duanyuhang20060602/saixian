@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "title": "标题测试",
+  "ticker": "底部独立文字",
+  "captures": [
+    {
+      "bank": "title",
+      "verified_pixels": 4096
+    },
+    {
+      "bank": "center-title",
+      "verified_pixels": 4096
+    },
+    {
+      "bank": "ticker",
+      "verified_pixels": 6144
+    }
+  ],
+  "hardware_validation": "pending",
+  "inputs_sha256": {
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\complete-boot-title-pixels-r6\\pixels.v": "6b730426d0817085c75e2a325e97d54ecbdc1f36a9ff9188366e29570828b835",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\tests\\ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+    "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_cached_control_a.v": "d2b86118b1e8a8ed33f3e59c7604e51122b13a81fcea29a4e79b4c10e2dd7d7f",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_control.v": "615a17e068742f7861c596d469b7f193614249da1e31ee02f8aa0b3520bb102c",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_sd_title_store.v": "c501d919aa698b75b8b110f05abb6cca5727df175ebd507e2ff2ecb0f782e66d",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\audio_ui\\saixian_font_rom.v": "77f9e0c7453cc497aa4e11a039877edfd5406c2be8bc7006fb066ec23bc6e0c6",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\audio_ui\\saixian_osd_overlay.v": "744e171dcc48a54ce15684412e9e34ff3c4e43c54f997a083a8dbf234bfd037c"
+  }
+}

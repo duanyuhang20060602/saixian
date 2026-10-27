@@ -25,7 +25,7 @@ end
 task send;
  input [7:0] kind,flags;input [31:0] value;
  begin
-  @(negedge clk);incoming={kind,(kind==1 ? 32'h87654321:session),dut.request_seq,{5'd0,dut.media_target},flags,32'd2764800,value,8'd0,16'd0};
+  @(negedge clk);incoming={kind,(kind==1 ? 32'h87654321:session),dut.request_seq,{5'd0,dut.media_target},flags,(kind==1 ? 32'd1843200:32'd2764800),value,8'd0,16'd0};
   repeat(3)@(negedge clk);got=1;@(negedge clk);got=0;
  end
 endtask

@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "cases": 6160,
+  "inputs_sha256": {
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\tools\\test_pointer_effects.py": "6eb007b3c639f217736e6d785d10cbbcde16063453474b0424a18714a6e1bda8",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\preserve-features-20261027\\pointer_effects\\effects.v": "33433de2a2a884ff2c660188823ec58969df087fd770bb649bc4137d3c8798f1",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\fluid\\water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\fluid\\water_priority_map.v": "b1074eb53d639e54c09c80989bdab92c3a80748310f5e5478282bee0c729ae76"
+  }
+}

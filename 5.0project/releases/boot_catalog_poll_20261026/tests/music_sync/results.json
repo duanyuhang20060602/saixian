@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "scope": "real top/settings/page event/SPI track logic; external hardware shells",
+  "inputs_sha256": {
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\catalog-poll-music-sync-r1\\sync.v": "e152cb80609e119dcceffac58693b84a90375f06f23ef48b2d6d70855bea6baa",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\catalog-poll-music-sync-r1\\hardware_shells.v": "56c8248ac59fb18b4b96f6cf0ac5a2316c91f1bcf07ff5d7f342fc9c022573fa",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\top_photo_a.v": "ec7c01511810fefa23955bd55be93a0296b23faaaaea1f0627db995e40a54a99",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_unified_settings_controller.v": "702fd7b38c3aae4b408041b05b70cd4feb00381b5c22192644b7aa98f77b2d14",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\saixian_hmi_uart.v": "22c726a0f74a84790ebd05f594ddca31360af6d5dc010a2f404d8c22d547b666",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_touchpad.v": "c29700dcfde3ef60713af7db8cfc1ae9fdfa44363cb2bf6d69c464062e0e54ca",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_audio_link.v": "fa29de38c0a449317ab4b0106c4b4b6825374f4989d4fe9e85d70acb6952388a",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784"
+  }
+}

@@ -1,7 +1,7 @@
 // The SDRAM IP executes aligned four-word bursts, not per-word random reads.
 // Stream sequential rows into a 16-row RAM32K window; displace only on chip.
 // Row prefetch overlaps geometry. Two alternating rows hold the second image.
-module water_reader #(parameter ADDR_BITS=21,BURST_SIZE=128,FIFO_DEPTH=1024,FRAME_WIDTH=320,HEIGHT=720)(
+module water_reader #(parameter POINTER_CENTER=0,ADDR_BITS=21,BURST_SIZE=128,FIFO_DEPTH=1024,FRAME_WIDTH=320,HEIGHT=720)(
  input rst,mem_clk,Sdr_init_done,Sdr_init_ref_vld,Sdr_busy,Sdr_rd_en,App_wr_busy,
  input[31:0] Sdr_rd_dout,output O_rd_busy,output App_rd_en,output[ADDR_BITS-1:0] App_rd_addr,
  input read_req,output reg read_req_ack,output read_finish,
@@ -83,7 +83,7 @@ water_warp warp(.clk(mem_clk),.rst(rst||state==ACK),.valid(feed),.xword({ix[8:0]
  .cx0(cfg[74:64]),.cx1(cfg[63:53]),.cy0(cfg[52:43]),.cy1(cfg[42:33]),
  .radius0(cfg[32:21]),.radius1(cfg[20:9]),.out_valid(warp_valid),.sxword(wx),.sy(wy),.out_xword(ox),.out_y(oy));
 wire mapped_valid;wire[9:0] old_x,old_y,new_x,bx,by;wire[8:0] map_alpha;wire[4:0] map_shade;wire[2:0] map_shine;
-water_effect_map mapping(.clk(mem_clk),.rst(rst||state==ACK),.valid(warp_valid),.enabled(effect_active),
+water_effect_map #(.POINTER_CENTER(POINTER_CENTER)) mapping(.center_x(cfg[74:64]),.center_y(cfg[52:43]),.clk(mem_clk),.rst(rst||state==ACK),.valid(warp_valid),.enabled(effect_active),
  .right(right),.effect(effect),.progress(cfg[8:0]),.ox(ox),.oy(oy),.wx(wx),.wy(wy),
  .out_valid(mapped_valid),.old_x(old_x),.old_y(old_y),.new_x(new_x),.out_x(bx),.out_y(by),
  .alpha(map_alpha),.shade(map_shade),.shine(map_shine));

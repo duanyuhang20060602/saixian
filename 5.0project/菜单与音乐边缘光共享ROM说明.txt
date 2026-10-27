@@ -1,5 +1,3 @@
-当前配套固件采用串口屏任务迁移，两板需一起烧录。最新分工、资源与验证见 串口屏任务迁移说明.txt；以下保留此前修订记录。
-
 5.0 菜单与音乐边缘光共享 ROM / shared-menu-edge-rom-20261025
 
 菜单文字字形编号表原为 1024x8，最后 128 字节逐项验证全零。把原音乐边缘光 128x8 权重无损放入这些地址，两者分别使用同一块 RAM9K 的 A/B 两个同步只读端口。菜单读取最后 128 字节时仍输出零，边缘光读取原始权重；并行吞吐、单拍 ROM 延迟、菜单 4/6/21 拍与边缘光五拍输出对齐保持。
@@ -15,6 +13,6 @@ A 建立/保持余量 +0.119/+0.024 ns；B +0.054/+0.022 ns；建立和保持总
 原始菜单表和边缘权重 MIF 保留。若以后改菜单或权重，请运行 python -B tools/prepare_menu_edge_rom.py；构建入口会检查打包是否过期，也会检查菜单被占用区是否仍全零，避免新字形覆盖权重。
 
 固件：releases/PHOTO_BOARD_A_5_0.bit。B 若已有 shared-award-math-20261025 配套合格固件，可保留，否则使用本目录 PHOTO_BOARD_B_5_0.bit。此次仿真、布局布线与保存完整性通过，实板验收仍待重新烧录确认。失败/调试运行不计入通过记录。
-备份与完整试验目录：LOCAL_ARTIFACT/saixian-shared-rom-20261025。
+备份与完整试验目录：E:/Codex/Work/saixian-shared-rom-20261025。
 调研：Yosys 官方 memory 文档的 RAM 几何尺寸、同步双端口和映射取舍说明，未复制其实现代码。TD/EG4 的具体端口行为用本地厂商模型和实际布局结果确认：
 https://github.com/YosysHQ/yosys/blob/5053d0e266d9e5f895211e39e6ee3a94cbba408a/docs/source/using_yosys/synthesis/memory.rst

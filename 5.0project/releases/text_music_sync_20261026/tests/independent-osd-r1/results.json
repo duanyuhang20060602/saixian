@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "inputs_sha256": {
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\independent-osd-r1\\osd.v": "9626abba3f5e60219a88dba60e5d1414c3105c486eb869bb78bc5eeacbc9ed73",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\audio_ui\\saixian_osd_overlay.v": "070254e83c0166be6e4db43a06c03a1b33cd07d3d96af5fb49517a228381d984",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\tests\\reference\\sd_title\\saixian_osd_overlay.v": "ed2b15a978294d7d9160fedb4494984c1d7645ba448324f32420fb6cc7624eed"
+  }
+}

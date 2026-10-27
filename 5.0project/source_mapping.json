@@ -349,7 +349,5 @@
   "projects/board_b/src/user_source/hdl_source/SD/sdram.v": "src/board_b/user_source/hdl_source/SD/sdram.v",
   "projects/board_b/src/td_project/build_board.tcl": "src/board_b/td_project/build_board.tcl",
   "projects/board_b/src/td_project/sources.json": "src/board_b/td_project/sources.json",
-  "projects/board_b/src/td_project/PHOTO_BOARD_B.al": "src/board_b/td_project/PHOTO_BOARD_B.al",
-  "common/photo_hmi_remote.v": "common/photo_hmi_remote.v",
-  "common/photo_audio_spi_b_offload.v": "common/photo_audio_spi_b_offload.v"
+  "projects/board_b/src/td_project/PHOTO_BOARD_B.al": "src/board_b/td_project/PHOTO_BOARD_B.al"
 }

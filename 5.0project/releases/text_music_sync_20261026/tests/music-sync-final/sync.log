@@ -1,0 +1,493 @@
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:41: warning: Port 8 (data) of photo_link_receiver expects 1 bits, got 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:41:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:41: warning: Port 19 (write_data) of photo_link_receiver expects 1 bits, got 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:41:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:41: warning: Port 23 (frame_crc) of photo_link_receiver expects 1 bits, got 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:41:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:41: warning: Port 24 (fault_detail) of photo_link_receiver expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:41:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66: warning: Port 8 (thumbnail_slot) of frame_store expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66: warning: Port 9 (thumbnail_address) of frame_store expects 1 bits, got 13.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66:        : Pruning 12 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66: warning: Port 11 (thumbnail_data) of frame_store expects 1 bits, got 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66: warning: Port 15 (light_address) of frame_store expects 1 bits, got 21.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66:        : Pruning 20 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66: warning: Port 17 (light_data) of frame_store expects 1 bits, got 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66: warning: Port 19 (light_base) of frame_store expects 1 bits, got 21.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66:        : Pruning 20 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66: warning: Port 20 (water_cfg) of frame_store expects 1 bits, got 77.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66:        : Pruning 76 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66: warning: Port 21 (fluid_progress) of frame_store expects 1 bits, got 9.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66:        : Pruning 8 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66: warning: Port 23 (write_slot) of frame_store expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66: warning: Port 24 (read_slot) of frame_store expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66: warning: Port 25 (new_slot) of frame_store expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66: warning: Port 28 (slide_offset) of frame_store expects 1 bits, got 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66: warning: Port 29 (transition_mode) of frame_store expects 1 bits, got 5.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66:        : Pruning 4 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66: warning: Port 36 (write_data) of frame_store expects 1 bits, got 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66: warning: Port 46 (read_data) of frame_store expects 1 bits, got 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:66:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:93: warning: Port 3 (rgb_in) of hdmi_minimal_tx expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:93:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:93: warning: Port 11 (x) of hdmi_minimal_tx expects 1 bits, got 12.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:93:        : Pruning 11 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:93: warning: Port 12 (y) of hdmi_minimal_tx expects 1 bits, got 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:93:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:96: warning: Port 4 (x) of frame_pixels expects 1 bits, got 12.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:96:        : Pruning 11 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:96: warning: Port 5 (y) of frame_pixels expects 1 bits, got 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:96:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:96: warning: Port 9 (data) of frame_pixels expects 1 bits, got 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:96:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:96: warning: Port 12 (rgb) of frame_pixels expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:96:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:99: warning: Port 6 (ready_buf_idx) of saixian_transition expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:99:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:99: warning: Port 9 (effect_select) of saixian_transition expects 1 bits, got 5.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:99:        : Pruning 4 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:99: warning: Port 10 (active_buf_idx) of saixian_transition expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:99:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:99: warning: Port 11 (slide_new_buf_idx) of saixian_transition expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:99:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:99: warning: Port 15 (fluid_progress) of saixian_transition expects 1 bits, got 9.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:99:        : Pruning 8 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:99: warning: Port 16 (transition_mode) of saixian_transition expects 1 bits, got 5.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:99:        : Pruning 4 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:99: warning: Port 17 (slide_offset) of saixian_transition expects 1 bits, got 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:99:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:99: warning: Port 19 (transition_level) of saixian_transition expects 1 bits, got 6.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:99:        : Pruning 5 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:170: warning: Port 7 (project_switch) of saixian_event_controller expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:170:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:170: warning: Port 8 (state) of saixian_event_controller expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:170:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:170: warning: Port 9 (project_id) of saixian_event_controller expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:170:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:170: warning: Port 10 (minutes) of saixian_event_controller expects 1 bits, got 7.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:170:        : Pruning 6 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:170: warning: Port 11 (seconds) of saixian_event_controller expects 1 bits, got 6.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:170:        : Pruning 5 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:170: warning: Port 12 (countdown_value) of saixian_event_controller expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:170:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:170: warning: Port 13 (cue_event) of saixian_event_controller expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:170:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:199: warning: Port 10 (interval_seconds) of photo_auto_advance expects 1 bits, got 5.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:199:        : Pruning 4 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:224: warning: Port 10 (first_ms) of photo_switch_timing expects 1 bits, got 20.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:224:        : Pruning 19 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:224: warning: Port 11 (second_ms) of photo_switch_timing expects 1 bits, got 20.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:224:        : Pruning 19 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:224: warning: Port 13 (total_ms) of photo_switch_timing expects 1 bits, got 20.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:224:        : Pruning 19 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:227: warning: Port 4 (first_ms) of photo_switch_timing_display expects 1 bits, got 20.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:227:        : Pruning 19 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:227: warning: Port 5 (second_ms) of photo_switch_timing_display expects 1 bits, got 20.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:227:        : Pruning 19 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:227: warning: Port 6 (third_ms) of photo_switch_timing_display expects 1 bits, got 20.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:227:        : Pruning 19 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:227: warning: Port 7 (total_ms) of photo_switch_timing_display expects 1 bits, got 20.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:227:        : Pruning 19 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:227: warning: Port 8 (seg_sel) of photo_switch_timing_display expects 1 bits, got 6.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:227:        : Pruning 5 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:227: warning: Port 9 (seg_data) of photo_switch_timing_display expects 1 bits, got 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:227:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 2 (title_word_index) of photo_cached_control_a expects 1 bits, got 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 3 (title_word_data) of photo_cached_control_a expects 1 bits, got 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 4 (title_word_length) of photo_cached_control_a expects 1 bits, got 5.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 4 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 9 (settings_state) of photo_cached_control_a expects 1 bits, got 19.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 18 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 16 (thumbnail_read_slot) of photo_cached_control_a expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 27 (award_notice) of photo_cached_control_a expects 1 bits, got 3.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 2 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 28 (last_transfer_error) of photo_cached_control_a expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 29 (first_transfer_origin) of photo_cached_control_a expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 30 (first_transfer_error) of photo_cached_control_a expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 33 (active_slot) of photo_cached_control_a expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 34 (new_slot) of photo_cached_control_a expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 37 (receive_slot) of photo_cached_control_a expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 44 (rx_crc) of photo_cached_control_a expects 1 bits, got 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 46 (ready_slot) of photo_cached_control_a expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 48 (image_count) of photo_cached_control_a expects 1 bits, got 3.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 2 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 49 (current_image) of photo_cached_control_a expects 1 bits, got 3.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 2 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 51 (error) of photo_cached_control_a expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 52 (debug_state) of photo_cached_control_a expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 54 (thumbnail_slot) of photo_cached_control_a expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 55 (thumbnail_id) of photo_cached_control_a expects 1 bits, got 3.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 2 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 56 (current_source_width) of photo_cached_control_a expects 1 bits, got 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230: warning: Port 57 (current_source_height) of photo_cached_control_a expects 1 bits, got 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:230:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:249: warning: Port 8 (progress) of water_scene expects 1 bits, got 9.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:249:        : Pruning 8 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:249: warning: Port 9 (cfg) of water_scene expects 1 bits, got 77.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:249:        : Pruning 76 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:283: warning: Port 3 (x) of photo_raster_delay expects 1 bits, got 12.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:283:        : Pruning 11 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:283: warning: Port 4 (y) of photo_raster_delay expects 1 bits, got 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:283:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:283: warning: Port 6 (y_two_thirds) of photo_raster_delay expects 1 bits, got 9.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:283:        : Pruning 8 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:284: warning: Port 3 (x) of photo_raster_delay expects 1 bits, got 12.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:284:        : Pruning 11 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:284: warning: Port 4 (y) of photo_raster_delay expects 1 bits, got 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:284:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:285: warning: Port 3 (x) of photo_raster_delay expects 1 bits, got 12.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:285:        : Pruning 11 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:285: warning: Port 4 (y) of photo_raster_delay expects 1 bits, got 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:285:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:286: warning: Port 3 (x) of photo_raster_delay expects 1 bits, got 12.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:286:        : Pruning 11 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:286: warning: Port 4 (y) of photo_raster_delay expects 1 bits, got 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:286:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:296: warning: Port 5 (O_acr_cts) of audio_arc_calculate expects 1 bits, got 20.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:296:        : Pruning 19 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:296: warning: Port 6 (O_acr_n) of audio_arc_calculate expects 1 bits, got 20.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:296:        : Pruning 19 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:320: warning: Port 12 (x_in) of saixian_battle_result_fx expects 1 bits, got 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:320:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:320: warning: Port 13 (y_in) of saixian_battle_result_fx expects 1 bits, got 10.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:320:        : Pruning 9 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:320: warning: Port 16 (rgb_in) of saixian_battle_result_fx expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:320:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:320: warning: Port 19 (rgb_out) of saixian_battle_result_fx expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:320:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339: warning: Port 1 (weight_x) of water_edge expects 1 bits, got 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339: warning: Port 2 (weight_y) of water_edge expects 1 bits, got 10.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339:        : Pruning 9 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339: warning: Port 3 (shared_weight) of water_edge expects 1 bits, got 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339: warning: Port 4 (weight_address) of water_edge expects 1 bits, got 7.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339:        : Pruning 6 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339: warning: Port 8 (external_target) of water_edge expects 1 bits, got 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339: warning: Port 11 (pcm_left) of water_edge expects 1 bits, got 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339: warning: Port 12 (pcm_right) of water_edge expects 1 bits, got 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339: warning: Port 13 (x) of water_edge expects 1 bits, got 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339: warning: Port 14 (y) of water_edge expects 1 bits, got 10.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339:        : Pruning 9 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339: warning: Port 18 (rgb) of water_edge expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339: warning: Port 19 (darkness) of water_edge expects 1 bits, got 6.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339:        : Pruning 5 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339: warning: Port 23 (rgb_out) of water_edge expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339: warning: Port 24 (level) of water_edge expects 1 bits, got 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:339:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:346: warning: Port 9 (I_axis_s_data) of hdmi_1_4b_transmitter_core_wrapper expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:346:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:346: warning: Port 12 (I_audio_left_data) of hdmi_1_4b_transmitter_core_wrapper expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:346:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:346: warning: Port 13 (I_audio_right_data) of hdmi_1_4b_transmitter_core_wrapper expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:346:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:346: warning: Port 15 (I_acr_cts) of hdmi_1_4b_transmitter_core_wrapper expects 1 bits, got 20.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:346:        : Pruning 19 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:346: warning: Port 16 (I_acr_n) of hdmi_1_4b_transmitter_core_wrapper expects 1 bits, got 20.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:346:        : Pruning 19 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:346: warning: Port 20 (O_ch0_tmds_data) of hdmi_1_4b_transmitter_core_wrapper expects 1 bits, got 10.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:346:        : Pruning 9 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:346: warning: Port 21 (O_ch1_tmds_data) of hdmi_1_4b_transmitter_core_wrapper expects 1 bits, got 10.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:346:        : Pruning 9 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:346: warning: Port 22 (O_ch2_tmds_data) of hdmi_1_4b_transmitter_core_wrapper expects 1 bits, got 10.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:346:        : Pruning 9 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:346: warning: Port 23 (O_clk_tmds_data) of hdmi_1_4b_transmitter_core_wrapper expects 1 bits, got 10.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:346:        : Pruning 9 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351: warning: Port 3 (image_count) of saixian_hmi_status_tx expects 1 bits, got 3.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351:        : Pruning 2 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351: warning: Port 4 (audio_count) of saixian_hmi_status_tx expects 1 bits, got 3.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351:        : Pruning 2 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351: warning: Port 5 (error_code) of saixian_hmi_status_tx expects 1 bits, got 3.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351:        : Pruning 2 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351: warning: Port 7 (page_id) of saixian_hmi_status_tx expects 1 bits, got 3.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351:        : Pruning 2 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351: warning: Port 9 (sharpness) of saixian_hmi_status_tx expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351: warning: Port 10 (brightness) of saixian_hmi_status_tx expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351: warning: Port 11 (contrast) of saixian_hmi_status_tx expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351: warning: Port 12 (saturation) of saixian_hmi_status_tx expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351: warning: Port 13 (volume) of saixian_hmi_status_tx expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351: warning: Port 16 (enhancement) of saixian_hmi_status_tx expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351: warning: Port 17 (event_state) of saixian_hmi_status_tx expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351: warning: Port 18 (minutes) of saixian_hmi_status_tx expects 1 bits, got 7.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351:        : Pruning 6 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351: warning: Port 19 (seconds) of saixian_hmi_status_tx expects 1 bits, got 6.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:351:        : Pruning 5 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:363: warning: Port 4 (rgb_in) of photo_neutral_delay expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:363:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:363: warning: Port 5 (rgb_out) of photo_neutral_delay expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:363:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:364: warning: Port 3 (darkness) of photo_display_fade expects 1 bits, got 6.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:364:        : Pruning 5 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:364: warning: Port 4 (rgb_in) of photo_display_fade expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:364:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:364: warning: Port 5 (rgb_out) of photo_display_fade expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:364:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365: warning: Port 1 (edge_weight_address) of photo_settings_overlay expects 1 bits, got 7.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365:        : Pruning 6 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365: warning: Port 2 (edge_weight) of photo_settings_overlay expects 1 bits, got 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365: warning: Port 6 (x) of photo_settings_overlay expects 1 bits, got 12.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365:        : Pruning 11 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365: warning: Port 7 (y) of photo_settings_overlay expects 1 bits, got 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365: warning: Port 10 (setting_item) of photo_settings_overlay expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365: warning: Port 14 (volume) of photo_settings_overlay expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365: warning: Port 16 (brightness) of photo_settings_overlay expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365: warning: Port 17 (contrast) of photo_settings_overlay expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365: warning: Port 18 (saturation) of photo_settings_overlay expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365: warning: Port 19 (sharpness) of photo_settings_overlay expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365: warning: Port 20 (enhancement) of photo_settings_overlay expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365: warning: Port 24 (effect) of photo_settings_overlay expects 1 bits, got 5.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365:        : Pruning 4 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365: warning: Port 26 (auto_interval_seconds) of photo_settings_overlay expects 1 bits, got 5.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365:        : Pruning 4 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365: warning: Port 27 (rgb_in) of photo_settings_overlay expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365: warning: Port 28 (rgb_out) of photo_settings_overlay expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:365:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:375: warning: Port 3 (notice) of photo_award_notice expects 1 bits, got 3.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:375:        : Pruning 2 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:375: warning: Port 4 (x) of photo_award_notice expects 1 bits, got 12.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:375:        : Pruning 11 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:375: warning: Port 5 (y) of photo_award_notice expects 1 bits, got 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:375:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:375: warning: Port 6 (rgb_in) of photo_award_notice expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:375:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:375: warning: Port 7 (rgb_out) of photo_award_notice expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:375:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:401: warning: Port 2 (word_index) of saixian_font_rom expects 1 bits, got 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:401:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:401: warning: Port 3 (word_data) of saixian_font_rom expects 1 bits, got 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:401:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:401: warning: Port 4 (word_length) of saixian_font_rom expects 1 bits, got 5.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:401:        : Pruning 4 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:401: warning: Port 7 (title_length) of saixian_font_rom expects 1 bits, got 5.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:401:        : Pruning 4 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:401: warning: Port 8 (ticker_length) of saixian_font_rom expects 1 bits, got 5.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:401:        : Pruning 4 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:401: warning: Port 10 (glyph_id) of saixian_font_rom expects 1 bits, got 7.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:401:        : Pruning 6 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:401: warning: Port 11 (row) of saixian_font_rom expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:401:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:401: warning: Port 12 (bits) of saixian_font_rom expects 1 bits, got 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:401:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411: warning: Port 3 (remote_wa) of photo_av_metadata_a expects 1 bits, got 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411: warning: Port 4 (remote_wd) of photo_av_metadata_a expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411: warning: Port 5 (remote_ra) of photo_av_metadata_a expects 1 bits, got 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411: warning: Port 6 (remote_rd) of photo_av_metadata_a expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411: warning: Port 10 (edge_target) of photo_av_metadata_a expects 1 bits, got 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411: warning: Port 11 (play_position) of photo_av_metadata_a expects 1 bits, got 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411: warning: Port 16 (word_index) of photo_av_metadata_a expects 1 bits, got 9.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411:        : Pruning 8 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411: warning: Port 17 (word_data) of photo_av_metadata_a expects 1 bits, got 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411: warning: Port 19 (read_band) of photo_av_metadata_a expects 1 bits, got 5.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411:        : Pruning 4 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411: warning: Port 20 (read_index) of photo_av_metadata_a expects 1 bits, got 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411: warning: Port 21 (height) of photo_av_metadata_a expects 1 bits, got 7.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411:        : Pruning 6 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411: warning: Port 22 (peak) of photo_av_metadata_a expects 1 bits, got 7.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411:        : Pruning 6 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411: warning: Port 23 (extrema) of photo_av_metadata_a expects 1 bits, got 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:411:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 5 (x_i) of saixian_osd_overlay expects 1 bits, got 10.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 9 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 6 (y_i) of saixian_osd_overlay expects 1 bits, got 9.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 8 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 7 (rgb_in_i) of saixian_osd_overlay expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 9 (loading_phase) of saixian_osd_overlay expects 1 bits, got 3.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 2 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 10 (state) of saixian_osd_overlay expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 11 (project_id) of saixian_osd_overlay expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 12 (minutes) of saixian_osd_overlay expects 1 bits, got 7.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 6 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 13 (seconds) of saixian_osd_overlay expects 1 bits, got 6.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 5 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 14 (countdown_value) of saixian_osd_overlay expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 15 (ticker_x) of saixian_osd_overlay expects 1 bits, got 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 16 (ticker_text_length) of saixian_osd_overlay expects 1 bits, got 5.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 4 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 17 (title_text_length) of saixian_osd_overlay expects 1 bits, got 5.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 4 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 18 (font_addr) of saixian_osd_overlay expects 1 bits, got 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 19 (font_bits) of saixian_osd_overlay expects 1 bits, got 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 21 (source_width_bcd) of saixian_osd_overlay expects 1 bits, got 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 22 (source_height_bcd) of saixian_osd_overlay expects 1 bits, got 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 23 (error_code) of saixian_osd_overlay expects 1 bits, got 3.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 2 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 24 (visual_height) of saixian_osd_overlay expects 1 bits, got 7.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 6 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 25 (visual_peak) of saixian_osd_overlay expects 1 bits, got 7.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 6 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 26 (visual_wave) of saixian_osd_overlay expects 1 bits, got 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 31 (setting_item) of saixian_osd_overlay expects 1 bits, got 3.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 2 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 32 (volume_setting) of saixian_osd_overlay expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 33 (brightness_setting) of saixian_osd_overlay expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 34 (contrast_setting) of saixian_osd_overlay expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 35 (sharpness_setting) of saixian_osd_overlay expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 36 (saturation_setting) of saixian_osd_overlay expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 39 (enhancement_setting) of saixian_osd_overlay expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418: warning: Port 40 (rgb_out) of saixian_osd_overlay expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:418:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443: warning: Port 1 (relief_descriptor) of photo_award_render expects 1 bits, got 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443: warning: Port 3 (relief_sent_descriptor) of photo_award_render expects 1 bits, got 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443: warning: Port 9 (relief_word_index) of photo_award_render expects 1 bits, got 9.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443:        : Pruning 8 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443: warning: Port 10 (relief_word) of photo_award_render expects 1 bits, got 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443: warning: Port 12 (wall_wa) of photo_award_render expects 1 bits, got 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443: warning: Port 13 (wall_wd) of photo_award_render expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443: warning: Port 14 (wall_ra) of photo_award_render expects 1 bits, got 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443: warning: Port 15 (wall_rgb) of photo_award_render expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443: warning: Port 18 (cursor_x) of photo_award_render expects 1 bits, got 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443: warning: Port 19 (cursor_y) of photo_award_render expects 1 bits, got 10.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443:        : Pruning 9 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443: warning: Port 22 (light_base) of photo_award_render expects 1 bits, got 21.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443:        : Pruning 20 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443: warning: Port 25 (light_address) of photo_award_render expects 1 bits, got 21.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443:        : Pruning 20 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443: warning: Port 27 (light_data) of photo_award_render expects 1 bits, got 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443: warning: Port 35 (x) of photo_award_render expects 1 bits, got 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443: warning: Port 36 (y) of photo_award_render expects 1 bits, got 10.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443:        : Pruning 9 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443: warning: Port 37 (tagged_rgb) of photo_award_render expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443: warning: Port 38 (rgb) of photo_award_render expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443: warning: Port 39 (menu_rgb) of photo_award_render expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443: warning: Port 40 (light_error) of photo_award_render expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443: warning: Port 41 (light_frame) of photo_award_render expects 1 bits, got 7.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:443:        : Pruning 6 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:477: warning: Port 4 (x) of photo_boot_screen expects 1 bits, got 12.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:477:        : Pruning 11 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:477: warning: Port 5 (y) of photo_boot_screen expects 1 bits, got 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:477:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:477: warning: Port 12 (rgb) of photo_boot_screen expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:477:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:484: warning: Port 8 (cache_slot) of photo_thumbnail_overlay expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:484:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:484: warning: Port 9 (identity) of photo_thumbnail_overlay expects 1 bits, got 6.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:484:        : Pruning 5 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:484: warning: Port 11 (x) of photo_thumbnail_overlay expects 1 bits, got 12.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:484:        : Pruning 11 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:484: warning: Port 12 (y) of photo_thumbnail_overlay expects 1 bits, got 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:484:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:484: warning: Port 14 (slot) of photo_thumbnail_overlay expects 1 bits, got 2.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:484:        : Pruning 1 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:484: warning: Port 17 (data) of photo_thumbnail_overlay expects 1 bits, got 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:484:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:484: warning: Port 18 (address) of photo_thumbnail_overlay expects 1 bits, got 13.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:484:        : Pruning 12 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:484: warning: Port 20 (rgb_in) of photo_thumbnail_overlay expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:484:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:484: warning: Port 21 (rgb_out) of photo_thumbnail_overlay expects 1 bits, got 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:484:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:495: warning: Port 4 (I_tmds_channel_0) of hdmi_phy_wrapper expects 1 bits, got 10.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:495:        : Pruning 9 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:495: warning: Port 5 (I_tmds_channel_1) of hdmi_phy_wrapper expects 1 bits, got 10.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:495:        : Pruning 9 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:495: warning: Port 6 (I_tmds_channel_2) of hdmi_phy_wrapper expects 1 bits, got 10.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:495:        : Pruning 9 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:495: warning: Port 7 (I_tmds_channel_clk) of hdmi_phy_wrapper expects 1 bits, got 10.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:495:        : Pruning 9 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:499: warning: Port 3 (x) of hdmi_scan_monitor expects 1 bits, got 12.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:499:        : Pruning 11 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:499: warning: Port 4 (y) of hdmi_scan_monitor expects 1 bits, got 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:499:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:531: warning: Port 3 (status) of photo_status expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:531:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:531: warning: Port 4 (error) of photo_status expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:531:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:531: warning: Port 5 (state) of photo_status expects 1 bits, got 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:531:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:531: warning: Port 6 (image) of photo_status expects 1 bits, got 3.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:531:        : Pruning 2 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:531: warning: Port 7 (count) of photo_status expects 1 bits, got 3.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:531:        : Pruning 2 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:531: warning: Port 8 (diagnostic_page) of photo_status expects 1 bits, got 3.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:531:        : Pruning 2 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:531: warning: Port 9 (diagnostic_crc) of photo_status expects 1 bits, got 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:531:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:531: warning: Port 10 (seg_sel) of photo_status expects 1 bits, got 6.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:531:        : Pruning 5 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:531: warning: Port 11 (seg_data) of photo_status expects 1 bits, got 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:531:        : Pruning 7 high bits of the expression.
+PASS actual top wiring: sync menu on/off/default/reset, one switch per accepted transition, wrap, single/zero tracks, request/failure isolation, boot/result/award/loading/event/music gates, manual music-next

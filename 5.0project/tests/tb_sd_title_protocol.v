@@ -32,7 +32,7 @@ always @(posedge clk)if(a.got && a.kind==33 && a.incoming[119:112]==0)first_retr
 initial begin
  $readmemh("title_records.hex",config_records);
  repeat(5)@(negedge clk);rst=0;
- a.state_flags=4;a.session=1;a.image_count=1;b.state_flags=11'd1<<2;b.session=1;b.announced_count=1;
+ a.state_flags=4;a.session=1;a.image_count=1;b.state=2;b.session=1;b.announced_count=1;
  force a.plan_needed=0;
  repeat(10000)@(negedge clk);
  if(writes || published_length)$fatal(1,"missing config did not preserve fallback");

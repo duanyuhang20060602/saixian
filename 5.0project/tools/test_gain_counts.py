@@ -4,7 +4,7 @@ import argparse,hashlib,json,os,subprocess,time
 ROOT=Path(__file__).resolve().parents[1]
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
- ap=argparse.ArgumentParser();ap.add_argument('--out',type=Path,required=True);a=ap.parse_args();out=a.out.resolve();out.mkdir(parents=True,exist_ok=True)
+ ap=argparse.ArgumentParser();ap.add_argument('--out',type=Path,required=True);ap.add_argument('--iverilog',type=Path,required=True);a=ap.parse_args();iv=a.iverilog.resolve();out=a.out.resolve();out.mkdir(parents=True,exist_ok=True)
  files=[ROOT/'common/photo_sd_cache.v',ROOT/'tests/reference/gain_counts/photo_sd_cache_before.v',Path(__file__)]
  s=files[0].read_text();old=files[1].read_text();body=s[s.index('reg [14:0] stat_count3;'):s.index('reg [20:0] words;')];ref=old[old.index('wire [1:0] loaded_gain='):old.index('reg [20:0] words;')].replace('loaded_gain','original_gain')
  wrapper=out/'production_gain.v';wrapper.write_text('module production_gain(input clk,rst,loading,scaler_pixel,load_start,input [10:0] stat_x,input [9:0] stat_y,input [12:0] stat_count,input [20:0] stat_sum,output [1:0] result,reference);\nwire [20:0] count_ext={8\'d0,stat_count};\n'+body+ref+'assign result=loaded_gain;assign reference=original_gain;endmodule\n')
@@ -39,9 +39,9 @@ initial begin
 end
 endmodule
 ''')
- h={p.relative_to(ROOT).as_posix() if p.is_relative_to(ROOT) else str(p):sha(p) for p in files+[wrapper,tb]};start=time.monotonic();exe=out/'gain.vvp';env=os.environ.copy();temp=out/'temp';temp.mkdir(exist_ok=True);env.update(TEMP=str(temp),TMP=str(temp),TMPDIR=str(temp))
- c=subprocess.run(['C:/iverilog/bin/iverilog.exe','-g2012','-s','tb','-o',str(exe),str(wrapper),str(tb)],cwd=out,env=env,capture_output=True,text=True);log=c.stdout+c.stderr
- if not c.returncode:c=subprocess.run(['C:/iverilog/bin/vvp.exe',str(exe)],cwd=out,env=env,capture_output=True,text=True,timeout=120);log+=c.stdout+c.stderr
+ h={p.relative_to(ROOT).as_posix() if p.is_relative_to(ROOT) else str(p):sha(p) for p in files+[wrapper,tb]};start=time.monotonic();exe=out/'gain.vvp';env=os.environ.copy();env['PATH']=str(iv.parent)+os.pathsep+env['PATH'];temp=out/'temp';temp.mkdir(exist_ok=True);env.update(TEMP=str(temp),TMP=str(temp),TMPDIR=str(temp))
+ c=subprocess.run([str(iv),'-g2012','-s','tb','-o',str(exe),str(wrapper),str(tb)],cwd=out,env=env,capture_output=True,text=True);log=c.stdout+c.stderr
+ if not c.returncode:c=subprocess.run([str(iv.with_name('vvp.exe')),str(exe)],cwd=out,env=env,capture_output=True,text=True,timeout=120);log+=c.stdout+c.stderr
  lp=out/'gain_counts.log';lp.write_text(log);passed=c.returncode==0 and 'PASS ' in log and 'FATAL' not in log and all(sha(ROOT/k if not Path(k).is_absolute() else Path(k))==v for k,v in h.items())
  (out/'results.json').write_text(json.dumps([dict(test='gain_counts',passed=passed,inputs_sha256=h,log=str(lp),log_sha256=sha(lp),seconds=round(time.monotonic()-start,2))],indent=2));print(log,flush=True)
  if not passed:raise SystemExit(1)

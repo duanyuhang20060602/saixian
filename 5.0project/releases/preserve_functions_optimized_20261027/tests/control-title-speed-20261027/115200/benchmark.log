@@ -1,0 +1,12 @@
+WARNING: C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\validation\control-title-speed-20261027\115200\benchmark.v:37: $readmemh(title_records.hex): Not enough words in the file for the requested range [0:4095].
+progress: 32 font words
+progress: 64 font words
+progress: 96 font words
+progress: 128 font words
+progress: 160 font words
+progress: 192 font words
+progress: 224 font words
+progress: 256 font words
+TITLE_CYCLES 9835599
+PASS complete 256-word transfer, both native font banks and atomic publication
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\validation\control-title-speed-20261027\115200\benchmark.v:59: $finish called at 98466390000 (1ps)

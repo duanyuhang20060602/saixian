@@ -1,0 +1,60 @@
+{
+  "a": {
+    "before": {
+      "lut": 18428,
+      "reg": 12873,
+      "bram": 63,
+      "bram32k": 15,
+      "dsp": 28
+    },
+    "after": {
+      "lut": 18382,
+      "reg": 13059,
+      "bram": 62,
+      "bram32k": 15,
+      "dsp": 28
+    },
+    "delta": {
+      "lut": -46,
+      "reg": 186,
+      "bram": -1,
+      "bram32k": 0,
+      "dsp": 0
+    },
+    "timing_ns": {
+      "SWNS": 0.316,
+      "STNS": 0.0,
+      "HWNS": 0.021,
+      "HTNS": 0.0
+    }
+  },
+  "b": {
+    "before": {
+      "lut": 16336,
+      "reg": 11077,
+      "bram": 57,
+      "bram32k": 16,
+      "dsp": 16
+    },
+    "after": {
+      "lut": 16892,
+      "reg": 11526,
+      "bram": 58,
+      "bram32k": 16,
+      "dsp": 16
+    },
+    "delta": {
+      "lut": 556,
+      "reg": 449,
+      "bram": 1,
+      "bram32k": 0,
+      "dsp": 0
+    },
+    "timing_ns": {
+      "SWNS": 0.061,
+      "STNS": 0.0,
+      "HWNS": 0.027,
+      "HTNS": 0.0
+    }
+  }
+}

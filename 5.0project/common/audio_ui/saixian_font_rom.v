@@ -1,7 +1,7 @@
 // 128 glyphs x 16 rows x 16 bits, stored in one EG4 32K block RAM.
-module saixian_font_rom #(parameter TITLE_SD=0)(
-    input word_valid,input [6:0] word_index,input [31:0] word_data,input [4:0] word_length,
-    input rst,frame_tick,output reg [4:0] title_length,
+module saixian_font_rom #(parameter TITLE_SD=0,INDEPENDENT_TEXT=0)(
+    input word_valid,input [6+INDEPENDENT_TEXT:0] word_index,input [31:0] word_data,input [4:0] word_length,
+    input rst,frame_tick,output reg [4:0] title_length,output reg [4:0] ticker_length,
     input  wire        clk,
     input  wire [6:0]  glyph_id,
     input  wire [3:0]  row,
@@ -9,23 +9,32 @@ module saixian_font_rom #(parameter TITLE_SD=0)(
 );
 
 wire [10:0] font_addr = {glyph_id, row};
-reg pending,complete,invalid;reg [6:0] low_index;reg [15:0] low_bits;
-reg [4:0] candidate_length;
+reg pending,invalid;reg [1:0] complete;reg [6+INDEPENDENT_TEXT:0] low_index;reg [15:0] low_bits;
+reg [4:0] candidate_length,candidate_ticker_length;
+wire word_bank=INDEPENDENT_TEXT && word_index[6+INDEPENDENT_TEXT];
+wire low_bank=INDEPENDENT_TEXT && low_index[6+INDEPENDENT_TEXT];
 wire font_we=TITLE_SD && (word_valid || pending);
 // Glyphs 96..111 form an aligned 256-row bank; no address adders.
-wire [10:0] font_wa={3'b110,(pending ? low_index:word_index),pending};
+wire [7:0] extended_index=pending ? low_index:word_index;
+wire [10:0] font_wa=INDEPENDENT_TEXT ? {2'b11,extended_index,pending}:{3'b110,(pending ? low_index[6:0]:word_index[6:0]),pending};
 wire [15:0] font_wd=pending ? low_bits:word_data[31:16];
 always @(posedge clk or posedge rst)begin
- if(rst)begin pending<=0;complete<=0;invalid<=0;low_index<=0;low_bits<=0;candidate_length<=0;title_length<=0;end
+ if(rst)begin pending<=0;complete<=0;invalid<=0;low_index<=0;low_bits<=0;candidate_length<=0;candidate_ticker_length<=0;title_length<=0;ticker_length<=0;end
  else if(TITLE_SD)begin
   pending<=word_valid;
   if(word_valid)begin
    low_index<=word_index;low_bits<=word_data[15:0];
-   if(word_index==0)begin title_length<=0;candidate_length<=word_length;invalid<=0;complete<=0;end
-   else if(word_length!=candidate_length)invalid<=1;
+   if(word_index[6:0]==0)begin
+    if(word_bank)begin ticker_length<=0;candidate_ticker_length<=word_length;end
+    else begin title_length<=0;candidate_length<=word_length;end
+    invalid<=word_length==0 || word_length>16;complete[word_bank]<=0;
+   end else if(word_length!=(word_bank ? candidate_ticker_length:candidate_length))invalid<=1;
   end
-  if(pending && low_index==127 && !invalid)complete<=1;
-  if(frame_tick && complete && !(word_valid && word_index==0))title_length<=candidate_length;
+  if(pending && low_index[6:0]==127 && !invalid)complete[low_bank]<=1;
+  if(frame_tick)begin
+   if(complete[0] && !(word_valid && word_index==0))title_length<=candidate_length;
+   if(complete[1] && !(word_valid && word_index==128))ticker_length<=candidate_ticker_length;
+  end
  end
 end
 

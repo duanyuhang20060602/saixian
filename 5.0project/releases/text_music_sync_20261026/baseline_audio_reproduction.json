@@ -1,0 +1,12 @@
+{
+  "baseline_failure_reproduced": true,
+  "inputs_identical_to_original_and_current": true,
+  "inputs_sha256": {
+    "tests/tb_audio_transport_repair.v": "434ec0c3cebe69cce255cbcfe7f6d219a3aa1b1718740ff14a2bd02da08062ee",
+    "common/photo_audio_link.v": "5bdf4798ae548bfa3ecc6143326bab490d4fcd423472daf052539da7b7c5d4fc",
+    "common/photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
+    "common/audio_ui/saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+    "common/audio_ui/photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1"
+  },
+  "log_sha256": "11e06e656d22e06f73a1e743468b306f1bcdd965ffcd9ad8f63d07ce67f6110e"
+}

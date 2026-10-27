@@ -2,9 +2,10 @@
 // A keeps current, next, next+1 and next+2 in four independent SDRAM slots.
 // Link transactions finish when stored; display commits run independently.
 module photo_cached_control_a #(
- parameter CLK_HZ=75000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0,AWARD_LIGHTS=0,EARLY_THUMBNAIL=0,RELIEF_CONTROL=0,TITLE_SD=0
+ parameter CLK_HZ=75000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0,AWARD_LIGHTS=0,EARLY_THUMBNAIL=0,RELIEF_CONTROL=0,TITLE_SD=0,INDEPENDENT_TEXT=0,BOOT_STATUS=0,CONTROL_BAUD=115200
 )(
- output title_word_valid,output [6:0] title_word_index,output [31:0] title_word_data,output [4:0] title_word_length,
+ output reg font_available,font_transfer_complete,
+ output title_word_valid,output [6+INDEPENDENT_TEXT:0] title_word_index,output [31:0] title_word_data,output [4:0] title_word_length,
  output receive_relief,output receive_award,output receive_fluid,
  input settings_mode,input [18:0] settings_state,output settings_updating,
  input award_toggle,relief_toggle,output reg award_available,award_scan_complete,relief_available,
@@ -85,8 +86,8 @@ end endfunction
 wire [3:0] state=state_number(state_flags);
 reg send;reg [159:0] message;
 wire tx_busy,got,bad;wire [159:0] incoming;
-reg [7:0] title_expected;reg title_ack_pending;reg [6:0] title_ack_index;
-photo_uart #(.CLK_HZ(CLK_HZ),.PULSE_PAYLOAD(1)) port(.clk(clk),.rst(rst),.rx(uart_rx),.tx(uart_tx),
+reg [7+INDEPENDENT_TEXT:0] title_expected;reg title_ack_pending;reg [6+INDEPENDENT_TEXT:0] title_ack_index;
+photo_uart #(.BAUD(CONTROL_BAUD),.CLK_HZ(CLK_HZ),.PULSE_PAYLOAD(1)) port(.clk(clk),.rst(rst),.rx(uart_rx),.tx(uart_tx),
  .send(send),.message(message),.busy(tx_busy),.received(got),.received_message(incoming),.bad_packet(bad));
 wire [7:0] kind=incoming[159:152];
 // begin REGISTERED_PACKET_KIND
@@ -159,9 +160,9 @@ reg session_changed;
 wire session_matches=session_match_q && !session_changed;
 wire matching=session_matches && transaction_match_q;
 wire title_packet=TITLE_SD && got && kind==33 && session_matches &&
- incoming[119]==0 && incoming[111:104]!=0 && incoming[111:104]<=16;
-assign title_word_valid=title_packet && incoming[119:112]==title_expected;
-assign title_word_index=incoming[118:112];
+ (INDEPENDENT_TEXT || incoming[119]==0) && incoming[111:104]!=0 && incoming[111:104]<=16;
+assign title_word_valid=title_packet && incoming[119:112]==title_expected && title_expected<(INDEPENDENT_TEXT ? 256:128);
+assign title_word_index=incoming[112+:7+INDEPENDENT_TEXT];
 assign title_word_data=incoming[103:72];
 assign title_word_length=incoming[108:104];
 
@@ -246,7 +247,14 @@ wire [11:0] cache_ids={cache_id[3],cache_id[2],cache_id[1],cache_id[0]};
 wire [2:0] nav_hit=lookup(nav_target,cache_valid,cache_ids);
 wire [2:0] center=display_pending ? display_target:
                   (nav_pending && nav_hit[2] ? nav_target:current_image);
-wire [2:0] window_next=adjacent(center,image_count,1'b1);
+// Compute each successor before choosing the current navigation context.
+// This avoids cache lookup -> center mux -> wrap arithmetic in one path.
+wire [2:0] next_display=adjacent(display_target,image_count,1'b1);
+wire [2:0] next_pending=adjacent(nav_target,image_count,1'b1);
+wire [2:0] next_current=adjacent(current_image,image_count,1'b1);
+wire [2:0] next_return=adjacent(return_photo,image_count,1'b1);
+wire [2:0] window_next=display_pending ? next_display:
+ (nav_pending && nav_hit[2] ? next_pending:next_current);
 wire [2:0] window_next2=forward_by(center,image_count,2'd2);
 wire [2:0] window_next3=forward_by(center,image_count,2'd3);
 reg [2:0] window_center_q,window_next_q,window_next2_q,window_next3_q;
@@ -306,7 +314,7 @@ always @(posedge clk or posedge rst)begin
 end
 always @(posedge clk or posedge rst)begin
  if(rst)begin
-  title_expected<=0;title_ack_pending<=0;title_ack_index<=0;
+  font_available<=0;font_transfer_complete<=0;title_expected<=0;title_ack_pending<=0;title_ack_index<=0;
   session_changed<=0;timing_begin<=0;timing_present<=0;timing_commit<=0;timing_pending<=0;timing_display<=0;
   award_available<=0;relief_available<=0;selected_award<=6;award_scan_complete<=0;award_notice<=0;last_transfer_error<=0;award_selected<=0;award_wait<=0;return_photo<=0;
   count_reply<=0;applied_settings<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};sent_settings<=0;refresh_pending<=0;
@@ -322,12 +330,13 @@ always @(posedge clk or posedge rst)begin
   session_changed<=0;uptime<=uptime+1'b1;timer_reset<=0;send<=0;
   if(title_packet && (incoming[119:112]==title_expected ||
       (title_expected!=0 && incoming[119:112]==title_expected-1'b1)))begin
-   title_ack_pending<=1;title_ack_index<=incoming[118:112];
+   title_ack_pending<=1;title_ack_index<=incoming[112+:7+INDEPENDENT_TEXT];
    if(incoming[119:112]==title_expected)title_expected<=title_expected+1'b1;
   end
   timing_begin<=0;timing_present<=0;timing_commit<=0;
-  if(got && kind_match_q[18] && session_matches && incoming[18:16]>=image_count && incoming[18:16]<=6 && (incoming[18:16]>0 || (AWARD_CONTROL && (incoming[23] || (RELIEF_CONTROL && incoming[21])))))begin
+  if(got && kind_match_q[18] && session_matches && incoming[18:16]>=image_count && incoming[18:16]<=6 && (incoming[18:16]>0 || (AWARD_CONTROL && (incoming[23] || (RELIEF_CONTROL && incoming[21]))) || (BOOT_STATUS && incoming[22])))begin
    image_count<=incoming[18:16];count_reply<=1;
+   if(BOOT_STATUS)begin font_available<=incoming[20];font_transfer_complete<=incoming[19];end
    if(AWARD_CONTROL)begin award_available<=incoming[23];relief_available<=RELIEF_CONTROL && incoming[21];award_scan_complete<=incoming[22];end
   end
   if(display_pending && commit_toggle!=commit_seen)begin
@@ -353,18 +362,19 @@ always @(posedge clk or posedge rst)begin
     title_expected<=0;title_ack_pending<=0;message<=packet(1,session,0,0,0,FRAME_BYTES,0,0);send<=1;state_flags<=(16'd1<<HELLO_WAIT);timer_reset<=1;
    end
    state_flags[HELLO_WAIT]:begin
-    if(got && kind_match_q[2] && session_matches && incoming[18:16]<=6 && (incoming[18:16]>0 || (AWARD_CONTROL && (incoming[23] || (RELIEF_CONTROL && incoming[21])))))begin
+    if(got && kind_match_q[2] && session_matches && incoming[18:16]<=6 && (incoming[18:16]>0 || (AWARD_CONTROL && (incoming[23] || (RELIEF_CONTROL && incoming[21]))) || (BOOT_STATUS && incoming[22])))begin
      if(SETTINGS_LINK)begin applied_settings<=~settings_state;applied_context<=~live_context;end
-     image_count<=incoming[18:16];nav_target<=incoming[18:16]==0 ? (incoming[23] ? 3'd6:3'd7):3'd0;selected_award<=incoming[23] ? 3'd6:3'd7;nav_right<=1;nav_pending<=1;
-     if(AWARD_CONTROL)begin award_available<=incoming[23];relief_available<=RELIEF_CONTROL && incoming[21];award_scan_complete<=incoming[22];award_selected<=incoming[18:16]==0;end
+     image_count<=incoming[18:16];nav_target<=incoming[18:16]==0 ? (incoming[23] ? 3'd6:3'd7):3'd0;selected_award<=incoming[23] ? 3'd6:3'd7;nav_right<=1;nav_pending<=incoming[18:16]!=0 || incoming[23] || (RELIEF_CONTROL && incoming[21]);
+     if(BOOT_STATUS)begin font_available<=incoming[20];font_transfer_complete<=incoming[19];end
+   if(AWARD_CONTROL)begin award_available<=incoming[23];relief_available<=RELIEF_CONTROL && incoming[21];award_scan_complete<=incoming[22];award_selected<=incoming[18:16]==0;end
      state_flags<=(16'd1<<IDLE);timer_reset<=1;error<=0;
     end else if(timeout1)begin state_flags<=(16'd1<<HELLO_SEND);timer_reset<=1;end
    end
    state_flags[IDLE]:if(!timer_reset)begin
     if(TITLE_SD && title_ack_pending && !tx_busy && !send)begin
-    message<={8'd34,session,{1'b0,title_ack_index},112'd0};send<=1;title_ack_pending<=0;
+    message<={8'd34,session,{{(1-INDEPENDENT_TEXT){1'b0}},title_ack_index},112'd0};send<=1;title_ack_pending<=0;
    end else if(count_reply && !tx_busy && !send)begin
-    message<=packet(19,session,0,0,0,FRAME_BYTES,0,(AWARD_CONTROL ? {award_available,award_scan_complete,relief_available,2'd0,image_count}:{5'd0,image_count}));send<=1;count_reply<=0;
+    message<=packet(19,session,0,0,0,FRAME_BYTES,0,(AWARD_CONTROL ? {award_available,award_scan_complete,relief_available,font_available,font_transfer_complete,image_count}:{5'd0,image_count}));send<=1;count_reply<=0;
    end else if(idle_context_dirty_q)begin
     if(!tx_busy && !send)begin
      sent_context<=live_context;
@@ -493,7 +503,7 @@ always @(posedge clk or posedge rst)begin
   end
   if(next && image_count!=0)begin
    timing_begin<=1;timing_pending<=1;timing_display<=0;
-   nav_target<=adjacent(AWARD_CONTROL && (center>=6 || award_selected) ? return_photo:center,image_count,1'b1);
+   nav_target<=AWARD_CONTROL && (center>=6 || award_selected) ? next_return:window_next;
    nav_right<=1'b1;nav_pending<=1;award_selected<=0;award_wait<=0;award_notice<=0;
   end
   if(timing_cancel)begin timing_pending<=0;timing_display<=0;end

@@ -18,7 +18,7 @@ localparam IDLE=0,F_WRITE=1,F_READ=2,F_GET=3,F_WAIT_L=4,F_SET_R=5,
     MAC_SET=12,MAC_WAIT=13,MAC_DONE=14,
     C_REF0=15,C_REF1=16,C_REF2=17,C_TGT0=18,C_TGT1=19,C_TGT2=20,
     I_COEFF=21,I_WAIT0=22,I_STEP0=23,I_WAIT1=24,I_STEP1=25,I_WAIT2=26,I_DONE=27,
-    C_ABS=28,C_SUM=29,C_SCORE=30,I_SELECT=31,I_PART=32,MAC_CLIP=33,MAC_SELECT=34;
+    C_ABS=28,C_SUM=29,C_SCORE=30,I_SELECT=31,I_PART=32,MAC_CLIP=33,MAC_SELECT=34,C_COMPARE=35;
 reg [5:0] state;
 reg [5:0] fir_head,fir_anchor,tap;
 reg [6:0] fir_count;
@@ -89,6 +89,7 @@ wire mute_a=pi>=1280, mute_b=pi>=256 && pi<1024;
 reg signed [16:0] dl,dr;
 reg [17:0] distance_reg;
 reg [23:0] score_total;
+reg score_better;
 wire [17:0] distance=(dl<0 ? -dl : dl)+(dr<0 ? -dr : dr);
 wire [11:0] base_a=write_index-12'd128-{1'b0,phase[26:16]};
 wire [11:0] base_b=write_index-12'd128-{1'b0,phase_b[26:16]};
@@ -134,7 +135,7 @@ wire signed[17:0] mac_gain=mac_heads ? $signed({1'b0,head_weight}):
                                       mac_blend ? $signed({1'b0,wet_gain}):$signed({1'b0,startup_gain,8'd0});
 wire signed [38:0] mac_value=$signed(mac_base)+((product+39'sd32768)>>>16);
 // Separate the exact wide rounded sum from saturation and destination muxes.
-// Six extra clocks per 48kHz stereo frame fit the original sample budget.
+// Twelve extra clocks per 48kHz stereo frame fit the original sample budget.
 reg signed [38:0] mac_sum;
 function signed [17:0] difference;
     input signed [15:0] a,b;
@@ -479,7 +480,7 @@ always @(posedge clk or posedge rst) begin
         prev_mute_a<=0;prev_mute_b<=0;candidate<=0;corr_tap<=0;
         anchor_ref<=0;anchor_target<=0;corr_score<=0;best_score<=24'hffffff;
         ref_l<=0;ref_r<=0;interp_channel<=0;cubic_c1<=0;cubic_c2<=0;cubic_y0<=0;
-        dl<=0;dr<=0;distance_reg<=0;score_total<=0;
+        dl<=0;dr<=0;distance_reg<=0;score_total<=0;score_better<=0;
 
         mul_a<=0;mul_b<=0;product_l<=0;input_l<=0;input_r<=0;
         center_l<=0;center_r<=0;filtered_l<=0;filtered_r<=0;read_slot<=0;operation_flags<=0;
@@ -493,7 +494,7 @@ always @(posedge clk or posedge rst) begin
         prev_mute_a<=0;prev_mute_b<=0;candidate<=0;corr_tap<=0;
         anchor_ref<=0;anchor_target<=0;corr_score<=0;best_score<=24'hffffff;
         ref_l<=0;ref_r<=0;interp_channel<=0;cubic_c1<=0;cubic_c2<=0;cubic_y0<=0;
-        dl<=0;dr<=0;distance_reg<=0;score_total<=0;
+        dl<=0;dr<=0;distance_reg<=0;score_total<=0;score_better<=0;
 
     end else begin
         out_valid<=0;
@@ -627,13 +628,20 @@ always @(posedge clk or posedge rst) begin
                 state<=C_ABS;
             end
             C_ABS:begin distance_reg<=distance;state<=C_SUM;end
-            C_SUM:begin score_total<=corr_score+distance_reg;state<=C_SCORE;end
+            C_SUM:begin
+                score_total<=corr_score+distance_reg;
+                state<=corr_tap==15 ? C_COMPARE:C_SCORE;
+            end
+            // Only the final SAD tap selects a candidate. Register that
+            // exact comparison before the offset/address destination muxes.
+            // One background clock per candidate fits the 48 kHz budget.
+            C_COMPARE:begin score_better<=score_total<best_score;state<=C_SCORE;end
             C_SCORE:begin
                 if(corr_tap==15) begin
-                    if(score_total<best_score) begin best_score<=score_total;best_offset<=candidate_offset;end
+                    if(score_better) begin best_score<=score_total;best_offset<=candidate_offset;end
                     if(candidate==128) begin
-                        if(corr_head && mute_b) offset_b<=score_total<best_score ? candidate_offset : best_offset;
-                        if(!corr_head && mute_a) offset_a<=score_total<best_score ? candidate_offset : best_offset;
+                        if(corr_head && mute_b) offset_b<=score_better ? candidate_offset : best_offset;
+                        if(!corr_head && mute_a) offset_a<=score_better ? candidate_offset : best_offset;
                         corr_busy<=0;
                     end else candidate<=candidate+1'b1;
                     state<=IDLE;
@@ -831,3 +839,4 @@ EG_LOGIC_BRAM #(.DATA_WIDTH_A(16),.ADDR_WIDTH_A(9),.DATA_DEPTH_A(512),
  .clkb(clk),.rstb(1'b0),.ceb(1'b0),.web(1'b0),.oceb(1'b0),.beb(1'b0),.addrb(9'd0),.dib(16'd0),.dob());
 `endif
 endmodule
+

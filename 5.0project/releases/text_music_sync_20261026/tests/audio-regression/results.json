@@ -1,0 +1,42 @@
+[
+  {
+    "test": "tb_v4_audio_rate",
+    "passed": true,
+    "seconds": 49.76,
+    "inputs_unchanged": true,
+    "inputs_sha256": {
+      "common/photo_audio_link.v": "5bdf4798ae548bfa3ecc6143326bab490d4fcd423472daf052539da7b7c5d4fc",
+      "tests/tb_v4_audio_rate.v": "f080ab87c10d3a59093966dabb592779a82f356f52776a71261ab3cb16dd4ee9"
+    },
+    "log_sha256": "1174b6e74f20079560cdc7fcfd254846016d63be90ff57057301e59fe1941b1a"
+  },
+  {
+    "test": "tb_boot_audio_sync",
+    "passed": true,
+    "seconds": 292.72,
+    "inputs_unchanged": true,
+    "inputs_sha256": {
+      "common/audio_ui/photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1",
+      "common/audio_ui/saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+      "common/photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
+      "common/photo_audio_link.v": "5bdf4798ae548bfa3ecc6143326bab490d4fcd423472daf052539da7b7c5d4fc",
+      "common/photo_boot_screen.v": "394fee66adf031a9dc2bc65233181765058e631e7456171500546fdeafa10d14",
+      "tests/tb_boot_audio_sync.v": "1bcac0451d9b86d1f16d95d34a92180e782a6c07f107633ba17ab615f4217c3d"
+    },
+    "log_sha256": "7f11ea497596eed3a4f3e85a88f747423ff211019751eedd2c1316fde4308e8a"
+  },
+  {
+    "test": "tb_audio_transport_repair",
+    "passed": false,
+    "seconds": 31.61,
+    "inputs_unchanged": true,
+    "inputs_sha256": {
+      "common/audio_ui/photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1",
+      "common/audio_ui/saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+      "common/photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
+      "common/photo_audio_link.v": "5bdf4798ae548bfa3ecc6143326bab490d4fcd423472daf052539da7b7c5d4fc",
+      "tests/tb_audio_transport_repair.v": "434ec0c3cebe69cce255cbcfe7f6d219a3aa1b1718740ff14a2bd02da08062ee"
+    },
+    "log_sha256": "f8267108baf5a1550572a5cf32faf4e96476a384815264ea8053f776eaa5a395"
+  }
+]

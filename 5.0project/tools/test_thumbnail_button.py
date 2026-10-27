@@ -4,7 +4,7 @@ import argparse,concurrent.futures,hashlib,json,os,re,subprocess,time
 ROOT=Path(__file__).resolve().parents[1]
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
- temp=Path("E:/Codex/Temp/saixian-thumbnail-merge-20261025");temp.mkdir(parents=True,exist_ok=True)
+ temp=Path(os.environ.get('SAIXIAN_TEMP_ROOT',ROOT.parent/'temp'));temp.mkdir(parents=True,exist_ok=True)
  os.environ.update(TEMP=str(temp),TMP=str(temp),TMPDIR=str(temp))
  ap=argparse.ArgumentParser();ap.add_argument('--out',type=Path,required=True);ap.add_argument('--iverilog',type=Path,required=True)
  ap.add_argument('--mode',choices=['unit','blanking','bandwidth','live_bandwidth','source_lock'],default='unit');ap.add_argument('--reuse',action='store_true');a=ap.parse_args();out=a.out.resolve();out.mkdir(parents=True,exist_ok=True)

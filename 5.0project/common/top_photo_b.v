@@ -4,7 +4,7 @@ module top_photo_b(
  output link_clk,output [15:0] link_data,output link_valid,link_sof,link_eof,
  input link_ready,audio_sclk,audio_cs,audio_mosi,output audio_miso,output transfer_done,transfer_error,
  output [5:0] seg_sel,output [7:0] seg_data);
-wire title_ready;wire [4:0] title_length;wire [6:0] title_address;wire [31:0] title_data;
+wire title_ready;wire [4:0] title_length;wire [7:0] title_address;wire [31:0] title_data;
 wire audio_packet_active,audio_request_valid,audio_switching,audio_fifo_read;
 wire audio_raw_read,audio_stream_reset;wire [7:0] requested_audio_epoch,active_audio_epoch;
 (* async_reg="true" *)reg award_meta,award_sync;
@@ -125,7 +125,7 @@ wire [15:0] media_source_width,media_source_height;
 reg finish_toggle;
 always @(posedge mem_clk or posedge rst_mem)
  if(rst_mem)finish_toggle<=0;else if(finish)finish_toggle<=~finish_toggle;
-photo_sd_cache #(.TITLE_SD(1),.FORWARD_ONLY(1),.DISPLAY_PIN(1),.EARLY_PREFETCH(1)) media(.title_ready(title_ready),.title_length(title_length),.title_address(title_address),.title_data(title_data),.audio_stream_reset(audio_stream_reset),.audio_packet_active(audio_packet_active),.audio_request_valid(audio_request_valid),.requested_audio_epoch(requested_audio_epoch),.requested_audio_track(requested_audio_track),
+photo_sd_cache #(.INDEPENDENT_TEXT(1),.TITLE_SD(1),.FORWARD_ONLY(1),.DISPLAY_PIN(1),.EARLY_PREFETCH(1)) media(.title_ready(title_ready),.title_length(title_length),.title_address(title_address),.title_data(title_data),.audio_stream_reset(audio_stream_reset),.audio_packet_active(audio_packet_active),.audio_request_valid(audio_request_valid),.requested_audio_epoch(requested_audio_epoch),.requested_audio_track(requested_audio_track),
  .active_audio_epoch(active_audio_epoch),.active_audio_track(active_audio_track),.audio_count(audio_count),.audio_switching(audio_switching),
  .audio_scan_state(audio_scan_state),.audio_fifo_used(audio_fifo_used),.audio_fifo_data(audio_fifo_data),.audio_fifo_read(audio_raw_read),.display_valid(display_pin_valid),.display_image(display_pin_image),.prefetch_pause(prefetch_pause),.clk(sd_clk),.rst(rst_sd),.request(request),.target(target),.release_slot(release_slot),.cancel(cancel),
  .relief_available(relief_available),.award_available(award_available),.award_scan_complete(award_scan_complete),.award_decode_error(award_decode_error),
@@ -181,7 +181,7 @@ photo_switch_timing #(.CLK_HZ(100000000),.PHASES(3)) timing_probe(.clk(sd_clk),.
 photo_switch_timing_display #(.CLK_HZ(100000000),.PAGES(4)) timing_display(.clk(sd_clk),.rst(rst_sd),.running(timing_running),
  .first_ms(timing_prepare_ms),.second_ms(timing_handshake_ms),.third_ms(timing_send_ms),.total_ms(timing_total_ms),.seg_sel(timing_seg_sel),.seg_data(timing_seg_data));
 photo_event_sync sd(.clk(sd_clk),.rst(rst_sd),.toggle(sent_toggle),.pulse(sent_sd));
-photo_control_b #(.TITLE_SD(1),.CHECK_FRAME_CRC(1),.SEND_SOURCE_SIZE(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.RELIEF_CONTROL(1)) ctrl(.hmi_session(hmi_session),.title_ready(title_ready),.title_length(title_length),.title_data(title_data),.title_address(title_address),.clk(sd_clk),.rst(rst_sd),.uart_rx(control_rx),.uart_tx(control_tx),
+photo_control_b #(.CONTROL_BAUD(230400),.BOOT_STATUS(1),.INDEPENDENT_TEXT(1),.TITLE_SD(1),.CHECK_FRAME_CRC(1),.SEND_SOURCE_SIZE(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.RELIEF_CONTROL(1)) ctrl(.hmi_session(hmi_session),.title_ready(title_ready),.title_length(title_length),.title_data(title_data),.title_address(title_address),.clk(sd_clk),.rst(rst_sd),.uart_rx(control_rx),.uart_tx(control_tx),
  .timing_begin(timing_begin),.timing_ready(timing_ready),.timing_send(timing_send),.timing_done(timing_done),.timing_cancel(timing_cancel),
  .display_valid(display_pin_valid),.display_image(display_pin_image),.prefetch_pause(prefetch_pause),
  .relief_available(relief_available && directory_ready),.award_available(award_available && directory_ready),.award_scan_complete(award_scan_complete),

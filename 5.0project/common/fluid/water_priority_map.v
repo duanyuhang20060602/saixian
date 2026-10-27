@@ -17,10 +17,11 @@
 `endif
 // One projected coordinate arrives every two clocks. All eleven effects share
 // one exact 17x17 multiplier: primary on the first slot, secondary on the next.
-module water_effect_map(input clk,rst,valid,enabled,right,input[3:0] effect,
+module water_effect_map #(parameter POINTER_CENTER=0)(input clk,rst,valid,enabled,right,input[3:0] effect,
  input[8:0] progress,input[9:0] ox,oy,wx,wy,
  output out_valid,output[9:0] old_x,old_y,new_x,out_x,out_y,
- output[8:0] alpha,output[4:0] shade,output[2:0] shine);
+ output[8:0] alpha,output[4:0] shade,output[2:0] shine,
+ input[10:0] center_x,input[9:0] center_y);
 wire bv,ev;wire[9:0] ba,by,bb,bx,bo,ea,ey,eb,ex,eo;
 wire[8:0] bq,eq;wire[4:0] bs,es;wire[2:0] bh,eh;
 wire extra_mode=effect==3||effect==4||effect==5||effect>=7;
@@ -48,23 +49,24 @@ end
 always @(posedge clk)if(!rst&&pending&&valid1)$fatal(1,"effect coordinate interval must be at least two clocks");
 `endif
 water_base_effect_map base(clk,rst,iv,ie,ir,fx[2:0],ip,ix,iy,iwx,iwy,bv,ba,by,bb,bx,bo,bq,bs,bh,primary_product,shared_t,shared_scale,shared_bend);
-water_extra_effect_map extra(clk,rst,valid,enabled,right,effect,progress,ox,oy,wx,wy,
- ev,ea,ey,eb,ex,eo,eq,es,eh,primary_product,shared_product,extra_a,extra_b,extra_c,extra_d,base_packet,shared_bend);
+water_extra_effect_map #(.POINTER_CENTER(POINTER_CENTER)) extra(clk,rst,valid,enabled,right,effect,progress,ox,oy,wx,wy,
+ ev,ea,ey,eb,ex,eo,eq,es,eh,primary_product,shared_product,extra_a,extra_b,extra_c,extra_d,base_packet,shared_bend,center_x,center_y);
 wire cv;wire[9:0] ca,cy,cb,cx,co;wire[8:0] cq;wire[4:0] cs;wire[2:0] ch;
-water_color_map color_map(clk,rst,valid&&enabled&&effect==6,progress,ox,oy,
- cv,ca,cy,cb,cx,co,cq,cs,ch);
+water_color_map #(.POINTER_CENTER(POINTER_CENTER)) color_map(clk,rst,valid&&enabled&&effect==6,progress,ox,oy,
+ cv,ca,cy,cb,cx,co,cq,cs,ch,center_x,center_y);
 // The frame snapshot keeps this selector constant until all pixels drain.
 assign {out_valid,old_x,old_y,new_x,out_x,out_y,alpha,shade,shine}=
  (enabled&&effect==6) ? {cv,ca,cy,cb,cx,co,cq,cs,ch}:
  selection[5] ? {ev,ea,ey,eb,ex,eo,eq,es,eh}:{bv,ba,by,bb,bx,bo,bq,bs,bh};
 endmodule
 
-module water_extra_effect_map(input clk,rst,valid,enabled,right,input[3:0] effect,
+module water_extra_effect_map #(parameter POINTER_CENTER=0)(input clk,rst,valid,enabled,right,input[3:0] effect,
  input[8:0] progress,input[9:0] ox,oy,wx,wy,
  output reg out_valid,output reg[9:0] old_x,old_y,new_x,out_x,out_y,
  output reg[8:0] alpha,output reg[4:0] shade,output reg[2:0] shine,
  input signed[33:0] product,second_product,output signed[16:0] multiply_a,multiply_b,multiply_c,multiply_d,
- output[73:0] base_packet,output signed[17:0] shared_bend);
+ output[73:0] base_packet,output signed[17:0] shared_bend,
+ input[10:0] center_x,input[9:0] center_y);
 reg signed[7:0] ribbon_shape[0:89];
 initial $readmemh({`FX11_ROM_ROOT,"water_strip.hex"},ribbon_shape);
 wire[10:0] px={ox,1'b0};wire[10:0] u=right ? 11'd1279-px:px;
@@ -163,8 +165,8 @@ assign {u_a,origin_a,x_a,y_a,wx_a,wy_a,local_t_a,scale_a,
  lx_a,tilt_a,ribbon_y_a,gc_a,v_a}=packet_a;
 assign px_a={x_a,1'b0};assign p_a=progress;assign env_a=envelope;
 assign fx_a=effect;assign e_a=enabled;assign r_a=right;
-wire signed[12:0] cx_a=$signed({2'd0,px_a})-13'sd640;
-wire signed[11:0] cy_a=$signed({2'd0,y_a})-12'sd360;
+wire signed[12:0] cx_a=$signed({2'd0,px_a})-$signed({2'd0,(POINTER_CENTER && effect==7 ? center_x:11'd640)});
+wire signed[11:0] cy_a=$signed({2'd0,y_a})-$signed({2'd0,(POINTER_CENTER && effect==7 ? center_y:10'd360)});
 wire[5:0] wave_index_a=y_a[5:0]+{y_a[8:6],3'd0};
 // Quantized sine has exact quarter-wave symmetry: only seventeen
 // distinct nonnegative magnitudes. Keep this small table in logic so the
@@ -300,7 +302,7 @@ reg signed[12:0] front,metric;
 reg signed[13:0] distance;
 reg signed[17:0] projection;
 reg signed[10:0] travel;
-reg signed[21:0] delta;
+reg signed[(POINTER_CENTER ? 23:21):0] delta;
 reg use_alpha;reg[8:0] bounded_alpha;reg[4:0] alpha_steps;
 always @*begin
  a=px0;b=px0;mix=p0;darkness=0;glint=0;use_alpha=0;bounded_alpha=0;alpha_steps=0;
@@ -334,7 +336,7 @@ always @*begin
    // Reflection is shared after the mode geometry.
   end
   7:begin // True circular distance squared; no square-root or frame buffer.
-   delta=(wave_product<<<3)+wave_product-product-second_product;
+   delta=POINTER_CENTER ? (wave_product<<<5)+(wave_product<<<2)-product-second_product:(wave_product<<<3)+wave_product-product-second_product;
    use_alpha=1;
    if((delta>-22'sd24576&&delta<22'sd24576))a=a+(delta>>>11);
    glint=(delta>-22'sd8192&&delta<22'sd8192) ? 7:(delta>-22'sd16384&&delta<22'sd16384) ? 2:0;
@@ -446,9 +448,10 @@ endmodule
 // noise, eased radial reveal, local refraction, envelope and chromatic amount.
 // Four smooth periodic noise projections share one dual-port RAM over two
 // clocks. No per-pixel interpolation multiplier or frame-sized effect storage.
-module water_color_map(input clk,rst,valid,input[8:0] progress,input[9:0] x,y,
+module water_color_map #(parameter POINTER_CENTER=0)(input clk,rst,valid,input[8:0] progress,input[9:0] x,y,
  output reg out_valid,output reg[9:0] old_x,old_y,new_x,out_x,out_y,
- output reg[8:0] alpha,output reg[4:0] shade,output reg[2:0] shine);
+ output reg[8:0] alpha,output reg[4:0] shade,output reg[2:0] shine,
+ input[10:0] center_x,input[9:0] center_y);
 wire[8:0] phase;
 water_color_phase eased_phase(progress,phase);
 reg pending;reg[9:0] next_a,next_b;
@@ -466,8 +469,10 @@ reg[3:0] token_write,token_read;wire[19:0] token;
 water_color_lutram #(20) token_queue(clk,valid&&!rst,token_write,{x,y},token_read,token);
 wire[9:0] token_x=token[19:10],token_y=token[9:0];
 wire[10:0] px={token_x,1'b0};
-wire[10:0] ax=px>=640 ? px-11'd640:11'd640-px;
-wire[9:0] ay=token_y>=360 ? token_y-10'd360:10'd360-token_y;
+wire[10:0] origin_x=POINTER_CENTER ? center_x:11'd640;
+wire[9:0] origin_y=POINTER_CENTER ? center_y:10'd360;
+wire[10:0] ax=px>=origin_x ? px-origin_x:origin_x-px;
+wire[9:0] ay=token_y>=origin_y ? token_y-origin_y:origin_y-token_y;
 wire[10:0] major=ax>ay ? ax:{1'b0,ay};
 wire[10:0] minor=ax>ay ? {1'b0,ay}:ax;
 wire[10:0] radius=major+(minor>>2)+(minor>>3);
@@ -475,7 +480,7 @@ reg signed[10:0] noise2,noise3,noise;
 wire signed[10:0] first_sum=$signed({{2{top_a[8]}},top_a})+$signed({{2{top_b[8]}},top_b});
 wire signed[9:0] second_sum=$signed({qa[8],qa})+$signed({qb[8],qb});
 reg signed[12:0] delta;wire[8:0] phase4=phase;
-wire[12:0] front4=({4'd0,phase4}<<2)+({4'd0,phase4}>>1)+({4'd0,phase4}>>3);
+wire[12:0] front4=POINTER_CENTER ? ({4'd0,phase4}<<2)+({4'd0,phase4}<<1)+({4'd0,phase4}>>2):({4'd0,phase4}<<2)+({4'd0,phase4}>>1)+({4'd0,phase4}>>3);
 wire[12:0] ad=delta<0 ? -delta:delta;
 function[4:0] envelope;input[5:0] a;begin case(a)
  0:envelope=5'd31;

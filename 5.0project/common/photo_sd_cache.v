@@ -1,9 +1,8 @@
 `timescale 1ns/1ps
 // Six-entry directory, two external SDRAM slots. A locked transmit slot is never a
 // load destination. Neighbour prefetch runs while the link consumes its slot.
-module photo_sd_cache #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=1048575,FRAME_WORDS=460800,FORWARD_ONLY=0,DISPLAY_PIN=0,EARLY_PREFETCH=0,TITLE_SD=0,RESULT_ASSET=0)(
- input asset_request,input [6:0] asset_chunk,asset_address,output asset_ready,output [31:0] asset_descriptor,asset_data,
- output title_ready,output [4:0] title_length,input [6:0] title_address,output [31:0] title_data,
+module photo_sd_cache #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=1048575,FRAME_WORDS=460800,FORWARD_ONLY=0,DISPLAY_PIN=0,EARLY_PREFETCH=0,TITLE_SD=0,INDEPENDENT_TEXT=0)(
+ output title_ready,output [4:0] title_length,input [6+INDEPENDENT_TEXT:0] title_address,output [31:0] title_data,
  input display_valid,input [2:0] display_image,input prefetch_pause,
  input audio_packet_active,input audio_request_valid,input [7:0] requested_audio_epoch,input [2:0] requested_audio_track,
  output reg [7:0] active_audio_epoch,output reg [2:0] active_audio_track,audio_count,
@@ -17,7 +16,6 @@ module photo_sd_cache #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=1048575,FRAME
  output write_en,output [31:0] write_data,input finish_toggle,
  output sd_ncs,sd_dclk,sd_mosi,input sd_miso
 );
-wire asset_sd_request,asset_found;wire [31:0] asset_sd_sector;
 reg demand,scanned,scanning,loading,load_started;
 
 wire initialized,bmp_ready,scan_done,scan_exhausted,found,scaler_pixel;
@@ -33,9 +31,9 @@ assign write_top_down=loading && load_is_dlt;
 wire load_ready=load_is_dlt ? (dlt_ready && dlt_done):bmp_ready;
 wire [3:0] bmp_state;wire [31:0] bmp_read_addr;wire bmp_read_req;
 wire sector_end,byte_valid,scaler_fault;wire [7:0] byte_data;
-reg [2:0] read_owner;reg read_settle;reg [31:0] read_address;
+reg [1:0] read_owner;reg read_settle;reg [31:0] read_address;
 generate if(TITLE_SD)begin:title_storage
-photo_sd_title_store title_store(.clk(clk),.rst(rst),
+photo_sd_title_store #(.INDEPENDENT_TEXT(INDEPENDENT_TEXT)) title_store(.clk(clk),.rst(rst),
  .valid(TITLE_SD && byte_valid && read_owner==1),.data(byte_data),
  .sector_end(sector_end && read_owner==1),.ready(title_ready),.length(title_length),
  .address(title_address),.word(title_data));
@@ -44,14 +42,9 @@ end else begin:no_sd_title
 end endgenerate
 assign scaler_fault=load_is_dlt ? dlt_error!=0:bmp_fault;
 reg scan_start,scan_resume,scan_complete,scan_yield;reg load_start,load_launch,abort_op;reg [31:0] load_sector;
-// Scanner yields only at sector boundaries. Register its request so title,
-// catalog and audio control do not feed the BMP address-enable mux directly.
 reg scan_stop_q;
 always @(posedge clk or posedge rst)
- if(rst)scan_stop_q<=0;
- else scan_stop_q<=(image_count!=0 || award_available || relief_available) &&
-  (!scanned || scan_yield || (image_count==6 && audio_count==5 && award_available && relief_available &&
-   (!TITLE_SD || title_ready) && (!RESULT_ASSET || asset_found)));
+ if(rst)scan_stop_q<=0;else scan_stop_q<=(image_count!=0 || award_available || relief_available) && (!scanned || scan_yield || (image_count==6 && audio_count==5 && award_available && relief_available && (!TITLE_SD || title_ready)));
 reg [31:0] directory[0:7];reg [2:0] cache_id[0:1];reg [1:0] cache_valid;
 reg [15:0] directory_width[0:7],directory_height[0:7];
 reg [1:0] load_slot;reg [2:0] load_image,current_image,wanted,playback_image;
@@ -64,8 +57,8 @@ reg [1:0] cache_gain[0:1];
 reg [10:0] stat_x;reg [9:0] stat_y;reg [20:0] stat_sum;reg [12:0] stat_count;
 wire [20:0] count_ext={8'd0,stat_count};
 wire [9:0] raw_luma={2'd0,pixel[23:16]}+{1'b0,pixel[15:8],1'b0}+{2'd0,pixel[7:0]};
-// Maintain exact 3*N and 9*N beside N. This removes two adders from
-// the gain-selection path without delaying the gain or changing its value.
+// Maintain exact multiples while sampling, instead of adding wide
+// shifted counts on the final cache-gain selection path.
 reg [14:0] stat_count3;
 reg [16:0] stat_count9;
 wire stat_sample=loading && scaler_pixel && stat_x[3:0]==0 && stat_y[3:0]==0;
@@ -167,21 +160,10 @@ always @(posedge clk or posedge rst)begin
  else if(read_owner==0)begin
   // Sector-granular arbitration: refill music before the next picture sector.
   if(audio_sd_req && !audio_switching)begin read_owner<=2;read_address<=audio_sd_addr;end
-  else if(asset_sd_request)begin read_owner<=4;read_address<=asset_sd_sector;end
   else if(bmp_read_req)begin read_owner<=1;read_address<=bmp_read_addr;end
   else if(dlt_req)begin read_owner<=3;read_address<=dlt_sector;end
  end
 end
-
-generate if(RESULT_ASSET)begin:result_asset
- photo_result_asset_b reader(.clk(clk),.rst(rst),.scan_valid(byte_valid && read_owner==1 && bmp_state==1),
-  .scan_end(sector_end && read_owner==1 && bmp_state==1),.scan_sector(read_address),.byte_data(byte_data),
-  .request(asset_request),.requested_chunk(asset_chunk),.packet_active(audio_packet_active),.found(asset_found),
-  .sd_request(asset_sd_request),.sd_sector(asset_sd_sector),.data_valid(byte_valid && read_owner==4),.sector_end(sector_end && read_owner==4),
-  .read_address(asset_address),.read_data(asset_data),.ready(asset_ready),.descriptor(asset_descriptor));
-end else begin
- assign asset_sd_request=0;assign asset_found=0;assign asset_sd_sector=0;assign asset_data=0;assign asset_ready=0;assign asset_descriptor=0;
-end endgenerate
 sd_card_top #(.SPI_LOW_SPEED_DIV(248),.SPI_HIGH_SPEED_DIV(2),.READ_MULTIBLOCK(1),.FAST_READ_STREAM(1)) sd(
  .clk(clk),.rst(rst || abort_op),.SD_nCS(sd_ncs),.SD_DCLK(sd_dclk),.SD_MOSI(sd_mosi),.SD_MISO(sd_miso),
  .sd_init_done(initialized),.init_stage(),.sd_sec_read(read_owner!=0),.sd_sec_read_addr(read_address),
@@ -251,7 +233,7 @@ always @(posedge clk or posedge rst)begin
    end
    if(scan_done && !scan_start && !scan_resume)begin
     scanning<=0;scanned<=1;scan_yield<=0;
-    scan_complete<=scan_exhausted || (image_count==6 && audio_count==5 && award_available && relief_available && (!TITLE_SD || title_ready) && (!RESULT_ASSET || asset_found));
+    scan_complete<=scan_exhausted || (image_count==6 && audio_count==5 && award_available && relief_available && (!TITLE_SD || title_ready));
     if(image_count==0 && !award_available && !relief_available && !found)error<=1;
    end
    if(scanned && (request || demand || release_slot || found))scan_yield<=1;

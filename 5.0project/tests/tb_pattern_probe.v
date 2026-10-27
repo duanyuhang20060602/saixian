@@ -32,7 +32,7 @@ always @(posedge link_clk)begin
 end
 task send_frame;
  begin
-  @(negedge link_clk);arm=1;b.ctrl.state_flags=(11'd1<<6);b.ctrl.start_toggle=~b.ctrl.start_toggle;
+  @(negedge link_clk);arm=1;b.ctrl.state=6;b.ctrl.start_toggle=~b.ctrl.start_toggle;
   @(negedge link_clk);arm=0;
   wait(done);@(negedge link_clk);
   if(pixels!=4096 || words!=2048 || fault)$fatal(1,"frame length/marker mismatch");

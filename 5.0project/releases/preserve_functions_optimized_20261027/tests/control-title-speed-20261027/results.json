@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "baud": 115200,
+      "passed": true,
+      "cycles": 9835599,
+      "seconds_at_bench_clock": 1.0672307942708332
+    },
+    {
+      "baud": 230400,
+      "passed": true,
+      "cycles": 4916194,
+      "seconds_at_bench_clock": 0.5334411892361111
+    }
+  ],
+  "speedup": 2.0006531475364886,
+  "scope": "Identical full 2048-byte SD configuration, both native font banks, 256 word ACKs; scaled system clock, error-free link; SD scan and image loading excluded.",
+  "inputs_sha256": {
+    "common/photo_cached_control_a.v": "9f9dd556c8de8893e1e90ae14319fb0a5c7b9265e23ae4785956ec2287b5ef8a",
+    "common/photo_control.v": "03717c47c233262011e5da0dd6b8309ac17eba43b16d1a34296fa2b78d67d5ab",
+    "common/photo_uart.v": "d1f4bb2624ceebcf73dd998ce2c5d925690a6786e8782e20462257ae3e572402",
+    "common/photo_sd_title_store.v": "c501d919aa698b75b8b110f05abb6cca5727df175ebd507e2ff2ecb0f782e66d",
+    "common/audio_ui/saixian_font_rom.v": "77f9e0c7453cc497aa4e11a039877edfd5406c2be8bc7006fb066ec23bc6e0c6"
+  },
+  "testbench_sha256": {
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\control-title-speed-20261027\\115200\\benchmark.v": "bf2536b759d937205ffaf3afde019f6feed482838605b95894d51e0a7ad2f3a1",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\control-title-speed-20261027\\230400\\benchmark.v": "bf2536b759d937205ffaf3afde019f6feed482838605b95894d51e0a7ad2f3a1"
+  }
+}

@@ -110,8 +110,8 @@ always @(posedge clk or posedge rst)begin
 end
 endmodule
 
-module photo_control_b #(parameter CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SEND_SOURCE_SIZE=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0,AWARD_LIGHTS=0,RELIEF_CONTROL=0,TITLE_SD=0)(
- input title_ready,input [4:0] title_length,input [31:0] title_data,output [6:0] title_address,
+module photo_control_b #(parameter CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SEND_SOURCE_SIZE=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0,AWARD_LIGHTS=0,RELIEF_CONTROL=0,TITLE_SD=0,INDEPENDENT_TEXT=0,BOOT_STATUS=0,CONTROL_BAUD=115200)(
+ input title_ready,input [4:0] title_length,input [31:0] title_data,output [6+INDEPENDENT_TEXT:0] title_address,
  input award_available,award_scan_complete,relief_available,
  input clk,rst,uart_rx,output uart_tx,input [2:0] image_count,input media_ready,
  input [1:0] media_slot,input [3:0] media_error,
@@ -124,8 +124,7 @@ module photo_control_b #(parameter CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=18
 ,output [31:0] hmi_session
 );
 
-
-reg [6:0] title_index;reg title_wait,title_complete,title_read_settle;
+reg [6+INDEPENDENT_TEXT:0] title_index;reg title_wait,title_complete,title_read_settle;
 assign title_address=title_index;
 wire tx_busy,got,bad;wire [159:0] incoming;
 wire has_relief=RELIEF_CONTROL && relief_available;
@@ -157,26 +156,29 @@ reg due_one,due_five,due_load,due_catalog;
 assign hmi_session=session;reg [15:0] request_seq;
 assign debug_state=state;
 reg settings_reply,context_reply,cancel_reply;reg [7:0] announced_count;
-wire [7:0] catalog=AWARD_CONTROL ? {award_available,award_scan_complete,has_relief,2'd0,image_count}:{5'd0,image_count};
+wire [7:0] catalog=AWARD_CONTROL ? {award_available,award_scan_complete,has_relief,(BOOT_STATUS && title_ready),(BOOT_STATUS && title_complete),image_count}:{5'd0,image_count};
 wire valid_target=incoming[103:96]<image_count || (AWARD_CONTROL && ((award_available && incoming[103:96]==6) || (has_relief && incoming[103:96]==7)));
 reg send;reg tx_idle_q;
 always @(posedge clk or posedge rst)if(rst)tx_idle_q<=0;else tx_idle_q<=!tx_busy && !send;
 reg direction;reg [1:0] retries;reg [159:0] message;reg [31:0] completed_crc;
 reg [15:0] source_width,source_height;
 
-photo_uart #(.CLK_HZ(CLK_HZ),.PULSE_PAYLOAD(1)) port(.clk(clk),.rst(rst),.rx(uart_rx),.tx(uart_tx),
+photo_uart #(.BAUD(CONTROL_BAUD),.CLK_HZ(CLK_HZ),.PULSE_PAYLOAD(1)) port(.clk(clk),.rst(rst),.rx(uart_rx),.tx(uart_tx),
  .send(send),.message(message),.busy(tx_busy),.received(got),.received_message(incoming),.bad_packet(bad));
 wire [7:0] kind=incoming[159:152];
 // Payload settles throughout both CRC bytes before got. Compare once,
 // then fan out the registered predicates instead of repeating 32-bit trees.
-reg session_match_q,matching_q;
+reg session_match_q,matching_q,hello_match_q;
 wire session_matches=session_match_q;
 wire matching=matching_q;
 always @(posedge clk or posedge rst)begin
- if(rst)begin session_match_q<=0;matching_q<=0;end
+ if(rst)begin session_match_q<=0;matching_q<=0;hello_match_q<=0;end
  else begin
   session_match_q<=incoming[151:120]==session;
   matching_q<=incoming[151:120]==session && incoming[119:104]==request_seq && incoming[103:96]=={5'd0,media_target};
+  // PULSE_PAYLOAD is stable throughout both CRC bytes before got.
+  // Keep the wide HELLO-size decode out of every FSM destination enable.
+  hello_match_q<=kind==1 && incoming[87:56]==FRAME_BYTES;
  end
 end
 assign timing_cancel=media_cancel || error!=0 || (got && matching && kind==9);
@@ -193,12 +195,12 @@ always @(posedge clk or posedge rst)begin
   due_catalog<=timer_reset ? TIME_HZ/10<=1:TIME_HZ/10==0 || (timer_count>=TIME_HZ/10-1 && !(&timer_count));
   timer_reset<=0;send<=0;media_request<=0;title_read_settle<=0;
   if(TITLE_SD && got && kind==34 && session_matches &&
-     incoming[119:112]=={1'b0,title_index} && title_wait)begin
-   title_wait<=0;title_read_settle<=1;if(title_index==127)title_complete<=1;else title_index<=title_index+1'b1;
+     incoming[119:112]==title_index && title_wait)begin
+   title_wait<=0;title_read_settle<=1;if(title_index==(INDEPENDENT_TEXT ? 255:127))title_complete<=1;else title_index<=title_index+1'b1;
   end
   timing_begin<=0;timing_ready<=0;timing_send<=0;timing_done<=0;
   if(got && kind==19 && session_matches && incoming[23:16]==catalog)announced_count<=incoming[23:16];media_release<=0;media_cancel<=0;
-  if(got && kind==1 && incoming[87:56]==FRAME_BYTES && (image_count>0 || (AWARD_CONTROL && (award_available || has_relief))))begin
+  if(got && hello_match_q && (image_count>0 || (AWARD_CONTROL && (award_available || has_relief)) || (BOOT_STATUS && award_scan_complete)))begin
    title_index<=0;title_wait<=0;title_complete<=0;session<=incoming[151:120];abort_toggle<=~abort_toggle;media_cancel<=1;state_flags<=11'd1<<HELLO_ACK;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;error<=0;
   end else if(got && matching && kind==9 && (state_flags[WAIT_READY] || state_flags[SENDING] || state_flags[WAIT_ACCEPT] || state_flags[WAIT_COMMIT]))begin
    abort_toggle<=~abort_toggle;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;
@@ -228,11 +230,11 @@ always @(posedge clk or posedge rst)begin
    end else if(got && kind==3 && session_matches && valid_target && incoming[87:56]==request_bytes && incoming[93]==request_fluid && incoming[94]==1'b0 && settings_state[18]==1'b0)begin
     request_seq<=incoming[119:104];media_target<=incoming[98:96];direction<=incoming[88];retries<=0;
     media_request<=1;state_flags<=11'd1<<LOAD;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;error<=0;timing_begin<=1;
-   end else if(catalog!=announced_count && (image_count>0 || (AWARD_CONTROL && (award_available || has_relief))) && due_catalog && tx_idle_q && !send)begin
+   end else if(catalog!=announced_count && (image_count>0 || (AWARD_CONTROL && (award_available || has_relief)) || (BOOT_STATUS && award_scan_complete)) && due_catalog && tx_idle_q && !send)begin
     // Reliable count growth notification; acknowledgement never resets caches.
     message<=packet(18,session,0,0,0,FRAME_BYTES,0,catalog);send<=1;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;
    end else if(TITLE_SD && title_ready && !title_complete && !title_read_settle && !(got && kind==34) && (!title_wait || due_one) && tx_idle_q && !send)begin
-    message<={8'd33,session,{1'b0,title_index},{3'd0,title_length},title_data,72'd0};
+    message<={8'd33,session,{{(1-INDEPENDENT_TEXT){1'b0}},title_index},{3'd0,title_length},title_data,72'd0};
     send<=1;title_wait<=1;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;
    end
    state_flags[LOAD]:begin

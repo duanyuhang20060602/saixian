@@ -1,0 +1,34 @@
+[
+  {
+    "name": "uart_cross_clock",
+    "baud": 230400,
+    "passed": true,
+    "inputs_sha256": {
+      "common\\photo_uart.v": "d1f4bb2624ceebcf73dd998ce2c5d925690a6786e8782e20462257ae3e572402"
+    }
+  },
+  {
+    "name": "switch_115200",
+    "baud": 115200,
+    "passed": true,
+    "inputs_sha256": {
+      "common\\photo_cached_control_a.v": "9f9dd556c8de8893e1e90ae14319fb0a5c7b9265e23ae4785956ec2287b5ef8a",
+      "common\\photo_control.v": "03717c47c233262011e5da0dd6b8309ac17eba43b16d1a34296fa2b78d67d5ab",
+      "common\\photo_uart.v": "d1f4bb2624ceebcf73dd998ce2c5d925690a6786e8782e20462257ae3e572402"
+    },
+    "cycles": 95971,
+    "scaled_seconds": 0.010413519965277777
+  },
+  {
+    "name": "switch_230400",
+    "baud": 230400,
+    "passed": true,
+    "inputs_sha256": {
+      "common\\photo_cached_control_a.v": "9f9dd556c8de8893e1e90ae14319fb0a5c7b9265e23ae4785956ec2287b5ef8a",
+      "common\\photo_control.v": "03717c47c233262011e5da0dd6b8309ac17eba43b16d1a34296fa2b78d67d5ab",
+      "common\\photo_uart.v": "d1f4bb2624ceebcf73dd998ce2c5d925690a6786e8782e20462257ae3e572402"
+    },
+    "cycles": 48051,
+    "scaled_seconds": 0.0052138671875
+  }
+]

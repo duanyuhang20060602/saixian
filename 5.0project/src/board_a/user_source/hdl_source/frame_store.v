@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 // One 1280x720 RGB565 frame, two pixels per SDRAM word.
-module frame_store #(parameter FLIP=0)(
+module frame_store #(parameter FLIP=0,POINTER_CENTER=0)(
  input display_active,thumbnail_request,thumbnail_cancel,thumbnail_blank,input [1:0] thumbnail_slot,
  input [12:0] thumbnail_address,output thumbnail_done,output [15:0] thumbnail_data,
  input write_relief,input write_award,read_award,light_enable,light_request,light_wide,input [20:0] light_address,
@@ -49,7 +49,7 @@ photo_thumbnail_memory thumbnails(.clk(mem_clk),.rst(rst),
  .video_clk(read_clk),.video_request(thumbnail_request),.video_cancel(thumbnail_cancel),.video_blank(thumbnail_blank),.video_slot(thumbnail_slot),
  .video_done(thumbnail_done),.video_address(thumbnail_address),.video_data(thumbnail_data));
 photo_sdram_read_align align_read(.clk(mem_clk),.rst(rst),.raw_data(rd_data),.aligned_data(aligned_rd_data));
-frame_read_write #(.WRITE_V_FLIP(FLIP),.FRAME_WIDTH(640),.FRAME_HEIGHT(720),.BURST_SIZE(256)) rw(
+frame_read_write #(.POINTER_CENTER(POINTER_CENTER),.WRITE_V_FLIP(FLIP),.FRAME_WIDTH(640),.FRAME_HEIGHT(720),.BURST_SIZE(256)) rw(
  .external_request(light_request || thumb_request),.external_busy(light_claim || thumb_claim),.access_busy(frame_access),
  .display_active(display_sync),.external_allowed(external_allowed),.water_cfg(water_cfg),.fluid_progress(fluid_progress),.mem_clk(mem_clk),.rst(rst),.Sdr_init_done(init_done),.Sdr_init_ref_vld(init_ref),.Sdr_busy(busy),
  .App_rd_en(frame_rd),.App_rd_addr(frame_address),.Sdr_rd_en(rd_valid && !light_claim && !thumb_claim),.Sdr_rd_dout(aligned_rd_data),

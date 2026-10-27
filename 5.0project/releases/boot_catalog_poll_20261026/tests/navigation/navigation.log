@@ -1,0 +1,1 @@
+PASS unchanged navigation/control behavior: 60008 exact cycles, all 16 states, every timeout boundary and wrap, UART payloads, CRC/errors, settings/awards/cache navigation and reset

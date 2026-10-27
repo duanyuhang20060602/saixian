@@ -1,0 +1,239 @@
+{
+  "hardware_validation": "pending",
+  "test_count": 35,
+  "tests": [
+    {
+      "report": "uart-pipeline-final-20261027/results.json",
+      "test": "uart-pipeline-final-20261027",
+      "passed": true
+    },
+    {
+      "report": "uart-pipeline-final-20261027/results.json",
+      "test": "uart-pipeline-final-20261027",
+      "passed": true
+    },
+    {
+      "report": "uart-pipeline-final-20261027/results.json",
+      "test": "uart-pipeline-final-20261027",
+      "passed": true
+    },
+    {
+      "report": "uart-pipeline-final-20261027/results.json",
+      "test": "uart-pipeline-final-20261027",
+      "passed": true
+    },
+    {
+      "report": "uart-pipeline-final-20261027/results.json",
+      "test": "uart-pipeline-final-20261027",
+      "passed": true
+    },
+    {
+      "report": "uart-pipeline-final-20261027/results.json",
+      "test": "uart-pipeline-final-20261027",
+      "passed": true
+    },
+    {
+      "report": "uart-pipeline-final-20261027/results.json",
+      "test": "uart-pipeline-final-20261027",
+      "passed": true
+    },
+    {
+      "report": "uart-pipeline-final-20261027/results.json",
+      "test": "uart-pipeline-final-20261027",
+      "passed": true
+    },
+    {
+      "report": "uart-pipeline-final-20261027/results.json",
+      "test": "uart-pipeline-final-20261027",
+      "passed": true
+    },
+    {
+      "report": "uart-pipeline-final-20261027/results.json",
+      "test": "uart-pipeline-final-20261027",
+      "passed": true
+    },
+    {
+      "report": "hmi-uart-final-20261027/results.json",
+      "test": "hmi_bytes",
+      "passed": true
+    },
+    {
+      "report": "hmi-uart-final-20261027/results.json",
+      "test": "hmi_recovery",
+      "passed": true
+    },
+    {
+      "report": "hmi-uart-final-20261027/results.json",
+      "test": "hmi_spi",
+      "passed": true
+    },
+    {
+      "report": "hmi-uart-final-20261027/results.json",
+      "test": "deadlines",
+      "passed": true
+    },
+    {
+      "report": "preserve-uart-title-20261027/results.json",
+      "test": "preserve-uart-title-20261027",
+      "passed": true
+    },
+    {
+      "report": "control-link-speed-20261027/results.json",
+      "test": "uart_cross_clock",
+      "passed": true
+    },
+    {
+      "report": "control-link-speed-20261027/results.json",
+      "test": "switch_115200",
+      "passed": true
+    },
+    {
+      "report": "control-link-speed-20261027/results.json",
+      "test": "switch_230400",
+      "passed": true
+    },
+    {
+      "report": "control-title-speed-20261027/results.json",
+      "test": "control-title-speed-20261027",
+      "passed": true
+    },
+    {
+      "report": "offload-boot-20261027/results.json",
+      "test": "boot_10",
+      "passed": true
+    },
+    {
+      "report": "offload-boot-20261027/results.json",
+      "test": "boot_11",
+      "passed": true
+    },
+    {
+      "report": "pitch-mac-final-20261027/results.json",
+      "test": "model",
+      "passed": true
+    },
+    {
+      "report": "pitch-mac-final-20261027/results.json",
+      "test": "native_model",
+      "passed": true
+    },
+    {
+      "report": "pitch-mac-final-20261027/results.json",
+      "test": "volume",
+      "passed": true
+    },
+    {
+      "report": "pitch-mac-final-20261027/results.json",
+      "test": "keys",
+      "passed": true
+    },
+    {
+      "report": "gain-counts-final-20261027/results.json",
+      "test": "gain_counts",
+      "passed": true
+    },
+    {
+      "report": "media-deadlines-final-20261027/results.json",
+      "test": "media_deadlines",
+      "passed": true
+    },
+    {
+      "report": "sd-cache-title-final-20261027/results.json",
+      "test": "sd-cache-title-final-20261027",
+      "passed": true
+    },
+    {
+      "report": "preserve-features-20261027/music_picture_sync/results.json",
+      "test": "preserve-features-20261027/music_picture_sync",
+      "passed": true
+    },
+    {
+      "report": "preserve-features-20261027/complete_boot_top/results.json",
+      "test": "preserve-features-20261027/complete_boot_top",
+      "passed": true
+    },
+    {
+      "report": "preserve-features-20261027/pointer_effects/results.json",
+      "test": "preserve-features-20261027/pointer_effects",
+      "passed": true
+    },
+    {
+      "report": "preserve-features-20261027/boot_pointer/results.json",
+      "test": "boot",
+      "passed": true
+    },
+    {
+      "report": "preserve-features-20261027/boot_pointer/results.json",
+      "test": "origin",
+      "passed": true
+    },
+    {
+      "report": "preserve-features-20261027/boot_pointer/results.json",
+      "test": "empty_text",
+      "passed": true
+    },
+    {
+      "report": "preserve-features-20261027/boot_pointer/results.json",
+      "test": "catalog",
+      "passed": true
+    }
+  ],
+  "text_transfer": {
+    "passed": true,
+    "results": [
+      {
+        "baud": 115200,
+        "passed": true,
+        "cycles": 9835599,
+        "seconds_at_bench_clock": 1.0672307942708332
+      },
+      {
+        "baud": 230400,
+        "passed": true,
+        "cycles": 4916194,
+        "seconds_at_bench_clock": 0.5334411892361111
+      }
+    ],
+    "speedup": 2.0006531475364886,
+    "scope": "Identical full 2048-byte SD configuration, both native font banks, 256 word ACKs; scaled system clock, error-free link; SD scan and image loading excluded.",
+    "inputs_sha256": {
+      "common/photo_cached_control_a.v": "9f9dd556c8de8893e1e90ae14319fb0a5c7b9265e23ae4785956ec2287b5ef8a",
+      "common/photo_control.v": "03717c47c233262011e5da0dd6b8309ac17eba43b16d1a34296fa2b78d67d5ab",
+      "common/photo_uart.v": "d1f4bb2624ceebcf73dd998ce2c5d925690a6786e8782e20462257ae3e572402",
+      "common/photo_sd_title_store.v": "c501d919aa698b75b8b110f05abb6cca5727df175ebd507e2ff2ecb0f782e66d",
+      "common/audio_ui/saixian_font_rom.v": "77f9e0c7453cc497aa4e11a039877edfd5406c2be8bc7006fb066ec23bc6e0c6"
+    },
+    "testbench_sha256": {
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\control-title-speed-20261027\\115200\\benchmark.v": "bf2536b759d937205ffaf3afde019f6feed482838605b95894d51e0a7ad2f3a1",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\control-title-speed-20261027\\230400\\benchmark.v": "bf2536b759d937205ffaf3afde019f6feed482838605b95894d51e0a7ad2f3a1"
+    }
+  },
+  "switch_control": [
+    {
+      "name": "switch_115200",
+      "baud": 115200,
+      "passed": true,
+      "inputs_sha256": {
+        "common\\photo_cached_control_a.v": "9f9dd556c8de8893e1e90ae14319fb0a5c7b9265e23ae4785956ec2287b5ef8a",
+        "common\\photo_control.v": "03717c47c233262011e5da0dd6b8309ac17eba43b16d1a34296fa2b78d67d5ab",
+        "common\\photo_uart.v": "d1f4bb2624ceebcf73dd998ce2c5d925690a6786e8782e20462257ae3e572402"
+      },
+      "cycles": 95971,
+      "scaled_seconds": 0.010413519965277777
+    },
+    {
+      "name": "switch_230400",
+      "baud": 230400,
+      "passed": true,
+      "inputs_sha256": {
+        "common\\photo_cached_control_a.v": "9f9dd556c8de8893e1e90ae14319fb0a5c7b9265e23ae4785956ec2287b5ef8a",
+        "common\\photo_control.v": "03717c47c233262011e5da0dd6b8309ac17eba43b16d1a34296fa2b78d67d5ab",
+        "common\\photo_uart.v": "d1f4bb2624ceebcf73dd998ce2c5d925690a6786e8782e20462257ae3e572402"
+      },
+      "cycles": 48051,
+      "scaled_seconds": 0.0052138671875
+    }
+  ],
+  "scope": "Exact UART cycles/CRC and native font RAM/pixels; preserved startup, pointer effects, music synchronization; real SPI PCM/recovery and HMI command bytes. SD scan and real image I/O timings are not benchmarked.",
+  "historical_baseline_audio_failure": "releases/text_music_sync_20261026/known_baseline_test_failure.json"
+}

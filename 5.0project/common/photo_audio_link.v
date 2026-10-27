@@ -306,6 +306,12 @@ reg av_transfer;reg [3:0] meta_cadence;reg [31:0] rx_av_crc;
 wire boot_asset=REMOTE_RESULT && relief_enable && relief_descriptor[31] && held;
 wire choose_relief=REMOTE_RELIEF && relief_enable && relief_available && (meta_cadence>=6 || boot_asset) && fifo_used>=512;
 wire choose_av=!(REMOTE_RELIEF && relief_enable) && EXTENDED_AV && meta_cadence==8 && av_available && fifo_used>=512;
+// Preloading can fill PCM before the SD scan finishes. Continue status-only
+// exchanges while held so the late catalog-complete bit can release boot.
+// A8 returns no PCM and reuses the current page sequence: no sample loss,
+// FIFO overwrite, page event or epoch change is needed to refresh status.
+wire catalog_poll=STARTUP_SYNC && PAGE_CUE && held && !catalog_complete &&
+ fifo_used>(1<<(FIFO_AW-1)) && !choose_av && !choose_relief;
 function [31:0] crc_bit;
  input [31:0] c;input b;
  begin crc_bit={c[30:0],1'b0}^((c[31]^b) ? 32'h04c11db7:32'd0);end
@@ -328,10 +334,10 @@ always @(posedge clk or posedge rst)begin
   case(state)
    IDLE:begin
     if(idle_wait!=0)idle_wait<=idle_wait-1'b1;
-    else if(send_page || fifo_used<=(1<<(FIFO_AW-1)) || choose_av || choose_relief)begin
+    else if(send_page || catalog_poll || fifo_used<=(1<<(FIFO_AW-1)) || choose_av || choose_relief)begin
      spi_cs<=0;spi_sclk<=0;spi_mosi<=1;divider<=0;
-     hmi_transfer<=REMOTE_HMI && !send_page && !choose_relief && !choose_av;
-     hmi_begin<=REMOTE_HMI && !send_page && !choose_relief && !choose_av;
+     hmi_transfer<=REMOTE_HMI && !send_page && !catalog_poll && !choose_relief && !choose_av;
+     hmi_begin<=REMOTE_HMI && !send_page && !catalog_poll && !choose_relief && !choose_av;
      if(REMOTE_HMI)hmi_snapshot<={hmi_status[52:32],hmi_ack_token,hmi_ack_valid,hmi_reset_request,1'b0,hmi_status[31:0]};
      typed_control_packet<=TYPED_PAGE && send_page;
      if(TYPED_PAGE && send_page)begin
@@ -342,7 +348,7 @@ always @(posedge clk or posedge rst)begin
      else if(REMOTE_HMI)relief_query_hold<=hmi_session;
      av_transfer<=choose_av && !send_page;av_begin<=choose_av && !send_page;rx_av_crc<=32'hffffffff;
      if(choose_av && !send_page)meta_cadence<=0;
-     tx_shift<={(send_page ? 8'ha8:choose_relief ? 8'ha9:choose_av ? 8'ha7:REMOTE_HMI ? 8'haa:8'ha6),desired_epoch,sent_bg,sent_volume,track_index,sent_cue,(PAGE_CUE ? (TYPED_PAGE && send_page ? outgoing_seq:page_seq):3'd0),repair_enable};rx_shift<=0;
+     tx_shift<={((send_page || catalog_poll) ? 8'ha8:choose_relief ? 8'ha9:choose_av ? 8'ha7:REMOTE_HMI ? 8'haa:8'ha6),desired_epoch,sent_bg,sent_volume,track_index,sent_cue,(PAGE_CUE ? (TYPED_PAGE && send_page ? outgoing_seq:page_seq):3'd0),repair_enable};rx_shift<=0;
      bit_index<=0;word_index<=0;payload_words<=0;finishing<=0;header_magic<=0;header_match<=0;state<=TRANSFER;
     end
    end

@@ -1,0 +1,11 @@
+{
+  "hardware_validation": "pending",
+  "current_test_count": 2,
+  "tests": [
+    "tests/results.json",
+    "events/results.json"
+  ],
+  "scope": "TITLE2 SD records through UART and native font RAM; exact left title/ticker pixels and a blank 192x32 center label region (16384 pixels). Compare eight competition state labels/timer area against the frozen prior release (112640 pixels/address pairs).",
+  "known_issue": "User reports startup FONT3/3 stall persists; this display-only revision does not establish a startup fix.",
+  "baseline_audio_failure": "../text_music_sync_20261026/known_baseline_test_failure.json"
+}

@@ -1,0 +1,178 @@
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:78: warning: Port 5 (rgb) of module photo_color_pack expects 1 bit(s), given 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:78:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:78: warning: Port 7 (word_data) of module photo_color_pack expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:78:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:319: warning: Port 3 (wa) of module photo_audio_word_ram expects 1 bit(s), given 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:319:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:319: warning: Port 4 (wd) of module photo_audio_word_ram expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:319:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:319: warning: Port 6 (ra) of module photo_audio_word_ram expects 1 bit(s), given 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:319:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:319: warning: Port 7 (rd) of module photo_audio_word_ram expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:319:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:322: warning: Port 3 (wa) of module photo_audio_word_ram expects 1 bit(s), given 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:322:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:322: warning: Port 4 (wd) of module photo_audio_word_ram expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:322:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:322: warning: Port 6 (ra) of module photo_audio_word_ram expects 1 bit(s), given 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:322:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:322: warning: Port 7 (rd) of module photo_audio_word_ram expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:322:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:325: warning: Port 3 (wa) of module photo_audio_word_ram expects 1 bit(s), given 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:325:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:325: warning: Port 4 (wd) of module photo_audio_word_ram expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:325:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:325: warning: Port 6 (ra) of module photo_audio_word_ram expects 1 bit(s), given 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:325:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:325: warning: Port 7 (rd) of module photo_audio_word_ram expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:325:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:135: warning: Port 4 (start_sector) of module photo_sd_audio_stream expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:135:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:135: warning: Port 5 (data_bytes) of module photo_sd_audio_stream expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:135:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:135: warning: Port 6 (fifo_wrusedw) of module photo_sd_audio_stream expects 1 bit(s), given 14.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:135:        : Pruning 13 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:135: warning: Port 8 (sd_sec_read_addr) of module photo_sd_audio_stream expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:135:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:135: warning: Port 9 (sd_sec_read_data) of module photo_sd_audio_stream expects 1 bit(s), given 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:135:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:135: warning: Port 13 (pcm_word) of module photo_sd_audio_stream expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:135:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:167: warning: Port 10 (sd_sec_read_addr) of module sd_card_top expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:167:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:167: warning: Port 11 (sd_sec_read_data) of module sd_card_top expects 1 bit(s), given 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:167:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:167: warning: Port 15 (sd_sec_write_addr) of module sd_card_top expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:167:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:167: warning: Port 16 (sd_sec_write_data) of module sd_card_top expects 1 bit(s), given 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:167:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:174: warning: Port 4 (start_sector) of module photo_dlt_reader expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:174:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:174: warning: Port 7 (error) of module photo_dlt_reader expects 1 bit(s), given 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:174:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:174: warning: Port 12 (pixel) of module photo_dlt_reader expects 1 bit(s), given 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:174:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:174: warning: Port 14 (sector) of module photo_dlt_reader expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:174:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:174: warning: Port 16 (byte_data) of module photo_dlt_reader expects 1 bit(s), given 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:174:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178: warning: Port 9 (scan_start_sector) of module bmp_read expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178: warning: Port 10 (scan_max_sector) of module bmp_read expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178:        : Pruning (signed) 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178: warning: Port 11 (scan_target_count) of module bmp_read expects 1 bit(s), given 3.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178:        : Pruning 2 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178: warning: Port 14 (scan_found_sector) of module bmp_read expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178: warning: Port 16 (scan_found_width) of module bmp_read expects 1 bit(s), given 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178: warning: Port 17 (scan_found_height) of module bmp_read expects 1 bit(s), given 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178: warning: Port 22 (audio_found_sector) of module bmp_read expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178: warning: Port 23 (audio_found_bytes) of module bmp_read expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178: warning: Port 25 (load_sector) of module bmp_read expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178: warning: Port 27 (state_code) of module bmp_read expects 1 bit(s), given 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178: warning: Port 28 (bmp_width) of module bmp_read expects 1 bit(s), given 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178: warning: Port 29 (bmp_height) of module bmp_read expects 1 bit(s), given 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178: warning: Port 33 (sd_sec_read_addr) of module bmp_read expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178: warning: Port 34 (sd_sec_read_data) of module bmp_read expects 1 bit(s), given 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178: warning: Port 38 (bmp_data) of module bmp_read expects 1 bit(s), given 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\photo_sd_cache.v:178:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:60: warning: Port 5 (rgb) of module photo_color_pack expects 1 bit(s), given 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:60:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:60: warning: Port 7 (word_data) of module photo_color_pack expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:60:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:301: warning: Port 3 (wa) of module photo_audio_word_ram expects 1 bit(s), given 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:301:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:301: warning: Port 4 (wd) of module photo_audio_word_ram expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:301:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:301: warning: Port 6 (ra) of module photo_audio_word_ram expects 1 bit(s), given 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:301:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:301: warning: Port 7 (rd) of module photo_audio_word_ram expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:301:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:304: warning: Port 3 (wa) of module photo_audio_word_ram expects 1 bit(s), given 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:304:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:304: warning: Port 4 (wd) of module photo_audio_word_ram expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:304:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:304: warning: Port 6 (ra) of module photo_audio_word_ram expects 1 bit(s), given 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:304:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:304: warning: Port 7 (rd) of module photo_audio_word_ram expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:304:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:307: warning: Port 3 (wa) of module photo_audio_word_ram expects 1 bit(s), given 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:307:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:307: warning: Port 4 (wd) of module photo_audio_word_ram expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:307:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:307: warning: Port 6 (ra) of module photo_audio_word_ram expects 1 bit(s), given 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:307:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:307: warning: Port 7 (rd) of module photo_audio_word_ram expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:307:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:117: warning: Port 4 (start_sector) of module photo_sd_audio_stream expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:117:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:117: warning: Port 5 (data_bytes) of module photo_sd_audio_stream expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:117:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:117: warning: Port 6 (fifo_wrusedw) of module photo_sd_audio_stream expects 1 bit(s), given 14.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:117:        : Pruning 13 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:117: warning: Port 8 (sd_sec_read_addr) of module photo_sd_audio_stream expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:117:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:117: warning: Port 9 (sd_sec_read_data) of module photo_sd_audio_stream expects 1 bit(s), given 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:117:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:117: warning: Port 13 (pcm_word) of module photo_sd_audio_stream expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:117:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:149: warning: Port 10 (sd_sec_read_addr) of module sd_card_top expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:149:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:149: warning: Port 11 (sd_sec_read_data) of module sd_card_top expects 1 bit(s), given 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:149:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:149: warning: Port 15 (sd_sec_write_addr) of module sd_card_top expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:149:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:149: warning: Port 16 (sd_sec_write_data) of module sd_card_top expects 1 bit(s), given 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:149:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:156: warning: Port 4 (start_sector) of module photo_dlt_reader expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:156:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:156: warning: Port 7 (error) of module photo_dlt_reader expects 1 bit(s), given 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:156:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:156: warning: Port 12 (pixel) of module photo_dlt_reader expects 1 bit(s), given 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:156:        : Pruning 23 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:156: warning: Port 14 (sector) of module photo_dlt_reader expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:156:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:156: warning: Port 16 (byte_data) of module photo_dlt_reader expects 1 bit(s), given 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:156:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160: warning: Port 9 (scan_start_sector) of module bmp_read expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160: warning: Port 10 (scan_max_sector) of module bmp_read expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160:        : Pruning (signed) 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160: warning: Port 11 (scan_target_count) of module bmp_read expects 1 bit(s), given 3.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160:        : Pruning 2 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160: warning: Port 14 (scan_found_sector) of module bmp_read expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160: warning: Port 16 (scan_found_width) of module bmp_read expects 1 bit(s), given 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160: warning: Port 17 (scan_found_height) of module bmp_read expects 1 bit(s), given 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160: warning: Port 22 (audio_found_sector) of module bmp_read expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160: warning: Port 23 (audio_found_bytes) of module bmp_read expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160: warning: Port 25 (load_sector) of module bmp_read expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160: warning: Port 27 (state_code) of module bmp_read expects 1 bit(s), given 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160: warning: Port 28 (bmp_width) of module bmp_read expects 1 bit(s), given 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160: warning: Port 29 (bmp_height) of module bmp_read expects 1 bit(s), given 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160: warning: Port 33 (sd_sec_read_addr) of module bmp_read expects 1 bit(s), given 32.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160:        : Pruning 31 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160: warning: Port 34 (sd_sec_read_data) of module bmp_read expects 1 bit(s), given 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160:        : Pruning 7 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160: warning: Port 38 (bmp_data) of module bmp_read expects 1 bit(s), given 24.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\reference\media_deadlines\photo_sd_cache_before.v:160:        : Pruning 23 high bits of the expression.
+PASS media watchdog pipeline: 65013 clocks exact against original FSM, threshold/reset/hold/overlapping scan-load priority and 32-bit wrap
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\tb_media_deadlines.v:29: $finish called at 650240000 (1ps)

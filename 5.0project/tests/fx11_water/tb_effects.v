@@ -3,7 +3,7 @@ module tb;
 reg clk=0;always #5 clk=~clk;
 reg rst=1,iv=0,en=0,right=0;reg[3:0] fx=0;reg[8:0] p=0;reg[9:0] x=0,y=0,wx=0,wy=0;
 wire ov;wire[9:0] a,b,c,ox,oy;wire[8:0] alpha;wire[4:0] shade;wire[2:0] shine;
-water_effect_map d(clk,rst,iv,en,right,fx,p,x,y,wx,wy,ov,a,b,c,ox,oy,alpha,shade,shine);
+water_effect_map d(clk,rst,iv,en,right,fx,p,x,y,wx,wy,ov,a,b,c,ox,oy,alpha,shade,shine,11'd640,10'd360);
 reg[31:0] rgb=0;wire[31:0] lit;water_effect_light light(rgb,shade,shine,lit);
 integer f,z,n,count=0,checked=0;
 integer vf[0:299999],vp[0:299999],vr[0:299999],ve[0:299999],vx[0:299999],vy[0:299999],vwx[0:299999],vwy[0:299999];

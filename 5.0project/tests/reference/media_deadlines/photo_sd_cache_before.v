@@ -1,9 +1,8 @@
 `timescale 1ns/1ps
 // Six-entry directory, two external SDRAM slots. A locked transmit slot is never a
 // load destination. Neighbour prefetch runs while the link consumes its slot.
-module photo_sd_cache_before #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=1048575,FRAME_WORDS=460800,FORWARD_ONLY=0,DISPLAY_PIN=0,EARLY_PREFETCH=0,TITLE_SD=0,RESULT_ASSET=0)(
- input asset_request,input [6:0] asset_chunk,asset_address,output asset_ready,output [31:0] asset_descriptor,asset_data,
- output title_ready,output [4:0] title_length,input [6:0] title_address,output [31:0] title_data,
+module photo_sd_cache_before #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=1048575,FRAME_WORDS=460800,FORWARD_ONLY=0,DISPLAY_PIN=0,EARLY_PREFETCH=0,TITLE_SD=0,INDEPENDENT_TEXT=0)(
+ output title_ready,output [4:0] title_length,input [6+INDEPENDENT_TEXT:0] title_address,output [31:0] title_data,
  input display_valid,input [2:0] display_image,input prefetch_pause,
  input audio_packet_active,input audio_request_valid,input [7:0] requested_audio_epoch,input [2:0] requested_audio_track,
  output reg [7:0] active_audio_epoch,output reg [2:0] active_audio_track,audio_count,
@@ -17,7 +16,6 @@ module photo_sd_cache_before #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=104857
  output write_en,output [31:0] write_data,input finish_toggle,
  output sd_ncs,sd_dclk,sd_mosi,input sd_miso
 );
-wire asset_sd_request,asset_found;wire [31:0] asset_sd_sector;
 reg demand,scanned,scanning,loading,load_started;
 
 wire initialized,bmp_ready,scan_done,scan_exhausted,found,scaler_pixel;
@@ -33,9 +31,9 @@ assign write_top_down=loading && load_is_dlt;
 wire load_ready=load_is_dlt ? (dlt_ready && dlt_done):bmp_ready;
 wire [3:0] bmp_state;wire [31:0] bmp_read_addr;wire bmp_read_req;
 wire sector_end,byte_valid,scaler_fault;wire [7:0] byte_data;
-reg [2:0] read_owner;reg read_settle;reg [31:0] read_address;
+reg [1:0] read_owner;reg read_settle;reg [31:0] read_address;
 generate if(TITLE_SD)begin:title_storage
-photo_sd_title_store title_store(.clk(clk),.rst(rst),
+photo_sd_title_store #(.INDEPENDENT_TEXT(INDEPENDENT_TEXT)) title_store(.clk(clk),.rst(rst),
  .valid(TITLE_SD && byte_valid && read_owner==1),.data(byte_data),
  .sector_end(sector_end && read_owner==1),.ready(title_ready),.length(title_length),
  .address(title_address),.word(title_data));
@@ -44,14 +42,6 @@ end else begin:no_sd_title
 end endgenerate
 assign scaler_fault=load_is_dlt ? dlt_error!=0:bmp_fault;
 reg scan_start,scan_resume,scan_complete,scan_yield;reg load_start,load_launch,abort_op;reg [31:0] load_sector;
-// Scanner yields only at sector boundaries. Register its request so title,
-// catalog and audio control do not feed the BMP address-enable mux directly.
-reg scan_stop_q;
-always @(posedge clk or posedge rst)
- if(rst)scan_stop_q<=0;
- else scan_stop_q<=(image_count!=0 || award_available || relief_available) &&
-  (!scanned || scan_yield || (image_count==6 && audio_count==5 && award_available && relief_available &&
-   (!TITLE_SD || title_ready) && (!RESULT_ASSET || asset_found)));
 reg [31:0] directory[0:7];reg [2:0] cache_id[0:1];reg [1:0] cache_valid;
 reg [15:0] directory_width[0:7],directory_height[0:7];
 reg [1:0] load_slot;reg [2:0] load_image,current_image,wanted,playback_image;
@@ -122,7 +112,7 @@ wire audio_enable=initialized && audio_count!=0 && active_audio_track<audio_coun
 // One registered PCM write may still be pending: legal occupancy <=4225.
 // Keep the same refill waterline with a 4352-frame physical ring, including
 // 127 frames of extra headroom. The upper 3968 old slots were unreachable.
-photo_audio_fifo_compact audio_fifo(.clk(clk),.rst(audio_reset),.write_en(audio_pcm_we && !audio_switching),.write_data(audio_pcm_word),
+photo_audio_fifo_compact_before audio_fifo(.clk(clk),.rst(audio_reset),.write_en(audio_pcm_we && !audio_switching),.write_data(audio_pcm_word),
  .read_en(audio_fifo_read && !audio_switching),.data(audio_fifo_data),.used(audio_fifo_used),.empty(audio_empty),.full(audio_full));
 photo_sd_audio_stream audio_stream(.clk(clk),.rst(audio_reset),.enable(audio_enable),
  .start_sector(audio_sectors[active_audio_track]),.data_bytes(audio_lengths[active_audio_track]),.fifo_wrusedw(audio_fifo_used),
@@ -152,21 +142,10 @@ always @(posedge clk or posedge rst)begin
  else if(read_owner==0)begin
   // Sector-granular arbitration: refill music before the next picture sector.
   if(audio_sd_req && !audio_switching)begin read_owner<=2;read_address<=audio_sd_addr;end
-  else if(asset_sd_request)begin read_owner<=4;read_address<=asset_sd_sector;end
   else if(bmp_read_req)begin read_owner<=1;read_address<=bmp_read_addr;end
   else if(dlt_req)begin read_owner<=3;read_address<=dlt_sector;end
  end
 end
-
-generate if(RESULT_ASSET)begin:result_asset
- photo_result_asset_b reader(.clk(clk),.rst(rst),.scan_valid(byte_valid && read_owner==1 && bmp_state==1),
-  .scan_end(sector_end && read_owner==1 && bmp_state==1),.scan_sector(read_address),.byte_data(byte_data),
-  .request(asset_request),.requested_chunk(asset_chunk),.packet_active(audio_packet_active),.found(asset_found),
-  .sd_request(asset_sd_request),.sd_sector(asset_sd_sector),.data_valid(byte_valid && read_owner==4),.sector_end(sector_end && read_owner==4),
-  .read_address(asset_address),.read_data(asset_data),.ready(asset_ready),.descriptor(asset_descriptor));
-end else begin
- assign asset_sd_request=0;assign asset_found=0;assign asset_sd_sector=0;assign asset_data=0;assign asset_ready=0;assign asset_descriptor=0;
-end endgenerate
 sd_card_top #(.SPI_LOW_SPEED_DIV(248),.SPI_HIGH_SPEED_DIV(2),.READ_MULTIBLOCK(1),.FAST_READ_STREAM(1)) sd(
  .clk(clk),.rst(rst || abort_op),.SD_nCS(sd_ncs),.SD_DCLK(sd_dclk),.SD_MOSI(sd_mosi),.SD_MISO(sd_miso),
  .sd_init_done(initialized),.init_stage(),.sd_sec_read(read_owner!=0),.sd_sec_read_addr(read_address),
@@ -180,7 +159,7 @@ photo_dlt_reader #(.PIXEL_GAP(4)) dlt(.clk(clk),.rst(rst || abort_op),.start(loa
  .req(dlt_req),.sector(dlt_sector),.byte_valid(byte_valid && read_owner==3),.byte_data(byte_data),.block_end(sector_end && read_owner==3));
 bmp_read bmp(.clk(clk),.rst(rst),.op_abort(abort_op),.ready(bmp_ready),
  .scan_start(scan_start),.scan_resume(scan_resume),.scan_exhausted(scan_exhausted),
- .scan_stop(scan_stop_q),.scan_start_sector(32'd0),.scan_max_sector(SCAN_MAX_SECTOR),
+ .scan_stop((image_count!=0 || award_available || relief_available) && (!scanned || scan_yield || (image_count==6 && audio_count==5 && award_available && relief_available && (!TITLE_SD || title_ready)))),.scan_start_sector(32'd0),.scan_max_sector(SCAN_MAX_SECTOR),
  .scan_target_count(3'd6),.scan_done(scan_done),.scan_found_valid(found),.scan_found_sector(sector),
  .scan_found_total(),.scan_found_width(width),.scan_found_height(height),.scan_found_sprint(),.scan_found_dlt(found_dlt),
  .audio_found_valid(audio_found),.audio_found_index(),.audio_found_sector(audio_found_sector),.audio_found_bytes(audio_found_bytes),
@@ -309,4 +288,38 @@ always @(posedge clk or posedge rst)begin
   end
  end
 end
+endmodule
+
+// Specialized ring: 2048 frames in RAM32K, 2304 in spare RAM9K.
+// Two large macros are released as well as the unreachable upper capacity. The generic FIFO and every A-board/transport queue stay unchanged.
+module photo_audio_fifo_compact_before(input clk,rst,write_en,input[31:0] write_data,
+ input read_en,output[31:0] data,output empty,full,output reg[13:0] used);
+reg[12:0] wp,rp;reg[1:0] read_bank;
+wire push=write_en && !full,pop=read_en && !empty;
+wire[31:0] head_q,middle_q,tail_q;
+assign empty=used==0;assign full=used==14'd4352;
+photo_audio_word_ram #(.ADDR(11),.IMPLEMENT("32K")) head(
+ .clk(clk),.we(push && wp[12:11]==0),.wa(wp[10:0]),.wd(write_data),
+ .re(pop && rp[12:11]==0),.ra(rp[10:0]),.rd(head_q));
+photo_audio_word_ram #(.ADDR(11),.IMPLEMENT("9K")) middle(
+ .clk(clk),.we(push && wp[12:11]==1),.wa(wp[10:0]),.wd(write_data),
+ .re(pop && rp[12:11]==1),.ra(rp[10:0]),.rd(middle_q));
+photo_audio_word_ram #(.ADDR(8),.IMPLEMENT("9K")) tail(
+ .clk(clk),.we(push && wp[12]),.wa(wp[7:0]),.wd(write_data),
+ .re(pop && rp[12]),.ra(rp[7:0]),.rd(tail_q));
+assign data=read_bank==0 ? head_q:read_bank==1 ? middle_q:tail_q;
+always @(posedge clk or posedge rst)begin
+ if(rst)begin wp<=0;rp<=0;used<=0;read_bank<=0;end
+ else begin
+  if(push)wp<=wp==13'd4351 ? 13'd0:wp+1'b1;
+  if(pop)begin rp<=rp==13'd4351 ? 13'd0:rp+1'b1;read_bank<=rp[12:11];end
+  case({push,pop})2'b10:used<=used+1'b1;2'b01:used<=used-1'b1;default:;endcase
+ end
+end
+// synthesis translate_off
+always @(posedge clk)if(!rst)begin
+ if(write_en && full)$fatal(1,"compact raw PCM overflow");
+ if(wp>=4352 || rp>=4352)$fatal(1,"compact raw PCM pointer out of range");
+end
+// synthesis translate_on
 endmodule

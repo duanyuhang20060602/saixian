@@ -1,0 +1,16 @@
+[
+  {
+    "test": "gain_counts",
+    "passed": true,
+    "inputs_sha256": {
+      "common/photo_sd_cache.v": "123f9f12c98c1f8a5e106c5eff2a1a2574d644a452a53012eee844c72b4d332b",
+      "tests/reference/gain_counts/photo_sd_cache_before.v": "a0469b2712094115c3fa01bf06317853e29d17ba923d101bacd00e875c96a262",
+      "tools/test_gain_counts.py": "c0a282e40c9f43fc70bb64db7584e3580f8ee99f1514533f99c9a5ed5aaaf3f0",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\gain-counts-final-20261027\\production_gain.v": "f06706c1585a54832f220d37bf7136da8aca6c67b6fa520b5d356f311d4c8c2f",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\gain-counts-final-20261027\\tb.v": "59d1787790d7b235811aee0041f6e2d19f7b54fb373ee651ab5d4163db2fbf38"
+    },
+    "log": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\gain-counts-final-20261027\\gain_counts.log",
+    "log_sha256": "4451551d8cdd8d53b283b79941d3f04818dd1e1a4e4d2f6725cd84523cb26d33",
+    "seconds": 1.48
+  }
+]

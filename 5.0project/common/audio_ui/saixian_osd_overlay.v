@@ -1,4 +1,4 @@
-module saixian_osd_overlay #(parameter SHOW_SOURCE_RESOLUTION=1,SHARED_TITLE=0)(
+module saixian_osd_overlay #(parameter SHOW_SOURCE_RESOLUTION=1,SHARED_TITLE=0,INDEPENDENT_TEXT=0,EMPTY_TEXT_BLANK=0,CAROUSEL_TITLE=0,HIDE_CAROUSEL_LABEL=0)(
     input  wire        clk,
     input  wire        rst,
     input  wire        frame_tick,
@@ -93,7 +93,11 @@ wire [11:0] ticker_width = (ticker_text_length == 0) ? 12'd224 :
                            {2'b0,ticker_text_length,5'b0};
 wire [11:0] ticker_local_x = {2'b0, x} + ticker_width - {1'b0, ticker_x};
 wire [10:0] title_scroll_x;
-wire [10:0] title_local_x = SHARED_TITLE ? (title_text_length<=4 ? {1'b0,x}-11'd20:ticker_local_x[10:0]-11'd20) : {1'b0,x}+11'd108-title_scroll_x;
+// Independent contents reuse the existing ticker phase. Its shortest period
+// is 672 pixels, covering every 16-character header plus the 128-pixel window.
+// Use the header's own width so a short ticker cannot hide long-title glyphs.
+wire [10:0] title_local_x = INDEPENDENT_TEXT ? (title_text_length<=4 ? {1'b0,x}-11'd20:{1'b0,x}-11'd20+{1'b0,title_text_length,5'b0}-title_scroll_x) : SHARED_TITLE ? (title_text_length<=4 ? {1'b0,x}-11'd20:ticker_local_x[10:0]-11'd20) : {1'b0,x}+11'd108-title_scroll_x;
+wire [10:0] center_title_x=title_local_x-11'd160;
 // 75% of the underlying photograph; only trace/peak pixels are opaque.
 function [7:0] background_channel;
  input [7:0] value;begin background_channel=(value>>1)+(value>>2);end
@@ -197,7 +201,9 @@ function [6:0] state_glyph;
     begin
         state_glyph = 7'd0;
         case (current_state)
-            ST_CAROUSEL: case(index)
+            // Glyph zero is the blank cell in the shared font ROM.
+            // A constant profile removes the carousel label lookup at synthesis.
+            ST_CAROUSEL: if(!HIDE_CAROUSEL_LABEL)case(index)
                 0:state_glyph=7'd15; 1:state_glyph=7'd16; 2:state_glyph=7'd17;
                 3:state_glyph=7'd18; 4:state_glyph=7'd19; 5:state_glyph=7'd20;
                 default:state_glyph=7'd0;
@@ -394,10 +400,10 @@ always @* begin
             local_x = ticker_local_x[9:0];
             font_col = local_x[4:1];
             font_row = (y - 9'd432) >> 1;
-            glyph_id = (SHARED_TITLE ? 7'd96:7'd88) + ticker_local_x[9:5];
+            glyph_id = (INDEPENDENT_TEXT ? 7'd112:SHARED_TITLE ? 7'd96:7'd88) + ticker_local_x[9:5];
             text_region = 1'b1;
             text_color = 24'hFFD166;
-        end else if ((state == ST_CAROUSEL) && (ticker_text_length == 0) &&
+        end else if ((state == ST_CAROUSEL) && (ticker_text_length == 0) && !EMPTY_TEXT_BLANK &&
                      (ticker_local_x < 12'd224) &&
                      (y >= 9'd432) && (y < 9'd464)) begin
             local_x = ticker_local_x[9:0];
@@ -414,7 +420,7 @@ always @* begin
             glyph_id = (title_local_x < {1'b0,title_text_length,5'b0}) ?
                        ((SHARED_TITLE ? 7'd96:7'd108) + title_local_x[9:5]) : 7'd0;
             text_region = 1'b1;
-        end else if ((x >= 10'd20) && (x < 10'd148) && (y >= 9'd16) && (y < 9'd48)) begin
+        end else if ((x >= 10'd20) && (x < 10'd148) && (y >= 9'd16) && (y < 9'd48) && !EMPTY_TEXT_BLANK) begin
             local_x = x - 10'd20;
             slot = local_x[8:5];
             font_col = local_x[4:1];
@@ -463,8 +469,12 @@ always @* begin
             slot = local_x[8:5];
             font_col = local_x[4:1];
             font_row = (y - 9'd16) >> 1;
-            glyph_id = state_glyph(state,slot);
-            text_region=1'b1;
+            if(CAROUSEL_TITLE && state==ST_CAROUSEL)begin
+                font_col=center_title_x[4:1];
+                glyph_id=center_title_x<{1'b0,title_text_length,5'b0} ?
+                    ((SHARED_TITLE ? 7'd96:7'd108)+center_title_x[9:5]):7'd0;
+            end else glyph_id = state_glyph(state,slot);
+            text_region=!(CAROUSEL_TITLE && state==ST_CAROUSEL && title_text_length==0);
             case(state)
                 ST_RUNNING: text_color=24'h5CFF8A;
                 ST_PAUSED : text_color=24'hFFD166;
