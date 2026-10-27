@@ -1,4 +1,4 @@
-module saixian_osd_overlay #(parameter SHOW_SOURCE_RESOLUTION=1)(
+module saixian_osd_overlay #(parameter SHOW_SOURCE_RESOLUTION=1,SHARED_TITLE=0)(
     input  wire        clk,
     input  wire        rst,
     input  wire        frame_tick,
@@ -92,8 +92,8 @@ wire font_pixel_q = font_ready && font_bits[15-font_col_q2];
 wire [11:0] ticker_width = (ticker_text_length == 0) ? 12'd224 :
                            {2'b0,ticker_text_length,5'b0};
 wire [11:0] ticker_local_x = {2'b0, x} + ticker_width - {1'b0, ticker_x};
-reg [9:0] title_scroll_x;
-wire [10:0] title_local_x = {1'b0,x} + 11'd108 - {1'b0,title_scroll_x};
+wire [10:0] title_scroll_x;
+wire [10:0] title_local_x = SHARED_TITLE ? (title_text_length<=4 ? {1'b0,x}-11'd20:ticker_local_x[10:0]-11'd20) : {1'b0,x}+11'd108-title_scroll_x;
 // 75% of the underlying photograph; only trace/peak pixels are opaque.
 function [7:0] background_channel;
  input [7:0] value;begin background_channel=(value>>1)+(value>>2);end
@@ -143,13 +143,17 @@ always @* begin
 end
 
 assign font_addr = {glyph_id_q,font_row_q};
-always @(posedge clk or posedge rst) begin
-    if (rst) title_scroll_x <= 0;
-    else if (frame_tick && title_text_length != 0) begin
-        if (title_scroll_x >= (10'd128 + {title_text_length,5'b0})) title_scroll_x <= 0;
-        else title_scroll_x <= title_scroll_x + 1'b1;
-    end else if (title_text_length == 0) title_scroll_x <= 0;
-end
+generate if(SHARED_TITLE)begin:shared_scroll
+ assign title_scroll_x=ticker_x;
+end else begin:independent_scroll
+ reg [9:0] position;
+ assign title_scroll_x={1'b0,position};
+ always @(posedge clk or posedge rst)begin
+  if(rst)position<=0;
+  else if(frame_tick && title_text_length!=0)position<=position>=(10'd128+{title_text_length,5'b0}) ? 0:position+1'b1;
+  else if(title_text_length==0)position<=0;
+ end
+end endgenerate
 
 function [6:0] digit_glyph;
     input [3:0] digit;
@@ -390,7 +394,7 @@ always @* begin
             local_x = ticker_local_x[9:0];
             font_col = local_x[4:1];
             font_row = (y - 9'd432) >> 1;
-            glyph_id = 7'd88 + ticker_local_x[9:5];
+            glyph_id = (SHARED_TITLE ? 7'd96:7'd88) + ticker_local_x[9:5];
             text_region = 1'b1;
             text_color = 24'hFFD166;
         end else if ((state == ST_CAROUSEL) && (ticker_text_length == 0) &&
@@ -408,7 +412,7 @@ always @* begin
             font_col = title_local_x[4:1];
             font_row = (y - 9'd16) >> 1;
             glyph_id = (title_local_x < {1'b0,title_text_length,5'b0}) ?
-                       (7'd108 + title_local_x[9:5]) : 7'd0;
+                       ((SHARED_TITLE ? 7'd96:7'd108) + title_local_x[9:5]) : 7'd0;
             text_region = 1'b1;
         end else if ((x >= 10'd20) && (x < 10'd148) && (y >= 9'd16) && (y < 9'd48)) begin
             local_x = x - 10'd20;

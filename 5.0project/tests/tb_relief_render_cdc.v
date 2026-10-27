@@ -81,10 +81,15 @@ endmodule
 
 // Requests intentionally remain pending through mode changes so routing is
 // checked independently of either player's reset/enable cancellation policy.
-module photo_relief_player #(parameter SHARED_PALETTE=0,WIDE=1)(input mem_clk,mem_rst,enable,input [20:0]base,
+module photo_relief_player #(parameter SHARED_PALETTE=0,WIDE=1,REMOTE_RELIEF=0,SHARED_MATH=0)(input mem_clk,mem_rst,enable,input [20:0]base,
  output wide_request,output request,output [20:0]address,input ack,input [31:0]data,input valid,
  input clk,rst,pause,frame_tick,de,input[10:0]x,input[9:0]y,input[23:0]rgb_in,
- input touch_contact,input[10:0]cursor_x,input[9:0]cursor_y,output[23:0]rgb_out,output[3:0]error,output[4:0]angle,output cache_write_en,output[7:0]cache_write_address,output[31:0]cache_write_data,output[7:0]cache_read_address,input[31:0]cache_read_data);
+ input touch_contact,input[10:0]cursor_x,input[9:0]cursor_y,output[23:0]rgb_out,output[3:0]error,output[4:0]angle,output cache_write_en,output[7:0]cache_write_address,output[31:0]cache_write_data,output[7:0]cache_read_address,input[31:0]cache_read_data,
+ input remote_valid,input[4:0]remote_angle,input signed[5:0]remote_light_x,remote_light_y,
+ output[4:0]desired_angle,output signed[5:0]desired_light_x,desired_light_y,output[6:0]wall_address,input[23:0]wall_rgb,
+ output signed[5:0]math_nx,math_ny,math_lx,math_ly,input signed[14:0]math_product_x,math_product_y);
+assign math_nx=0;assign math_ny=0;assign math_lx=0;assign math_ly=0;
+assign desired_angle=0;assign desired_light_x=0;assign desired_light_y=0;assign wall_address=0;
 assign cache_write_en=0;assign cache_write_address=0;assign cache_write_data=0;assign cache_read_address=0;
 assign wide_request=WIDE;assign request=!mem_rst;assign address=base+21'h20000;assign rgb_out=rgb_in;assign error=0;assign angle=0;
 endmodule
@@ -96,7 +101,9 @@ assign cache_write_en=0;assign cache_write_address=0;assign cache_write_data=0;a
 assign stream_start=!mem_rst;assign stream_offset=base+21'h10000;assign error=0;
 assign rgb_out=rgb_in;assign de_out=de_in;assign vs_out=vs_in;assign frame_index=0;assign initialized=1;
 endmodule
-module award_fx #(parameter INITIAL_HOLD_FRAMES=0)(input clk,rst,enable,pause,frame_tick,input[10:0]x,input[9:0]y,input[23:0]base_rgb,input[5:0]tag,output[23:0]rgb);
+module award_fx #(parameter INITIAL_HOLD_FRAMES=0,SHARED_MATH=0)(input clk,rst,enable,pause,frame_tick,input[10:0]x,input[9:0]y,input[23:0]base_rgb,input[5:0]tag,output[23:0]rgb,
+output signed[8:0]math_delta_r,math_delta_g,output[3:0]math_alpha,output math_request,input signed[14:0]math_product_r,math_product_g);
+assign math_delta_r=0;assign math_delta_g=0;assign math_alpha=0;assign math_request=0;
 assign rgb=base_rgb;
 endmodule
 module photo_award_delay(input clk,rst,input[23:0]rgb_in,output[23:0]rgb,menu_rgb);

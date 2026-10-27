@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "shared_award_renderer",
+  "validation_group": "shared_renderer",
+  "passed": true,
+  "rerun_this_revision": false,
+  "seconds": 235.2
+}

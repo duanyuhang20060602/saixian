@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "rgb565_settings",
+  "validation_group": "rgb565_03",
+  "passed": true,
+  "rerun_this_revision": false,
+  "seconds": 0.06
+}

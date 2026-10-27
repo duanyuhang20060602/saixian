@@ -1,0 +1,3 @@
+WARNING: E:\Codex\Work\saixian-color-ripple-rtl-20261025\candidate\5.0project\tests\ip_vendor_ram_adapter.v:27: $readmemh: The behaviour for reg[...] mem[N:0]; $readmemh("...", mem); changed in the 1364-2005 standard. To avoid ambiguity, use mem[0:N] or explicit range parameters $readmemh("...", mem, start, stop);. Defaulting to 1364-2005 behavior.
+PASS color_noise_memory 8192 independent dual-port samples, every 1024x9 coefficient, native one-clock latency
+E:\Codex\Work\saixian-color-ripple-rtl-20261025\candidate\5.0project\tests\fx11_water\tb_color_noise_memory.v:14: $finish called at 40990000 (1ps)

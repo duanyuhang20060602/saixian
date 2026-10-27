@@ -1,0 +1,2 @@
+PASS real 720p blanking: cache across 3 frame boundaries, 40320 source words, 14400 complete preview pixels
+E:\Codex\Work\saixian-merged-thumbnail-resource-20261025\thumbnail_blanking\blank_after.v:44: $finish called at 47253535892 (1ps)

@@ -1,0 +1,2 @@
+PASS concurrent SDRAM COLOR=0: 460800 exact main words, 14400 preview pixels, zero underflow, no steady preview SDRAM traffic, background words=71199
+E:\Codex\Work\saixian-color-ripple-rtl-20261025\thumbnail_bandwidth_final\bandwidth.v:84: $finish called at 17662456412 (1ps)

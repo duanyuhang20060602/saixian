@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "sd_title_concurrent_concurrent",
+  "validation_group": "compat_title_concurrent",
+  "passed": true,
+  "rerun_this_revision": true,
+  "seconds": 17.27
+}

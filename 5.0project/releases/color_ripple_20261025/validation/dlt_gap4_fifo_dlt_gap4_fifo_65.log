@@ -1,0 +1,2 @@
+PASS production gap4, native asynchronous FIFO, real full stalls and complete ordered drain: 985088 exact words including plate, opaque tail and full backpressure
+E:\Codex\Work\saixian-merged-thumbnail-resource-20261025\dlt_gap4_fifo\dlt_gap4_fifo.v:56: $finish called at 192411318000 (1ps)

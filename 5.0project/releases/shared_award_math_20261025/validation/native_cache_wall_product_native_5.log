@@ -1,0 +1,23 @@
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:415: warning: Choosing typ expression.
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:415: warning: Choosing typ expression.
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:416: warning: Choosing typ expression.
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:416: warning: Choosing typ expression.
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:417: warning: Choosing typ expression.
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:417: warning: Choosing typ expression.
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:418: warning: Choosing typ expression.
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:418: warning: Choosing typ expression.
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:419: warning: Choosing typ expression.
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:419: warning: Choosing typ expression.
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:197: vvp.tgt sorry: procedural continuous assignments are not yet fully supported. The RHS of this assignment will only be evaluated once, at the time the assignment statement is executed.
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:204: vvp.tgt sorry: procedural continuous assignments are not yet fully supported. The RHS of this assignment will only be evaluated once, at the time the assignment statement is executed.
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:211: vvp.tgt sorry: procedural continuous assignments are not yet fully supported. The RHS of this assignment will only be evaluated once, at the time the assignment statement is executed.
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:218: vvp.tgt sorry: procedural continuous assignments are not yet fully supported. The RHS of this assignment will only be evaluated once, at the time the assignment statement is executed.
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:225: vvp.tgt sorry: procedural continuous assignments are not yet fully supported. The RHS of this assignment will only be evaluated once, at the time the assignment statement is executed.
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:232: vvp.tgt sorry: procedural continuous assignments are not yet fully supported. The RHS of this assignment will only be evaluated once, at the time the assignment statement is executed.
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:239: vvp.tgt sorry: procedural continuous assignments are not yet fully supported. The RHS of this assignment will only be evaluated once, at the time the assignment statement is executed.
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:246: vvp.tgt sorry: procedural continuous assignments are not yet fully supported. The RHS of this assignment will only be evaluated once, at the time the assignment statement is executed.
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:253: vvp.tgt sorry: procedural continuous assignments are not yet fully supported. The RHS of this assignment will only be evaluated once, at the time the assignment statement is executed.
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:260: vvp.tgt sorry: procedural continuous assignments are not yet fully supported. The RHS of this assignment will only be evaluated once, at the time the assignment statement is executed.
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\native_cache\vendor_mult18_functional.v:267: vvp.tgt sorry: procedural continuous assignments are not yet fully supported. The RHS of this assignment will only be evaluated once, at the time the assignment statement is executed.
+PASS all 4096 signed normal/light products in native DSP model, exact low 12 bits and registered reset
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_rebalance_wall_product.v:12: $finish called at 41016000 (1ps)

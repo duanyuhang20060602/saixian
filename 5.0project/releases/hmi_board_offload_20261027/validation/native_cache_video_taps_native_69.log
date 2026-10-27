@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "video_taps_native",
+  "validation_group": "native_cache",
+  "passed": true,
+  "rerun_this_revision": false,
+  "seconds": 2.81
+}

@@ -1,0 +1,16 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "native_geometry_memory",
+  "validation_group": "color_memory",
+  "passed": true,
+  "rerun_this_revision": false,
+  "seconds": 0.59,
+  "measurements": {
+    "exact_low9_rom_words": 2048,
+    "high_bits_nonzero_only_at": "1..128",
+    "inverse_ram9k_before": 4,
+    "inverse_ram9k_expected": 2,
+    "cache_tail_ram32k_before": 2,
+    "cache_tail_ram9k_expected": 4
+  }
+}

@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "bandwidth_metal",
+  "validation_group": "effects",
+  "passed": true,
+  "rerun_this_revision": false,
+  "seconds": 117.69
+}

@@ -1,0 +1,1 @@
+localparam HEX_FILE=INIT_FILE=="photo_menu_font.mif" ? "menu_font.hex":INIT_FILE=="../src/board_a/user_source/hdl_source/photo_menu_text_lookup.mif" ? "menu_map.hex":INIT_FILE=="../src/board_a/user_source/hdl_source/photo_menu_edge_weights.mif" ? "menu_edge.hex":INIT_FILE=="../../src/board_a/user_source/hdl_source/IP/water_edge_weights.mif" ? "edge_weights.hex":"";

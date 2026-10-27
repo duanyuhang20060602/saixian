@@ -1,0 +1,2 @@
+PASS 800000 exact 48kHz phase/sample cycles, production clocks and coprime clock, control flushes
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\tests\tb_v4_audio_rate.v:33: $finish called at 2000040000 (1ps)

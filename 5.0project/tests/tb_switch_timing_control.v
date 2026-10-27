@@ -25,7 +25,7 @@ photo_switch_timing #(.CLK_HZ(10000),.PHASES(3)) b_probe(.clk(clk),.rst(rst),.st
 task packet;
  input [7:0] kind;
  begin @(negedge clk);b_packet={kind,32'd7,16'd1,8'd1,8'd0,32'd4,32'd0,8'd0,16'd0};
-  b_got=1;@(negedge clk);b_got=0;
+  repeat(2)@(negedge clk);b_got=1;@(negedge clk);b_got=0;
  end
 endtask
 initial begin
@@ -43,7 +43,7 @@ initial begin
  if(!ar || a_finishes!=1)$fatal(1,"old display commit completed a newer request");
  wait(a.display_pending);repeat(20)@(negedge clk);commit_frame();
  if(ar || a_finishes!=2)$fatal(1,"queued request failed to commit its own sample");
- @(negedge clk);b.state=2;b.session=7;packet(3);
+ @(negedge clk);b.state_flags=(11'd1<<2);b.session=7;packet(3);
  repeat(25)@(negedge clk);b_ready=1;wait(b.state==5);
  repeat(30)@(negedge clk);packet(5);wait(b.state==6);
  repeat(40)@(negedge clk);b_done=1;@(negedge clk);b_done=0;repeat(3)@(negedge clk);

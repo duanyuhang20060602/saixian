@@ -1,0 +1,4 @@
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\tests\tb_rebalance_bus.v:65: warning: Port 26 (read_len) of module frame_read_write expects 21 bit(s), given 32.
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\tests\tb_rebalance_bus.v:65:        : Pruning (signed) 11 high bits of the expression.
+PASS 2 full 720p relief frames, 1843200 pixels, zero framebuffer/row underflow; 1152 completed rows; 3260 refreshes; worst row latency 1288 memory clocks; 123122 accepted/122628 written background words with 10 Mword/s offered load
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\tests\tb_rebalance_bus.v:105: $finish called at 33003010068 (1ps)

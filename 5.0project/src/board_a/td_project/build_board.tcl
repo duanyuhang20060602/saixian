@@ -23,11 +23,16 @@ lappend phyWildParams route post_route_opt high
 lappend phyWildParams route effort high
 # TD official AreaOptimizeHigh parameters, applied directly so builds do
 # not depend on a per-user GUI strategy file.
-lappend phyWildParams gate add_map_lut_struct high
+lappend phyWildParams gate add_map_lut_struct off
 lappend phyWildParams gate map_mode area_prior
 lappend phyWildParams gate multi_thread_mapping partition
+# Disable additional wide-LUT restructuring to reduce packing fragmentation.
+# Keep high packing effort; the timing constraints are unchanged.
+lappend phyWildParams gate pack_effort high
 lappend phyWildParams rtl resource_sharing auto
 lappend phyWildParams rtl shifter_style shifter_reg
+# Consolidate small clock-enable groups to reduce slice control fragmentation.
+lappend phyWildParams rtl min_ce_fanout 128
 # This high-utilization design needs the explicit route hold-fix stage.  The
 # automatic in-route pass is skipped above 90% slice utilization.  Keep the
 # normal route phase enabled, then invoke the tool's official fix_hold phase

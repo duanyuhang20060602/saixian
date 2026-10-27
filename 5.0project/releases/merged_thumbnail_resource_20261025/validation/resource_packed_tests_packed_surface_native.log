@@ -1,0 +1,12 @@
+E:\Codex\Work\saixian-resource-save-20261024\packed_tests\vendor_mult18_functional.v:415: warning: Choosing typ expression.
+E:\Codex\Work\saixian-resource-save-20261024\packed_tests\vendor_mult18_functional.v:415: warning: Choosing typ expression.
+E:\Codex\Work\saixian-resource-save-20261024\packed_tests\vendor_mult18_functional.v:416: warning: Choosing typ expression.
+E:\Codex\Work\saixian-resource-save-20261024\packed_tests\vendor_mult18_functional.v:416: warning: Choosing typ expression.
+E:\Codex\Work\saixian-resource-save-20261024\packed_tests\vendor_mult18_functional.v:417: warning: Choosing typ expression.
+E:\Codex\Work\saixian-resource-save-20261024\packed_tests\vendor_mult18_functional.v:417: warning: Choosing typ expression.
+E:\Codex\Work\saixian-resource-save-20261024\packed_tests\vendor_mult18_functional.v:418: warning: Choosing typ expression.
+E:\Codex\Work\saixian-resource-save-20261024\packed_tests\vendor_mult18_functional.v:418: warning: Choosing typ expression.
+E:\Codex\Work\saixian-resource-save-20261024\packed_tests\vendor_mult18_functional.v:419: warning: Choosing typ expression.
+E:\Codex\Work\saixian-resource-save-20261024\packed_tests\vendor_mult18_functional.v:419: warning: Choosing typ expression.
+PASS packed_surface pair_cases=262144 green_cases=16384 two_pixel_transactions=4096 exact RGB565 reference, valid cadence and reset
+E:\Codex\Work\saixian-resource-save-20261024\candidate\5.0project\tests\fx11_water\tb_packed_surface.v:53: $finish called at 649317000 (1ps)

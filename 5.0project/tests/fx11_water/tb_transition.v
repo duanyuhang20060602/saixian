@@ -19,7 +19,7 @@ function[4:0] expected;input integer v;begin
 end endfunction
 task finish_transition;begin
  previous=0;saved_commit=commit;
- for(i=1;i<=48;i=i+1)begin
+ for(i=1;i<=(mode==6 ? 84:48);i=i+1)begin
   frame();
   if(!active||progress<previous||progress>256||level!=0||commit!=saved_commit)$fatal(1,"invalid 48-frame progression");
   previous=progress;
@@ -44,7 +44,7 @@ initial begin
  fluid_enable=0;
  for(e=1;e<=11;e=e+1)begin selection=e;submit();if(mode!=0)$fatal(1,"RGB888 fallback");finish_transition();end
  immediate=1;next_slot=2;submit();if(active||current!=2)$fatal(1,"immediate award/settings commit");
- $display("PASS 48-frame progression, eleven fixed effects, random coverage/no repeats, native endpoint commit, RGB888 fallback and immediate updates");$finish;
+ $display("PASS 84-frame colorful ripple / 48-frame other progression, eleven fixed effects, random coverage/no repeats, native endpoint commit, RGB888 fallback and immediate updates");$finish;
 end
 initial begin #3000000;$fatal(1,"transition timeout");end
 endmodule

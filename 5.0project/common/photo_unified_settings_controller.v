@@ -63,7 +63,7 @@ always @(posedge clk or posedge rst) begin
     if (rst) begin
         settings_mode      <= 1'b0;
         setting_item       <= 4'd0;
-        effect_select      <= 3'd0;
+        effect_select      <= 5'd1;
         auto_interval_seconds<=5'd5;auto_enable        <= 1'b0;waveform_mode<=0;audio_repair_enable<=0;edge_enable<=0;
         volume_setting     <= 4'd5;
         brightness_setting <= 4'd4;
@@ -75,7 +75,7 @@ always @(posedge clk or posedge rst) begin
         enhancement_setting <= 2'd1;
         idle_timer         <= 33'd0;
     end else if (hmi_reset_defaults) begin
-        effect_select      <= 3'd0;
+        effect_select      <= 5'd1;
         auto_interval_seconds<=5'd5;auto_enable        <= 1'b0;waveform_mode<=0;audio_repair_enable<=0;edge_enable<=0;
         volume_setting     <= 4'd5;
         brightness_setting <= 4'd4;

@@ -1,0 +1,2 @@
+PASS typed SPI: corrupt metadata rejection, queue-full backpressure, ACK loss/retries deduplicated, 20 ordered styles, sequence wrap, no PCM reads/stream reset
+E:\Codex\Downloads\qiansai\5.2project\tests\tb_fx_protocol.v:34: $finish called at 1037270000 (1ps)

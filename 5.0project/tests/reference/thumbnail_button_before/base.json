@@ -1,0 +1,9 @@
+{
+  "upstream": "390690f91f6e49e8124064843a32f0515ded91ad",
+  "base_delivery_sha256": "eaf6fa19737396856b0128af938adfe0c2040d29e0ba54622835e1f13bcbb885",
+  "files": [
+    "common/photo_thumbnail.v",
+    "common/photo_touchpad.v",
+    "common/top_photo_a.v"
+  ]
+}

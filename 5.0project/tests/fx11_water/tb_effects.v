@@ -25,6 +25,7 @@ initial begin
  end
  repeat(4)@(negedge clk);rst=0;
  for(n=0;n<count;n=n+1)begin
+  if(n>0&&(vf[n]!=vf[n-1]||ve[n]!=ve[n-1]||vp[n]!=vp[n-1]||vr[n]!=vr[n-1]))repeat(10)@(negedge clk);
   iv=1;fx=vf[n];p=vp[n];right=vr[n];en=ve[n];x=vx[n];y=vy[n];wx=vwx[n];wy=vwy[n];
   @(negedge clk);iv=0;@(negedge clk);
  end

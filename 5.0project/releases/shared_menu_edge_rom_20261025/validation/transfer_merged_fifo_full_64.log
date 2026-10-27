@@ -1,0 +1,2 @@
+PASS actual vendor read/write FIFOs, 460800 ordered words, asynchronous clocks and full/empty backpressure
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\tests\tb_real_fifo_link_full.v:49: $finish called at 295388000000 (1ps)

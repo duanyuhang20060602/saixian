@@ -1,0 +1,56 @@
+{
+  "same_feature_synthesis_comparison": {
+    "before": {
+      "lut": 18137,
+      "reg": 12358,
+      "bram": 64,
+      "bram32k": 16,
+      "dsp": 29
+    },
+    "after": {
+      "lut": 17839,
+      "reg": 12342,
+      "bram": 64,
+      "bram32k": 16,
+      "dsp": 28
+    },
+    "saved": {
+      "lut": 298,
+      "reg": 16,
+      "bram": 0,
+      "bram32k": 0,
+      "dsp": 1
+    },
+    "source_differences": [
+      "common/fluid/water_edge.v",
+      "common/fluid/water_surface.v",
+      "common/photo_relief_player.v",
+      "src/board_a/td_project/build_board.tcl"
+    ],
+    "baseline_scope": "Synthesis only, intentionally stopped at opt_gate. No qualified baseline placement, timing or bitstream claimed."
+  },
+  "previous_local_resources": {
+    "lut": 18112,
+    "reg": 12346,
+    "bram": 64,
+    "bram32k": 16,
+    "dsp": 29
+  },
+  "merged_final_resources": {
+    "lut": 18131,
+    "reg": 12363,
+    "bram": 64,
+    "bram32k": 16,
+    "dsp": 28
+  },
+  "previous_mslices": 4778,
+  "merged_mslices": 4757,
+  "unchanged_material_sha256": "0513e891be150866f5ff5d26ec37ca1bb11b09c636a73eb04440b6d5ee8db025",
+  "unchanged_timing_constraints": true,
+  "preserved_diffuse_levels": 256,
+  "thumbnail_frame_boundaries": {
+    "before": 7,
+    "after": 3,
+    "scope": "Same fully loaded next-photo source; SD and link wait excluded."
+  }
+}

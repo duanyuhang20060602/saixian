@@ -1,0 +1,7 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "color_surface",
+  "validation_group": "color_surface",
+  "passed": true,
+  "rerun_this_revision": false
+}

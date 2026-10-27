@@ -102,7 +102,8 @@ def vectors(directory, source, relief=False):
             wall = (~cup) & ((base & 1) != 0)
             shaded = color.copy()
             shaded[wall] = np.stack((24 + diffuse // 2, 12 + diffuse // 4, 3 + diffuse // 16), axis=-1)[wall]
-            metal = color // 2 + (color * (diffuse[...,None]//16)) // 32 + np.stack((specular // 2, specular // 4, specular // 8), axis=-1)
+            fine = np.stack((((color[...,0]>>3)*diffuse*33)//2048, ((color[...,1]>>2)*diffuse*65)//8192, ((color[...,2]>>3)*diffuse*33)//2048),axis=-1)
+            metal = color // 2 + fine + np.stack((specular // 2, specular // 4, specular // 8), axis=-1)
             shaded[cup] = np.clip(metal, 0, 255)[cup]
             shaded=np.rint(510*shaded/(255+shaded)).astype(np.int32)
             images.append(((shaded[..., 0] << 16) | (shaded[..., 1] << 8) | shaded[..., 2]).ravel())

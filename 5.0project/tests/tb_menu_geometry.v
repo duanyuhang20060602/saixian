@@ -3,7 +3,7 @@ module geometry_menu_case #(parameter DELAY=21,INTERVAL=0)(input clk,rst,frame_t
 wire [23:0] a,b;
 wire [10:0] ref_y=(y>=496 && y<656) ? y+11'd32:(y>=656 && y<688) ? 11'd686:y;
 wire [3:0] ref_item=random_state[3:0]>=11 && random_state[3:0]<15 ? random_state[3:0]+1'b1:random_state[3:0];
-photo_settings_overlay #(.VIDEO_DELAY(DELAY),.INTERVAL_CONTROL(INTERVAL)) actual(clk,rst,frame_tick,de,settings_mode,updating,x,y,random_state[3:0],random_state[7:4],random_state[11:8],random_state[15:12],random_state[19:16],random_state[21:20],random_state[23:22],random_state[24],random_state[25],random_state[30:26],random_state[31],random_state[1],random_state[2],random_state[4],random_state[23:0],a,random_state[20:16]);
+photo_settings_overlay #(.VIDEO_DELAY(DELAY),.INTERVAL_CONTROL(INTERVAL)) actual(clk,rst,frame_tick,de,settings_mode,updating,x,y,random_state[3:0],random_state[7:4],random_state[11:8],random_state[15:12],random_state[19:16],random_state[21:20],random_state[23:22],random_state[24],random_state[25],random_state[30:26],random_state[31],random_state[1],random_state[2],random_state[4],random_state[23:0],a,random_state[20:16],7'd0,);
 photo_settings_geometry_ref #(.VIDEO_DELAY(DELAY),.INTERVAL_CONTROL(INTERVAL)) frozen(clk,rst,frame_tick,de,settings_mode,updating,x,ref_y,ref_item,random_state[7:4],random_state[11:8],random_state[15:12],random_state[19:16],random_state[21:20],random_state[23:22],random_state[24],random_state[25],random_state[30:26],random_state[31],random_state[1],random_state[2],1'b0,random_state[4],random_state[23:0],b,random_state[20:16]);
 always @(posedge clk)begin #1;if(a!==b)$fatal(1,"menu palette mismatch delay=%0d x=%0d y=%0d actual=%h expected=%h",DELAY,x,y,a,b);end
 endmodule

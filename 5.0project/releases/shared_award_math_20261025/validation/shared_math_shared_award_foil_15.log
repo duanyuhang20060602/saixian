@@ -1,0 +1,2 @@
+PASS shared foil: 285539 same-cycle RGB comparisons including all 65536 opacity/color/background combinations, random RGB, tags, enable, pause and reset
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_shared_award_fx.v:25: $finish called at 2855390000 (1ps)

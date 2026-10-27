@@ -1,0 +1,9 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "keys",
+  "validation_group": "pitch",
+  "passed": true,
+  "rerun_this_revision": true,
+  "seconds": 0.08,
+  "measurements": {}
+}

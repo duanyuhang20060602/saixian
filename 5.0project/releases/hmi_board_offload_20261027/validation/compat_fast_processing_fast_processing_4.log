@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "fast_processing",
+  "validation_group": "compat_fast_processing",
+  "passed": true,
+  "rerun_this_revision": true,
+  "seconds": 17.89
+}

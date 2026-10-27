@@ -3,13 +3,14 @@
 
 // smoothed at frame boundaries and never drives the water-wave scheduler.
 
-module water_edge #(parameter EXTERNAL_ENVELOPE=0)(input clk,rst,frame_tick,music_drive,pcm_valid,
+module water_edge #(parameter EXTERNAL_ENVELOPE=0,SHARED_WEIGHT=0)(input clk,rst,frame_tick,music_drive,pcm_valid,
 
  input signed[15:0] pcm_left,pcm_right,input[10:0] x,input[9:0] y,
 
  input de,sof,eol,input[23:0] rgb,input[5:0] darkness,input[7:0] external_target,
 
- output reg de_out,sof_out,eol_out,output reg[23:0] rgb_out,output reg[7:0] level);
+ output reg de_out,sof_out,eol_out,output reg[23:0] rgb_out,output reg[7:0] level,
+ input [7:0] shared_weight,output [6:0] weight_address);
 
 reg[18:0] envelope;wire signed[16:0] sum=$signed({pcm_left[15],pcm_left})+$signed({pcm_right[15],pcm_right});
 
@@ -57,6 +58,20 @@ wire[10:0] yd={1'b0,y}<bottom_dist ? {1'b0,y}:{1'b0,bottom_dist};
 
 wire[10:0] distance=xd<yd ? xd:yd;
 
+// The weight is zero away from the 76-pixel border. Clip each axis before
+// taking the minimum: only seven bits are relevant to the ROM, avoiding the
+// wide subtract/compare chain on the synchronous RAM address setup path.
+// Screen-outside coordinates retain the original zero-distance behavior.
+wire[6:0] border_x=x<76 ? x[6:0]:x>=1280 ? 7'd0:x>=1204 ? 7'd127-x[6:0]:7'd127;
+wire[6:0] border_y=y<76 ? y[6:0]:y>=720 ? 7'd0:y>=644 ? 7'd79-y[6:0]:7'd127;
+wire[6:0] border_address=border_x<border_y ? border_x:border_y;
+
+assign weight_address=border_address;
+wire [7:0] weight;reg inside_edge;
+generate if(SHARED_WEIGHT)begin:shared_weights
+ // Menu ROM port B returns the same synchronous byte, including zero at 127.
+ assign weight=shared_weight;
+end else begin:dedicated_weights
 // Use the original synchronous LUT model for legacy simulator-only builds.
 // Production uses a native eRAM read in the same single-clock stage.
 `ifdef WATER_SIM
@@ -190,19 +205,20 @@ reg[7:0] edge_rom[0:127];initial begin
  edge_rom[126]=8'h00;
  edge_rom[127]=8'h00;
 end
-reg [7:0] weight;
-always @(posedge clk)weight<=distance<76 ? edge_rom[distance[6:0]]:8'd0;
+reg [7:0] local_weight;
+always @(posedge clk)local_weight<=distance<76 ? edge_rom[distance[6:0]]:8'd0;
+assign weight=local_weight;
 `else
 wire [7:0] rom_weight;
-reg inside_edge;
-wire [7:0] weight=inside_edge ? rom_weight:8'd0;
+assign weight=inside_edge ? rom_weight:8'd0;
 EG_LOGIC_BRAM #(.DATA_WIDTH_A(8),.ADDR_WIDTH_A(7),.DATA_DEPTH_A(128),
  .DATA_WIDTH_B(8),.ADDR_WIDTH_B(7),.DATA_DEPTH_B(128),.BYTE_ENABLE(0),
  .MODE("SP"),.REGMODE_A("NOREG"),.REGMODE_B("NOREG"),.WRITEMODE_A("NORMAL"),.WRITEMODE_B("NORMAL"),
  .RESETMODE("SYNC"),.INIT_FILE("../../src/board_a/user_source/hdl_source/IP/water_edge_weights.mif"),.IMPLEMENT("9K")) weights(
- .clka(clk),.rsta(1'b0),.cea(1'b1),.wea(1'b0),.ocea(1'b1),.bea(1'b0),.addra(distance[6:0]),.dia(8'd0),.doa(rom_weight),
+ .clka(clk),.rsta(1'b0),.cea(1'b1),.wea(1'b0),.ocea(1'b1),.bea(1'b0),.addra(border_address),.dia(8'd0),.doa(rom_weight),
  .clkb(1'b0),.rstb(1'b0),.ceb(1'b0),.web(1'b0),.oceb(1'b0),.beb(1'b0),.addrb(7'd0),.dib(8'd0),.dob());
 `endif
+end endgenerate
 
 reg[23:0] rgb0,rgb1,rgb2;reg[5:0] dark0,dark1,dark2;
 
@@ -240,7 +256,9 @@ endfunction
 
 always @(posedge clk)begin
 
- inside_edge<=distance<76;rgb0<=rgb;dark0<=darkness;
+ // Exact distance<76 predicate for every 11-bit x / 10-bit y,
+ // including the original zero-distance clamp outside 1280x720.
+ inside_edge<=(x<11'd76 || x>=11'd1204 || y<10'd76 || y>=10'd644);rgb0<=rgb;dark0<=darkness;
 
  energy<=edge_product($signed({1'b0,weight}),level);rgb1<=rgb0;dark1<=dark0;
 

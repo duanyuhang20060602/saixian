@@ -1,0 +1,29 @@
+Public qualified build summary.
+{
+  "board": "a",
+  "status": "passed",
+  "hardware_validation": "pending",
+  "resources": {
+    "lut": 18188,
+    "reg": 12968,
+    "bram": 61,
+    "bram32k": 16,
+    "dsp": 28
+  },
+  "timing_ns": {
+    "SWNS": 0.14,
+    "STNS": 0.0,
+    "HWNS": 0.022,
+    "HTNS": 0.0
+  },
+  "physical_mslices": 4737,
+  "place_seed_override": "17",
+  "physical_strategy": {
+    "name": "TimingUltraEmbeddedCompactRoute"
+  },
+  "bit": {
+    "path": "releases/PHOTO_BOARD_A_5_0.bit",
+    "sha256": "26997cf516f3c2a2cec65602f1c191feca70bb7fc4d9db82cb84d8b26cdd4740"
+  },
+  "report_scope": "Qualified final numerical summary only; raw logs and machine-specific provenance are retained locally."
+}

@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "legacy_state_tb_switch_timing_control",
+  "validation_group": "legacy_state",
+  "passed": true,
+  "rerun_this_revision": true,
+  "seconds": 0.2
+}

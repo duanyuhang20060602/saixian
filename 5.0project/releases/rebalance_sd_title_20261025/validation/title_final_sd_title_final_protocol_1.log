@@ -1,0 +1,6 @@
+progress: 32 font words
+progress: 64 font words
+progress: 96 font words
+progress: 128 font words
+PASS SD CRC and single-RAM title store through real full-duplex UART/CRC, lost ACK retry, duplicate suppression, all 256 font rows, blanking-only publication, unchanged fallback glyphs and frame-edge restart isolation
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\tests\tb_sd_title_protocol.v:61: $finish called at 5186350000 (1ps)

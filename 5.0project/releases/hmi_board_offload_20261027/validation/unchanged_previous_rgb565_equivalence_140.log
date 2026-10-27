@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "rgb565_equivalence",
+  "validation_group": "unchanged_previous",
+  "passed": true,
+  "rerun_this_revision": false,
+  "seconds": 2.17
+}

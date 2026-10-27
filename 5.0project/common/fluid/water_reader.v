@@ -103,19 +103,19 @@ water_native_cache native_cache(.clk(mem_clk),.ra(native_ra),.wa(fetch_cache_add
  .rst(rst||state==ACK),.read_valid(mapped_valid));
 reg[2:0] cache_valid;reg[8:0] alpha0,alpha1;
 reg[7:0] last_q,affected_q;
-reg[4:0] shade_q[0:5];reg[2:0] shine_q[0:5];integer light_stage;
+reg[4:0] shade_q[0:7];reg[2:0] shine_q[0:7];integer light_stage;
 reg[63:0] native0,native1,native2,native3,native4,native5;
 always @(posedge mem_clk)begin
  if(rst||state==ACK)begin
   cache_valid<=0;alpha0<=0;alpha1<=0;last_q<=0;affected_q<=0;native0<=0;native1<=0;native2<=0;native3<=0;native4<=0;native5<=0;
-  for(light_stage=0;light_stage<6;light_stage=light_stage+1)begin shade_q[light_stage]<=0;shine_q[light_stage]<=0;end
+  for(light_stage=0;light_stage<8;light_stage=light_stage+1)begin shade_q[light_stage]<=0;shine_q[light_stage]<=0;end
  end
  else begin
   cache_valid<={cache_valid[1:0],mapped_valid};alpha0<=map_alpha;alpha1<=alpha0;
   last_q<={last_q[6:0],mapped_valid&&bx==638};
   affected_q<={affected_q[6:0],force_effect||effect_active||(!final_view&&(old_x!=bx||old_y!=by))};
   shade_q[0]<=map_shade;shine_q[0]<=map_shine;
-  for(light_stage=1;light_stage<6;light_stage=light_stage+1)begin shade_q[light_stage]<=shade_q[light_stage-1];shine_q[light_stage]<=shine_q[light_stage-1];end
+  for(light_stage=1;light_stage<8;light_stage=light_stage+1)begin shade_q[light_stage]<=shade_q[light_stage-1];shine_q[light_stage]<=shine_q[light_stage-1];end
   native0<=cached_native;native1<=native0;native2<=native1;native3<=native2;native4<=native3;native5<=native4;
  end
 end
@@ -125,10 +125,14 @@ water_blend mixer(.clk(mem_clk),.rst(rst||state==ACK),.valid(cache_valid[1]),
  .alpha(blend ? alpha1:9'd0),.out_valid(blend_valid),.word_out(blended));
 wire[31:0] illuminated;wire surface_valid;
 water_surface_light surface(.clk(mem_clk),.rst(rst||state==ACK),.valid(blend_valid),
- .rgb(blended),.shade(shade_q[5]),.shine(shine_q[5]),.out_valid(surface_valid),.lit(illuminated));
+ .color_mode(effect_active&&effect==6),.rgb(blended),.shade(shade_q[5]),.shine(shine_q[5]),.out_valid(surface_valid),.lit(illuminated));
+wire color_valid,color_last;wire[31:0] color_pixels;
+water_color_fringe fringe(.clk(mem_clk),.rst(rst||state==ACK),.enabled(effect_active&&effect==6),
+ .valid(surface_valid),.last(last_q[7]),.amount(shine_q[7]),.rgb(illuminated),
+ .out_valid(color_valid),.out_last(color_last),.pixels(color_pixels));
 wire reconstructed_valid;wire[31:0] reconstructed_word;
-water_reconstruct reconstruct(.clk(mem_clk),.rst(rst||state==ACK),.valid(surface_valid),
- .last(last_q[7]),.affected(affected_q[7]),.effect_word(illuminated),.native_pixels(native5),
+water_reconstruct reconstruct(.clk(mem_clk),.rst(rst||state==ACK),.valid(color_valid),
+ .last(color_last),.affected(effect_active&&effect==6 ? 1'b1:affected_q[7]),.effect_word(color_pixels),.native_pixels(native5),
  .out_valid(reconstructed_valid),.word_out(reconstructed_word));
 assign fifo_we=state==ROW_RUN&&reconstructed_valid;
 assign fifo_data=reconstructed_word;
