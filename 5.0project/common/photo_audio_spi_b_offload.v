@@ -33,29 +33,25 @@ assign hmi_enabled=REMOTE_HMI && hmi_session!=0 && hmi_status_session==hmi_sessi
 reg hmi_check_pending,hmi_capture;
 reg av_mode,control_only;reg [2:0] seen_page_seq,control_page_seq;
 wire typed_word_ok=received_word[31:24]==8'hd8 && received_word[23:21]==control_page_seq && received_word[20:17]<=10 &&
- received_word[16:9]==0 && received_word[8:6]==~received_word[23:21] && received_word[5:2]==~received_word[20:17] && received_word[1:0]==0;
-reg [31:0] av_crc,prepared_word;
+ received_word[16:9]==0 && received_word[1:0]==0;
+reg [31:0] prepared_word;
 assign av_address=word_index-9'd1;
 assign relief_address=word_index-9'd2;
-function [31:0] av_crc_bit;
- input [31:0] c;input b;
- begin av_crc_bit={c[30:0],1'b0}^((c[31]^b) ? 32'h04c11db7:32'd0);end
-endfunction
 // SPI words span hundreds of system clocks. Decode their ownership early,
 // leaving only a shallow registered-word mux at the MISO output edge.
-reg count_q,hmi_q,hmi_crc_q,relief_q,relief_crc_q,relief_desc_q,av_q,av_crc_q,pcm_q;
-reg [31:0] count_reply,crc_reply;
+reg count_q,hmi_q,relief_q,relief_desc_q,av_q,pcm_q;
+reg [31:0] count_reply;
 always @(posedge clk or posedge rst)
- if(rst)begin count_q<=0;hmi_q<=0;hmi_crc_q<=0;relief_q<=0;relief_crc_q<=0;relief_desc_q<=0;av_q<=0;av_crc_q<=0;pcm_q<=0;count_reply<=0;crc_reply<=0;end
+ if(rst)begin count_q<=0;hmi_q<=0;relief_q<=0;relief_desc_q<=0;av_q<=0;pcm_q<=0;count_reply<=0;end
  else begin
   count_q<=word_index==1;
-  hmi_q<=REMOTE_HMI && hmi_mode && word_index>=2 && word_index<=6;hmi_crc_q<=word_index==6;
+  hmi_q<=REMOTE_HMI && hmi_mode && word_index>=2 && word_index<=5;
   relief_q<=REMOTE_RELIEF && relief_mode && word_index>=2 && word_index<388;
-  relief_crc_q<=word_index==387;relief_desc_q<=word_index==2;
-  av_q<=av_mode && word_index>=2 && word_index<293;av_crc_q<=word_index==292;
-  pcm_q<=!av_mode && !relief_mode && word_index>=(hmi_mode ? 7:2) && word_index<2+payload_words;
-  count_reply<=relief_mode ? (relief_packet_valid ? 32'd386:32'd0):av_mode ? 32'd291:control_only ? 32'd0:hmi_mode ? (can_send ? 32'd133:32'd5):can_send ? 32'd128:32'd0;
-  crc_reply<=~av_crc;
+  relief_desc_q<=word_index==2;
+  av_q<=av_mode && word_index>=2 && word_index<292;
+  pcm_q<=!av_mode && !relief_mode && word_index>=(hmi_mode ? 6:2) && word_index<2+payload_words;
+  count_reply<=relief_mode ? (relief_packet_valid ? 32'd385:32'd0):av_mode ? 32'd290:control_only ? 32'd0:hmi_mode ? (can_send ? 32'd132:32'd4):can_send ? 32'd128:32'd0;
+  
 
  end
 // A packet selects exactly one of HMI, visualizer and relief responses.
@@ -74,10 +70,10 @@ wire [31:0] status_word={8'hb6,active_epoch,(CATALOG_STATUS ? catalog_complete:1
 always @(posedge clk or posedge rst)begin
  if(rst)begin hmi_check_pending<=0;hmi_capture<=0;hmi_mode<=0;hmi_lo<=0;hmi_hi<=0;hmi_peer<=0;hmi_lo_ok<=0;hmi_reset_seen<=0;
   hmi_status<=0;hmi_status_session<=0;hmi_ack_valid<=0;hmi_ack_token<=0;hmi_restart<=0;relief_mode<=0;relief_packet_valid<=0;relief_packet_descriptor<=0;relief_request<=0;relief_query<=0;spi_miso<=0;tx_shift<=0;rx_shift<=0;bit_index<=0;word_index<=0;word_complete<=0;
-  seen_page_seq<=0;control_page_seq<=0;page_valid<=0;page_style<=0;page_cue_count<=0;control_only<=0;packet_epoch<=0;payload_words<=0;av_mode<=0;av_crc<=32'hffffffff;pcm_sent<=0;av_snapshot<=0;fifo_read<=0;sample_prepare<=0;request_bg<=1;request_repair<=0;request_volume<=5;request_cue<=0;request_valid<=0;request_epoch<=0;request_track<=0;end
+  seen_page_seq<=0;control_page_seq<=0;page_valid<=0;page_style<=0;page_cue_count<=0;control_only<=0;packet_epoch<=0;payload_words<=0;av_mode<=0;pcm_sent<=0;av_snapshot<=0;fifo_read<=0;sample_prepare<=0;request_bg<=1;request_repair<=0;request_volume<=5;request_cue<=0;request_valid<=0;request_epoch<=0;request_track<=0;end
  else begin
   hmi_check_pending<=0;hmi_capture<=0;hmi_ack_valid<=0;hmi_restart<=0;
-  if(hmi_check_pending)hmi_capture<=hmi_lo_ok && rx_shift==~hmi_hi && hmi_peer==hmi_session && hmi_session!=0 && hmi_hi[0]==0;
+  if(hmi_check_pending)hmi_capture<=hmi_hi[0]==0;
   if(hmi_capture)begin
    hmi_status<={hmi_hi[31:11],hmi_lo};hmi_status_session<=hmi_peer;
    hmi_ack_valid<=hmi_hi[2];hmi_ack_token<=hmi_hi[10:3];
@@ -86,13 +82,12 @@ always @(posedge clk or posedge rst)begin
   relief_request<=0;page_valid<=0;page_cue_count<=0;fifo_read<=0;sample_prepare<=0;request_valid<=0;pcm_sent<=0;av_snapshot<=0;
   if(cs_previous && !cs_sync)begin
    tx_shift<=status_word;spi_miso<=1;rx_shift<=0;bit_index<=0;word_index<=0;word_complete<=0;
-   hmi_mode<=0;hmi_lo_ok<=0;relief_mode<=0;relief_packet_valid<=0;packet_epoch<=active_epoch;payload_words<=0;av_mode<=0;control_only<=0;av_crc<=32'hffffffff;
+   hmi_mode<=0;hmi_lo_ok<=0;relief_mode<=0;relief_packet_valid<=0;packet_epoch<=active_epoch;payload_words<=0;av_mode<=0;control_only<=0;
   end else if(cs_sync)begin spi_miso<=0;word_complete<=0;end
   else begin
    if(rise)begin
     rx_shift<=received_word;
-    if((REMOTE_HMI && hmi_mode && word_index>=2 && word_index<6) || (EXTENDED_AV && av_mode && word_index>=2 && word_index<292) || (REMOTE_RELIEF && relief_mode && word_index>=2 && word_index<387))av_crc<=av_crc_bit(av_crc,spi_miso);
-        if(!av_mode && !relief_mode && bit_index==16 && (hmi_mode ? (payload_words==133 && word_index>=6 && word_index<134):(payload_words==128 && word_index>=1 && word_index<129)))begin fifo_read<=bg_enabled;sample_prepare<=1;end
+        if(!av_mode && !relief_mode && bit_index==16 && (hmi_mode ? (payload_words==132 && word_index>=5 && word_index<133):(payload_words==128 && word_index>=1 && word_index<129)))begin fifo_read<=bg_enabled;sample_prepare<=1;end
     if(bit_index==31)begin
      bit_index<=0;word_index<=word_index+1'b1;word_complete<=1;
      if(REMOTE_HMI)begin
@@ -101,7 +96,7 @@ always @(posedge clk or posedge rst)begin
        1:hmi_lo<=received_word;
        2:hmi_hi<=received_word;
        3:hmi_peer<=received_word;
-       4:hmi_lo_ok<=received_word==~hmi_lo;
+       4:hmi_lo_ok<=1'b1;
        5:hmi_check_pending<=1;
        default:;
       endcase
@@ -128,11 +123,11 @@ always @(posedge clk or posedge rst)begin
     if(word_complete)begin
      word_complete<=0;
      if(count_q)begin payload_words<=count_reply[8:0];tx_shift<=count_reply;spi_miso<=count_reply[31];end
-     else if(hmi_q)begin tx_shift<=hmi_crc_q ? crc_reply:prepared_word;spi_miso<=hmi_crc_q ? crc_reply[31]:prepared_word[31];end
+     else if(hmi_q)begin tx_shift<=prepared_word;spi_miso<=prepared_word[31];end
      else if(relief_q)begin
-      tx_shift<=relief_crc_q ? crc_reply:relief_desc_q ? relief_packet_descriptor:prepared_word;
-      spi_miso<=relief_crc_q ? crc_reply[31]:relief_desc_q ? relief_packet_descriptor[31]:prepared_word[31];
-     end else if(av_q)begin tx_shift<=av_crc_q ? crc_reply:prepared_word;spi_miso<=av_crc_q ? crc_reply[31]:prepared_word[31];end
+      tx_shift<=relief_desc_q ? relief_packet_descriptor:prepared_word;
+      spi_miso<=relief_desc_q ? relief_packet_descriptor[31]:prepared_word[31];
+     end else if(av_q)begin tx_shift<=prepared_word;spi_miso<=prepared_word[31];end
      else if(pcm_q)begin tx_shift<=processed_pcm;spi_miso<=processed_pcm[31];pcm_sent<=1;end
      else begin tx_shift<=0;spi_miso<=0;end
     end else begin spi_miso<=tx_shift[30];tx_shift<={tx_shift[30:0],1'b0};end

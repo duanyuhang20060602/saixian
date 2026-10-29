@@ -10,6 +10,12 @@ module photo_relief_tables_compact_a(
  input mem_clk,mem_rst,mem_enable,
  output palette_we,output [8:0] palette_wa,output [31:0] palette_wd,
  output reg rejected);
+ // The compact SPI packet delivers its last word and finish together.
+ // Publish one clock later so the final write and count have completed.
+ reg finish_q,commit_q;
+ always @(posedge clk or posedge rst)
+  if(rst)begin finish_q<=0;commit_q<=0;end
+  else begin finish_q<=finish_packet;commit_q<=commit_packet;end
  reg previous_enable;reg [7:0] owner;
  
  wire [16:0] parameters={desired_angle,desired_light_x,desired_light_y};
@@ -69,9 +75,9 @@ module photo_relief_tables_compact_a(
       else begin mailbox_address<={write_bank,(word_index[7:0]-8'd1)};mailbox_data<=word_data;mailbox_request<=~mailbox_request;end
      end
     end
-    if(finish_packet)begin
+    if(finish_q)begin
      receiving<=0;
-     if(receiving && accepted && !failed && commit_packet && expected_index==385 && !mailbox_busy)begin pending_valid<=1;end
+     if(receiving && accepted && !failed && commit_q && expected_index==385 && !mailbox_busy)begin pending_valid<=1;end
      else rejected<=1;
     end
    end

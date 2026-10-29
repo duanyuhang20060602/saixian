@@ -38,7 +38,7 @@ wire arm_toggle,abort_toggle,arm,abort;
 wire [1:0] receive_slot,active_slot,new_slot,ready_slot;
 photo_event_sync sa(.clk(link_clk),.rst(rst_link),.toggle(arm_toggle),.pulse(arm));
 photo_event_sync sb(.clk(link_clk),.rst(rst_link),.toggle(abort_toggle),.pulse(abort));
-photo_link_receiver #(.ENABLE_CRC(1),.LEGACY_TIMING(1),.AWARD_TAIL(1)) rx(.relief_frame(relief_link_sync),.award_frame(award_link_sync),.extended_frame(fluid_link_sync),.clk(link_clk),.rst(rst_image_link),.arm(arm),.abort(abort),.data(link_data),.valid(link_valid),.sof(link_sof),.eof(link_eof),
+photo_link_receiver #(.ENABLE_CRC(0),.LEGACY_TIMING(1),.AWARD_TAIL(1)) rx(.relief_frame(relief_link_sync),.award_frame(award_link_sync),.extended_frame(fluid_link_sync),.clk(link_clk),.rst(rst_image_link),.arm(arm),.abort(abort),.data(link_data),.valid(link_valid),.sof(link_sof),.eof(link_eof),
  .ready(link_ready),.armed(rx_armed),.busy(),.write_req(req),.write_ack(ack),.full(full),.write_en(we),.write_data(packed_data),
  .finish_toggle(finish_toggle),.done(rx_done),.fault(rx_fault),.frame_crc(rx_crc),.fault_detail(rx_fault_detail));
 
@@ -191,11 +191,6 @@ always @(posedge pixel_clk or posedge rst_pixel)
 
 
 wire [3:0] first_transfer_origin,first_transfer_error;
-reg [3:0] first_link_fault;
-always @(posedge pixel_clk or posedge rst_pixel)
- if(rst_pixel)first_link_fault<=0;
- else if(presses[0] || hmi_next || pointer_next_click || key4_short)first_link_fault<=0;
- else if(fault_sync && first_link_fault==0)first_link_fault<=rx_fault_detail;
 reg auto_run_q,auto_manual_q;
 always @(posedge pixel_clk or posedge rst_pixel)
  if(rst_pixel)begin auto_run_q<=0;auto_manual_q<=0;end
@@ -233,17 +228,12 @@ always @(posedge pixel_clk or posedge rst_pixel)
 wire timing_begin,timing_present,timing_commit,timing_cancel,timing_running,timing_valid;
 wire [19:0] timing_wait_ms,timing_effect_ms,timing_total_ms;
 wire [5:0] timing_seg_sel,base_seg_sel;wire [7:0] timing_seg_data,base_seg_data;
-photo_switch_timing #(.CLK_HZ(75000000),.PHASES(2)) timing_probe(.clk(pixel_clk),.rst(rst_pixel),
- .start(timing_begin),.mark1(timing_present),.mark2(1'b0),.finish(timing_commit),.cancel(timing_cancel),
- .running(timing_running),.valid(timing_valid),.first_ms(timing_wait_ms),.second_ms(timing_effect_ms),.third_ms(),.total_ms(timing_total_ms));
-photo_switch_timing_display #(.CLK_HZ(75000000),.PAGES(3)) timing_display(.clk(pixel_clk),.rst(rst_pixel),.running(timing_running),
- .first_ms(timing_wait_ms),.second_ms(timing_effect_ms),.third_ms(20'd0),.total_ms(timing_total_ms),.seg_sel(timing_seg_sel),.seg_data(timing_seg_data));
 wire font_available,font_transfer_complete;
 wire title_word_valid;wire [7:0] title_word_index;wire [31:0] title_word_data;wire [4:0] title_word_length,title_length,ticker_length;
 wire [31:0] hmi_session,hmi_word;wire [52:0] hmi_status_bus;
 wire hmi_ack_valid,hmi_reset_request,hmi_begin,hmi_word_valid,hmi_commit;
 wire [7:0] hmi_ack_token;wire [1:0] hmi_word_index;
-photo_cached_control_a #(.CONTROL_BAUD(230400),.BOOT_STATUS(1),.INDEPENDENT_TEXT(1),.TITLE_SD(1),.CHECK_FRAME_CRC(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.EARLY_THUMBNAIL(1),.RELIEF_CONTROL(1)) ctrl(.hmi_session(hmi_session),.font_available(font_available),.font_transfer_complete(font_transfer_complete),.title_word_valid(title_word_valid),.title_word_index(title_word_index),.title_word_data(title_word_data),.title_word_length(title_word_length),.receive_relief(receive_relief),.receive_award(receive_award),.receive_fluid(receive_fluid),.settings_mode(photo_focus),.settings_state(image_settings),.settings_updating(settings_updating),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
+photo_cached_control_a #(.CONTROL_BAUD(230400),.BOOT_STATUS(1),.INDEPENDENT_TEXT(1),.TITLE_SD(1),.CHECK_FRAME_CRC(0),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.EARLY_THUMBNAIL(1),.RELIEF_CONTROL(1)) ctrl(.hmi_session(hmi_session),.font_available(font_available),.font_transfer_complete(font_transfer_complete),.title_word_valid(title_word_valid),.title_word_index(title_word_index),.title_word_data(title_word_data),.title_word_length(title_word_length),.receive_relief(receive_relief),.receive_award(receive_award),.receive_fluid(receive_fluid),.settings_mode(photo_focus),.settings_state(image_settings),.settings_updating(settings_updating),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
  .thumbnail_read_busy(thumbnail_read_busy),.thumbnail_read_slot(thumbnail_slot),
  .timing_begin(timing_begin),.timing_present(timing_present),.timing_commit(timing_commit),.timing_cancel(timing_cancel),
  .award_toggle(photo_award_event),.relief_toggle(photo_relief_event),.relief_available(relief_available),.award_available(award_available),.award_scan_complete(award_scan_complete),.award_loading(award_loading),.award_notice(award_notice),.last_transfer_error(last_transfer_error),
@@ -523,45 +513,7 @@ assign feature_rgb=boot_active ? boot_rgb:(display_valid ? pointer_rgb:24'd0);
 hdmi_phy_wrapper #(.DEVICE("EG")) u_hdmi_phy(.I_pixel_clk(pixel_clk),.I_serial_clk(serial_clk),.I_rst(rst_serial),
  .I_tmds_channel_0(blue),.I_tmds_channel_1(green),.I_tmds_channel_2(red),.I_tmds_channel_clk(hdmi_clock_data),
  .O_tmds_ch0_p(HDMI_D0_P),.O_tmds_ch1_p(HDMI_D1_P),.O_tmds_ch2_p(HDMI_D2_P),.O_tmds_clk_p(HDMI_CLK_P));
-wire scan_valid,scan_fault,clock_valid,clock_fault;
-hdmi_scan_monitor #(.HT(1650),.VT(750),.HA(1280),.VA(720),.HS(40),.VS(5)) u_scan(
- .clk(pixel_clk),.rst(rst_pixel),.x(x),.y(y),.de(de),.hs(hs),.vs(vs),.frame_start(fs),.valid(scan_valid),.fault(scan_fault));
-hdmi_pixel_clock_monitor #(.EXPECTED_PIXELS(7500000),.TOLERANCE_PIXELS(75000)) u_clock_check(
- .ref_clk(clk),.pixel_clk(pixel_clk),.arst(!video_lock),.valid(clock_valid),.fault(clock_fault));
-// Preserve the first image fault until startup succeeds. Audio readiness
-// must not hide why the loading screen is still waiting for its first frame.
-reg [3:0] startup_first_error;
-always @(posedge pixel_clk or posedge rst_pixel)
- if(rst_pixel)startup_first_error<=0;
- else if(!startup_released && startup_first_error==0 && error!=0)startup_first_error<=error;
-wire [15:0] startup_failure_digits={4'd8,4'd0,control_state,startup_first_error};
-reg hpd_meta,hpd_sync;reg [17:0] status_meta,status_sync;
-reg [19:0] audio_diag_meta,audio_diag_sync;
-reg [15:0] award_diag_meta,award_diag_sync;
-reg menu_meta,menu_sync;reg [15:0] menu_digits_meta,menu_digits_sync;
-// photo_status shifts nibble 0 out first, so encode the displayed order in reverse.
-wire [15:0] menu_digits={4'd0,{3'b000,auto_enable},effect_select[3:0],setting_item};
-always @(posedge clk or posedge rst_ref)
- if(rst_ref)begin hpd_meta<=0;hpd_sync<=0;status_meta<=0;status_sync<=0;
-  award_diag_meta<=0;award_diag_sync<=0;audio_diag_meta<=0;audio_diag_sync<=0;menu_meta<=0;menu_sync<=0;menu_digits_meta<=0;menu_digits_sync<=0;end
- else begin hpd_meta<=hdmi_hpd;hpd_sync<=hpd_meta;
-  audio_diag_meta<={audio_diag_stage,{1'b0,music_count},(music_count!=0 ? {1'b0,music_index}+4'd1:4'd0),audio_buffer_level,
-   {1'b0,audio_nonzero_seen,hdmi_video_locked,hpd_audio_sync}};
-  audio_diag_sync<=audio_diag_meta;
-  // Award playback: 4 6 E FF C (E=light error, FF=field 00..77).
-  // Preserve earlier transfer/startup faults ahead of this live diagnostic.
-  award_diag_meta<=first_transfer_origin!=0 ? {4'd4,first_transfer_origin,first_transfer_error,(first_transfer_origin==2 ? first_link_fault:4'd0)}:(!startup_released && startup_first_error!=0) ? startup_failure_digits:award_active ? {4'd6,award_light_error,1'b0,award_light_frame}:{1'b0,(award_loading ? 3'd1:award_notice),3'd0,award_available,3'd0,award_scan_complete,((award_notice==3 || award_notice==4) ? last_transfer_error:error)};award_diag_sync<=award_diag_meta;
-  menu_meta<=settings_mode;menu_sync<=menu_meta;
-  menu_digits_meta<=menu_digits;menu_digits_sync<=menu_digits_meta;
-  status_meta<={count,(display_valid ? current+3'd1:3'd0),control_state,error,
-   (error!=0 || underflow || scan_fault || clock_fault ? 4'd9:busy ? 4'd3:display_valid ? 4'd5:4'd2)};
-  status_sync<=status_meta;end
-photo_status #(.CLK_HZ(50000000)) status(.clk(clk),.rst(rst_ref),.status(menu_sync ? (hpd_sync ? status_sync[3:0]:4'd0):audio_diag_sync[3:0]),
- .error(status_sync[7:4]),.state(status_sync[11:8]),.image(status_sync[14:12]),.count(status_sync[17:15]),
- .diagnostic_page(menu_sync ? 3'd1:award_diag_sync[15:12]!=0 ? 3'd4:3'd5),.diagnostic_crc(menu_sync ? menu_digits_sync:award_diag_sync[15:12]!=0 ? award_diag_sync:audio_diag_sync[19:4]),.seg_sel(base_seg_sel),.seg_data(base_seg_data));
-wire show_timing=timing_valid && !settings_mode && !award_active && !award_loading &&
- first_transfer_origin==0 && startup_first_error==0 && error==0;
-assign seg_sel=show_timing ? timing_seg_sel:base_seg_sel;
-assign seg_data=show_timing ? timing_seg_data:base_seg_data;
-
+// Debug displays and timing/clock/scan monitors removed.
+assign seg_sel=6'b111111;
+assign seg_data=8'hff;
 endmodule

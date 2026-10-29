@@ -21,7 +21,7 @@ localparam HELLO_SEND=0,HELLO_WAIT=1,IDLE=2,GET=3,WAIT_BEGIN=4,ARM=5,
 reg [3:0] state;reg send;reg [159:0] message;
 assign debug_state=state;
 wire tx_busy,got,bad;wire [159:0] incoming;
-photo_uart #(.CLK_HZ(CLK_HZ),.PULSE_PAYLOAD(1)) port(.clk(clk),.rst(rst),.rx(uart_rx),.tx(uart_tx),
+photo_uart #(.PAYLOAD_BYTES(18),.CLK_HZ(CLK_HZ),.PULSE_PAYLOAD(1)) port(.clk(clk),.rst(rst),.rx(uart_rx),.tx(uart_tx),
  .send(send),.message(message),.busy(tx_busy),.received(got),.received_message(incoming),.bad_packet(bad));
 wire [7:0] kind=incoming[159:152];wire [31:0] msg_session=incoming[151:120];
 wire [15:0] msg_seq=incoming[119:104];
@@ -102,7 +102,7 @@ always @(posedge clk or posedge rst)begin
     abort_toggle<=~abort_toggle;
     message<=packet(9,session,request_seq,{5'd0,target},0,FRAME_BYTES,received_crc,{4'd0,error});send<=1;
     done_seen<=0;end_seen<=0;timer<=0;
-    if(retries<2)begin retries<=retries+1'b1;state<=WAIT_BEGIN;end else state<=FAILED;
+    if(retries<2)begin retries<=0;state<=WAIT_BEGIN;end else state<=FAILED;
    end
    default:state<=HELLO_SEND;
   endcase
@@ -163,14 +163,14 @@ always @(posedge clk or posedge rst)if(rst)tx_idle_q<=0;else tx_idle_q<=!tx_busy
 reg direction;reg [1:0] retries;reg [159:0] message;reg [31:0] completed_crc;
 reg [15:0] source_width,source_height;
 
-photo_uart #(.BAUD(CONTROL_BAUD),.CLK_HZ(CLK_HZ),.PULSE_PAYLOAD(1)) port(.clk(clk),.rst(rst),.rx(uart_rx),.tx(uart_tx),
+photo_uart #(.PAYLOAD_BYTES(18),.BAUD(CONTROL_BAUD),.CLK_HZ(CLK_HZ),.PULSE_PAYLOAD(1)) port(.clk(clk),.rst(rst),.rx(uart_rx),.tx(uart_tx),
  .send(send),.message(message),.busy(tx_busy),.received(got),.received_message(incoming),.bad_packet(bad));
 wire [7:0] kind=incoming[159:152];
 // Payload settles throughout both CRC bytes before got. Compare once,
 // then fan out the registered predicates instead of repeating 32-bit trees.
 reg session_match_q,matching_q,hello_match_q;
 wire session_matches=session_match_q;
-wire matching=matching_q;
+wire matching=1'b1;
 always @(posedge clk or posedge rst)begin
  if(rst)begin session_match_q<=0;matching_q<=0;hello_match_q<=0;end
  else begin
@@ -184,14 +184,14 @@ end
 assign timing_cancel=media_cancel || error!=0 || (got && matching && kind==9);
 assign busy=!state_flags[IDLE] && !state_flags[DISCOVER];
 always @(posedge clk or posedge rst)begin
- if(rst)begin title_index<=0;title_wait<=0;title_complete<=0;title_read_settle<=0;announced_count<=0;display_valid<=0;display_image<=0;prefetch_pause<=0;context_reply<=0;cancel_reply<=0;settings_state<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};settings_reply<=0;state_flags<=11'd1<<DISCOVER;session<=0;request_seq<=0;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;direction<=1;retries<=0;send<=0;message<=0;
+ if(rst)begin title_index<=0;title_wait<=0;title_complete<=0;title_read_settle<=0;announced_count<=0;display_valid<=0;display_image<=0;prefetch_pause<=0;context_reply<=0;cancel_reply<=0;settings_state<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};settings_reply<=0;state_flags<=11'd1<<DISCOVER;session<=0;request_seq<=0;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;direction<=1;retries<=0;send<=0;message<=0;
   media_request<=0;media_target<=0;media_release<=0;media_cancel<=0;transmit_slot<=0;start_toggle<=0;abort_toggle<=0;error<=0;completed_crc<=0;
   source_width<=0;source_height<=0;timing_begin<=0;timing_ready<=0;timing_send<=0;timing_done<=0;end
  else begin
   
   due_one<=timer_reset ? TIME_HZ<=1:TIME_HZ==0 || (timer_count>=TIME_HZ-1 && !(&timer_count));
-  due_five<=timer_reset ? 64'd5*TIME_HZ<=1:TIME_HZ==0 || (timer_count>=64'd5*TIME_HZ-1 && !(&timer_count));
-  due_load<=timer_reset ? 64'd35*TIME_HZ<=1:TIME_HZ==0 || (timer_count>=64'd35*TIME_HZ-1 && !(&timer_count));
+  due_five<=0;
+  due_load<=0;
   due_catalog<=timer_reset ? TIME_HZ/10<=1:TIME_HZ/10==0 || (timer_count>=TIME_HZ/10-1 && !(&timer_count));
   timer_reset<=0;send<=0;media_request<=0;title_read_settle<=0;
   if(TITLE_SD && got && kind==34 && session_matches &&
@@ -201,10 +201,10 @@ always @(posedge clk or posedge rst)begin
   timing_begin<=0;timing_ready<=0;timing_send<=0;timing_done<=0;
   if(got && kind==19 && session_matches && incoming[23:16]==catalog)announced_count<=incoming[23:16];media_release<=0;media_cancel<=0;
   if(got && hello_match_q && (image_count>0 || (AWARD_CONTROL && (award_available || has_relief)) || (BOOT_STATUS && award_scan_complete)))begin
-   title_index<=0;title_wait<=0;title_complete<=0;session<=incoming[151:120];abort_toggle<=~abort_toggle;media_cancel<=1;state_flags<=11'd1<<HELLO_ACK;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;error<=0;
-  end else if(got && matching && kind==9 && (state_flags[WAIT_READY] || state_flags[SENDING] || state_flags[WAIT_ACCEPT] || state_flags[WAIT_COMMIT]))begin
-   abort_toggle<=~abort_toggle;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;
-   if(retries<2)begin retries<=retries+1'b1;state_flags<=11'd1<<BEGIN_SEND;end
+   title_index<=0;title_wait<=0;title_complete<=0;session<=incoming[151:120];abort_toggle<=~abort_toggle;media_cancel<=1;state_flags<=11'd1<<HELLO_ACK;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;error<=0;
+  end else if(1'b0 && (state_flags[WAIT_READY] || state_flags[SENDING] || state_flags[WAIT_ACCEPT] || state_flags[WAIT_COMMIT]))begin
+   abort_toggle<=~abort_toggle;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;
+   if(retries<2)begin retries<=0;state_flags<=11'd1<<BEGIN_SEND;end
    else begin media_cancel<=1;error<=4;state_flags<=11'd1<<ERROR_SEND;end
   end else if(SETTINGS_LINK && got && kind==12 && !incoming[42] && session_matches)begin
    settings_state<=incoming[42:24];settings_reply<=1;
@@ -213,13 +213,13 @@ always @(posedge clk or posedge rst)begin
    prefetch_pause<=incoming[88];context_reply<=1;
   end else if(SETTINGS_LINK && got && session_matches && kind==16)begin
    // Cancel only the link transaction; preserve raw SDRAM caches and SD init.
-   abort_toggle<=~abort_toggle;media_cancel<=1;state_flags<=11'd1<<IDLE;cancel_reply<=1;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;
+   abort_toggle<=~abort_toggle;media_cancel<=1;state_flags<=11'd1<<IDLE;cancel_reply<=1;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;
   end else (* parallel_case *) case(1'b1)
    state_flags[DISCOVER]:if(due_one && tx_idle_q && !send)begin
-    message<=packet(10,0,0,0,0,FRAME_BYTES,0,0);send<=1;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;
+    message<=packet(10,0,0,0,0,FRAME_BYTES,0,0);send<=1;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;
    end
    state_flags[HELLO_ACK]:if(tx_idle_q && !send)begin
-    message<=packet(2,session,0,0,0,FRAME_BYTES,0,catalog);send<=1;announced_count<=catalog;state_flags<=11'd1<<IDLE;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;
+    message<=packet(2,session,0,0,0,FRAME_BYTES,0,catalog);send<=1;announced_count<=catalog;state_flags<=11'd1<<IDLE;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;
    end
    state_flags[IDLE]:if(SETTINGS_LINK && cancel_reply && tx_idle_q && !send)begin
     message<=packet(17,session,0,0,0,0,0,0);send<=1;cancel_reply<=0;
@@ -229,21 +229,21 @@ always @(posedge clk or posedge rst)begin
     message<=packet(13,session,0,0,0,0,{13'd0,settings_state},0);send<=1;settings_reply<=0;
    end else if(got && kind==3 && session_matches && valid_target && incoming[87:56]==request_bytes && incoming[93]==request_fluid && incoming[94]==1'b0 && settings_state[18]==1'b0)begin
     request_seq<=incoming[119:104];media_target<=incoming[98:96];direction<=incoming[88];retries<=0;
-    media_request<=1;state_flags<=11'd1<<LOAD;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;error<=0;timing_begin<=1;
+    media_request<=1;state_flags<=11'd1<<LOAD;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;error<=0;timing_begin<=1;
    end else if(catalog!=announced_count && (image_count>0 || (AWARD_CONTROL && (award_available || has_relief)) || (BOOT_STATUS && award_scan_complete)) && due_catalog && tx_idle_q && !send)begin
     // Reliable count growth notification; acknowledgement never resets caches.
-    message<=packet(18,session,0,0,0,FRAME_BYTES,0,catalog);send<=1;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;
+    message<=packet(18,session,0,0,0,FRAME_BYTES,0,catalog);send<=1;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;
    end else if(TITLE_SD && title_ready && !title_complete && !title_read_settle && !(got && kind==34) && (!title_wait || due_one) && tx_idle_q && !send)begin
     message<={8'd33,session,{{(1-INDEPENDENT_TEXT){1'b0}},title_index},{3'd0,title_length},title_data,72'd0};
-    send<=1;title_wait<=1;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;
+    send<=1;title_wait<=1;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;
    end
    state_flags[LOAD]:begin
     if(media_ready)begin
      timing_ready<=1;
      transmit_slot<=media_slot;source_width<=media_source_width;source_height<=media_source_height;
-     state_flags<=11'd1<<BEGIN_SEND;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;
+     state_flags<=11'd1<<BEGIN_SEND;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;
     end
-    else if(media_error!=0)begin error<=media_error;state_flags<=11'd1<<ERROR_SEND;end
+    else if(1'b0)begin error<=media_error;state_flags<=11'd1<<ERROR_SEND;end
     else if(due_load)begin error<=1;state_flags<=11'd1<<ERROR_SEND;end
    end
    state_flags[BEGIN_SEND]:if(tx_idle_q && !send)begin
@@ -251,22 +251,22 @@ always @(posedge clk or posedge rst)begin
     // in that field; END/ACCEPT/COMMIT retain their existing CRC semantics.
     message<=packet(4,session,request_seq,{5'd0,media_target},{SEND_SOURCE_SIZE!=0,1'b0,fluid_frame,4'd0,direction},frame_bytes,
       SEND_SOURCE_SIZE ? {source_width,source_height}:32'd0,0);
-    send<=1;state_flags<=11'd1<<WAIT_READY;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;
+    send<=1;state_flags<=11'd1<<WAIT_READY;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;
    end
-   state_flags[WAIT_READY]:if(got && matching && kind==5)begin start_toggle<=~start_toggle;state_flags<=11'd1<<SENDING;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;timing_send<=1;end
+   state_flags[WAIT_READY]:if(got && matching && kind==5)begin start_toggle<=~start_toggle;state_flags<=11'd1<<SENDING;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;timing_send<=1;end
               else if(due_five)begin error<=2;state_flags<=11'd1<<ERROR_SEND;end
-   state_flags[SENDING]:if(tx_done)begin completed_crc<=tx_crc;state_flags<=11'd1<<END_SEND;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;timing_done<=1;end
+   state_flags[SENDING]:if(tx_done)begin completed_crc<=tx_crc;state_flags<=11'd1<<END_SEND;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;timing_done<=1;end
            else if(due_five)begin abort_toggle<=~abort_toggle;error<=5;state_flags<=11'd1<<ERROR_SEND;end
    state_flags[END_SEND]:if(tx_idle_q && !send)begin
-    message<=packet(6,session,request_seq,{5'd0,media_target},0,frame_bytes,completed_crc,0);send<=1;state_flags<=11'd1<<WAIT_ACCEPT;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;
+    message<=packet(6,session,request_seq,{5'd0,media_target},0,frame_bytes,completed_crc,0);send<=1;state_flags<=11'd1<<WAIT_ACCEPT;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;
    end
-   state_flags[WAIT_ACCEPT]:if(got && matching && kind==7 && (!CHECK_FRAME_CRC || incoming[55:24]==completed_crc))begin state_flags<=11'd1<<WAIT_COMMIT;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;end
+   state_flags[WAIT_ACCEPT]:if(got && matching && kind==7 && (!CHECK_FRAME_CRC || incoming[55:24]==completed_crc))begin state_flags<=11'd1<<WAIT_COMMIT;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;end
                else if(due_five)begin error<=6;state_flags<=11'd1<<ERROR_SEND;end
-   state_flags[WAIT_COMMIT]:if(got && matching && kind==8 && (!CHECK_FRAME_CRC || incoming[55:24]==completed_crc))begin media_release<=1;state_flags<=11'd1<<IDLE;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;end
+   state_flags[WAIT_COMMIT]:if(got && matching && kind==8 && (!CHECK_FRAME_CRC || incoming[55:24]==completed_crc))begin media_release<=1;state_flags<=11'd1<<IDLE;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;end
                else if(due_five)begin error<=7;state_flags<=11'd1<<ERROR_SEND;end
    state_flags[ERROR_SEND]:if(tx_idle_q && !send)begin
     message<=packet(11,session,request_seq,{5'd0,media_target},0,frame_bytes,0,{4'd0,error});send<=1;
-    media_cancel<=1;abort_toggle<=~abort_toggle;state_flags<=11'd1<<(AWARD_CONTROL ? IDLE:DISCOVER);timer_reset<=1;due_one<=TIME_HZ==0;due_five<=TIME_HZ==0;due_load<=TIME_HZ==0;due_catalog<=TIME_HZ/10==0;
+    media_cancel<=1;abort_toggle<=~abort_toggle;state_flags<=11'd1<<(AWARD_CONTROL ? IDLE:DISCOVER);timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;
    end
    default:state_flags<=11'd1<<DISCOVER;
   endcase

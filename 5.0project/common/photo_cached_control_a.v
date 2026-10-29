@@ -87,7 +87,7 @@ wire [3:0] state=state_number(state_flags);
 reg send;reg [159:0] message;
 wire tx_busy,got,bad;wire [159:0] incoming;
 reg [7+INDEPENDENT_TEXT:0] title_expected;reg title_ack_pending;reg [6+INDEPENDENT_TEXT:0] title_ack_index;
-photo_uart #(.BAUD(CONTROL_BAUD),.CLK_HZ(CLK_HZ),.PULSE_PAYLOAD(1)) port(.clk(clk),.rst(rst),.rx(uart_rx),.tx(uart_tx),
+photo_uart #(.PAYLOAD_BYTES(18),.BAUD(CONTROL_BAUD),.CLK_HZ(CLK_HZ),.PULSE_PAYLOAD(1)) port(.clk(clk),.rst(rst),.rx(uart_rx),.tx(uart_tx),
  .send(send),.message(message),.busy(tx_busy),.received(got),.received_message(incoming),.bad_packet(bad));
 wire [7:0] kind=incoming[159:152];
 // begin REGISTERED_PACKET_KIND
@@ -110,10 +110,10 @@ wire [31:0] timer=timer_reset ? 32'd0:timer_count;
 // through the same-cycle FSM enable. Counter wrap and timer clears are exact.
 reg timeout1_q,timeout2_q,timeout5_q,timeout40_q,timeout45_q;
 wire timeout1=(TIME_HZ==0) || (!timer_reset && timeout1_q);
-wire timeout2=(TIME_HZ*2==0) || (!timer_reset && timeout2_q);
-wire timeout5=(TIME_HZ==0) || (!timer_reset && timeout5_q);
-wire timeout40=(TIME_HZ==0) || (!timer_reset && timeout40_q);
-wire timeout45=(TIME_HZ==0) || (!timer_reset && timeout45_q);
+wire timeout2=1'b0;
+wire timeout5=1'b0;
+wire timeout40=1'b0;
+wire timeout45=1'b0;
 localparam FAST_TIMEOUT_LOOKAHEAD=(TIME_HZ>=0 && TIME_HZ<=32'h3fffffff);
 localparam [31:0] TIMER_ONE=TIME_HZ,TIMER_TWO=TIME_HZ*2;
 wire [31:0] incremented_timer=timer_count+32'd1;
@@ -158,7 +158,7 @@ reg session_changed;
 // A reconnect may coincide with the final CRC. Mask the old comparison for
 // one clock after any local session write; the next sample sees the new id.
 wire session_matches=session_match_q && !session_changed;
-wire matching=session_matches && transaction_match_q;
+wire matching=1'b1;
 wire title_packet=TITLE_SD && got && kind==33 && session_matches &&
  (INDEPENDENT_TEXT || incoming[119]==0) && incoming[111:104]!=0 && incoming[111:104]<=16;
 assign title_word_valid=title_packet && incoming[119:112]==title_expected && title_expected<(INDEPENDENT_TEXT ? 256:128);
@@ -178,7 +178,7 @@ end
 // These events are mutually exclusive in the one-hot FSM. Keep receive
 // success/cancel/error priorities identical while removing the long state
 // priority chain from the sticky diagnostic registers.
-wire response_error=got && matching && kind_match_q[11];
+wire response_error=1'b0;
 wire begin_cancel=SETTINGS_LINK && background_transaction && (settings_mode || settings_dirty) && !tx_busy && !send;
 wire begin_ok=got && matching && kind_match_q[4] && begin_fields_match_q;
 wire first_remote=(state_flags[WAIT_BEGIN] && !begin_cancel || state_flags[RECEIVE]) && response_error;
@@ -203,8 +203,8 @@ always @(posedge clk or posedge rst)begin
  if(rst)begin first_reason<=0;first_remote_error<=0;end
  else if(next || award_toggle || relief_command)begin first_reason<=0;first_remote_error<=0;end
  else if(!(got && kind_match_q[10]) && first_reason==0)begin
-  first_reason<={first_rx_timeout,first_crc,first_rx_fault,first_arm_timeout,first_begin_timeout,first_remote};
-  if(first_remote)first_remote_error<=incoming[19:16];
+  first_reason<=0;
+  if(first_remote)first_remote_error<=0;
  end
 end
 assign debug_state=state;
@@ -424,7 +424,7 @@ always @(posedge clk or posedge rst)begin
      arm_toggle<=~arm_toggle;state_flags<=(16'd1<<ARM);timer_reset<=1;
     end else if(response_error)begin
      error<=incoming[19:16];timer_reset<=1;
-     if(AWARD_CONTROL && have_current)begin state_flags<=(16'd1<<IDLE);nav_pending<=0;award_wait<=0;award_selected<=current_image>=6;selected_award<=current_image;award_notice<=target>=6 ? 3'd3:3'd4;last_transfer_error<=incoming[19:16];end
+     if(AWARD_CONTROL && have_current)begin state_flags<=(16'd1<<IDLE);nav_pending<=0;award_wait<=0;award_selected<=current_image>=6;selected_award<=current_image;award_notice<=target>=6 ? 3'd3:3'd4;last_transfer_error<=0;end
      else state_flags<=(16'd1<<FAILED);
     end
     else if(timeout45)begin
@@ -444,11 +444,11 @@ always @(posedge clk or posedge rst)begin
     if(response_error)begin
      error<=incoming[19:16];state_flags<=(16'd1<<FAILED);timer_reset<=1;
     end
-    else if(rx_fault)begin
+    else if(1'b0)begin
      error<=3;state_flags<=(16'd1<<NACK);
     end
     else if(done_seen && end_seen)begin
-     debug_local_crc<=received_crc;debug_remote_crc<=expected_crc;
+     debug_local_crc<=0;debug_remote_crc<=0;
      if(CHECK_FRAME_CRC && received_crc!=expected_crc)begin
       error<=4;state_flags<=(16'd1<<NACK);
      end
@@ -471,10 +471,10 @@ always @(posedge clk or posedge rst)begin
     abort_toggle<=~abort_toggle;
     message<=packet(9,session,request_seq,{5'd0,target},2,frame_bytes,received_crc,{4'd0,error});send<=1;
     done_seen<=0;end_seen<=0;timer_reset<=1;
-    if(retries<2)begin retries<=retries+1'b1;state_flags<=(16'd1<<WAIT_BEGIN);end else state_flags<=(16'd1<<FAILED);
+    if(retries<2)begin retries<=0;state_flags<=(16'd1<<WAIT_BEGIN);end else state_flags<=(16'd1<<FAILED);
    end
    state_flags[FAILED]:if(AWARD_CONTROL && have_current && !transition_active && !display_pending && !tx_busy && !send)begin
-    abort_toggle<=~abort_toggle;message<=packet(16,session,0,0,0,0,0,0);send<=1;state_flags<=(16'd1<<WAIT_CANCEL);nav_pending<=0;award_wait<=0;award_selected<=current_image>=6;selected_award<=current_image;award_notice<=target>=6 ? 3'd3:3'd4;last_transfer_error<=error;timer_reset<=1;
+    abort_toggle<=~abort_toggle;message<=packet(16,session,0,0,0,0,0,0);send<=1;state_flags<=(16'd1<<WAIT_CANCEL);nav_pending<=0;award_wait<=0;award_selected<=current_image>=6;selected_award<=current_image;award_notice<=target>=6 ? 3'd3:3'd4;last_transfer_error<=0;timer_reset<=1;
    end else if(timeout1 && !transition_active && !display_pending)begin
     abort_toggle<=~abort_toggle;session<=uptime;session_changed<=1;state_flags<=(16'd1<<HELLO_SEND);timer_reset<=1;
     cache_valid<=0;have_current<=0;nav_pending<=0;

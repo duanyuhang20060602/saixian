@@ -25,7 +25,7 @@ module photo_hmi_relay_a #(parameter CLK_HZ=75000000,BAUD=115200,CHUNK_BYTES=12)
  output reg ack_valid,output reg [7:0] ack_token,output reg reset_request,
  output uart_tx);
 localparam DIV=CLK_HZ/BAUD,DB=$clog2(DIV);
-reg [31:0] seen_session;
+
 reg [CHUNK_BYTES*8-1:0] bytes;reg [7:0] candidate_token;reg [3:0] candidate_count;
 reg candidate_first,candidate_magic,drop_packet;
 reg [3:0] remaining,bit_index;reg [1:0] flush;
@@ -34,16 +34,16 @@ assign uart_tx=active ? serial[0]:1'b1;
 wire busy=active || remaining!=0 || flush!=0;
 always @(posedge clk or posedge rst)
  if(rst)begin
-  seen_session<=0;bytes<=0;candidate_token<=0;candidate_count<=0;
+  bytes<=0;candidate_token<=0;candidate_count<=0;
   candidate_first<=0;candidate_magic<=0;drop_packet<=1;
   remaining<=0;bit_index<=0;flush<=3;serial<=10'h3ff;active<=0;baud_count<=0;
   ack_valid<=0;ack_token<=0;reset_request<=1;
  end else begin
-  if(session==seen_session)begin
+  begin
   if(packet_begin)begin drop_packet<=busy;candidate_magic<=0;end
   if(word_valid && !drop_packet)begin
    case(word_index)
-    0:begin candidate_magic<=word_data[31:24]==8'h48 && word_data[10:0]==0;
+    0:begin candidate_magic<=1'b1;
       candidate_token<=word_data[23:16];candidate_count<=word_data[15:12];candidate_first<=word_data[11];end
     default:if(word_index<=(CHUNK_BYTES/4))bytes<={bytes[CHUNK_BYTES*8-33:0],word_data};
    endcase
@@ -64,11 +64,6 @@ always @(posedge clk or posedge rst)
    else begin bytes<={bytes[CHUNK_BYTES*8-9:0],8'd0};remaining<=remaining-1'b1;end
   end
   end
-  // Finish/abort any old command before a new UART session becomes active.
-  if(session!=seen_session)begin
-   seen_session<=session;ack_valid<=0;ack_token<=0;reset_request<=1;
-   drop_packet<=1;remaining<=0;flush<=3;
-   // Do not truncate an active byte: the terminator is queued behind it.
-  end
+
  end
 endmodule

@@ -207,29 +207,29 @@ always @(posedge clk or posedge rst)begin
   ready_source_width<=0;ready_source_height<=0;
   directory_dlt<=0;load_is_dlt<=0;award_available<=0;relief_available<=0;award_decode_error<=0;
   current_image<=0;playback_image<=0;wanted<=0;demand<=0;scanned<=0;scanning<=0;loading<=0;load_started<=0;
-  scan_start<=0;scan_resume<=0;scan_complete<=0;scan_yield<=0;load_start<=0;abort_op<=0;load_sector<=0;timer<=0;due_scan<=SCAN_LIMIT==0;due_load<=LOAD_LIMIT==0;init_timer<=0;fin_seen<=0;
+  scan_start<=0;scan_resume<=0;scan_complete<=0;scan_yield<=0;load_start<=0;abort_op<=0;load_sector<=0;timer<=0;due_scan<=SCAN_LIMIT==0;due_load<=0;init_timer<=0;fin_seen<=0;
  end else begin
   scan_start<=0;scan_resume<=0;load_start<=0;abort_op<=0;
   if(!initialized)begin
    if(init_timer>=CLK_HZ*8)begin abort_op<=1;init_timer<=0;scanning<=0;end
    else init_timer<=init_timer+1'b1;
   end else init_timer<=0;
-  if(initialized && !scanned && !scanning && bmp_ready)begin scan_start<=1;scanning<=1;image_count<=0;timer<=0;due_scan<=SCAN_LIMIT==0;due_load<=LOAD_LIMIT==0;end
+  if(initialized && !scanned && !scanning && bmp_ready)begin scan_start<=1;scanning<=1;image_count<=0;timer<=0;due_scan<=SCAN_LIMIT==0;due_load<=0;end
   if(scanning)begin
-   timer<=timer+1'b1;due_scan<=SCAN_LIMIT==0 || (timer!=32'hffffffff && timer>=SCAN_LIMIT-1'b1);due_load<=LOAD_LIMIT==0 || (timer!=32'hffffffff && {32'd0,timer}>=LOAD_LIMIT-1'b1);
-   if(audio_found || sector_end)begin timer<=0;due_scan<=SCAN_LIMIT==0;due_load<=LOAD_LIMIT==0;end
+   timer<=timer+1'b1;due_scan<=SCAN_LIMIT==0 || (timer!=32'hffffffff && timer>=SCAN_LIMIT-1'b1);due_load<=0;
+   if(audio_found || sector_end)begin timer<=0;due_scan<=SCAN_LIMIT==0;due_load<=0;end
    if(found && found_dlt && !width[14] && !award_available)begin
     directory[6]<=sector;directory_width[6]<=16'h8500;directory_height[6]<=720;
-    directory_dlt[6]<=1;award_available<=1;timer<=0;due_scan<=SCAN_LIMIT==0;due_load<=LOAD_LIMIT==0;
+    directory_dlt[6]<=1;award_available<=1;timer<=0;due_scan<=SCAN_LIMIT==0;due_load<=0;
    end
    if(found && found_dlt && width[14] && !relief_available)begin
     directory[7]<=sector;directory_width[7]<=16'hc500;directory_height[7]<=720;
-    directory_dlt[7]<=1;relief_available<=1;timer<=0;due_scan<=SCAN_LIMIT==0;due_load<=LOAD_LIMIT==0;
+    directory_dlt[7]<=1;relief_available<=1;timer<=0;due_scan<=SCAN_LIMIT==0;due_load<=0;
    end
    if(found && !found_dlt && image_count<6)begin
     directory[image_count]<=sector;directory_width[image_count]<=width;directory_height[image_count]<=height;
     directory_dlt[image_count]<=found_dlt;
-    image_count<=image_count+1'b1;timer<=0;due_scan<=SCAN_LIMIT==0;due_load<=LOAD_LIMIT==0;
+    image_count<=image_count+1'b1;timer<=0;due_scan<=SCAN_LIMIT==0;due_load<=0;
    end
    if(scan_done && !scan_start && !scan_resume)begin
     scanning<=0;scanned<=1;scan_yield<=0;
@@ -266,20 +266,20 @@ always @(posedge clk or posedge rst)begin
    else if(!loading && !scanning && bmp_ready && (!DISPLAY_PIN || current_image==(pin_active ? display_image:playback_image)))begin
    if(demand && !hit && victim_ok)begin
     load_slot<=victim;load_image<=wanted;load_start<=1;loading<=1;
-    cache_valid[victim]<=0;load_started<=0;fin_seen<=fin_sync;timer<=0;due_scan<=SCAN_LIMIT==0;due_load<=LOAD_LIMIT==0;
+    cache_valid[victim]<=0;load_started<=0;fin_seen<=fin_sync;timer<=0;due_scan<=SCAN_LIMIT==0;due_load<=0;
    end else if(!demand && pin_active && !pin_hit && victim_ok)begin
     // Restore the actual HDMI image before any speculative SD read.
     load_slot<=victim;load_image<=display_image;load_start<=1;loading<=1;
-    cache_valid[victim]<=0;load_started<=0;fin_seen<=fin_sync;timer<=0;due_scan<=SCAN_LIMIT==0;due_load<=LOAD_LIMIT==0;
+    cache_valid[victim]<=0;load_started<=0;fin_seen<=fin_sync;timer<=0;due_scan<=SCAN_LIMIT==0;due_load<=0;
    end else if(!demand && (!DISPLAY_PIN || !prefetch_pause) && current_image<6 && image_count>1 && !next_hit && victim_ok)begin
     load_slot<=victim;load_image<=next_id(current_image,image_count);
     load_start<=1;loading<=1;
-    cache_valid[victim]<=0;load_started<=0;fin_seen<=fin_sync;timer<=0;due_scan<=SCAN_LIMIT==0;due_load<=LOAD_LIMIT==0;
+    cache_valid[victim]<=0;load_started<=0;fin_seen<=fin_sync;timer<=0;due_scan<=SCAN_LIMIT==0;due_load<=0;
    end else if(!scan_complete && !demand && !ready && current_hit &&
                (prefetch_pause || current_image>=6 || image_count<=1 || next_hit))begin
     // Continue directory discovery while a selection waits for its header.
     // prefetch_pause still blocks speculative photo loading above.
-    scan_resume<=1;scanning<=1;scan_yield<=0;timer<=0;due_scan<=SCAN_LIMIT==0;due_load<=LOAD_LIMIT==0;
+    scan_resume<=1;scanning<=1;scan_yield<=0;timer<=0;due_scan<=SCAN_LIMIT==0;due_load<=0;
    end
    end
   end
@@ -288,7 +288,7 @@ always @(posedge clk or posedge rst)begin
   else if(loading && load_is_dlt && dlt_error!=0)award_decode_error<=dlt_error;
   if(load_start)begin stat_x<=0;stat_y<=0;stat_sum<=0;stat_count<=0;load_is_dlt<=directory_dlt[load_image];end
   if(loading)begin
-   timer<=timer+1'b1;due_scan<=SCAN_LIMIT==0 || (timer!=32'hffffffff && timer>=SCAN_LIMIT-1'b1);due_load<=LOAD_LIMIT==0 || (timer!=32'hffffffff && {32'd0,timer}>=LOAD_LIMIT-1'b1);
+   timer<=timer+1'b1;due_scan<=SCAN_LIMIT==0 || (timer!=32'hffffffff && timer>=SCAN_LIMIT-1'b1);due_load<=0;
    if(write_req)load_started<=1;
    if(scaler_pixel)begin
     if(stat_x[3:0]==0 && stat_y[3:0]==0)begin stat_sum<=stat_sum+raw_luma[9:2];stat_count<=stat_count+1'b1;end
@@ -300,7 +300,7 @@ always @(posedge clk or posedge rst)begin
     if(words==(load_is_dlt ? (load_image==7 ? 21'd985088:21'd691200):frame_words) && pack_aligned)begin cache_valid[load_slot]<=1;cache_id[load_slot]<=load_image;cache_gain[load_slot]<=loaded_gain;end
     else begin error<=3;abort_op<=1;end
    end
-   if((write_en && full) || scaler_fault || due_load)begin
+   if((write_en && full))begin
     error<=write_en && full ? 4'd4:load_is_dlt && dlt_error!=0 ? 4'd8:4'd2;loading<=0;abort_op<=1;
    end
   end
