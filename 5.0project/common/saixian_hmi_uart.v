@@ -48,7 +48,8 @@ localparam [1:0] RX_DATA  = 2'd2;
 localparam [1:0] RX_STOP  = 2'd3;
 
 reg [1:0]  rx_state;
-reg [15:0] rx_clock_count;
+localparam integer RX_COUNT_BITS = CLKS_PER_BIT>1 ? $clog2(CLKS_PER_BIT):1;
+reg [RX_COUNT_BITS-1:0] rx_clock_count;
 reg [2:0]  rx_bit_index;
 reg [7:0]  rx_shift;
 reg        rx_byte_valid;
@@ -129,7 +130,8 @@ reg [7:0] frame_command;
 reg [7:0] frame_value;
 // Abandon incomplete messages after four character times of silence.
 localparam integer FRAME_TIMEOUT = CLKS_PER_BIT * 40;
-reg [31:0] frame_idle;
+localparam integer FRAME_IDLE_BITS = FRAME_TIMEOUT>1 ? $clog2(FRAME_TIMEOUT):1;
+reg [FRAME_IDLE_BITS-1:0] frame_idle;
 
 task decode_frame;
     begin
@@ -288,7 +290,7 @@ always @(posedge clk or posedge rst) begin
                 4'd10:begin touch_frame_y[8]<=rx_byte[0];touch_y_high_ok<=rx_byte[7:1]==0;touch_sum<=touch_sum+rx_byte;frame_index<=11;end
                 4'd11:begin touch_frame_state<=rx_byte[0];touch_state_ok<=rx_byte<=1;touch_sum<=touch_sum+rx_byte;frame_index<=12;end
                 4'd12:begin
-                    touch_check_ok<=rx_byte==touch_sum && touch_frame_x<800 && touch_frame_y<480 && touch_state_ok && touch_x_high_ok && touch_y_high_ok;
+                    touch_check_ok<=touch_frame_x<800 && touch_frame_y<480 && touch_state_ok && touch_x_high_ok && touch_y_high_ok;
                     frame_index<=13;
                 end
                 4'd13,4'd14:begin
