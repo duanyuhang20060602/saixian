@@ -1,0 +1,13 @@
+set_pin_assignment { clk } { LOCATION = R7; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { hmi_uart_rx } { LOCATION = D14; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { hmi_uart_tx } { LOCATION = G11; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { sd_ncs } { LOCATION = A12; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { sd_dclk } { LOCATION = A14; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { sd_miso } { LOCATION = B14; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { sd_mosi } { LOCATION = A13; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { HDMI_CLK_P } { LOCATION = K1; IOSTANDARD = LVDS33; }
+set_pin_assignment { HDMI_D2_P } { LOCATION = B3; IOSTANDARD = LVDS33; }
+set_pin_assignment { HDMI_D1_P } { LOCATION = E3; IOSTANDARD = LVDS33; }
+set_pin_assignment { HDMI_D0_P } { LOCATION = F5; IOSTANDARD = LVDS33; }
+set_pin_assignment { HDMI_DDC_SCL } { LOCATION = P1; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { HDMI_DDC_SDA } { LOCATION = R1; IOSTANDARD = LVCMOS33; }

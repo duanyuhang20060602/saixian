@@ -1,0 +1,14 @@
+{
+  "base_commit": "585ea4008669ef5a350559405786b9b70be2afce",
+  "base_git_files_verified": 2701,
+  "base_upstream_manifest_status": "Stale upstream hashes including common/photo_audio_link.v; original commit left unchanged",
+  "demo_type": "single-board standalone, J1 UART only",
+  "external_gpio": {
+    "RX": "J1-1 / D14",
+    "TX": "J1-2 / G11",
+    "GND": "J1-12"
+  },
+  "hardware_validation": "pending",
+  "font_storage": "Read-only FAT16/FAT32 root FONTS.BIN; fragmented cluster chains supported",
+  "official_example": "DEMO/18_sd_card_audio inside HX4S20_Contest_202606/2_Example/DEMO_TD版本6.2.1.zip; same command sequence, not byte-identical source"
+}

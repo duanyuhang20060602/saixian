@@ -1,0 +1,52 @@
+[
+  {
+    "test": "fat16_mbr",
+    "passed": true,
+    "bytes_compared": 4096
+  },
+  {
+    "test": "fat16_superfloppy",
+    "passed": true,
+    "bytes_compared": 4096
+  },
+  {
+    "test": "fat32_active_fat1",
+    "passed": true,
+    "bytes_compared": 4096
+  },
+  {
+    "test": "fat32_superfloppy",
+    "passed": true,
+    "bytes_compared": 4096
+  },
+  {
+    "test": "missing",
+    "passed": true,
+    "bytes_compared": 0
+  },
+  {
+    "test": "bad_chain",
+    "passed": true,
+    "bytes_compared": 0
+  },
+  {
+    "test": "exfat",
+    "passed": true,
+    "bytes_compared": 0
+  },
+  {
+    "test": "wrong_sector_size",
+    "passed": true,
+    "bytes_compared": 0
+  },
+  {
+    "test": "fat32_high_cluster",
+    "passed": true,
+    "bytes_compared": 4096
+  },
+  {
+    "test": "third_primary_partition",
+    "passed": true,
+    "bytes_compared": 4096
+  }
+]

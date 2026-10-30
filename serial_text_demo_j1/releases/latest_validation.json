@@ -1,0 +1,79 @@
+{
+  "revision": "fat-root-font-copy-20261030",
+  "passed": true,
+  "hardware_validation": "pending",
+  "filesystem_cases": [
+    {
+      "test": "fat16_mbr",
+      "passed": true,
+      "bytes_compared": 4096
+    },
+    {
+      "test": "fat16_superfloppy",
+      "passed": true,
+      "bytes_compared": 4096
+    },
+    {
+      "test": "fat32_active_fat1",
+      "passed": true,
+      "bytes_compared": 4096
+    },
+    {
+      "test": "fat32_superfloppy",
+      "passed": true,
+      "bytes_compared": 4096
+    },
+    {
+      "test": "missing",
+      "passed": true,
+      "bytes_compared": 0
+    },
+    {
+      "test": "bad_chain",
+      "passed": true,
+      "bytes_compared": 0
+    },
+    {
+      "test": "exfat",
+      "passed": true,
+      "bytes_compared": 0
+    },
+    {
+      "test": "wrong_sector_size",
+      "passed": true,
+      "bytes_compared": 0
+    },
+    {
+      "test": "fat32_high_cluster",
+      "passed": true,
+      "bytes_compared": 4096
+    },
+    {
+      "test": "third_primary_partition",
+      "passed": true,
+      "bytes_compared": 4096
+    }
+  ],
+  "integration": [
+    "real UART",
+    "fragmented FAT32 active FAT1",
+    "behavioral RAM",
+    "supplier RAM",
+    "8192 display pixels",
+    "instant display / skip empty / blink / replace / delete"
+  ],
+  "bit_sha256": "db2cd4d262d4f92f218567d98a4a93fc949376ca3ddf6753dcaf3ee8c1fe3472",
+  "timing_ns": {
+    "SWNS": 0.113,
+    "STNS": 0.0,
+    "HWNS": 0.1,
+    "HTNS": 0.0
+  },
+  "inputs_sha256": {
+    "rtl/demo_fat_font.v": "29c8e3d7dbd76e8b6117a6ee79c5dc2ac5e635c73cdc00ee5e8c664e1f0e7dbe",
+    "tests/tb_fat_font.v": "57188dfbde6f3cb9f25433cceead4ad436d98bd316dc88374eed1b464d3b155e",
+    "tools/test_fat_font.py": "167fcc49f7b278a11b12d828d0c77c3e5d57f603b93ee95af8de7f9e73c80f2d",
+    "tools/test_fat_integration.py": "11523c6976aaf0908054c61df8ae648d88cc358428f81914b85253424a1f8e09",
+    "TF卡文件/FONTS.BIN": "d9b4ba441bf7951ea768dec17f5dc00c90d98f312be5e5baa1a04d8fce260f26"
+  }
+}

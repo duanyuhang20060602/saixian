@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "hardware_validation": "pending",
+  "base_commit": "585ea4008669ef5a350559405786b9b70be2afce",
+  "timing_ns": {
+    "SWNS": 0.113,
+    "STNS": 0.0,
+    "HWNS": 0.1,
+    "HTNS": 0.0
+  },
+  "sha256": "db2cd4d262d4f92f218567d98a4a93fc949376ca3ddf6753dcaf3ee8c1fe3472",
+  "inputs_sha256": {
+    "rtl/demo_core.v": "894438dbc69912f81bd307abd4ab32c927be24de3ba6bf72043b8fdeb2afd538",
+    "rtl/demo_diagnostics.v": "574794a99983aa990fcf27329d6a4224f18b6caa4c321887060e405c012a7716",
+    "rtl/demo_fat_font.v": "29c8e3d7dbd76e8b6117a6ee79c5dc2ac5e635c73cdc00ee5e8c664e1f0e7dbe",
+    "rtl/demo_uart_test.v": "cec61bfb20c4a714612b17830ce1be0ae82a148ecff0eaabad7c26a9b409d56a",
+    "rtl/top_text_demo.v": "712351ee9cd1574b2d8d499415a86d374d3c3a3c87e78ffd15f85841e2cbe79a",
+    "vendor/dual_still_reset_sync.v": "86a363f9bf457e59e19470eadc14b89eef30a3d9142874ab0c20ced49b8cecac",
+    "vendor/hdmi_minimal_tx.v": "6abdf0ae79fa61b790ff12ca785cb306308414b61bda280af714b44ea89f7944",
+    "vendor/hdmi_phy_warpper.v": "7665996d6504860ef2554fb8fc70df0746b54dcb2fe078883c2f72c898366ffb",
+    "vendor/lane_lvds_10_1.v": "fd61b139c3803a16d1a3ed33bbd9babd88af4c73702a98b406d7ea6b7771269b",
+    "vendor/sd_card_cmd.v": "ee93ef4fce483306a204c8d0232f35418e4e4a6b94df7f11e912048f7d8aa46c",
+    "vendor/sd_card_sec_read_write.v": "2c51c66e347595d20ddd5d6b3a5cad9252fb308a754aa59140f739636b3d7dd6",
+    "vendor/sd_card_top.v": "96a83af8c155514f4fe8a802d207caea1577702d97bf362b0955bdc2f243214f",
+    "vendor/spi_master.v": "f3f04df5bc162fba03beff74fc506bace4038d2667505e498731a06f6b5a27e9",
+    "vendor/video_pll.v": "30e49bd3ccdccfcf7f7a874448be75a84a4790e89e82526ddd660fc2af891faf",
+    "td_project/build.tcl": "3671e500c0df23994561c0c45f9f297582f553cfc0cf38d17a8fb02f799349ed",
+    "td_project/pins.adc": "e39ee1acea3be8f13787a2df5200e2b1f5ee431f5dba58c9f05783f6e2a10e13",
+    "td_project/TEXT_DEMO_J1.al": "6269fab04de73af3ec29477dc3700b9c2dd80c9f3bc19885d8300c7693a13df8",
+    "td_project/timing.sdc": "c6f27f4a432165429af71d92b2add6ff1604751b9cc8efbfdce6070c1f572d75"
+  }
+}
