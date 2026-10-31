@@ -1,0 +1,2 @@
+PASS shared award DSPs: foil-trophy-foil-trophy, one full 720p trophy frame plus 240 transition rows, 1228800 visible pixels, 1793686 same-cycle RGB/menu/control comparisons, 1026 stalled four-word bursts, atomic table commits, fixed light and pause, zero trophy underflow
+E:\Codex\Work\saixian-resource-sharing-20261025\candidate\5.0project\tests\tb_shared_award_renderer.v:97: $finish called at 23917115796 (1ps)

@@ -1,0 +1,166 @@
+{
+  "base": "transfer-speed candidate based on 390690f",
+  "cases": [
+    {
+      "test": "memory",
+      "passed": true,
+      "log": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\thumbnail-ui-final\\memory.log",
+      "flags": [
+        "-DTHUMBNAIL_SIM"
+      ],
+      "seconds": 14.95,
+      "inputs_sha256": {
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\thumbnail-ui-final\\memory.v": "13bfec875bedf9a7b690659b7ff70841fb016e5b6c97a8bace9a33195241556a",
+        "common/photo_thumbnail.v": "d9d390cbc745cedce4d5f56148b16d07db9885701cf14f5ad4562fa81c240f3d",
+        "tools/test_thumbnail_button.py": "b1b79208e004c4e83aacdb364d47951b6002d8cae4bbfb66b87410c0d7e10e53",
+        "tests/tb_thumbnail_memory.v": "2a907ded2cf3c911bd7cd75e522b5f22f4a422db4df5af6bfd0cb4f244e24e86",
+        "tests/tb_thumbnail_blanking.v": "5436fafc51ff23483fdf8db8935bbd256f2cc7a25024b9e3a5673c7730d2778a",
+        "tests/tb_thumbnail_bandwidth.v": "5e23b84f83c589de584df494e45b3164078f4135b63336d919caa437c91286c5",
+        "tests/reference/thumbnail_button_before/photo_thumbnail.v": "bff41a53ecaa49b4b586e049562cf69e3aa535fbb767a1637262b44206689000",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\thumbnail-ui-final\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log_sha256": "6bf55e52a99b564c90e5ff17f79a5675d170bc4a0e0bc4be5560407c25a1d3e0"
+    },
+    {
+      "test": "vendor",
+      "passed": true,
+      "log": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\thumbnail-ui-final\\vendor.log",
+      "flags": [
+        "-IC:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\thumbnail-ui-final"
+      ],
+      "seconds": 34.06,
+      "inputs_sha256": {
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\thumbnail-ui-final\\memory.v": "13bfec875bedf9a7b690659b7ff70841fb016e5b6c97a8bace9a33195241556a",
+        "common/photo_thumbnail.v": "d9d390cbc745cedce4d5f56148b16d07db9885701cf14f5ad4562fa81c240f3d",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "tools/test_thumbnail_button.py": "b1b79208e004c4e83aacdb364d47951b6002d8cae4bbfb66b87410c0d7e10e53",
+        "tests/tb_thumbnail_memory.v": "2a907ded2cf3c911bd7cd75e522b5f22f4a422db4df5af6bfd0cb4f244e24e86",
+        "tests/tb_thumbnail_blanking.v": "5436fafc51ff23483fdf8db8935bbd256f2cc7a25024b9e3a5673c7730d2778a",
+        "tests/tb_thumbnail_bandwidth.v": "5e23b84f83c589de584df494e45b3164078f4135b63336d919caa437c91286c5",
+        "tests/reference/thumbnail_button_before/photo_thumbnail.v": "bff41a53ecaa49b4b586e049562cf69e3aa535fbb767a1637262b44206689000",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\thumbnail-ui-final\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log_sha256": "6bf55e52a99b564c90e5ff17f79a5675d170bc4a0e0bc4be5560407c25a1d3e0"
+    },
+    {
+      "test": "overlay",
+      "passed": true,
+      "log": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\thumbnail-ui-final\\overlay.log",
+      "flags": [
+        "-DTHUMBNAIL_SIM"
+      ],
+      "seconds": 0.11,
+      "inputs_sha256": {
+        "tests/tb_thumbnail_overlay.v": "a6e557569ed1f587892e077356b8e10bc7957de19ed855641ab31f27f2fc4d36",
+        "common/photo_thumbnail.v": "d9d390cbc745cedce4d5f56148b16d07db9885701cf14f5ad4562fa81c240f3d",
+        "tools/test_thumbnail_button.py": "b1b79208e004c4e83aacdb364d47951b6002d8cae4bbfb66b87410c0d7e10e53",
+        "tests/tb_thumbnail_memory.v": "2a907ded2cf3c911bd7cd75e522b5f22f4a422db4df5af6bfd0cb4f244e24e86",
+        "tests/tb_thumbnail_blanking.v": "5436fafc51ff23483fdf8db8935bbd256f2cc7a25024b9e3a5673c7730d2778a",
+        "tests/tb_thumbnail_bandwidth.v": "5e23b84f83c589de584df494e45b3164078f4135b63336d919caa437c91286c5",
+        "tests/reference/thumbnail_button_before/photo_thumbnail.v": "bff41a53ecaa49b4b586e049562cf69e3aa535fbb767a1637262b44206689000",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\thumbnail-ui-final\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log_sha256": "f62dd0b3f03df53d26c005ed77a8438eb0895e251457f8ab0368995bc54ceda9"
+    },
+    {
+      "test": "cancel",
+      "passed": true,
+      "log": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\thumbnail-ui-final\\cancel.log",
+      "flags": [
+        "-DTHUMBNAIL_SIM"
+      ],
+      "seconds": 0.11,
+      "inputs_sha256": {
+        "tests/tb_thumbnail_early_cancel.v": "83299089b27d56a27619947cec5c4ec166ad11005e70dcd3cc82ae8b0cc78610",
+        "common/photo_thumbnail.v": "d9d390cbc745cedce4d5f56148b16d07db9885701cf14f5ad4562fa81c240f3d",
+        "tools/test_thumbnail_button.py": "b1b79208e004c4e83aacdb364d47951b6002d8cae4bbfb66b87410c0d7e10e53",
+        "tests/tb_thumbnail_memory.v": "2a907ded2cf3c911bd7cd75e522b5f22f4a422db4df5af6bfd0cb4f244e24e86",
+        "tests/tb_thumbnail_blanking.v": "5436fafc51ff23483fdf8db8935bbd256f2cc7a25024b9e3a5673c7730d2778a",
+        "tests/tb_thumbnail_bandwidth.v": "5e23b84f83c589de584df494e45b3164078f4135b63336d919caa437c91286c5",
+        "tests/reference/thumbnail_button_before/photo_thumbnail.v": "bff41a53ecaa49b4b586e049562cf69e3aa535fbb767a1637262b44206689000",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\thumbnail-ui-final\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log_sha256": "7b94dd7b515aedb5cd945633e1dc6a6b75687e8c7aac1183aa1f63d268484e03"
+    },
+    {
+      "test": "pointer",
+      "passed": true,
+      "log": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\thumbnail-ui-final\\pointer.log",
+      "flags": [],
+      "seconds": 0.86,
+      "inputs_sha256": {
+        "tests/tb_pointer_overlay.v": "b57d0f4721fa979220c9531df7889d7f5c62832c7530859301f66fc25fffb6cb",
+        "common/photo_touchpad.v": "c29700dcfde3ef60713af7db8cfc1ae9fdfa44363cb2bf6d69c464062e0e54ca",
+        "tools/test_thumbnail_button.py": "b1b79208e004c4e83aacdb364d47951b6002d8cae4bbfb66b87410c0d7e10e53",
+        "tests/tb_thumbnail_memory.v": "2a907ded2cf3c911bd7cd75e522b5f22f4a422db4df5af6bfd0cb4f244e24e86",
+        "tests/tb_thumbnail_blanking.v": "5436fafc51ff23483fdf8db8935bbd256f2cc7a25024b9e3a5673c7730d2778a",
+        "tests/tb_thumbnail_bandwidth.v": "5e23b84f83c589de584df494e45b3164078f4135b63336d919caa437c91286c5",
+        "tests/reference/thumbnail_button_before/photo_thumbnail.v": "bff41a53ecaa49b4b586e049562cf69e3aa535fbb767a1637262b44206689000",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\thumbnail-ui-final\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log_sha256": "fc7e992279c63e3b1051ba9f76fe80d3c5561636c7960bc7dcf69e2048c842ee"
+    },
+    {
+      "test": "arrow_removed",
+      "passed": true,
+      "log": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\thumbnail-ui-final\\arrow_removed.log",
+      "flags": [],
+      "seconds": 0.11,
+      "inputs_sha256": {
+        "tests/tb_thumbnail_arrow_removed.v": "52e0f6bde6fd033f24c049001797d5b699f32a4aa9e250fbcd8462f1785263f5",
+        "common/photo_touchpad.v": "c29700dcfde3ef60713af7db8cfc1ae9fdfa44363cb2bf6d69c464062e0e54ca",
+        "tools/test_thumbnail_button.py": "b1b79208e004c4e83aacdb364d47951b6002d8cae4bbfb66b87410c0d7e10e53",
+        "tests/tb_thumbnail_memory.v": "2a907ded2cf3c911bd7cd75e522b5f22f4a422db4df5af6bfd0cb4f244e24e86",
+        "tests/tb_thumbnail_blanking.v": "5436fafc51ff23483fdf8db8935bbd256f2cc7a25024b9e3a5673c7730d2778a",
+        "tests/tb_thumbnail_bandwidth.v": "5e23b84f83c589de584df494e45b3164078f4135b63336d919caa437c91286c5",
+        "tests/reference/thumbnail_button_before/photo_thumbnail.v": "bff41a53ecaa49b4b586e049562cf69e3aa535fbb767a1637262b44206689000",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\thumbnail-ui-final\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log_sha256": "033087a4371697ceb7c9549258377968763861f5c5ed366b46437a590279f5d7"
+    },
+    {
+      "test": "new_phase",
+      "passed": true,
+      "log": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\thumbnail-ui-final\\new_phase.log",
+      "flags": [
+        "-DTHUMBNAIL_SIM"
+      ],
+      "seconds": 3.23,
+      "inputs_sha256": {
+        "tests/tb_thumbnail_button_phase.v": "7602535c061c5d47bf4540d9a48438a15eb47cc5d3642280761a8bf32020d295",
+        "common/photo_thumbnail.v": "d9d390cbc745cedce4d5f56148b16d07db9885701cf14f5ad4562fa81c240f3d",
+        "common/photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795",
+        "tools/test_thumbnail_button.py": "b1b79208e004c4e83aacdb364d47951b6002d8cae4bbfb66b87410c0d7e10e53",
+        "tests/tb_thumbnail_memory.v": "2a907ded2cf3c911bd7cd75e522b5f22f4a422db4df5af6bfd0cb4f244e24e86",
+        "tests/tb_thumbnail_blanking.v": "5436fafc51ff23483fdf8db8935bbd256f2cc7a25024b9e3a5673c7730d2778a",
+        "tests/tb_thumbnail_bandwidth.v": "5e23b84f83c589de584df494e45b3164078f4135b63336d919caa437c91286c5",
+        "tests/reference/thumbnail_button_before/photo_thumbnail.v": "bff41a53ecaa49b4b586e049562cf69e3aa535fbb767a1637262b44206689000",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\thumbnail-ui-final\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log_sha256": "210333d91ab9ba9f08269eed6e6f8ae07af518ba577e5b624b62e8a8c7e9a6f2"
+    },
+    {
+      "test": "touch",
+      "passed": true,
+      "log": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\thumbnail-ui-final\\touch.log",
+      "flags": [],
+      "seconds": 58.41,
+      "inputs_sha256": {
+        "tests/tb_thumbnail_button_touch.v": "de6ca09b0ca89ec3f87aa54c8f6c374b33310b85b7cde39896af8ebf41c0f107",
+        "common/top_photo_a.v": "05194343e65a381d0fc6a1084e4323c0aefcb6a2b8a09b35de66ead94450607e",
+        "common/saixian_hmi_uart.v": "22c726a0f74a84790ebd05f594ddca31360af6d5dc010a2f404d8c22d547b666",
+        "common/photo_touchpad.v": "c29700dcfde3ef60713af7db8cfc1ae9fdfa44363cb2bf6d69c464062e0e54ca",
+        "common/photo_unified_settings_controller.v": "702fd7b38c3aae4b408041b05b70cd4feb00381b5c22192644b7aa98f77b2d14",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\thumbnail-ui-final\\hardware_shells.v": "a45e9793f262919147ad790b25dd3418436986dfe223ff78dccc37195c082f6f",
+        "tools/test_thumbnail_button.py": "b1b79208e004c4e83aacdb364d47951b6002d8cae4bbfb66b87410c0d7e10e53",
+        "tests/tb_thumbnail_memory.v": "2a907ded2cf3c911bd7cd75e522b5f22f4a422db4df5af6bfd0cb4f244e24e86",
+        "tests/tb_thumbnail_blanking.v": "5436fafc51ff23483fdf8db8935bbd256f2cc7a25024b9e3a5673c7730d2778a",
+        "tests/tb_thumbnail_bandwidth.v": "5e23b84f83c589de584df494e45b3164078f4135b63336d919caa437c91286c5",
+        "tests/reference/thumbnail_button_before/photo_thumbnail.v": "bff41a53ecaa49b4b586e049562cf69e3aa535fbb767a1637262b44206689000",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\thumbnail-ui-final\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log_sha256": "6d357216aa27fe40d0a823bf48600a1b3475ee95a5b3a3dc0e53c3610de72d0c"
+    }
+  ]
+}

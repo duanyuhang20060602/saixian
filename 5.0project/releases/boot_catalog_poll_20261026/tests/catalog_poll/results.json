@@ -1,0 +1,20 @@
+[
+  {
+    "test": "delayed_catalog_typed_0",
+    "passed": true,
+    "inputs_sha256": {
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\catalog-poll-fixed-final\\poll_typed_0.v": "77dd0da6484ffc928924c4a65c311359a1d7b374c622f916d4699cb192998ca5",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_audio_link.v": "fa29de38c0a449317ab4b0106c4b4b6825374f4989d4fe9e85d70acb6952388a",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_boot_screen.v": "7e4ac12f6e9af29c46e2a950a4fe6da7cec41a60afa245a9229cbf3869d4ae0e"
+    }
+  },
+  {
+    "test": "delayed_catalog_typed_1",
+    "passed": true,
+    "inputs_sha256": {
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\catalog-poll-fixed-final\\poll_typed_1.v": "7b4189381e165da8a6667d81ad101c679c463c48c005ba788ba42e95ab336250",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_audio_link.v": "fa29de38c0a449317ab4b0106c4b4b6825374f4989d4fe9e85d70acb6952388a",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_boot_screen.v": "7e4ac12f6e9af29c46e2a950a4fe6da7cec41a60afa245a9229cbf3869d4ae0e"
+    }
+  }
+]

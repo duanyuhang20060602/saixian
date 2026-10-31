@@ -1,0 +1,3 @@
+SWITCH_CYCLES 95971
+PASS uncached switch GET/BEGIN/READY/frame/END/display-ready, fixed media-ready and 100-cycle frame stub
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\validation\control-link-speed-20261027\switch_115200\bench.v:37: $finish called at 959895000 (1ps)

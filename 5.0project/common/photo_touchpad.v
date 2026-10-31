@@ -65,7 +65,7 @@ endmodule
 
 // Raster cursor and settings launcher, aligned with the existing 26-clock RGB.
 // No RAM, multiplier, extra video latency, or SDRAM traffic.
-module photo_pointer_overlay #(parameter DELAY=26)(
+module photo_pointer_overlay #(parameter DELAY=26,NAVIGATION_BUTTON=1)(
  input clk,rst,frame_tick,enable,de,navigation_enable,input [11:0] x,input [10:0] y,
  input [10:0] cursor_x,input [9:0] cursor_y,
  input [23:0] rgb_in,output [23:0] rgb_out
@@ -87,9 +87,9 @@ always @(posedge clk or posedge rst)begin
   if(frame_tick)begin visible<=enable;navigation_visible<=navigation_enable;end
   dx<=x-{1'b0,cursor_x};dy<=y-{1'b0,cursor_y};
   bounds<=visible && de && x>={1'b0,cursor_x} && y>={1'b0,cursor_y};
-  button<=visible && de && ((x>=1152 && x<1256 && y>=24 && y<64) || (navigation_visible && next_button));
+  button<=visible && de && ((x>=1152 && x<1256 && y>=24 && y<64) || (NAVIGATION_BUTTON && navigation_visible && next_button));
   // Three horizontal menu lines and a simple frame remain readable at 720p.
-  button_ink<=(x>=1180 && x<1228 && ((y>=34 && y<38)||(y>=44 && y<48)||(y>=54 && y<58))) || (navigation_visible && next_button && next_ink);
+  button_ink<=(x>=1180 && x<1228 && ((y>=34 && y<38)||(y>=44 && y<48)||(y>=54 && y<58))) || (NAVIGATION_BUTTON && navigation_visible && next_button && next_ink);
   body_pipe<={body_pipe[DELAY-3:0],body};border_pipe<={border_pipe[DELAY-3:0],border};
   button_pipe<={button_pipe[DELAY-3:0],button};ink_pipe<={ink_pipe[DELAY-3:0],button_ink};
  end

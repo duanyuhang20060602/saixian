@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "blanking_after",
+  "validation_group": "thumbnail_blanking",
+  "passed": true,
+  "rerun_this_revision": false,
+  "seconds": 31.72
+}

@@ -1,0 +1,213 @@
+============================================================
+   Tang Dynasty, V6.2.168116
+   Copyright (c) 2012-2025 Anlogic Inc.
+   Executable = C:/Anlogic/TD_6.2.1_Engineer_6.2.168.116/bin/td_commands_prompt.exe
+   Built at =   16:32:07 Jun 12 2025
+   Run by =     MR.HUSKY
+   Run Date =   Tue Oct 27 19:06:12 2026
+
+   Run on =     LAPTOP-V1QI5QTA
+============================================================
+RUN-1002 : start command "import_device eagle_s20.db -package EG4S20BG256"
+RUN-1001 : Using default speed grade: NA
+ARC-1001 : Device Initialization.
+ARC-1001 : ------------------------------------------------------------------
+ARC-1001 :            OPTION            |          IO          |   SETTING   
+ARC-1001 : ------------------------------------------------------------------
+ARC-1001 :   cso_b/cclk/mosi/miso/dout  |  T3/R11/T10/P10/S11  |    gpio    
+ARC-1001 :             done             |         P13          |    gpio    
+ARC-1001 :           program_b          |          T2          |  dedicate  
+ARC-1001 :        tdi/tms/tck/tdo       |   C12/A15/C14/E14    |  dedicate  
+ARC-1001 : ------------------------------------------------------------------
+ARC-1004 : Device setting, marked 5 dedicate IOs in total.
+RUN-1002 : start command "open_project PHOTO_BOARD_B.al -single_run"
+RUN-1002 : start command "commit_param -step design"
+RUN-1001 : Print Global Property
+RUN-1001 : --------------------------------------------------------
+RUN-1001 :   Parameters   |  Settings  |  Default Values  |  Note  
+RUN-1001 : --------------------------------------------------------
+RUN-1001 :   enable_seed  |    off     |       off        |        
+RUN-1001 :     message    |  standard  |     standard     |        
+RUN-1001 :   qor_monitor  |     on     |        on        |        
+RUN-1001 :   syn_ip_flow  |    off     |       off        |        
+RUN-1001 :     thread     |    auto    |       auto       |        
+RUN-1001 : --------------------------------------------------------
+RUN-1001 : Print Design Property
+RUN-1001 : ----------------------------------------------------------------
+RUN-1001 :       Parameters       |  Settings  |  Default Values  |  Note  
+RUN-1001 : ----------------------------------------------------------------
+RUN-1001 :   default_reg_initial  |    auto    |       auto       |        
+RUN-1001 :    hdl_warning_level   |   normal   |      normal      |        
+RUN-1001 : ----------------------------------------------------------------
+HDL-1007 : analyze verilog file ../user_source/hdl_source/SD/frame_read_write.v
+HDL-1007 : analyze verilog file ../user_source/hdl_source/SD/frame_fifo_read.v
+HDL-1007 : analyze verilog file ../user_source/hdl_source/SD/frame_fifo_write.v
+HDL-1007 : analyze verilog file ../user_source/hdl_source/SD/sdram.v
+HDL-1007 : analyze included file ../user_source/hdl_source/include/global_def.v in ../user_source/hdl_source/SD/sdram.v(10)
+HDL-1007 : back to file '../user_source/hdl_source/SD/sdram.v' in ../user_source/hdl_source/SD/sdram.v(10)
+HDL-1007 : undeclared symbol 'SDR_CKE', assumed default net type 'wire' in ../user_source/hdl_source/SD/sdram.v(89)
+HDL-1007 : analyze verilog file ../user_source/hdl_source/IP/sys_pll.v
+HDL-1007 : undeclared symbol 'open', assumed default net type 'wire' in ../user_source/hdl_source/IP/sys_pll.v(86)
+HDL-1007 : analyze verilog file ../user_source/hdl_source/IP/afifo_16_32_256.v
+HDL-1007 : analyze verilog file ../user_source/hdl_source/IP/afifo_32_16_256.v
+HDL-1007 : analyze verilog file ../user_source/hdl_source/include/sdr_as_ram.enc.v
+HDL-1007 : analyze included file ../user_source/hdl_source/include/global_def.v in ../user_source/hdl_source/include/sdr_as_ram.enc.v(10)
+HDL-1007 : back to file '../user_source/hdl_source/include/sdr_as_ram.enc.v' in ../user_source/hdl_source/include/sdr_as_ram.enc.v(10)
+Copyright (c) 1998-2019 The OpenSSL Project.  All rights reserved.
+This product includes software developed by the OpenSSL Project
+for use in the OpenSSL Toolkit (http://www.openssl.org/)
+Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
+All rights reserved.
+This product includes cryptographic software written by Eric Young (eay@cryptsoft.com)
+HDL-1007 : back to file '../user_source/hdl_source/include/sdr_as_ram.enc.v' in ../user_source/hdl_source/include/sdr_as_ram.enc.v(45)
+HDL-1007 : analyze verilog file ../user_source/hdl_source/include/sdr_init_ref.enc.v
+HDL-1007 : analyze included file ../user_source/hdl_source/include/global_def.v in ../user_source/hdl_source/include/sdr_init_ref.enc.v(11)
+HDL-1007 : back to file '../user_source/hdl_source/include/sdr_init_ref.enc.v' in ../user_source/hdl_source/include/sdr_init_ref.enc.v(11)
+HDL-1007 : undeclared symbol '**', assumed default net type '**' in ../user_source/hdl_source/include/sdr_init_ref.enc.v(57)
+HDL-1007 : back to file '../user_source/hdl_source/include/sdr_init_ref.enc.v' in ../user_source/hdl_source/include/sdr_init_ref.enc.v(153)
+HDL-5007 WARNING: concatenation with an unsized literal will be treated as 32 bits in ../user_source/hdl_source/include/sdr_init_ref.enc.v(47)
+HDL-1007 : analyze verilog file ../user_source/hdl_source/include/sdr_wrrd.enc.v
+HDL-5007 WARNING: concatenation with an unsized literal will be treated as 32 bits in ../user_source/hdl_source/include/sdr_wrrd.enc.v(283)
+HDL-1007 : back to file '../user_source/hdl_source/include/sdr_wrrd.enc.v' in ../user_source/hdl_source/include/sdr_wrrd.enc.v(19)
+HDL-1007 : analyze verilog file ../user_source/hdl_source/frame_store.v
+HDL-1007 : analyze verilog file ../user_source/hdl_source/dual_still_reset_sync.v
+HDL-1007 : analyze verilog file ../user_source/hdl_source/builtin_link_pll.v
+HDL-1007 : analyze verilog file ../../../common/photo_uart.v
+HDL-1007 : analyze verilog file ../../../common/photo_link.v
+HDL-1007 : analyze verilog file ../../../common/photo_control.v
+HDL-1007 : analyze verilog file ../../../common/photo_status.v
+HDL-1007 : analyze verilog file ../../../common/top_photo_b.v
+HDL-1007 : analyze verilog file ../../../common/photo_sd_cache.v
+HDL-1007 : analyze verilog file ../../../common/photo_processing.v
+HDL-1007 : analyze verilog file ../../../common/photo_b_processing.v
+HDL-1007 : analyze verilog file ../../../common/photo_audio_link.v
+HDL-1007 : analyze verilog file ../../../common/photo_sd_audio_stream.v
+HDL-1007 : analyze verilog file ../../../common/photo_audio_features.v
+HDL-1007 : analyze verilog file ../../../common/audio_ui/photo_audio_cue_samples.v
+HDL-1007 : analyze verilog file ../../../common/photo_color_format.v
+HDL-1007 : analyze verilog file ../../../common/audio_ui/saixian_audio_repair.v
+HDL-1007 : analyze verilog file ../../../common/photo_sd/bmp_read.v
+HDL-1007 : analyze verilog file ../../../common/photo_sd/photo_dlt_header.v
+HDL-1007 : analyze verilog file ../../../common/photo_sd/photo_dlt_reader.v
+HDL-1007 : analyze verilog file ../../../common/photo_sd/saixian_media_header.v
+HDL-1007 : analyze verilog file ../../../common/photo_sd/sd_card_cmd.v
+HDL-1007 : analyze verilog file ../../../common/photo_sd/sd_card_sec_read_write.v
+HDL-1007 : analyze verilog file ../../../common/photo_sd/sd_card_top.v
+HDL-1007 : analyze verilog file ../../../common/photo_sd/spi_master.v
+HDL-1007 : analyze verilog file ../../../common/audio_ui/saixian_audio_visualizer.v
+HDL-1007 : analyze verilog file ../../../common/photo_av_metadata.v
+HDL-1007 : analyze verilog file ../../../common/fluid/water_pack.v
+HDL-1007 : analyze verilog file ../../../common/audio_ui/saixian_audio_pitch.v
+HDL-1007 : analyze verilog file ../../../common/photo_audio_pitch_b.v
+HDL-1007 : analyze verilog file ../../../common/photo_switch_timing.v
+HDL-1007 : analyze verilog file ../../../common/photo_sd_title_store.v
+HDL-1007 : analyze verilog file ../../../common/photo_relief_remote.v
+HDL-1007 : analyze verilog file ../../../common/photo_relief_remote_tables.v
+HDL-1007 : analyze verilog file ../../../common/photo_hmi_remote.v
+HDL-1007 : analyze verilog file ../../../common/photo_audio_spi_b_offload.v
+PRJ-1401 : Successfully analyzed 47 source files.
+RUN-1002 : start command "import_db PHOTO_BOARD_B_pr.db"
+RUN-1001 : Importing database generated by Tang Dynasty, V6.2.168116.
+RUN-1001 : Database version number 46207
+RUN-1002 : start command "set_param gate opt_area high"
+RUN-1002 : start command "set_param place macro_opt on"
+RUN-1002 : start command "set_param place uram_opt on"
+RUN-1002 : start command "set_param place uram_opt2 on"
+RUN-1001 : Import flow parameters
+RUN-1001 : Import netlist
+PHY-1001 : Generate detailed routing grids ...
+PHY-1001 : End build routing graph; 1.688911s wall, 1.640625s user + 0.046875s system = 1.687500s CPU (99.9%)
+
+PHY-1001 : Processed IO instance link_data[15]_syn_4 with INV attribute.
+PHY-1001 : Processed IO instance link_data[14]_syn_4 with INV attribute.
+PHY-1001 : Processed IO instance link_data[13]_syn_4 with INV attribute.
+PHY-1001 : Processed IO instance link_data[12]_syn_4 with INV attribute.
+PHY-1001 : Processed IO instance link_data[11]_syn_4 with INV attribute.
+PHY-1001 : Processed IO instance link_data[10]_syn_4 with INV attribute.
+PHY-1001 : Processed IO instance link_data[9]_syn_4 with INV attribute.
+PHY-1001 : Processed IO instance link_data[8]_syn_4 with INV attribute.
+PHY-1001 : Processed IO instance link_data[7]_syn_4 with INV attribute.
+PHY-1001 : Processed IO instance link_data[6]_syn_4 with INV attribute.
+PHY-1001 : Processed IO instance link_data[5]_syn_4 with INV attribute.
+PHY-1001 : Processed IO instance link_data[4]_syn_4 with INV attribute.
+PHY-1001 : Processed IO instance link_data[3]_syn_4 with INV attribute.
+PHY-1001 : Processed IO instance link_data[2]_syn_4 with INV attribute.
+PHY-1001 : Processed IO instance link_data[1]_syn_4 with INV attribute.
+PHY-1001 : Processed IO instance link_data[0]_syn_4 with INV attribute.
+PHY-1001 : Processed IO instance link_eof_syn_4 with INV attribute.
+PHY-1001 : Processed IO instance link_sof_syn_4 with INV attribute.
+PHY-1001 : Processed IO instance link_valid_syn_4 with INV attribute.
+PHY-1001 : Build lut bridge;  0.033036s wall, 0.031250s user + 0.000000s system = 0.031250s CPU (94.6%)
+
+PHY-1001 : Generate nets ...
+PHY-1001 : net clk_dup_1 will be routed on clock mesh
+PHY-1001 : net audio_analysis/fft/clk will be routed on clock mesh
+PHY-1001 : clock net audio_link/clk will be merged with clock u_sys_pll/clk0_buf
+PHY-1001 : clock net store/rw/read_buf/clkr will be merged with clock u_link_pll/clk0_buf
+PHY-1001 : net store/ram/u2_ram/SDRAM_CLK will be routed on clock mesh
+PHY-1001 : eco open net = 0
+PHY-5014 WARNING: Detail route doesn't find pib for relief_processor/kernel/diffuse_g/native$multiply.acin[4]
+PHY-5014 WARNING: Detail route doesn't find pib for relief_processor/kernel/diffuse_g/native$multiply.bcin[5]
+PHY-5014 WARNING: Detail route doesn't find pib for relief_processor/kernel/diffuse_rb/native$multiply.bcin[14]
+PHY-5014 WARNING: Detail route doesn't find pib for relief_processor/kernel/diffuse_rb/native$multiply.bcin[2]
+PHY-5014 WARNING: Detail route doesn't find pib for relief_processor/kernel/diffuse_g/native$multiply.acin[6]
+PHY-5014 WARNING: Detail route doesn't find pib for relief_processor/kernel/diffuse_g/native$multiply.acin[1]
+PHY-5014 WARNING: Detail route doesn't find pib for relief_processor/kernel/diffuse_rb/native$multiply.bcin[5]
+PHY-5014 WARNING: Detail route doesn't find pib for relief_processor/kernel/diffuse_rb/native$multiply.acin[2]
+PHY-5014 WARNING: Detail route doesn't find pib for relief_processor/kernel/diffuse_g/native$multiply.acin[13]
+PHY-5014 WARNING: Detail route doesn't find pib for relief_processor/kernel/diffuse_rb/native$multiply.acin[8]
+PHY-5014 Similar messages will be suppressed.
+PHY-1001 : 449 feed throughs used by 365 nets
+RUN-1001 : Import phy database
+RUN-1001 : Import timing constraints
+RUN-1001 : Import IO constraints
+RUN-1001 : Import Inst constraints
+RUN-1001 : Import ChipWatcher
+RUN-1001 : Import design success TD_VERSION=6.2.168116 , DB_VERSION=46207
+RUN-1003 : finish command "import_db PHOTO_BOARD_B_pr.db" in  6.107123s wall, 5.562500s user + 0.140625s system = 5.703125s CPU (93.4%)
+
+RUN-1004 : used memory is 834 MB, reserved memory is 825 MB, peak memory is 834 MB
+RUN-1002 : start command "update_timing -mode final"
+RUN-1002 : start command "start_timer"
+USR-1002 : Derived clock:  create_generated_clock -name {u_link_pll/pll_inst.clkc[0]} -source [get_ports {clk}] -master_clock {clk} -divide_by 2.0000 -duty_cycle 50.0000 [get_pins {u_link_pll/pll_inst.clkc[0]}]
+USR-1002 : Derived clock:  create_generated_clock -name {u_sys_pll/pll_inst.clkc[0]} -source [get_ports {clk}] -master_clock {clk} -multiply_by 2.0000 -duty_cycle 50.0000 [get_pins {u_sys_pll/pll_inst.clkc[0]}]
+USR-1002 : Derived clock:  create_generated_clock -name {u_sys_pll/pll_inst.clkc[1]} -source [get_ports {clk}] -master_clock {clk} -multiply_by 1.0000 -duty_cycle 50.0000 [get_pins {u_sys_pll/pll_inst.clkc[1]}]
+USR-1002 : Derived clock:  create_generated_clock -name {u_sys_pll/pll_inst.clkc[2]} -source [get_ports {clk}] -master_clock {clk} -multiply_by 1.0000 -phase 144 -duty_cycle 50.0000 [get_pins {u_sys_pll/pll_inst.clkc[2]}]
+USR-8012 CRITICAL-WARNING: value for option -to is invalid.
+USR-8159 CRITICAL-WARNING: Command set_false_path -to [get_regs -nowarn {*color_meta* *color_link_meta*}] in C:/Users/MR.HUSKY/Desktop/qian/saixian-independent-text-music-20261026/build-preserve-hello-b-r1-20261027/builds/board_b/project/src/board_b/user_source/constraints_source/BOARD_B_SENDER_timing.sdc(28) fails.
+20.000000
+40.000000
+10.000000
+20.000000
+RUN-1003 : finish command "start_timer" in  1.062848s wall, 1.031250s user + 0.015625s system = 1.046875s CPU (98.5%)
+
+RUN-1004 : used memory is 870 MB, reserved memory is 859 MB, peak memory is 870 MB
+TMR-2502 : Net delay update with mode: Routed
+RUN-1003 : finish command "update_timing -mode final" in  2.071738s wall, 2.031250s user + 0.031250s system = 2.062500s CPU (99.6%)
+
+RUN-1004 : used memory is 948 MB, reserved memory is 936 MB, peak memory is 948 MB
+RUN-1002 : start command "report_timing_summary -file margin_baseline.timing"
+RUN-1002 : start command "set_path_margin -group codex_setup_guard -setup -global 0.20"
+RUN-1002 : start command "report_path_margin"
+------------------------------------------------------------------------------
+       group       |                      set_path_margin                     
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+RUN-1002 : start command "update_timing -mode final"
+RUN-1002 : start command "start_timer"
+RUN-1003 : finish command "update_timing -mode final" in  1.751414s wall, 1.750000s user + 0.000000s system = 1.750000s CPU (99.9%)
+
+RUN-1004 : used memory is 963 MB, reserved memory is 952 MB, peak memory is 963 MB
+RUN-1002 : start command "report_timing_summary -file margin_tightened.timing"
+RUN-1002 : start command "reset_path_margin -group codex_setup_guard"
+RUN-1002 : start command "report_path_margin"
+------------------------------------------------------------------------------
+       group       |                      set_path_margin                     
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+RUN-1002 : start command "update_timing -mode final"
+RUN-1002 : start command "start_timer"
+RUN-1003 : finish command "update_timing -mode final" in  1.852095s wall, 1.828125s user + 0.015625s system = 1.843750s CPU (99.5%)
+
+RUN-1004 : used memory is 965 MB, reserved memory is 953 MB, peak memory is 965 MB
+RUN-1002 : start command "report_timing_summary -file margin_restored.timing"

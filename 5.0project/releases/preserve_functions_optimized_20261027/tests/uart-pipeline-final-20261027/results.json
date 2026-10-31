@@ -1,0 +1,102 @@
+[
+  {
+    "div": 1,
+    "pulse_payload": 0,
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_uart_pipeline_exact.v": "c1698d13b840bb57d3125562b0add93e25556797d20158122facc8e706aa463b",
+      "common/photo_uart.v": "d1f4bb2624ceebcf73dd998ce2c5d925690a6786e8782e20462257ae3e572402",
+      "tests/reference/photo_uart_before.v": "07bd0de89693686c00bafbd1b000dc4ec9e5d0fb26aa8266a8a31c54e320d7c6"
+    }
+  },
+  {
+    "div": 1,
+    "pulse_payload": 1,
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_uart_pipeline_exact.v": "c1698d13b840bb57d3125562b0add93e25556797d20158122facc8e706aa463b",
+      "common/photo_uart.v": "d1f4bb2624ceebcf73dd998ce2c5d925690a6786e8782e20462257ae3e572402",
+      "tests/reference/photo_uart_before.v": "07bd0de89693686c00bafbd1b000dc4ec9e5d0fb26aa8266a8a31c54e320d7c6"
+    }
+  },
+  {
+    "div": 2,
+    "pulse_payload": 0,
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_uart_pipeline_exact.v": "c1698d13b840bb57d3125562b0add93e25556797d20158122facc8e706aa463b",
+      "common/photo_uart.v": "d1f4bb2624ceebcf73dd998ce2c5d925690a6786e8782e20462257ae3e572402",
+      "tests/reference/photo_uart_before.v": "07bd0de89693686c00bafbd1b000dc4ec9e5d0fb26aa8266a8a31c54e320d7c6"
+    }
+  },
+  {
+    "div": 2,
+    "pulse_payload": 1,
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_uart_pipeline_exact.v": "c1698d13b840bb57d3125562b0add93e25556797d20158122facc8e706aa463b",
+      "common/photo_uart.v": "d1f4bb2624ceebcf73dd998ce2c5d925690a6786e8782e20462257ae3e572402",
+      "tests/reference/photo_uart_before.v": "07bd0de89693686c00bafbd1b000dc4ec9e5d0fb26aa8266a8a31c54e320d7c6"
+    }
+  },
+  {
+    "div": 8,
+    "pulse_payload": 0,
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_uart_pipeline_exact.v": "c1698d13b840bb57d3125562b0add93e25556797d20158122facc8e706aa463b",
+      "common/photo_uart.v": "d1f4bb2624ceebcf73dd998ce2c5d925690a6786e8782e20462257ae3e572402",
+      "tests/reference/photo_uart_before.v": "07bd0de89693686c00bafbd1b000dc4ec9e5d0fb26aa8266a8a31c54e320d7c6"
+    }
+  },
+  {
+    "div": 8,
+    "pulse_payload": 1,
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_uart_pipeline_exact.v": "c1698d13b840bb57d3125562b0add93e25556797d20158122facc8e706aa463b",
+      "common/photo_uart.v": "d1f4bb2624ceebcf73dd998ce2c5d925690a6786e8782e20462257ae3e572402",
+      "tests/reference/photo_uart_before.v": "07bd0de89693686c00bafbd1b000dc4ec9e5d0fb26aa8266a8a31c54e320d7c6"
+    }
+  },
+  {
+    "div": 326,
+    "pulse_payload": 0,
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_uart_pipeline_exact.v": "c1698d13b840bb57d3125562b0add93e25556797d20158122facc8e706aa463b",
+      "common/photo_uart.v": "d1f4bb2624ceebcf73dd998ce2c5d925690a6786e8782e20462257ae3e572402",
+      "tests/reference/photo_uart_before.v": "07bd0de89693686c00bafbd1b000dc4ec9e5d0fb26aa8266a8a31c54e320d7c6"
+    }
+  },
+  {
+    "div": 326,
+    "pulse_payload": 1,
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_uart_pipeline_exact.v": "c1698d13b840bb57d3125562b0add93e25556797d20158122facc8e706aa463b",
+      "common/photo_uart.v": "d1f4bb2624ceebcf73dd998ce2c5d925690a6786e8782e20462257ae3e572402",
+      "tests/reference/photo_uart_before.v": "07bd0de89693686c00bafbd1b000dc4ec9e5d0fb26aa8266a8a31c54e320d7c6"
+    }
+  },
+  {
+    "div": 434,
+    "pulse_payload": 0,
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_uart_pipeline_exact.v": "c1698d13b840bb57d3125562b0add93e25556797d20158122facc8e706aa463b",
+      "common/photo_uart.v": "d1f4bb2624ceebcf73dd998ce2c5d925690a6786e8782e20462257ae3e572402",
+      "tests/reference/photo_uart_before.v": "07bd0de89693686c00bafbd1b000dc4ec9e5d0fb26aa8266a8a31c54e320d7c6"
+    }
+  },
+  {
+    "div": 434,
+    "pulse_payload": 1,
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_uart_pipeline_exact.v": "c1698d13b840bb57d3125562b0add93e25556797d20158122facc8e706aa463b",
+      "common/photo_uart.v": "d1f4bb2624ceebcf73dd998ce2c5d925690a6786e8782e20462257ae3e572402",
+      "tests/reference/photo_uart_before.v": "07bd0de89693686c00bafbd1b000dc4ec9e5d0fb26aa8266a8a31c54e320d7c6"
+    }
+  }
+]

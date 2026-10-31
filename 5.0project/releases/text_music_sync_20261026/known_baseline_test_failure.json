@@ -1,0 +1,7 @@
+{
+  "test": "tb_audio_transport_repair",
+  "status": "baseline_failure",
+  "production_inputs_unchanged_from_baseline": true,
+  "message": "The unchanged legacy transport fixture expects a 32-sample repair delay and fails at PCM sample 32 (zero vs 03e803e8). It is not counted as passed.",
+  "log_sha256": "f8267108baf5a1550572a5cf32faf4e96476a384815264ea8053f776eaa5a395"
+}

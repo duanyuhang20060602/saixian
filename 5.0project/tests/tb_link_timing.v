@@ -19,10 +19,10 @@ always @(posedge bclk)begin
  if(re)begin memory_word<={pattern(read_index*2),pattern(read_index*2+1)};read_index<=read_index+1;end
 end
 assign read_data=memory_word;
-photo_link_sender #(.ENABLE_CRC(1),.LEGACY_TIMING(0),.FRAME_PIXELS(32)) tx(.clk(bclk),.rst(rst),.start(start),.abort(1'b0),.data(read_data),.empty(1'b0),
+photo_link_sender #(.ENABLE_CRC(1),.LEGACY_TIMING(0),.FRAME_PIXELS(32)) tx(.extended_frame(1'b0),.award_frame(1'b0),.relief_frame(1'b0),.clk(bclk),.rst(rst),.start(start),.abort(1'b0),.data(read_data),.empty(1'b0),
  .read_ack(read_ack[1]),.link_ready(ready_b),.read_req(req),.read_en(re),.link_data(data),.link_valid(valid),.link_sof(sof),.link_eof(eof),
  .done(sent),.busy(),.frame_crc(tx_crc));
-photo_link_receiver #(.ENABLE_CRC(1),.LEGACY_TIMING(0),.FRAME_PIXELS(32)) rx(.clk(aclk),.rst(rst),.arm(arm),.abort(1'b0),.data(rx_data),.valid(rx_valid),.sof(rx_sof),.eof(rx_eof),
+photo_link_receiver #(.ENABLE_CRC(1),.LEGACY_TIMING(0),.FRAME_PIXELS(32)) rx(.extended_frame(1'b0),.award_frame(1'b0),.relief_frame(1'b0),.clk(aclk),.rst(rst),.arm(arm),.abort(1'b0),.data(rx_data),.valid(rx_valid),.sof(rx_sof),.eof(rx_eof),
  .ready(ready_a),.armed(armed),.busy(),.write_req(write_req),.write_ack(write_ack[1]),.full(1'b0),.write_en(we),.write_data(write_data),
  .finish_toggle(finish),.done(done),.fault(fault),.frame_crc(rx_crc));
 reg pixel_bad=0;

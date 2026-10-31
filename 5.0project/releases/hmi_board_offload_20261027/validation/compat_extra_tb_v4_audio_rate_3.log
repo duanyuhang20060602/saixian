@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "tb_v4_audio_rate",
+  "validation_group": "compat_extra",
+  "passed": true,
+  "rerun_this_revision": true,
+  "seconds": 4.45
+}

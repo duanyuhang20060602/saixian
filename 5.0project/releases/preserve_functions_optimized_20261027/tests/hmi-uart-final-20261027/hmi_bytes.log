@@ -1,0 +1,7 @@
+page 0 matched 58 bytes
+page 1 matched 407 bytes
+page 2 matched 67 bytes
+page 3 matched 0 bytes
+page 4 matched 0 bytes
+PASS byte stream equals original UART, pages 0..4, random backpressure
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\tb_hmi_byte_stream.v:37: $finish called at 543190000 (1ps)

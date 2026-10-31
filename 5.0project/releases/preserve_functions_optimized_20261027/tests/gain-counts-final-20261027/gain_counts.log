@@ -1,0 +1,2 @@
+PASS exact gain thresholds: 280205 same-cycle comparisons, all 8192 counts at all nine boundary values, two wraps, reset/load/sample/hold priority
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\validation\gain-counts-final-20261027\tb.v:28: $finish called at 2802300000 (1ps)

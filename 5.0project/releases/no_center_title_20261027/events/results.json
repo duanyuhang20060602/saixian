@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "verified_pixels": 112640,
+  "scope": "Compare eight competition states against frozen prior release RTL, center labels and timer area.",
+  "inputs_sha256": {
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\no-center-events-20261027\\events.v": "95f644acb4a05a04f1c5ad4f0dc40c1a2b3f123c6e2ee0183a1f20406e1cb8c3",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\no-center-events-20261027\\overlay_reference.v": "0fc4f7d62ae893a8ea3ea52a1ce092528fdd6aa64f53c1eb31eecad36956a51c",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\audio_ui\\saixian_osd_overlay.v": "9b472982f8fb323dea62e02c87d57fcee6f5a1897fff7f7e4bdcd79bb34af451"
+  }
+}

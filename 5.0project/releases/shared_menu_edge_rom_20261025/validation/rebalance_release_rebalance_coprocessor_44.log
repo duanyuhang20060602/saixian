@@ -1,0 +1,2 @@
+PASS 6144 palette words across mixed 32K/9K boundaries, 48 exact complete tables, asynchronous clocks, reload and abort
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\tests\tb_board_rebalance_coprocessor.v:28: $finish called at 7295420000 (1ps)

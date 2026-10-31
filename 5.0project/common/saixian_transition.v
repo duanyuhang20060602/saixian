@@ -29,7 +29,8 @@ reg [1:0] ready_buf_sync0;
 reg [1:0] ready_buf_sync1;
 reg       ready_right_sync0;
 reg       ready_right_sync1;
-reg [5:0] slide_step;
+reg [6:0] slide_step;
+reg [4:0] color_fraction;
 reg       end_hold;
 reg [7:0] effect_lfsr;
 
@@ -193,7 +194,8 @@ always @(posedge clk or posedge rst) begin
         slide_offset        <= 11'd0;
         fluid_progress      <= 9'd0;
         slide_right         <= 1'b0;
-        slide_step          <= 6'd0;
+        slide_step          <= 7'd0;
+        color_fraction      <= 0;
         end_hold            <= 1'b0;
 
         transition_level    <= 6'd0;
@@ -226,7 +228,8 @@ always @(posedge clk or posedge rst) begin
                     transition_active <= 1'b1;
                     transition_mode   <= selected_effect(effect_select,effect_lfsr,transition_mode,fluid_enable);
                     slide_right       <= ready_right_sync1;
-                    slide_step        <= 6'd0;
+                    slide_step        <= 7'd0;
+                    color_fraction <= 0;
                     slide_offset      <= 11'd0;
                     fluid_progress<=9'd0;
                     transition_level  <= 6'd0;
@@ -240,20 +243,24 @@ always @(posedge clk or posedge rst) begin
                     transition_active   <= 1'b0;
                     slide_offset        <= 11'd0;
                     fluid_progress      <= 9'd0;
-                    slide_step          <= 6'd0;
+                    slide_step          <= 7'd0;
+        color_fraction      <= 0;
                     transition_level    <= 6'd0;
                     end_hold            <= 1'b0;
 
-                end else if (slide_step >= 6'd47) begin
-                    slide_step       <= 6'd48;
+                end else if (slide_step >= (transition_mode==6 ? 7'd83:7'd47)) begin
+                    slide_step       <= transition_mode==6 ? 7'd84:7'd48;
                     slide_offset     <= 11'd1280;
                     fluid_progress<=9'd256;
                     transition_level <= 6'd0;
                     end_hold         <= 1'b1;
                 end else begin
                     slide_step       <= slide_step + 1'b1;
-                    slide_offset     <= ease_offset(slide_step + 6'd1);
-                    fluid_progress<=phase_at_step(slide_step + 6'd1);
+                    slide_offset     <= ease_offset(slide_step[5:0] + 6'd1);
+                    if(transition_mode==6)begin
+                        fluid_progress<=fluid_progress+(color_fraction==20 ? 9'd4:9'd3);
+                        color_fraction<=color_fraction==20 ? 0:color_fraction+1'b1;
+                    end else fluid_progress<=phase_at_step(slide_step[5:0] + 6'd1);
                     transition_level <= 6'd0;
                 end
             end else begin

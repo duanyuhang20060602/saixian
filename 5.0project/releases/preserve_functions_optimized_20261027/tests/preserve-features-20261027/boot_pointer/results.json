@@ -1,0 +1,38 @@
+[
+  {
+    "test": "boot",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_complete_scan_boot.v": "8379382c1863ccd0f53fab86bd40b3db2b8fcfcdb68fb34ac30bc644ac431833",
+      "common/photo_boot_screen.v": "7e4ac12f6e9af29c46e2a950a4fe6da7cec41a60afa245a9229cbf3869d4ae0e"
+    }
+  },
+  {
+    "test": "origin",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_pointer_transition_origin.v": "42548cef5a43a0421439c3ed0b37cd5cab9768df8f10116f026d9bcc801c47db",
+      "common/fluid/water_scene.v": "b3dc1de4948d86416a24b7cb0ee8b8323846faa3f399bdaef577df7e16351d1f"
+    }
+  },
+  {
+    "test": "empty_text",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_empty_sd_text.v": "7c2d96bcaac8aa9a5322d44025d437d0ea10a3dbea8795a0a64dea0f7b007014",
+      "common/audio_ui/saixian_osd_overlay.v": "9b472982f8fb323dea62e02c87d57fcee6f5a1897fff7f7e4bdcd79bb34af451"
+    }
+  },
+  {
+    "test": "catalog",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_boot_catalog_status.v": "707a69fa20abfab0358bea349360e435c1e5da43da6d01b3653848611e527242",
+      "tests/title_font_ram_model.v": "5645c2efe210627dad2e9d131a1a400751b0794b31719ceb3d70b80c6b6e0e87",
+      "common/photo_cached_control_a.v": "9f9dd556c8de8893e1e90ae14319fb0a5c7b9265e23ae4785956ec2287b5ef8a",
+      "common/photo_control.v": "03717c47c233262011e5da0dd6b8309ac17eba43b16d1a34296fa2b78d67d5ab",
+      "common/photo_uart.v": "d1f4bb2624ceebcf73dd998ce2c5d925690a6786e8782e20462257ae3e572402",
+      "common/audio_ui/saixian_font_rom.v": "77f9e0c7453cc497aa4e11a039877edfd5406c2be8bc7006fb066ec23bc6e0c6"
+    }
+  }
+]

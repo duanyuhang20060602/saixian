@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "inputs_sha256": {
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\navigation-equivalence-r1\\navigation.v": "6f070390d790d5002c4a28b52a2c9bd887664451c928dd767aad9d44d1a0fd3c",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_cached_control_a.v": "d2b86118b1e8a8ed33f3e59c7604e51122b13a81fcea29a4e79b4c10e2dd7d7f",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\tests\\reference\\complete_boot\\photo_cached_control_a.v": "9b44bd41f69dd5f1dffe416218ec0d9641e3dd4a404f1cfd5aab1d69514023fa"
+  }
+}

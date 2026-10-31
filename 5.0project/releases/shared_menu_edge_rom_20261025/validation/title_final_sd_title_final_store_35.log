@@ -1,0 +1,2 @@
+PASS SD title CRC, byte gaps, missing/out-of-order records, mixed identities, invalid version/length, overwrite isolation; 256 font rows exact
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\tests\tb_sd_title_store.v:41: $finish called at 125140000 (1ps)

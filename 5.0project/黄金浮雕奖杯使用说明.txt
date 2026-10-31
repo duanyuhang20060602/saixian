@@ -1,4 +1,8 @@
-黄金浮雕奖杯 / 5.0 / gold-relief-native-bright-20261024
+当前配套固件已合入 TF 标题与双板重分工，请优先查看 双板重分工与TF标题说明.txt。以下为此前修订记录。
+
+当前固件增加彩色水波轮播，最新烧录、操作、资源和验证请见 彩色水波轮播说明.txt。以下保留此前修订说明。
+
+黄金浮雕奖杯 / 5.0 / gold-relief-thumbnail-resource-20261025
 
 烧录与素材
 1. A 板使用 releases/PHOTO_BOARD_A_5_0.bit，B 板使用 releases/PHOTO_BOARD_B_5_0.bit。
@@ -31,7 +35,7 @@ HDMI 输出沿用 1280×720，奖杯显示区域仍为 576×576。杯身源素�
 背景数据与上一版逐字节一致。杯身增加由表面法线决定的漫反射明暗，减少大块高光泛白；仍以黄金为主体，无宝石。清晰度比较和光照预览属于软件参考，实际屏幕拍摄效果需本次上板复验。
 
 验证与源码
-本次固件的电脑编译、资源、时序和仿真记录见 releases/relief_native_20261024/validation.json。
+本次固件的电脑编译、资源、时序和仿真记录见 releases/merged_thumbnail_resource_20261025/validation.json。
 本次新增固件仍需上板复验；此前 5.0 实板通过是原有版本的验收结果。
 新素材完整读取、逐像素显示及 SDRAM 仲裁测试：python -B tools/test_relief_bus.py --out E:/Codex/Work/relief-bus-check
 控制、串口屏和新旧素材目录测试：python -B tools/test_relief_controls.py --out E:/Codex/Work/relief-control-check
@@ -44,3 +48,9 @@ HDMI 输出沿用 1280×720，奖杯显示区域仍为 576×576。杯身源素�
 模型连接修订 / joined-model-20261024
 修复四根杯颈支撑杆、两侧把手及金色背脊、八条装饰肋线的连接。全部 24 个角度重新渲染并打包。此修订只更新 RELIEF720.DLT，搭配 gold-relief-native-bright-20261024 固件使用；已烧录该新版的两块板无需再次烧录。
 模型 32 个端点实体连接检查、材质轮廓及显示/读取回归见 releases/relief_joinfix_20261024/validation.json；本修订仍需实板观察确认。
+
+精细光照修订 / gold-relief-fine-light-20261024
+杯身漫反射系数提高到 256 档，DSP 和 RAM 总占用不增加，显示流水线仍为 12 个时钟。此修订需更新 A 板固件，B 板与连接修复版素材保持相同；详见 精细光照与DSP复用优化说明.txt。
+
+缩略图与资源优化合并 / gold-relief-thumbnail-resource-20261025
+缩略图已移至右侧并替代下一张箭头，预读和传输提速；保留奖杯精细光照。本轮需要更新两板固件，配套素材不变。实际资源、时序和验证请以 资源节约与缩略图合并说明.txt 为准。

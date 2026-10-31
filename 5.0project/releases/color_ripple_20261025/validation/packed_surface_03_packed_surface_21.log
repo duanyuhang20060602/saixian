@@ -1,0 +1,2 @@
+PASS packed_surface pair_cases=262144 green_cases=16384 two_pixel_transactions=4096 exact RGB565 reference, valid cadence and reset
+E:\Codex\Work\saixian-color-ripple-rtl-20261025\candidate\5.0project\tests\fx11_water\tb_packed_surface.v:53: $finish called at 649317000 (1ps)

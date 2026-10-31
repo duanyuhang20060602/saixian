@@ -1,0 +1,2 @@
+PASS existing TF SPI contract: 128 exact bytes, div0=4097 and div2=9085 system clocks, at most 25MHz/12.5MHz, first/last byte and byte-boundary continuity; configuration comparison only, production TF driver unchanged
+E:\Codex\Downloads\qiansai\5.3project\tests\tb_spi_read_speed.v:33: $finish called at 90925000 (1ps)

@@ -1,0 +1,59 @@
+{
+  "hardware_validation": "pending",
+  "firmware_package_sha256": "e860db147181b7a1e8d9ac93d7cdde0dd7663490933efa04c60f5b0e18e4a133",
+  "firmware_package_name": "delivery-small-names-20261031.zip",
+  "tests": {
+    "validation-rank-style": {
+      "passed": true,
+      "inputs_sha256": {
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\tests\\tb_rank_style.v": "19c5a0bb624e6bb188bb85d2a68f57dd424612adea6cdafa54dcc670507d3c6f",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\tests\\before_battle.v": "c944190f34473ab36646db7917e9303d1a37d96615a48fa29482eb2aa135bf6a",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\tests\\rank_style_ram_model.v": "fa61fbff16b423fe60bd831a3d29793974ca68a323b3fe41e7229b07e69c5b78",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\tests\\rank_style_update.hex": "7ebe5c1bf28017cf4049b9465a7d48035f03f902ef64567832dcf3ba9d46dd59",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\tests\\rank_style_expected_score.hex": "b352a62968d3b81e5f4d2fdda26c49beea8f53744591a62f3b9af24848c7fd50",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\common\\photo_rank_text.v": "59ec084c70338b916b8e7ca8705e965ba3f4d0c61f36c382b3b55b23c0f474b9",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\common\\saixian_battle_result_fx_pipelined.v": "2286d669665dd541f25ec6a5ab1b6a17e6bf288497e73c3e8e014086996e5685",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\common\\rank_names.mif": "7b066d8a45efbfdb44adc53c799f0cf1a7339a3d6c645236a2b2e5328b4aac1c",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\common\\rank_names.hex": "8cefbb5c2164ee1f4eca4a39520f16802551e7090fce564aff4030f2b5bece77",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\common\\rank_digits.mif": "0d2da9b2e0c7af49b7c3ad71774bb8e6b90088f327d4ff43ce9cc5096bdeea14",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\common\\rank_digits.hex": "f47eadf6137589d70e1486e01d225db19c3b1101768668c465f3cf7360daefb9"
+      }
+    },
+    "validation-rank-uart": {
+      "passed": true,
+      "inputs_sha256": {
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\tests\\tb_editable_rank_uart.v": "e0058a2e1715cd7f8b5864f3ffccf6430fefa88249548341ae59e026738d9ce0",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\tests\\serial_title_ram_model.v": "687220b6e718ee4f24c58931a6cdb60be308ce09d357dc18bb72a40c7adfd03a",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\common\\photo_cached_control_a.v": "4d5f830c31fc71f9cc651ff0d35c7356c99e21fe57b423b1b3501fad19032199",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\common\\photo_control.v": "83c0965a0e0fb24bc5a774e0f3d04fb29d5b7226e7f32fd4f9f4df459965baf1",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\common\\photo_uart.v": "99262aac12d6107353786166feeeef319ffa5a53e0bfb449734d9779f62d78f5",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\common\\photo_link.v": "de1faebbb7fe85711ae84f28d428c7dd524e4074bd007cec25461dcf9e084a3c",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\common\\photo_serial_text.v": "dfafa0ff10098e2c6c1d0bd8c6713f57e915a68fedd9ece7de3dea5c63674e0d",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\common\\photo_rank_text.v": "59ec084c70338b916b8e7ca8705e965ba3f4d0c61f36c382b3b55b23c0f474b9",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\common\\photo_scan_font_index.v": "c48587c632b346364b075437a4d550dc9e05c143d9e658b0a1d861151dde3dc8",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\common\\photo_scan_glyph_b.v": "c11479092a50c0fa51191ce87983f73adeecc02ca5630a416f8d6764cb63c495",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\common\\saixian_hmi_uart.v": "5bfb3eea7634511d4f66cce969ab1610d83fb98be1b1c2337df8b83950a23679",
+        "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-display-ranking-20261031\\5.0project\\common\\audio_ui\\saixian_font_rom.v": "6dfcf23e19529d181cbf04252ec9f740ae22c7cb48795c04ae72f4f1f092ca18"
+      }
+    },
+    "rank-small-name-reference.log": {
+      "passed": true,
+      "summary": "PASS 32768 independently mapped pixels: eight names, all 16 source rows/columns, 24x24 size, rank/podium, clipping and latency"
+    },
+    "rank-name-small.log": {
+      "passed": true,
+      "summary": "PASS 3200 rank/podium pixels: named glyph dimensions, clipping and unchanged 8-clock RGB/DE alignment"
+    }
+  },
+  "match_attempt": {
+    "status": "failed",
+    "reason": "PHY-9015: RAM32K 17 exceeds 16",
+    "resources": {
+      "lut": 19569,
+      "ram9k": 64,
+      "ram32k": 17,
+      "dsp": 28
+    },
+    "included_in_firmware": false
+  }
+}

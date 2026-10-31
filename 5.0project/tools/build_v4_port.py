@@ -106,17 +106,27 @@ def build(board, work, mapped_from=None, checkpoint_stage='gate'):
     tool = td_root/'bin/td_commands_prompt.exe'
     environment['SAIXIAN_TD_ROOT'] = td_root.as_posix()
     physical_strategy = environment.get('SAIXIAN_PHYSICAL_STRATEGY')
+    requested_physical_strategy = physical_strategy
+    macro_extra = physical_strategy == 'TimingUltraEmbeddedCompactMacroExtraRoute'
+    clean_guard = physical_strategy == 'MacroTimingEmbeddedCleanGuardAll'
+    guard_route = physical_strategy in ('TimingUltraEmbeddedCompactMacroGuardRoute','TimingUltraEmbeddedCompactMacroGuardAll','MacroTimingEmbeddedCleanGuardAll')
+    guard_place = physical_strategy in ('TimingUltraEmbeddedCompactMacroGuardAll','MacroTimingEmbeddedCleanGuardAll')
+    if clean_guard:
+        physical_strategy = 'MacroTimingEmbeddedCleanRoute'
+    compact_macro = physical_strategy in ('TimingUltraEmbeddedCompactMacroRoute','TimingUltraEmbeddedCompactMacroExtraRoute','TimingUltraEmbeddedCompactMacroGuardRoute','TimingUltraEmbeddedCompactMacroGuardAll')
+    if compact_macro:
+        physical_strategy = 'TimingUltraEmbeddedCompactRoute'
     if mapped_from and checkpoint_stage == 'place':
         assert physical_strategy, 'Placed retry requires an explicit routing profile'
     if physical_strategy:
         catalog = td_root/'doc/strategies/official_strategy_ph1.json'
         strategies = json.loads(catalog.read_text(encoding='utf-8'))
-        strategy_base = {'MacroTimingExtra':'MacroTiming','MacroTimingEmbedded':'MacroTiming','TimingUltraNoPadSplit':'TimingUltra','TimingUltraEmbedded':'TimingUltra','TimingUltraEmbeddedExtra':'TimingUltra','TimingUltraEmbeddedNoSwap':'TimingUltra','TimingMediumEmbedded':'TimingMedium','TimingMediumEmbeddedReset':'TimingMedium','CongestionEmbedded':'CongestionHigh'}.get(physical_strategy,physical_strategy)
+        strategy_base = {'TimingUltraEmbeddedCompactRoute':'TimingUltra','MacroTimingEmbeddedCleanRoute':'MacroTiming','MacroTimingExtra':'MacroTiming','MacroTimingEmbedded':'MacroTiming','TimingUltraEmbeddedCleanRoute':'TimingUltra','TimingUltraNoPadSplit':'TimingUltra','TimingUltraEmbedded':'TimingUltra','TimingUltraEmbeddedExtra':'TimingUltra','TimingUltraEmbeddedNoSwap':'TimingUltra','TimingMediumEmbedded':'TimingMedium','TimingMediumEmbeddedReset':'TimingMedium','CongestionEmbedded':'CongestionHigh'}.get(physical_strategy,physical_strategy)
         strategy = dict(strategies[strategy_base])
         strategy['params'] = list(strategy['params'])
-        if physical_strategy in ('TimingUltraNoPadSplit','TimingUltraEmbedded','TimingUltraEmbeddedExtra','TimingUltraEmbeddedNoSwap','TimingMediumEmbedded','TimingMediumEmbeddedReset','MacroTimingEmbedded','CongestionEmbedded'):
+        if physical_strategy in ('TimingUltraEmbeddedCompactRoute','TimingUltraEmbeddedCleanRoute','TimingUltraNoPadSplit','TimingUltraEmbedded','TimingUltraEmbeddedExtra','TimingUltraEmbeddedNoSwap','TimingMediumEmbedded','TimingMediumEmbeddedReset','MacroTimingEmbedded','MacroTimingEmbeddedCleanRoute','CongestionEmbedded'):
             strategy['params'] += [{'step':'place','param':'split_data_from_clock','val':'off'}]
-        if physical_strategy in ('TimingUltraEmbedded','TimingUltraEmbeddedExtra','TimingUltraEmbeddedNoSwap','TimingMediumEmbedded','TimingMediumEmbeddedReset','MacroTimingEmbedded','CongestionEmbedded'):
+        if physical_strategy in ('TimingUltraEmbeddedCompactRoute','TimingUltraEmbeddedCleanRoute','TimingUltraEmbedded','TimingUltraEmbeddedExtra','TimingUltraEmbeddedNoSwap','TimingMediumEmbedded','TimingMediumEmbeddedReset','MacroTimingEmbedded','MacroTimingEmbeddedCleanRoute','CongestionEmbedded'):
             # The post-place crit_path_opt zigzag pass queries external-pad
             # coordinates on embedded SDRAM pads (ARC-8011/PHY-8105).
             strategy['params'] += [{'step':'place','param':'crit_path_opt','val':'off'},
@@ -129,6 +139,45 @@ def build(board, work, mapped_from=None, checkpoint_stage='gate'):
             strategy['params'] += [{'step':'route','param':'postrt_opt_extra_round','val':'8'}]
         if physical_strategy == 'TimingUltraEmbeddedNoSwap':
             strategy['params'] += [{'step':'route','param':'swap_pin','val':'off'}]
+        if physical_strategy in ('TimingUltraEmbeddedCleanRoute','TimingUltraEmbeddedCompactRoute','MacroTimingEmbeddedCleanRoute'):
+            # Preserve placement/timing checks; avoid the tool's failing
+            # post-route ECO reconstruction and maximize route cleanup.
+            strategy['params'] += [{'step':'route','param':'post_route_opt','val':'off'},
+                                   {'step':'route','param':'postrt_opt_extra_round','val':'0'},
+                                   {'step':'route','param':'effort','val':'routability'},
+                                   {'step':'route','param':'swap_pin','val':'off'}]
+        if physical_strategy == 'TimingUltraEmbeddedCompactRoute':
+            # Keep mapping and clocks intact. Avoid area-expanding prepack
+            # logic-level restructuring when the device is nearly full.
+            strategy['params'] += [{'step':'place','param':'aggressive_opt','val':'0'},
+                                   {'step':'place','param':'logic_level_opt','val':'off'},
+                                   {'step':'place','param':'hfn_opt_effort','val':'low'}]
+        if compact_macro:
+            # Keep the compact packing recipe while prioritizing RAM/DSP nets.
+            # These are the documented MacroTiming placement parameters.
+            strategy['params'] += [{'step':'place','param':'enlarge_macro_net_weight','val':'on'},
+                                   {'step':'place','param':'mcflg_eram_anchor_driven','val':'medium'},
+                                   {'step':'place','param':'macro_performance','val':'macro_congestion'}]
+        if macro_extra:
+            # Same compact macro placement, with documented timing cleanup
+            # for B's remaining sub-nanosecond routed setup paths.
+            strategy['params'] += [{'step':'route','param':'post_route_opt','val':'high'},
+                                   {'step':'route','param':'postrt_opt_extra_round','val':'4'}]
+        if clean_guard:
+            # B has spare logic area. Explicitly re-enable restructuring
+            # instead of inheriting the compact gate checkpoint's settings.
+            strategy['params'] += [{'step':'place','param':'logic_level_opt','val':'on'},
+                                   {'step':'place','param':'hfn_opt_effort','val':'high'}]
+        # Optional routed-checkpoint retry: retain all placement parameters
+        # and let TD use its default routing effort instead of routability.
+        route_effort = environment.get('SAIXIAN_ROUTE_EFFORT')
+        if route_effort:
+            assert route_effort == 'default', 'Supported route effort override: default'
+            strategy['params'] = [p for p in strategy['params'] if not (p['step']=='route' and p['param']=='effort')]
+        route_swap = environment.get('SAIXIAN_ROUTE_SWAP_PIN')
+        if route_swap:
+            assert route_swap in ('on','off'), 'Supported route pin-swap overrides: on/off'
+            strategy['params'] += [{'step':'route','param':'swap_pin','val':route_swap}]
         if mapped_from and checkpoint_stage == 'place':
             assert record['place_seed_override'] == origin['place_seed_override'], 'Keep the accepted placement seed'
             original_place = [p for p in origin['physical_strategy']['parameters'] if p['step'] == 'place']
@@ -143,7 +192,7 @@ def build(board, work, mapped_from=None, checkpoint_stage='gate'):
                             for p in strategy['params'])
         recipe = recipe[:pos]+overrides+recipe[pos:]
         flow.write_text(recipe, encoding='utf-8', newline='\n')
-        record['physical_strategy'] = {'name': physical_strategy, 'base': strategy_base, 'catalog': str(catalog),
+        record['physical_strategy'] = {'name': requested_physical_strategy, 'base': strategy_base, 'catalog': str(catalog),
                                        'catalog_sha256': digest(catalog), 'parameters': strategy['params']}
         record['local_physical_recipe_sha256'] = digest(flow)
         if physical_strategy == 'TimingMediumEmbeddedReset':
@@ -159,6 +208,40 @@ def build(board, work, mapped_from=None, checkpoint_stage='gate'):
             record['local_flow'] = {'path': str(local_flow), 'sha256': digest(local_flow),
                                     'base': str(original_flow), 'base_sha256': digest(original_flow),
                                     'change': 'Clear checkpoint parameter inheritance before applying the explicit recipe.'}
+            recipe = flow.read_text(encoding='utf-8')
+            marker = 'source [file join $tdRoot doc scripts DefaultFlow.tcl]'
+            assert recipe.count(marker) == 1
+            flow.write_text(recipe.replace(marker, 'source ./physical_flow.tcl'), encoding='utf-8', newline='\n')
+            record['local_physical_recipe_sha256'] = digest(flow)
+        if guard_route:
+            # Official set_path_margin is an optimization target, not a
+            # relaxed clock. A probe confirms +0.20 ns tightens setup by
+            # exactly 0.20 ns. Remove ONLY our named group before final STA.
+            original_flow = td_root/'doc/scripts/DefaultFlow.tcl'
+            derived = original_flow.read_text(encoding='utf-8')
+            margin_command = '  set_path_margin -group codex_setup_guard -setup -global 0.20\n'
+            route_start = derived.index('proc opt_route_fun {}')
+            route_end = derived.index('proc bitgen_fun {}', route_start)
+            route_body = derived[route_start:route_end]
+            marker = '### Editable zone for opt_route ###\n'
+            assert route_body.count(marker) == 1
+            route_body = route_body.replace(marker, marker+margin_command, 1)
+            marker = '  report_area -io_info -file ${prj_name}_phy.area\n'
+            assert route_body.count(marker) == 1
+            route_body = route_body.replace(marker, '  reset_path_margin -group codex_setup_guard\n  report_path_margin\n'+marker, 1)
+            derived = derived[:route_start]+route_body+derived[route_end:]
+            if guard_place:
+                marker = '### Editable zone for opt_place ###\n'
+                assert derived.count(marker) == 1
+                derived = derived.replace(marker, marker+margin_command, 1)
+            local_flow = td/'physical_flow.tcl'
+            local_flow.write_text(derived, encoding='utf-8', newline='\n')
+            record['local_flow'] = {'path': str(local_flow), 'sha256': digest(local_flow),
+                                    'base': str(original_flow), 'base_sha256': digest(original_flow),
+                                    'change': 'Use +0.20ns setup optimization margin; reset its named group before final routed timing.'}
+            record['optimization_guard'] = {'setup_margin_ns': 0.20,
+                'during': ['place','route'] if guard_place else ['route'],
+                'restored_before_final_timing': True}
             recipe = flow.read_text(encoding='utf-8')
             marker = 'source [file join $tdRoot doc scripts DefaultFlow.tcl]'
             assert recipe.count(marker) == 1

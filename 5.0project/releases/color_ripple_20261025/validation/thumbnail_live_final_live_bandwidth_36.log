@@ -1,0 +1,2 @@
+PASS live thumbnail tail generation: 2 complete 720p frames, 921600 exact main words, 14400 complete preview pixels, zero underflow, 9600 preview read commands while background receive active
+E:\Codex\Work\saixian-color-ripple-rtl-20261025\thumbnail_live_final\bandwidth.v:84: $finish called at 33893161240 (1ps)

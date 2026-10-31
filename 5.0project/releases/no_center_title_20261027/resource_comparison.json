@@ -1,0 +1,47 @@
+{
+  "a": {
+    "before": {
+      "lut": 18452,
+      "reg": 12881,
+      "bram": 63,
+      "bram32k": 15,
+      "dsp": 28
+    },
+    "after": {
+      "lut": 18428,
+      "reg": 12873,
+      "bram": 63,
+      "bram32k": 15,
+      "dsp": 28
+    },
+    "delta": {
+      "lut": -24,
+      "reg": -8,
+      "bram": 0,
+      "bram32k": 0,
+      "dsp": 0
+    },
+    "timing_ns": {
+      "SWNS": 0.218,
+      "STNS": 0.0,
+      "HWNS": 0.022,
+      "HTNS": 0.0
+    }
+  },
+  "b": {
+    "firmware_unchanged": true,
+    "resources": {
+      "lut": 16336,
+      "reg": 11077,
+      "bram": 57,
+      "bram32k": 16,
+      "dsp": 16
+    },
+    "timing_ns": {
+      "SWNS": 0.108,
+      "STNS": 0.0,
+      "HWNS": 0.021,
+      "HTNS": 0.0
+    }
+  }
+}

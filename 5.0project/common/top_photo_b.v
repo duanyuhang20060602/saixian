@@ -4,6 +4,7 @@ module top_photo_b(
  output link_clk,output [15:0] link_data,output link_valid,link_sof,link_eof,
  input link_ready,audio_sclk,audio_cs,audio_mosi,output audio_miso,output transfer_done,transfer_error,
  output [5:0] seg_sel,output [7:0] seg_data);
+wire title_ready;wire [4:0] title_length;wire [7:0] title_address;wire [31:0] title_data;
 wire audio_packet_active,audio_request_valid,audio_switching,audio_fifo_read;
 wire audio_raw_read,audio_stream_reset;wire [7:0] requested_audio_epoch,active_audio_epoch;
 (* async_reg="true" *)reg award_meta,award_sync;
@@ -33,6 +34,9 @@ photo_audio_pitch_b pitch_processing(.clk(sd_clk),.rst(rst_sd),
  .requested_mode(pitch_mode),.raw_used(audio_fifo_used),.raw_pcm(audio_fifo_data),.raw_read(audio_raw_read),
  .output_read(audio_fifo_read),.output_pcm(pitched_audio),.output_used(pitch_fifo_used),
  .ready(pitch_ready),.overrun(pitch_overrun),.active_mode(pitch_active_mode));
+wire relief_response_valid,relief_request;wire [31:0] relief_response_descriptor,relief_response_data,relief_query;
+wire [8:0] relief_address;
+wire material_tap_valid;wire [19:0] material_tap_index;wire [31:0] material_tap_data;
 wire av_pcm_sent,av_snapshot;wire [8:0] av_address;wire [31:0] av_data;
 // The serial-analysis datapath fits the existing 50 MHz domain. Transfer
 // sparse events with toggles and hold each PCM bundle until the next sample.
@@ -65,7 +69,32 @@ always @(posedge sd_clk or posedge rst_sd)
  else begin av_data_meta<=av_data;av_data_sync<=av_data_meta;end
 photo_av_metadata_b #(.EDGE_METADATA(1)) audio_analysis(.clk(mem_clk),.rst(av_analysis_rst),
  .pcm_sent(av_pcm_valid),.snapshot(av_snapshot_event),.pcm(av_pcm_sync),.address(av_address_sync),.data(av_data));
-photo_audio_spi_b #(.CATALOG_STATUS(1),.EXTENDED_AV(1),.PAGE_CUE(1),.TYPED_PAGE(1)) audio_link(.page_valid(audio_page_valid),.page_style(audio_page_style),.page_ready(audio_page_ready),.page_cue_count(audio_page_cue_count),.catalog_complete(award_scan_complete),.clk(sd_clk),.rst(rst_sd),.spi_sclk(audio_sclk),.spi_cs(audio_cs),.spi_mosi(audio_mosi),.spi_miso(audio_miso),.packet_active(audio_packet_active),
+wire [31:0] hmi_session,hmi_header;wire [52:0] hmi_status;
+wire [95:0] hmi_payload;wire hmi_enabled,hmi_ack_valid,hmi_restart;
+wire [7:0] hmi_ack_token,hmi_byte_data;wire hmi_byte_valid,hmi_byte_ready,hmi_command_done;
+// Register the session predicate before distributing the formatter reset.
+// The 32-bit comparison must not drive every byte-buffer reset pin directly.
+reg hmi_rst;
+always @(posedge sd_clk or posedge rst_sd)
+ if(rst_sd)hmi_rst<=1;else hmi_rst<=!hmi_enabled || hmi_restart;
+wire hmi_refresh;reg hmi_refresh_seen;
+always @(posedge sd_clk or posedge rst_sd)
+ if(rst_sd)hmi_refresh_seen<=0;else hmi_refresh_seen<=hmi_status[52];
+assign hmi_refresh=hmi_refresh_seen!=hmi_status[52];
+saixian_hmi_status_tx #(.CLK_FREQ_HZ(100000000),.ENHANCEMENT_FEEDBACK(1),.BYTE_STREAM(1)) screen_format(
+ .clk(sd_clk),.rst(hmi_rst),.image_count(hmi_status[51:49]),.audio_count(hmi_status[48:46]),
+ .error_code(hmi_status[45:43]),.initializing(hmi_status[42]),.page_id(hmi_status[41:39]),.refresh_request(hmi_refresh),
+ .sharpness(hmi_status[38:37]),.brightness(hmi_status[36:33]),.contrast(hmi_status[32:29]),.saturation(hmi_status[28:25]),.volume(hmi_status[24:21]),
+ .invert(hmi_status[20]),.vintage(hmi_status[19]),.enhancement(hmi_status[18:17]),.event_state(hmi_status[16:13]),
+ .minutes(hmi_status[12:6]),.seconds(hmi_status[5:0]),.uart_tx(),.command_sent_pulse(hmi_command_done),
+ .byte_valid(hmi_byte_valid),.byte_data(hmi_byte_data),.byte_ready(hmi_byte_ready));
+photo_hmi_chunk_b #(.CHUNK_BYTES(8)) screen_chunks(.clk(sd_clk),.rst(hmi_rst),.byte_valid(hmi_byte_valid),.byte_data(hmi_byte_data),.byte_ready(hmi_byte_ready),
+ .command_done(hmi_command_done),.ack_valid(hmi_ack_valid),.ack_token(hmi_ack_token),.header(hmi_header),.payload(hmi_payload));
+photo_audio_spi_b_offload #(.REMOTE_HMI(1),.REMOTE_RELIEF(1),.CATALOG_STATUS(1),.EXTENDED_AV(1),.PAGE_CUE(1),.TYPED_PAGE(1)) audio_link(
+ .hmi_session(hmi_session),.hmi_header(hmi_header),.hmi_payload(hmi_payload),.hmi_status(hmi_status),.hmi_enabled(hmi_enabled),
+ .hmi_ack_valid(hmi_ack_valid),.hmi_ack_token(hmi_ack_token),.hmi_restart(hmi_restart),
+ .relief_ready(relief_response_valid),.relief_descriptor(relief_response_descriptor),.relief_data(relief_response_data),.relief_address(relief_address),
+ .relief_request(relief_request),.relief_query(relief_query),.page_valid(audio_page_valid),.page_style(audio_page_style),.page_ready(audio_page_ready),.page_cue_count(audio_page_cue_count),.catalog_complete(award_scan_complete),.clk(sd_clk),.rst(rst_sd),.spi_sclk(audio_sclk),.spi_cs(audio_cs),.spi_mosi(audio_mosi),.spi_miso(audio_miso),.packet_active(audio_packet_active),
  .active_epoch(active_audio_epoch),.active_track(active_audio_track),.track_count(audio_count),.switching(audio_switching),
  .fifo_used(pitch_fifo_used),.processed_pcm(processed_audio),.bg_enabled(audio_bg_enabled && audio_count!=0),.sample_prepare(audio_sample_prepare),.fifo_read(audio_fifo_read),.request_valid(audio_request_valid),.request_epoch(requested_audio_epoch),.request_track(requested_audio_track),.request_repair(audio_request_repair),.request_bg(audio_request_bg),.request_volume(audio_request_volume),.request_cue(audio_request_cue),.pcm_sent(av_pcm_sent),.av_snapshot(av_snapshot),.av_address(av_address),.av_data(av_data_sync));
 photo_audio_processing_b #(.PAGE_CUE(1),.TYPED_PAGE(1),.SHARED_SCALE(1),.EXTERNAL_REPAIRED(1),.BOOSTED_VOLUME(1)) audio_processing(.page_valid(audio_page_valid),.page_style(audio_page_style),.page_ready(audio_page_ready),.page_cue_count(audio_page_cue_count),.background_available(audio_count!=0),.clk(sd_clk),.rst(rst_sd),.prepare(audio_sample_prepare),
@@ -96,7 +125,8 @@ wire [15:0] media_source_width,media_source_height;
 reg finish_toggle;
 always @(posedge mem_clk or posedge rst_mem)
  if(rst_mem)finish_toggle<=0;else if(finish)finish_toggle<=~finish_toggle;
-photo_sd_cache #(.FORWARD_ONLY(1),.DISPLAY_PIN(1),.EARLY_PREFETCH(1)) media(.audio_stream_reset(audio_stream_reset),.audio_packet_active(audio_packet_active),.audio_request_valid(audio_request_valid),.requested_audio_epoch(requested_audio_epoch),.requested_audio_track(requested_audio_track),
+wire text_load,text_clear,text_ready,text_failed,text_consume;wire [13:0] text_code;wire [31:0] text_word;
+photo_sd_cache #(.INDEPENDENT_TEXT(1),.TITLE_SD(0),.FORWARD_ONLY(1),.DISPLAY_PIN(1),.EARLY_PREFETCH(1)) media(.text_load(text_load),.text_code(text_code),.text_clear(text_clear),.text_consume(text_consume),.text_ready(text_ready),.text_failed(text_failed),.text_word(text_word),.title_ready(title_ready),.title_length(title_length),.title_address(title_address),.title_data(title_data),.audio_stream_reset(audio_stream_reset),.audio_packet_active(audio_packet_active),.audio_request_valid(audio_request_valid),.requested_audio_epoch(requested_audio_epoch),.requested_audio_track(requested_audio_track),
  .active_audio_epoch(active_audio_epoch),.active_audio_track(active_audio_track),.audio_count(audio_count),.audio_switching(audio_switching),
  .audio_scan_state(audio_scan_state),.audio_fifo_used(audio_fifo_used),.audio_fifo_data(audio_fifo_data),.audio_fifo_read(audio_raw_read),.display_valid(display_pin_valid),.display_image(display_pin_image),.prefetch_pause(prefetch_pause),.clk(sd_clk),.rst(rst_sd),.request(request),.target(target),.release_slot(release_slot),.cancel(cancel),
  .relief_available(relief_available),.award_available(award_available),.award_scan_complete(award_scan_complete),.award_decode_error(award_decode_error),
@@ -130,9 +160,15 @@ assign source_read=transmit_award ? read_en:processed_source_read;
 photo_b_processing processing(.clk(link_clk),.rst(rst_link),.start((start && !award_sync) || plane_start),.abort(abort),.effect_plane(effect_plane),.read_req(read_req && !transmit_award),
  .source_ack(read_ack),.source_empty(empty),.source_data(read_data),.source_read(processed_source_read),
  .settings_state(settings_sync),.image_gain(gain_sync),.read_en(read_en),.empty(processed_empty),.data(processed_data));
-photo_link_sender #(.ENABLE_CRC(1),.LEGACY_TIMING(1),.AWARD_TAIL(1),.PREFETCH_WORD(1)) tx(.relief_frame(relief_sync),.award_frame(award_sync),.extended_frame(!award_sync),.plane_start(plane_start),.effect_plane(effect_plane),.clk(link_clk),.rst(rst_link),.start(start),.abort(abort),.data(transmit_award ? read_data:processed_data),.empty(transmit_award ? empty:processed_empty),
+photo_link_sender #(.ENABLE_CRC(0),.LEGACY_TIMING(1),.AWARD_TAIL(1),.PREFETCH_WORD(1)) tx(.tap_valid(material_tap_valid),.tap_index(material_tap_index),.tap_data(material_tap_data),.relief_frame(relief_sync),.award_frame(award_sync),.extended_frame(!award_sync),.plane_start(plane_start),.effect_plane(effect_plane),.clk(link_clk),.rst(rst_link),.start(start),.abort(abort),.data(transmit_award ? read_data:processed_data),.empty(transmit_award ? empty:processed_empty),
  .read_ack(read_ack),.link_ready(link_ready),.read_req(read_req),.read_en(read_en),
  .link_data(link_data),.link_valid(link_valid),.link_sof(link_sof),.link_eof(link_eof),.done(sent),.busy(tx_busy),.frame_crc(tx_crc));
+photo_relief_coprocessor_b relief_processor(
+ .link_clk(link_clk),.link_rst(rst_link),.relief_start(start && relief_sync),.relief_abort(abort),
+ .tap_valid(material_tap_valid),.tap_index(material_tap_index),.tap_data(material_tap_data),
+ .clk(mem_clk),.rst(rst_mem),.spi_clk(sd_clk),.spi_rst(rst_sd),.packet_active(audio_packet_active),
+ .request_valid(relief_request),.request_descriptor(relief_query),.read_address(relief_address),
+ .response_valid(relief_response_valid),.response_descriptor(relief_response_descriptor),.response_data(relief_response_data));
 reg sent_toggle;
 always @(posedge link_clk or posedge rst_link)
  if(rst_link)sent_toggle<=0;else if(sent)sent_toggle<=~sent_toggle;
@@ -140,13 +176,8 @@ wire sent_sd,control_busy;wire [3:0] control_state;
 wire timing_begin,timing_ready,timing_send,timing_done,timing_cancel,timing_running,timing_valid;
 wire [19:0] timing_prepare_ms,timing_handshake_ms,timing_send_ms,timing_total_ms;
 wire [5:0] timing_seg_sel,base_seg_sel;wire [7:0] timing_seg_data,base_seg_data;
-photo_switch_timing #(.CLK_HZ(100000000),.PHASES(3)) timing_probe(.clk(sd_clk),.rst(rst_sd),
- .start(timing_begin),.mark1(timing_ready),.mark2(timing_send),.finish(timing_done),.cancel(timing_cancel),
- .running(timing_running),.valid(timing_valid),.first_ms(timing_prepare_ms),.second_ms(timing_handshake_ms),.third_ms(timing_send_ms),.total_ms(timing_total_ms));
-photo_switch_timing_display #(.CLK_HZ(100000000),.PAGES(4)) timing_display(.clk(sd_clk),.rst(rst_sd),.running(timing_running),
- .first_ms(timing_prepare_ms),.second_ms(timing_handshake_ms),.third_ms(timing_send_ms),.total_ms(timing_total_ms),.seg_sel(timing_seg_sel),.seg_data(timing_seg_data));
 photo_event_sync sd(.clk(sd_clk),.rst(rst_sd),.toggle(sent_toggle),.pulse(sent_sd));
-photo_control_b #(.CHECK_FRAME_CRC(1),.SEND_SOURCE_SIZE(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.RELIEF_CONTROL(1)) ctrl(.clk(sd_clk),.rst(rst_sd),.uart_rx(control_rx),.uart_tx(control_tx),
+photo_control_b #(.CONTROL_BAUD(230400),.BOOT_STATUS(1),.INDEPENDENT_TEXT(1),.TITLE_SD(0),.CHECK_FRAME_CRC(0),.SEND_SOURCE_SIZE(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.RELIEF_CONTROL(1)) ctrl(.text_load(text_load),.text_code(text_code),.text_clear(text_clear),.text_consume(text_consume),.text_ready(text_ready),.text_failed(text_failed),.text_word(text_word),.hmi_session(hmi_session),.title_ready(title_ready),.title_length(title_length),.title_data(title_data),.title_address(title_address),.clk(sd_clk),.rst(rst_sd),.uart_rx(control_rx),.uart_tx(control_tx),
  .timing_begin(timing_begin),.timing_ready(timing_ready),.timing_send(timing_send),.timing_done(timing_done),.timing_cancel(timing_cancel),
  .display_valid(display_pin_valid),.display_image(display_pin_image),.prefetch_pause(prefetch_pause),
  .relief_available(relief_available && directory_ready),.award_available(award_available && directory_ready),.award_scan_complete(award_scan_complete),
@@ -155,28 +186,9 @@ photo_control_b #(.CHECK_FRAME_CRC(1),.SEND_SOURCE_SIZE(1),.SETTINGS_LINK(1),.AW
  .media_request(request),.media_target(target),.media_release(release_slot),.media_cancel(cancel),
  .transmit_slot(transmit_slot),.start_toggle(start_toggle),.abort_toggle(abort_toggle),.tx_done(sent_sd),.tx_crc(tx_crc),
  .busy(control_busy),.error(control_error),.debug_state(control_state));
-// Preserve a failed award report while photo background prefetch resumes.
-// A new explicit award request starts a fresh diagnostic attempt.
-reg [11:0] award_errors;
-// Retain the first photo error across automatic retries and audio-page updates.
-// Power cycling clears this history; a retained code does not mean it is active.
-reg [11:0] first_photo_errors;
-always @(posedge sd_clk or posedge rst_sd)
- if(rst_sd)first_photo_errors<=0;
- else if(first_photo_errors==0 && target<6 && media_result_current && (media_error!=0 || control_error!=0))
-  first_photo_errors<={4'd0,media_error,control_error};
-always @(posedge sd_clk or posedge rst_sd)
- if(rst_sd)award_errors<=0;
- else if(request && target>=6)award_errors<=0;
- else if(target>=6 && media_result_current && (media_error!=0 || control_error!=0))
-  award_errors<={award_decode_error,media_error,control_error};
-wire [3:0] digit=(media_error!=0 || control_error!=0) ? 4'd9:control_busy ? 4'd3:directory_ready ? 4'd5:4'd1;
-photo_status #(.CLK_HZ(100000000)) status(.clk(sd_clk),.rst(rst_sd),.status({1'b0,pitch_mode}),
- .error(media_error!=0 ? media_error:control_error),.state(control_state),.image(directory_ready ? target+3'd1:3'd0),
- .count(count),.diagnostic_page((award_errors!=0 || first_photo_errors!=0 || media_error!=0 || control_error!=0 || target>=6) ? 3'd4:3'd6),.diagnostic_crc((award_errors!=0 || first_photo_errors!=0 || media_error!=0 || control_error!=0 || target>=6) ? {3'd0,award_available,(award_errors!=0 ? award_errors:first_photo_errors!=0 ? first_photo_errors:{award_decode_error,media_error,control_error})}:{audio_scan_state,{1'b0,audio_count},(audio_count!=0 ? {1'b0,active_audio_track}+4'd1:4'd0),(audio_fifo_used[13] ? 4'd8:{1'b0,audio_fifo_used[12:10]})}),.seg_sel(base_seg_sel),.seg_data(base_seg_data));
-wire show_timing=timing_valid && media_error==0 && control_error==0 && award_errors==0 && first_photo_errors==0 && target<6;
-assign seg_sel=show_timing ? timing_seg_sel:base_seg_sel;
-assign seg_data=show_timing ? timing_seg_data:base_seg_data;
+// Debug displays and sticky fault reports removed.
+assign seg_sel=6'b111111;
+assign seg_data=8'hff;
 assign transfer_done=directory_ready && !control_busy;
 assign transfer_error=media_error!=0 || control_error!=0;
 endmodule

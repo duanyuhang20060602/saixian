@@ -20,6 +20,7 @@ def vector(x,y,cx,cy,radius,enabled=False,water=False,progress=0):
 
 def warp(x,y,cfg):
     mode,progress,on0,on1,cx0,cx1,cy0,cy1,r0,r1=cfg
+    if mode:return x,y
     dx0,dy0=vector(x,y,640 if mode else cx0,360 if mode else cy0,r0,mode or on0,mode,progress)
     dx1,dy1=vector(x,y,cx1,cy1,r1,on1 and not mode)
     return max(0,min(639,(2*x+dx0+dx1)//2)),max(0,min(719,y+max(-6,min(6,dy0+dy1))))

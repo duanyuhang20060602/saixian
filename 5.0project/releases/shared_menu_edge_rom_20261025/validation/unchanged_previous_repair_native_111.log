@@ -1,0 +1,2 @@
+PASS 4998 repair stereo frames bit-exact to frozen 5.4 (128 extra work clocks, same sample delay): extremes, random, toggles, wrap, mid-FIR clear
+E:\Codex\Work\resource-research-20261022-203734\delivery-5.5project\tests\tb_repair_packed8.v:33: $finish called at 30000050000 (1ps)

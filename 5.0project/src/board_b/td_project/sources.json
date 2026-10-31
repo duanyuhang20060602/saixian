@@ -40,5 +40,13 @@
   "../../../common/fluid/water_pack.v",
   "../../../common/audio_ui/saixian_audio_pitch.v",
   "../../../common/photo_audio_pitch_b.v",
-  "../../../common/photo_switch_timing.v"
+  "../../../common/photo_switch_timing.v",
+  "../../../common/photo_sd_title_store.v",
+  "../../../common/photo_relief_remote.v",
+  "../../../common/photo_relief_remote_tables.v",
+  "../../../common/photo_hmi_remote.v",
+  "../../../common/photo_audio_spi_b_offload.v",
+  "../../../common/photo_serial_text.v",
+  "../../../common/photo_scan_font_index.v",
+  "../../../common/photo_scan_glyph_b.v"
 ]

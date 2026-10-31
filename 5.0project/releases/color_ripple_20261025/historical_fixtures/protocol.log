@@ -1,0 +1,7 @@
+E:\Codex\Work\saixian-color-ripple-rtl-20261025\baseline\5.0project\tests\fx11_water\tb_protocol.v:57: error: port ``high_color'' is not a port of dut.
+E:\Codex\Work\saixian-color-ripple-rtl-20261025\baseline\5.0project\tests\fx11_water\tb_protocol.v:57: error: port ``format_changed'' is not a port of dut.
+E:\Codex\Work\saixian-color-ripple-rtl-20261025\baseline\5.0project\tests\fx11_water\tb_protocol.v:57: error: port ``high_color'' is not a port of dut.
+E:\Codex\Work\saixian-color-ripple-rtl-20261025\baseline\5.0project\tests\fx11_water\tb_protocol.v:57: error: port ``format_changed'' is not a port of dut.
+E:\Codex\Work\saixian-color-ripple-rtl-20261025\baseline\5.0project\tests\fx11_water\tb_protocol.v:91: error: 'dut.timer' is not a valid l-value for a procedural assignment.
+E:\Codex\Work\saixian-color-ripple-rtl-20261025\baseline\5.0project\common\photo_cached_control_a.v:102:      : 'dut.timer' is declared here as a wire.
+5 error(s) during elaboration.

@@ -1,0 +1,68 @@
+{
+  "upstream_commit": "6901498b70d02bc61a894e229879605287c6a47d",
+  "merge_base": "390690f91f6e49e8124064843a32f0515ded91ad",
+  "local_build": "gold-relief-fine-light-20261024",
+  "source_files": [
+    {
+      "path": "common/photo_link.v",
+      "sha256": "b0b033185960ac4070c1d41a4b01bd4f44a30c11377ac9dc117495b13d7d9734"
+    },
+    {
+      "path": "common/photo_sd_cache.v",
+      "sha256": "8f8e857ba4e51f432de861a6c86174bfaa1cbe1b860e2747d9f1435c3e67a183"
+    },
+    {
+      "path": "common/photo_thumbnail.v",
+      "sha256": "d9d390cbc745cedce4d5f56148b16d07db9885701cf14f5ad4562fa81c240f3d"
+    },
+    {
+      "path": "common/photo_touchpad.v",
+      "sha256": "c29700dcfde3ef60713af7db8cfc1ae9fdfa44363cb2bf6d69c464062e0e54ca"
+    },
+    {
+      "path": "common/top_photo_a.v",
+      "sha256": "ba3631c0ff287b2382751e9c2eb841b1b854f0beabf00a1f3f82d4458b40ab0f"
+    },
+    {
+      "path": "tests/reference/thumbnail_button_before/base.json",
+      "sha256": "07076c545941b6faa35e48de8b0a68ae4fc195a1da19981c01f4a070a7ee4ebc"
+    },
+    {
+      "path": "tests/reference/thumbnail_button_before/photo_thumbnail.v",
+      "sha256": "bff41a53ecaa49b4b586e049562cf69e3aa535fbb767a1637262b44206689000"
+    },
+    {
+      "path": "tests/reference/thumbnail_button_before/photo_touchpad.v",
+      "sha256": "3cc8c9b46b9b206b0c37353823ca9635cbde5cd9f77058a9a45664061bfdb956"
+    },
+    {
+      "path": "tests/reference/thumbnail_button_before/top_photo_a.v",
+      "sha256": "1a0274139a6bc99e0a1352349db550f23137891dc84c643be5541293c48fc8f2"
+    },
+    {
+      "path": "tests/tb_thumbnail_arrow_removed.v",
+      "sha256": "52e0f6bde6fd033f24c049001797d5b699f32a4aa9e250fbcd8462f1785263f5"
+    },
+    {
+      "path": "tests/tb_thumbnail_button_phase.v",
+      "sha256": "7602535c061c5d47bf4540d9a48438a15eb47cc5d3642280761a8bf32020d295"
+    },
+    {
+      "path": "tests/tb_thumbnail_button_touch.v",
+      "sha256": "258ae37162d410235f345e16c3c8f8d9b896f70273546a1669644fd817518e21"
+    },
+    {
+      "path": "tests/tb_thumbnail_source_lock.v",
+      "sha256": "0e19ebcdd27fed3994d95da64271aefbeda55e39ddefe36d40885a8879fcb8d3"
+    },
+    {
+      "path": "tools/test_thumbnail_button.py",
+      "sha256": "db91ba79e96391e1ed4e9601f290a4b64b232d0efa3a973b1efdc437511bd830"
+    }
+  ],
+  "preserved_optimization_files": [
+    "common/photo_relief_player.v",
+    "common/fluid/water_surface.v",
+    "common/fluid/water_edge.v"
+  ]
+}

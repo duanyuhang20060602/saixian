@@ -1,7 +1,7 @@
 // SXDLT008: 24 independent palettes and sparse 576x576 surface views.
 // A shared palette and four decoded rows retain native surface details. Wall
 // normals arrive in the existing framebuffer. Input-to-output latency: 12.
-module photo_relief_player #(parameter HOLD_FRAMES=10,SHARED_PALETTE=0)(
+module photo_relief_player #(parameter HOLD_FRAMES=10,SHARED_PALETTE=0,REMOTE_RELIEF=0,SHARED_MATH=0)(
  input mem_clk,mem_rst,enable,input [20:0] base,
  output wide_request,output reg request,output [20:0] address,input ack,
  input [31:0] data,input valid,
@@ -9,12 +9,21 @@ module photo_relief_player #(parameter HOLD_FRAMES=10,SHARED_PALETTE=0)(
  input [23:0] rgb_in,input touch_contact,input [10:0] cursor_x,input [9:0] cursor_y,
  output [23:0] rgb_out,output [3:0] error,output [4:0] angle,
  output cache_write_en,output [7:0] cache_write_address,output [31:0] cache_write_data,
- output [7:0] cache_read_address,input [31:0] cache_read_data
+ output [7:0] cache_read_address,input [31:0] cache_read_data,
+ input remote_valid,input [4:0] remote_angle,input signed [5:0] remote_light_x,remote_light_y,
+ output [4:0] desired_angle,output signed [5:0] desired_light_x,desired_light_y,
+ output [6:0] wall_address,input [23:0] wall_rgb,
+ output signed [5:0] math_nx,math_ny,math_lx,math_ly,
+ input signed [14:0] math_product_x,math_product_y
 );
-wire signed [5:0] light_x,light_y;wire frame_update;
+wire signed [5:0] light_x=REMOTE_RELIEF ? remote_light_x:desired_light_x;
+wire signed [5:0] light_y=REMOTE_RELIEF ? remote_light_y:desired_light_y;
+assign angle=REMOTE_RELIEF ? remote_angle:desired_angle;
+assign math_lx=light_x;assign math_ly=light_y;
+wire frame_update;
 photo_relief_motion #(.HOLD_FRAMES(HOLD_FRAMES)) motion(.clk(clk),.rst(rst),.enable(enable),.pause(pause),.frame_tick(frame_tick),
  .touch_contact(touch_contact),.cursor_x(cursor_x),.cursor_y(cursor_y),
- .angle(angle),.light_x(light_x),.light_y(light_y),.frame_update(frame_update));
+ .angle(desired_angle),.light_x(desired_light_x),.light_y(desired_light_y),.frame_update(frame_update));
 
 reg request_toggle;reg [4:0] requested_angle;reg [9:0] requested_row;
 (* async_reg="true" *)reg enable_meta,enable_sync;
@@ -22,7 +31,7 @@ reg request_toggle;reg [4:0] requested_angle;reg [9:0] requested_row;
 (* async_reg="true" *)reg [4:0] angle_meta;reg [4:0] angle_sync;
 (* async_reg="true" *)reg [9:0] row_meta;reg [9:0] row_sync;
 reg done_toggle,palette_ready,seen,palette_loaded;reg [4:0] loaded_angle;
-localparam IDLE=0,ASK=1,READ=2,DIRECTORY=3,DECODE=4,DIR_START=5,DIR_CACHED=6;
+localparam IDLE=0,ASK=1,READ=2,DIRECTORY=3,DECODE=4,DIR_START=5,DIR_CACHED=6,CACHE_WAIT=7;
 localparam PALETTE=0,ROW_DIRECTORY=1,ROW_STREAM=2;
 reg [2:0] state;reg [1:0] job;reg [5:0] lane;reg [7:0] position;
 reg [4:0] job_angle;reg [9:0] job_row,column;
@@ -32,14 +41,26 @@ reg [8:0] byte_number;reg [7:0] initial_byte;reg [10:0] encoded_left;
 reg need_run_value;reg [7:0] run_left,literal_left,run_value;reg [3:0] mem_error;
 reg dir_valid;reg [4:0] dir_angle;reg [7:0] dir_group;
 wire [31:0] cached_descriptor;
-photo_relief_directory_cache dir_cache(.clk(mem_clk),.we(state==READ && valid && job==ROW_DIRECTORY),
- .wa(lane[1:0]),.wd(data),.ra(job_row[1:0]),.rd(cached_descriptor));
+wire row_we;
 wire [7:0] code;
 assign wide_request=job!=ROW_DIRECTORY;
+generate if(!REMOTE_RELIEF)begin:local_decode_cache
+photo_relief_directory_cache dir_cache(.clk(mem_clk),.we(state==READ && valid && job==ROW_DIRECTORY),
+ .wa(lane[1:0]),.wd(data),.ra(job_row[1:0]),.rd(cached_descriptor));
 photo_relief_burst_cache burst_cache(.clk(mem_clk),.we(state==READ && valid && job==ROW_STREAM),
  .wa(lane),.wd(data),.ra(byte_number[7:0]),.rd(code));
+end else begin:compact_decode_cache
+ wire [7:0] future_byte=byte_number[7:0]+(state==DECODE && byte_number<256 && encoded_left!=0 &&
+  (!row_we || (literal_left!=0 && run_left==0)));
+ wire [6:0] read_word=job==ROW_DIRECTORY ? {5'b10000,job_row[1:0]}:{1'b0,future_byte[7:2]};
+ wire [31:0] q;reg [1:0] byte_lane;
+ always @(posedge mem_clk)byte_lane<=future_byte[1:0];
+ photo_relief_decode_cache memory(.clk(mem_clk),.we(state==READ && valid && job!=PALETTE),
+  .wa(job==ROW_DIRECTORY ? {5'b10000,lane[1:0]}:{1'b0,lane}),.wd(data),.ra(read_word),.rd(q));
+ assign cached_descriptor=q;assign code=q>>(byte_lane*8);
+end endgenerate
 wire implicit_zero=encoded_left==0 && run_left==0 && literal_left==0 && !need_run_value;
-wire row_we=enable_sync && state==DECODE && !need_run_value &&
+assign row_we=enable_sync && state==DECODE && !need_run_value &&
  (implicit_zero || run_left!=0 || (literal_left!=0 && encoded_left!=0 && byte_number<256));
 wire [7:0] row_data=implicit_zero ? 8'd0:run_left!=0 ? run_value:code;
 always @(posedge mem_clk or posedge mem_rst)
@@ -59,24 +80,25 @@ always @(posedge mem_clk)begin
   seen<=request_sync[2];job_angle<=angle_sync;job_row<=row_sync;column<=0;
   directory_offset<=15'd6208+({10'd0,angle_sync}<<9)+({10'd0,angle_sync}<<6)+{5'd0,row_sync[9:2],2'b00};
   need_run_value<=0;run_left<=0;literal_left<=0;run_value<=0;position<=0;
-  if(!palette_loaded || loaded_angle!=angle_sync)begin
+  if(!REMOTE_RELIEF && (!palette_loaded || loaded_angle!=angle_sync))begin
    palette_ready<=0;job<=PALETTE;burst_address<=base+{8'd0,angle_sync,8'h40};state<=ASK;
-  end else begin job<=ROW_DIRECTORY;state<=(dir_valid && dir_angle==angle_sync && dir_group==row_sync[9:2]) ? DIR_CACHED:DIR_START;end
+  end else begin palette_ready<=1;job<=ROW_DIRECTORY;state<=(dir_valid && dir_angle==angle_sync && dir_group==row_sync[9:2]) ? (REMOTE_RELIEF ? CACHE_WAIT:DIR_CACHED):DIR_START;end
  end
+ CACHE_WAIT:state<=job==ROW_STREAM ? DECODE:DIR_CACHED;
  DIR_CACHED:begin descriptor<=cached_descriptor;state<=DIRECTORY;end
  DIR_START:begin burst_address<=base+{6'd0,directory_offset};state<=ASK;end
  ASK:begin request<=1;if(ack)begin request<=0;lane<=0;state<=READ;end end
  READ:if(valid)begin
   lane<=lane+1'b1;
-  if(job==PALETTE)position<=position+1'b1;
+  if(!REMOTE_RELIEF && job==PALETTE)position<=position+1'b1;
   if(job==ROW_DIRECTORY && lane==job_row[1:0])descriptor<=data;
     if(lane==(job==ROW_DIRECTORY ? 3:63))begin
-   if(job==PALETTE)begin
+   if(!REMOTE_RELIEF && job==PALETTE)begin
     if(position==255)begin
      palette_ready<=1;palette_loaded<=1;loaded_angle<=job_angle;job<=ROW_DIRECTORY;state<=DIR_START;
     end else begin burst_address<=burst_address+64;state<=ASK;end
    end else if(job==ROW_DIRECTORY)begin dir_valid<=1;dir_angle<=job_angle;dir_group<=job_row[9:2];state<=DIRECTORY;end
-   else begin byte_number<={1'b0,initial_byte};initial_byte<=0;state<=DECODE;end
+   else begin byte_number<={1'b0,initial_byte};initial_byte<=0;state<=REMOTE_RELIEF ? CACHE_WAIT:DECODE;end
   end
  end
  DIRECTORY:begin
@@ -186,7 +208,7 @@ wire [15:0] surface=cup ? palette_word[15:0]:bg2;
 wire [15:0] base_color=cup ? palette_word[31:16]:bg2;
 function [23:0] expand;input [15:0] p;begin
  expand={p[15:11],p[15:13],p[10:5],p[10:9],p[4:0],p[4:2]};end endfunction
-// Two native DSP output registers keep the original stage-4 product latency.
+// Logic-array products retain the original stage-4 latency; both DSPs serve diffuse shading.
 function [7:0] sat;input [8:0] a;begin sat=a[8]?8'd255:a[7:0];end endfunction
 function [7:0] exposure2;input [7:0] c;begin case(c)
 8'd0:exposure2=8'd0;
@@ -446,6 +468,8 @@ function [7:0] exposure2;input [7:0] c;begin case(c)
 8'd254:exposure2=8'd254;
 8'd255:exposure2=8'd255;
 default:exposure2=0;endcase end endfunction
+generate if(!REMOTE_RELIEF)begin:local_lighting
+assign wall_address=0;assign math_nx=0;assign math_ny=0;
 reg signed [5:0] nx,ny;reg [4:0] nz;
 reg [23:0] color3,color4,color5,color6;
 reg [3:0] wall_pipe,cup_pipe;
@@ -455,17 +479,26 @@ photo_relief_product product_y(.clk(clk),.rst(rst),.a(ny),.b(light_y),.p(py));
 reg signed [12:0] dot,half_dot;
 reg [7:0] diffuse,specular;reg back;
 wire signed [12:0] sum=$signed({px[11],px})+$signed({py[11],py})+$signed({3'b000,pz});
-reg [23:0] shaded,delay8,delay9,delay10,delay11;
-reg [9:0] shade_low_r,shade_low_g,shade_low_b;
-reg [11:0] shade_high_r,shade_high_g,shade_high_b;
+reg [23:0] delay8,delay9,delay10,delay11;
+reg wall7;reg [6:0] wall_diffuse7;
+wire [23:0] wall_shaded7={8'd24+{1'b0,wall_diffuse7},8'd12+{2'd0,wall_diffuse7[6:1]},8'd3+{4'd0,wall_diffuse7[6:3]}};
 reg [23:0] color7;reg [7:0] specular7;reg cup7;
-function [9:0] shade_low;input [7:0] c;input [1:0] g;begin
- shade_low=(g[0]?{2'b00,c}:10'd0)+(g[1]?{1'b0,c,1'b0}:10'd0);end endfunction
-function [11:0] shade_high;input [7:0] c;input [1:0] g;begin
- shade_high=(g[0]?{2'b00,c,2'b00}:12'd0)+(g[1]?{1'b0,c,3'b000}:12'd0);end endfunction
-wire [11:0] lit_r={2'b00,shade_low_r}+shade_high_r;
-wire [11:0] lit_g={2'b00,shade_low_g}+shade_high_g;
-wire [11:0] lit_b={2'b00,shade_low_b}+shade_high_b;
+// Two 18x18 blocks carry all three full-precision diffuse channels. Red and
+// blue each produce 13 bits; their 13-bit separation prevents any cross-carry.
+wire [25:0] packed_diffuse,green_diffuse;
+photo_relief_lighting_product diffuse_rb(.clk(clk),.rst(rst),
+ .a({color6[23:19],8'd0,color6[7:3]}),.b(diffuse),.p(packed_diffuse));
+photo_relief_lighting_product diffuse_g(.clk(clk),.rst(rst),
+ .a({12'd0,color6[15:10]}),.b(diffuse),.p(green_diffuse));
+wire [12:0] red_product=packed_diffuse[25:13],blue_product=packed_diffuse[12:0];
+wire [13:0] green_product=green_diffuse[13:0];
+// Expand RGB565 at sub-code precision: 33/4 for R/B, 65/16 for G. The
+// diffuse result differs from exact RGB888 replication by at most one code.
+wire [17:0] red_scaled={red_product,5'b0}+{5'b0,red_product};
+wire [17:0] blue_scaled={blue_product,5'b0}+{5'b0,blue_product};
+wire [19:0] green_scaled={green_product,6'b0}+{6'b0,green_product};
+wire [7:0] fine_r={1'b0,red_scaled[17:11]},fine_b={1'b0,blue_scaled[17:11]};
+wire [7:0] fine_g={1'b0,green_scaled[19:13]};
 always @(posedge clk)begin
  // Stage 3: palette and background meet after the two synchronous RAM reads.
  nx<=$signed({surface[15:11],1'b0});ny<=$signed({surface[10:6],1'b0});nz<=surface[5:1];
@@ -479,27 +512,155 @@ always @(posedge clk)begin
  specular<=half_dot<=1024 ? 8'd0:half_dot>=1279 ? 8'd255:(half_dot-13'sd1024);
  back<=dot<0;color6<=color5;
  // Stage 7: rough antique wall and polished gold cup use different response.
- if(wall_pipe[3])shaded<={8'd24+{1'b0,diffuse[7:1]},8'd12+{2'b00,diffuse[7:2]},8'd3+{4'b0000,diffuse[7:4]}};
- else shaded<=color6;
+ // Store only the seven wall-light bits and tag; the colour pipeline
+ // already retains the fallback RGB, so a second 24-bit RGB register is redundant.
+ wall7<=wall_pipe[3];wall_diffuse7<=diffuse[7:1];
  // Stages 8..11 preserve the shared award menu/HDMI taps.
  color7<=color6;specular7<=specular;cup7<=cup_pipe[3];
- shade_low_r<=shade_low(color6[23:16],diffuse[5:4]);shade_high_r<=shade_high(color6[23:16],diffuse[7:6]);
- shade_low_g<=shade_low(color6[15:8],diffuse[5:4]);shade_high_g<=shade_high(color6[15:8],diffuse[7:6]);
- shade_low_b<=shade_low(color6[7:0],diffuse[5:4]);shade_high_b<=shade_high(color6[7:0],diffuse[7:6]);
  if(cup7)delay8<={
-  sat({2'b00,color7[23:17]}+{2'b00,lit_r[11:5]}+{2'b00,specular7[7:1]}),
-  sat({2'b00,color7[15:9]}+{2'b00,lit_g[11:5]}+{3'b000,specular7[7:2]}),
-  sat({2'b00,color7[7:1]}+{2'b00,lit_b[11:5]}+{4'b0000,specular7[7:3]})};
- else delay8<=shaded;
+  sat({2'b00,color7[23:17]}+{1'b0,fine_r}+{2'b00,specular7[7:1]}),
+  sat({2'b00,color7[15:9]}+{1'b0,fine_g}+{3'b000,specular7[7:2]}),
+  sat({2'b00,color7[7:1]}+{1'b0,fine_b}+{4'b0000,specular7[7:3]})};
+ else delay8<=wall7 ? wall_shaded7:color7;
  delay9<=delay8;delay10<=delay9;delay11<={exposure2(delay10[23:16]),exposure2(delay10[15:8]),exposure2(delay10[7:0])};
  if(rst)begin
   nx<=0;ny<=0;nz<=0;color3<=0;color4<=0;color5<=0;color6<=0;
-  shade_low_r<=0;shade_low_g<=0;shade_low_b<=0;shade_high_r<=0;shade_high_g<=0;shade_high_b<=0;
   color7<=0;specular7<=0;cup7<=0;wall_pipe<=0;cup_pipe<=0;pz<=0;dot<=0;half_dot<=0;
-  diffuse<=0;specular<=0;back<=0;shaded<=0;delay8<=0;delay9<=0;delay10<=0;delay11<=0;
+  diffuse<=0;specular<=0;back<=0;wall7<=0;wall_diffuse7<=0;delay8<=0;delay9<=0;delay10<=0;delay11<=0;
  end
 end
 assign rgb_out=delay11;
+end else begin:remote_lighting
+ reg signed [5:0] nx,ny;reg [4:0] nz;wire signed [11:0] px,py;
+ reg [9:0] pz;reg signed [12:0] dot;reg [7:0] diffuse;
+ reg [23:0] c3,c4,c5,c6,c7,c8,c9,c10,c11;
+ reg [3:0] walls,cups;reg wall7,cup7;
+ assign math_nx=nx;assign math_ny=ny;
+ if(SHARED_MATH)begin:shared_products
+  assign px=math_product_x[11:0];assign py=math_product_y[11:0];
+ end else begin:private_products
+  photo_relief_wall_dsp_product mx(.clk(clk),.rst(rst),.a(nx),.b(light_x),.p(px));
+  photo_relief_wall_dsp_product my(.clk(clk),.rst(rst),.a(ny),.b(light_y),.p(py));
+ end
+ assign wall_address=diffuse[7:1];
+ // Only fixed RGB565 fallback text needs a local exposure conversion.
+ // Cup RGB and the 128 wall response values already arrive exposed from B.
+function [7:0] exposure_rb5;input [4:0] v;begin case(v)
+5'd0:exposure_rb5=8'd0;
+5'd1:exposure_rb5=8'd16;
+5'd2:exposure_rb5=8'd30;
+5'd3:exposure_rb5=8'd44;
+5'd4:exposure_rb5=8'd58;
+5'd5:exposure_rb5=8'd71;
+5'd6:exposure_rb5=8'd82;
+5'd7:exposure_rb5=8'd93;
+5'd8:exposure_rb5=8'd105;
+5'd9:exposure_rb5=8'd115;
+5'd10:exposure_rb5=8'd124;
+5'd11:exposure_rb5=8'd133;
+5'd12:exposure_rb5=8'd143;
+5'd13:exposure_rb5=8'd151;
+5'd14:exposure_rb5=8'd159;
+5'd15:exposure_rb5=8'd166;
+5'd16:exposure_rb5=8'd174;
+5'd17:exposure_rb5=8'd181;
+5'd18:exposure_rb5=8'd187;
+5'd19:exposure_rb5=8'd194;
+5'd20:exposure_rb5=8'd200;
+5'd21:exposure_rb5=8'd206;
+5'd22:exposure_rb5=8'd212;
+5'd23:exposure_rb5=8'd217;
+5'd24:exposure_rb5=8'd223;
+5'd25:exposure_rb5=8'd228;
+5'd26:exposure_rb5=8'd233;
+5'd27:exposure_rb5=8'd237;
+5'd28:exposure_rb5=8'd242;
+5'd29:exposure_rb5=8'd247;
+5'd30:exposure_rb5=8'd251;
+5'd31:exposure_rb5=8'd255;
+endcase end endfunction
+function [7:0] exposure_g6;input [5:0] v;begin case(v)
+6'd0:exposure_g6=8'd0;
+6'd1:exposure_g6=8'd8;
+6'd2:exposure_g6=8'd16;
+6'd3:exposure_g6=8'd23;
+6'd4:exposure_g6=8'd30;
+6'd5:exposure_g6=8'd37;
+6'd6:exposure_g6=8'd44;
+6'd7:exposure_g6=8'd50;
+6'd8:exposure_g6=8'd57;
+6'd9:exposure_g6=8'd63;
+6'd10:exposure_g6=8'd69;
+6'd11:exposure_g6=8'd75;
+6'd12:exposure_g6=8'd81;
+6'd13:exposure_g6=8'd86;
+6'd14:exposure_g6=8'd92;
+6'd15:exposure_g6=8'd97;
+6'd16:exposure_g6=8'd104;
+6'd17:exposure_g6=8'd109;
+6'd18:exposure_g6=8'd114;
+6'd19:exposure_g6=8'd118;
+6'd20:exposure_g6=8'd123;
+6'd21:exposure_g6=8'd128;
+6'd22:exposure_g6=8'd132;
+6'd23:exposure_g6=8'd136;
+6'd24:exposure_g6=8'd141;
+6'd25:exposure_g6=8'd145;
+6'd26:exposure_g6=8'd149;
+6'd27:exposure_g6=8'd153;
+6'd28:exposure_g6=8'd157;
+6'd29:exposure_g6=8'd160;
+6'd30:exposure_g6=8'd164;
+6'd31:exposure_g6=8'd168;
+6'd32:exposure_g6=8'd172;
+6'd33:exposure_g6=8'd176;
+6'd34:exposure_g6=8'd179;
+6'd35:exposure_g6=8'd182;
+6'd36:exposure_g6=8'd186;
+6'd37:exposure_g6=8'd189;
+6'd38:exposure_g6=8'd192;
+6'd39:exposure_g6=8'd195;
+6'd40:exposure_g6=8'd198;
+6'd41:exposure_g6=8'd201;
+6'd42:exposure_g6=8'd204;
+6'd43:exposure_g6=8'd207;
+6'd44:exposure_g6=8'd210;
+6'd45:exposure_g6=8'd212;
+6'd46:exposure_g6=8'd215;
+6'd47:exposure_g6=8'd218;
+6'd48:exposure_g6=8'd221;
+6'd49:exposure_g6=8'd224;
+6'd50:exposure_g6=8'd226;
+6'd51:exposure_g6=8'd229;
+6'd52:exposure_g6=8'd231;
+6'd53:exposure_g6=8'd233;
+6'd54:exposure_g6=8'd236;
+6'd55:exposure_g6=8'd238;
+6'd56:exposure_g6=8'd240;
+6'd57:exposure_g6=8'd242;
+6'd58:exposure_g6=8'd245;
+6'd59:exposure_g6=8'd247;
+6'd60:exposure_g6=8'd249;
+6'd61:exposure_g6=8'd251;
+6'd62:exposure_g6=8'd253;
+6'd63:exposure_g6=8'd255;
+endcase end endfunction
+
+ always @(posedge clk)begin
+  nx<=$signed({bg2[15:11],1'b0});ny<=$signed({bg2[10:6],1'b0});nz<=bg2[5:1];
+  c3<=cup ? palette_word[31:8]:{exposure_rb5(bg2[15:11]),exposure_g6(bg2[10:5]),exposure_rb5(bg2[4:0])};
+  walls<={walls[2:0],!cup && bg2[0]};cups<={cups[2:0],cup};
+  pz<={nz,4'b0};c4<=c3;
+  dot<=$signed({px[11],px})+$signed({py[11],py})+$signed({3'b0,pz});c5<=c4;
+  diffuse<=dot<0 ? 0:dot>1020 ? 255:dot[9:2];c6<=c5;
+  c7<=c6;wall7<=walls[3];cup7<=cups[3];
+  c8<=wall7 && !cup7 ? wall_rgb:c7;
+  c9<=c8;c10<=c9;c11<=remote_valid ? c10:24'h6d4825;
+  if(rst)begin nx<=0;ny<=0;nz<=0;pz<=0;dot<=0;diffuse<=0;walls<=0;cups<=0;wall7<=0;cup7<=0;
+   c3<=0;c4<=0;c5<=0;c6<=0;c7<=0;c8<=0;c9<=0;c10<=0;c11<=0;end
+ end
+ assign rgb_out=c11;
+end endgenerate
 endmodule
 
 module photo_relief_ram #(parameter DATA_BITS=32,ADDRESS_BITS=8,DEPTH=256)(
@@ -522,10 +683,28 @@ EG_LOGIC_BRAM #(.DATA_WIDTH_A(DATA_BITS),.ADDR_WIDTH_A(ADDRESS_BITS),.DATA_DEPTH
 endmodule
 
 
-// Signed 6x6 product, exactly one registered clock and synchronous reset.
-// RELIEF_NATIVE_DSP lets functional tests use the installed vendor model
-// while keeping the compact RTL model for ordinary Icarus regressions.
-module photo_relief_product(input clk,rst,input signed [5:0] a,b,output signed [11:0] p);
+// Signed 6x6 Baugh-Wooley array. All arithmetic is modulo 2^12; inverted
+// sign-column products are corrected by constant bits 11 and 6 in row zero.
+// Carry-save reduction leaves one carry-propagate adder before the register.
+// No multiplier operator or DSP primitive is used for these small products.
+module photo_relief_product(input clk,rst,input signed [5:0] a,b,output reg signed [11:0] p);
+wire [5:0] q0={~(a[0]&b[5]),({5{a[0]}}&b[4:0])};
+wire [5:0] q1={~(a[1]&b[5]),({5{a[1]}}&b[4:0])};
+wire [5:0] q2={~(a[2]&b[5]),({5{a[2]}}&b[4:0])};
+wire [5:0] q3={~(a[3]&b[5]),({5{a[3]}}&b[4:0])};
+wire [5:0] q4={~(a[4]&b[5]),({5{a[4]}}&b[4:0])};
+wire [11:0] r0={6'd0,q0}|12'h840,r1={5'd0,q1,1'b0},r2={4'd0,q2,2'b0};
+wire [11:0] r3={3'd0,q3,3'b0},r4={2'd0,q4,4'b0};
+wire [11:0] r5={1'b0,(a[5]&b[5]),~({5{a[5]}}&b[4:0]),5'd0};
+wire [11:0] s0=r0^r1^r2,c0=((r0&r1)|(r0&r2)|(r1&r2))<<1;
+wire [11:0] s1=r3^r4^r5,c1=((r3&r4)|(r3&r5)|(r4&r5))<<1;
+wire [11:0] s2=s0^c0^s1,c2=((s0&c0)|(s0&s1)|(c0&s1))<<1;
+wire [11:0] s3=s2^c2^c1,c3=((s2&c2)|(s2&c1)|(c2&c1))<<1;
+always @(posedge clk)if(rst)p<=0;else p<=s3+c3;
+endmodule
+
+// Unsigned registered product; native tests use the installed vendor model.
+module photo_relief_lighting_product(input clk,rst,input [17:0] a,input [7:0] b,output [25:0] p);
 `ifdef RELIEF_SIM
 `ifdef RELIEF_NATIVE_DSP
 localparam NATIVE=1;
@@ -539,12 +718,12 @@ generate if(NATIVE)begin:native
  wire [35:0] wide;
  EG_PHY_MULT18 #(.INPUTREGA("DISABLE"),.INPUTREGB("DISABLE"),
   .OUTPUTREG("ENABLE"),.SRMODE("SYNC")) multiply(
-  .a({{12{a[5]}},a}),.b({{12{b[5]}},b}),.p(wide),.signeda(1'b1),.signedb(1'b1),
+  .a(a),.b({10'd0,b}),.p(wide),.signeda(1'b0),.signedb(1'b0),
   .acin(18'd0),.bcin(18'd0),.sourcea(1'b1),.sourceb(1'b1),.acout(),.bcout(),
   .cea(1'b1),.ceb(1'b1),.cepd(1'b1),.clk(clk),.rstan(1'b1),.rstbn(1'b1),.rstpdn(!rst));
- assign p=wide[11:0];
+ assign p=wide[25:0];
 end else begin:simulation
- reg signed [11:0] product;
+ reg [25:0] product;
  always @(posedge clk)if(rst)product<=0;else product<=a*b;
  assign p=product;
 end endgenerate
@@ -590,3 +769,29 @@ EG_LOGIC_DRAM #(.DATA_WIDTH_W(32),.DATA_WIDTH_R(32),.ADDR_WIDTH_W(2),.ADDR_WIDTH
  .DATA_DEPTH_W(4),.DATA_DEPTH_R(4)) memory(.di(wd),.waddr(wa),.we(we),.wclk(clk),.raddr(ra),.do(rd));
 `endif
 endmodule
+
+module photo_relief_wall_dsp_product(input clk,rst,input signed [5:0] a,b,output signed [11:0] p);
+`ifdef RELIEF_SIM
+`ifdef RELIEF_NATIVE_DSP
+localparam NATIVE=1;
+`else
+localparam NATIVE=0;
+`endif
+`else
+localparam NATIVE=1;
+`endif
+generate if(NATIVE)begin:native
+ wire [35:0] wide;
+ EG_PHY_MULT18 #(.INPUTREGA("DISABLE"),.INPUTREGB("DISABLE"),
+  .OUTPUTREG("ENABLE"),.SRMODE("SYNC")) multiply(
+  .a({{12{a[5]}},a}),.b({{12{b[5]}},b}),.p(wide),.signeda(1'b0),.signedb(1'b0),
+  .acin(18'd0),.bcin(18'd0),.sourcea(1'b1),.sourceb(1'b1),.acout(),.bcout(),
+  .cea(1'b1),.ceb(1'b1),.cepd(1'b1),.clk(clk),.rstan(1'b1),.rstbn(1'b1),.rstpdn(!rst));
+ assign p=wide[11:0];
+end else begin:simulation
+ reg signed [11:0] product;
+ always @(posedge clk)if(rst)product<=0;else product<=a*b;
+ assign p=product;
+end endgenerate
+endmodule
+

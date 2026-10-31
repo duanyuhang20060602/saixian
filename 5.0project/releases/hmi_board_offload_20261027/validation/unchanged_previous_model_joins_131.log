@@ -1,0 +1,7 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "model_joins",
+  "validation_group": "unchanged_previous",
+  "passed": true,
+  "rerun_this_revision": false
+}

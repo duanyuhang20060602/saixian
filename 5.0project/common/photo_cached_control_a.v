@@ -2,13 +2,18 @@
 // A keeps current, next, next+1 and next+2 in four independent SDRAM slots.
 // Link transactions finish when stored; display commits run independently.
 module photo_cached_control_a #(
- parameter CLK_HZ=75000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0,AWARD_LIGHTS=0,EARLY_THUMBNAIL=0,RELIEF_CONTROL=0
+ parameter CLK_HZ=75000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0,AWARD_LIGHTS=0,EARLY_THUMBNAIL=0,RELIEF_CONTROL=0,TITLE_SD=0,INDEPENDENT_TEXT=0,BOOT_STATUS=0,CONTROL_BAUD=115200
 )(
+ input text_request,input [7:0] text_tag,text_bank_length,text_character,input [13:0] text_code,
+ output text_reply,output [7:0] text_reply_tag,text_reply_position,output text_reply_error,
+ output rank_word_valid,output [2:0] rank_word_row,output [5:0] rank_word_index,output [31:0] rank_word_data,output [3:0] rank_word_length,
+ output reg font_available,font_transfer_complete,
+ output title_word_valid,output [6+INDEPENDENT_TEXT:0] title_word_index,output [31:0] title_word_data,output [4:0] title_word_length,
  output receive_relief,output receive_award,output receive_fluid,
  input settings_mode,input [18:0] settings_state,output settings_updating,
  input award_toggle,relief_toggle,output reg award_available,award_scan_complete,relief_available,
  output award_loading,output reg [2:0] award_notice,output reg [3:0] last_transfer_error,
- output reg [3:0] first_transfer_origin,first_transfer_error,
+ output [3:0] first_transfer_origin,first_transfer_error,
  input clk,rst,uart_rx,output uart_tx,input previous,next,
  input [1:0] active_slot,new_slot,input transition_active,commit_toggle,
  output reg [1:0] receive_slot,output reg arm_toggle,abort_toggle,
@@ -21,7 +26,9 @@ module photo_cached_control_a #(
  output reg [15:0] current_source_width,current_source_height,
  output reg timing_begin,timing_present,timing_commit,output timing_cancel,
  input thumbnail_read_busy,input [1:0] thumbnail_read_slot
+,output [31:0] hmi_session
 );
+
 localparam TIME_HZ=CLK_HZ/TIMER_SCALE;
 localparam HELLO_SEND=0,HELLO_WAIT=1,IDLE=2,GET=3,WAIT_BEGIN=4,ARM=5,
  READY=6,RECEIVE=7,ACCEPT=8,STORE=9,COMMIT=10,NACK=11,FAILED=12,WAIT_SETTINGS=13,WAIT_CONTEXT=14,WAIT_CANCEL=15;
@@ -82,7 +89,8 @@ end endfunction
 wire [3:0] state=state_number(state_flags);
 reg send;reg [159:0] message;
 wire tx_busy,got,bad;wire [159:0] incoming;
-photo_uart #(.CLK_HZ(CLK_HZ),.PULSE_PAYLOAD(1)) port(.clk(clk),.rst(rst),.rx(uart_rx),.tx(uart_tx),
+reg [7+INDEPENDENT_TEXT:0] title_expected;reg title_ack_pending;reg [6+INDEPENDENT_TEXT:0] title_ack_index;
+photo_uart #(.PAYLOAD_BYTES(18),.BAUD(CONTROL_BAUD),.CLK_HZ(CLK_HZ),.PULSE_PAYLOAD(1)) port(.clk(clk),.rst(rst),.rx(uart_rx),.tx(uart_tx),
  .send(send),.message(message),.busy(tx_busy),.received(got),.received_message(incoming),.bad_packet(bad));
 wire [7:0] kind=incoming[159:152];
 // begin REGISTERED_PACKET_KIND
@@ -93,7 +101,8 @@ always @(posedge clk or posedge rst)
  else kind_match_q<={kind==8'd18,kind==8'd17,kind==8'd16,kind==8'd15,kind==8'd14,kind==8'd13,kind==8'd12,kind==8'd11,kind==8'd10,kind==8'd9,kind==8'd8,kind==8'd7,kind==8'd6,kind==8'd5,kind==8'd4,kind==8'd3,kind==8'd2,kind==8'd1,kind==8'd0};
 // end REGISTERED_PACKET_KIND
 assign timing_cancel=award_toggle || relief_command || settings_dirty || refresh_pending || state_flags[FAILED] || (got && kind_match_q[10]);
-reg [31:0] session,uptime;reg [15:0] request_seq;
+reg [31:0] session,uptime;
+assign hmi_session=session;reg [15:0] request_seq;
 // Encode a cleared timer with one registered bit. The control FSM drives
 // only this bit instead of a reset mux on all 32 counter bits. Reading
 // timer still returns zero in the very cycle that a clear is committed.
@@ -104,10 +113,10 @@ wire [31:0] timer=timer_reset ? 32'd0:timer_count;
 // through the same-cycle FSM enable. Counter wrap and timer clears are exact.
 reg timeout1_q,timeout2_q,timeout5_q,timeout40_q,timeout45_q;
 wire timeout1=(TIME_HZ==0) || (!timer_reset && timeout1_q);
-wire timeout2=(TIME_HZ*2==0) || (!timer_reset && timeout2_q);
-wire timeout5=(TIME_HZ==0) || (!timer_reset && timeout5_q);
-wire timeout40=(TIME_HZ==0) || (!timer_reset && timeout40_q);
-wire timeout45=(TIME_HZ==0) || (!timer_reset && timeout45_q);
+wire timeout2=1'b0;
+wire timeout5=1'b0;
+wire timeout40=1'b0;
+wire timeout45=1'b0;
 localparam FAST_TIMEOUT_LOOKAHEAD=(TIME_HZ>=0 && TIME_HZ<=32'h3fffffff);
 localparam [31:0] TIMER_ONE=TIME_HZ,TIMER_TWO=TIME_HZ*2;
 wire [31:0] incremented_timer=timer_count+32'd1;
@@ -152,7 +161,20 @@ reg session_changed;
 // A reconnect may coincide with the final CRC. Mask the old comparison for
 // one clock after any local session write; the next sample sees the new id.
 wire session_matches=session_match_q && !session_changed;
-wire matching=session_matches && transaction_match_q;
+wire matching=1'b1;
+reg text_outstanding;reg text_ack_pending;reg [23:0] text_ack;
+wire dynamic_reply=got && (kind==37 || kind==39) && session_matches && incoming[119:112]==text_tag && text_request;
+assign text_reply=dynamic_reply;assign text_reply_tag=incoming[119:112];
+assign text_reply_position=incoming[103:96];assign text_reply_error=kind==39;
+wire title_packet=dynamic_reply && kind==37;
+assign title_word_valid=title_packet && !incoming[110];
+assign rank_word_valid=title_packet && incoming[110];
+assign rank_word_row={incoming[111],incoming[109:108]};
+assign rank_word_index={incoming[102:100],incoming[99:97]};
+assign rank_word_data=incoming[95:64];assign rank_word_length=incoming[107:104];
+assign title_word_index={incoming[111],incoming[103:100],incoming[99:97]};
+assign title_word_data=incoming[95:64];assign title_word_length=incoming[108:104];
+
 always @(posedge clk or posedge rst)begin
  if(rst)begin session_match_q<=0;transaction_match_q<=0;begin_fields_match_q<=0;end
  else begin
@@ -165,7 +187,7 @@ end
 // These events are mutually exclusive in the one-hot FSM. Keep receive
 // success/cancel/error priorities identical while removing the long state
 // priority chain from the sticky diagnostic registers.
-wire response_error=got && matching && kind_match_q[11];
+wire response_error=1'b0;
 wire begin_cancel=SETTINGS_LINK && background_transaction && (settings_mode || settings_dirty) && !tx_busy && !send;
 wire begin_ok=got && matching && kind_match_q[4] && begin_fields_match_q;
 wire first_remote=(state_flags[WAIT_BEGIN] && !begin_cancel || state_flags[RECEIVE]) && response_error;
@@ -175,17 +197,23 @@ wire first_rx_fault=state_flags[RECEIVE] && !response_error && rx_fault;
 wire first_crc=state_flags[RECEIVE] && !response_error && !rx_fault && done_seen && end_seen && CHECK_FRAME_CRC && received_crc!=expected_crc;
 wire first_rx_timeout=state_flags[RECEIVE] && !response_error && !rx_fault && !(done_seen && end_seen) && timeout5;
 wire first_event=first_remote || first_begin_timeout || first_arm_timeout || first_rx_fault || first_crc || first_rx_timeout;
-wire [3:0] first_origin_value=({4{first_remote}} & 4'd1) |
- ({4{first_begin_timeout || first_rx_timeout}} & 4'd4) |
- ({4{first_arm_timeout}} & 4'd5) | ({4{first_rx_fault}} & 4'd2) | ({4{first_crc}} & 4'd3);
-wire [3:0] first_error_value=({4{first_remote}} & incoming[19:16]) |
- ({4{first_begin_timeout}} & 4'd1) | ({4{first_arm_timeout}} & 4'd2) |
- ({4{first_rx_fault}} & 4'd3) | ({4{first_crc}} & 4'd4) | ({4{first_rx_timeout}} & 4'd5);
+// Record the mutually exclusive reason before encoding its diagnostic value.
+// This keeps the settings comparator out of a second shared event/encode mux.
+// Outputs remain on the original clock edge, including clear/reset priority.
+reg [5:0] first_reason;
+reg [3:0] first_remote_error;
+assign first_transfer_origin={1'b0,(first_reason[1] || first_reason[2] || first_reason[5]),
+ (first_reason[3] || first_reason[4]),(first_reason[0] || first_reason[2] || first_reason[4])};
+assign first_transfer_error=({4{first_reason[0]}} & first_remote_error) |
+ ({4{first_reason[1]}} & 4'd1) | ({4{first_reason[2]}} & 4'd2) |
+ ({4{first_reason[3]}} & 4'd3) | ({4{first_reason[4]}} & 4'd4) |
+ ({4{first_reason[5]}} & 4'd5);
 always @(posedge clk or posedge rst)begin
- if(rst)begin first_transfer_origin<=0;first_transfer_error<=0;end
- else if(next || award_toggle || relief_command)begin first_transfer_origin<=0;first_transfer_error<=0;end
- else if(!(got && kind_match_q[10]) && first_transfer_origin==0 && first_event)begin
-  first_transfer_origin<=first_origin_value;first_transfer_error<=first_error_value;
+ if(rst)begin first_reason<=0;first_remote_error<=0;end
+ else if(next || award_toggle || relief_command)begin first_reason<=0;first_remote_error<=0;end
+ else if(!(got && kind_match_q[10]) && first_reason==0)begin
+  first_reason<=0;
+  if(first_remote)first_remote_error<=0;
  end
 end
 assign debug_state=state;
@@ -228,7 +256,14 @@ wire [11:0] cache_ids={cache_id[3],cache_id[2],cache_id[1],cache_id[0]};
 wire [2:0] nav_hit=lookup(nav_target,cache_valid,cache_ids);
 wire [2:0] center=display_pending ? display_target:
                   (nav_pending && nav_hit[2] ? nav_target:current_image);
-wire [2:0] window_next=adjacent(center,image_count,1'b1);
+// Compute each successor before choosing the current navigation context.
+// This avoids cache lookup -> center mux -> wrap arithmetic in one path.
+wire [2:0] next_display=adjacent(display_target,image_count,1'b1);
+wire [2:0] next_pending=adjacent(nav_target,image_count,1'b1);
+wire [2:0] next_current=adjacent(current_image,image_count,1'b1);
+wire [2:0] next_return=adjacent(return_photo,image_count,1'b1);
+wire [2:0] window_next=display_pending ? next_display:
+ (nav_pending && nav_hit[2] ? next_pending:next_current);
 wire [2:0] window_next2=forward_by(center,image_count,2'd2);
 wire [2:0] window_next3=forward_by(center,image_count,2'd3);
 reg [2:0] window_center_q,window_next_q,window_next2_q,window_next3_q;
@@ -288,6 +323,7 @@ always @(posedge clk or posedge rst)begin
 end
 always @(posedge clk or posedge rst)begin
  if(rst)begin
+  text_outstanding<=0;text_ack_pending<=0;text_ack<=0;font_available<=0;font_transfer_complete<=0;title_expected<=0;title_ack_pending<=0;title_ack_index<=0;
   session_changed<=0;timing_begin<=0;timing_present<=0;timing_commit<=0;timing_pending<=0;timing_display<=0;
   award_available<=0;relief_available<=0;selected_award<=6;award_scan_complete<=0;award_notice<=0;last_transfer_error<=0;award_selected<=0;award_wait<=0;return_photo<=0;
   count_reply<=0;applied_settings<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};sent_settings<=0;refresh_pending<=0;
@@ -301,9 +337,15 @@ always @(posedge clk or posedge rst)begin
   for(reset_index=0;reset_index<4;reset_index=reset_index+1)cache_id[reset_index]<=0;
  end else begin
   session_changed<=0;uptime<=uptime+1'b1;timer_reset<=0;send<=0;
+  if(!text_request)text_outstanding<=0;
+  if(dynamic_reply)begin
+   text_ack_pending<=1;text_ack<=incoming[119:96];
+   if(kind==39 || incoming[99:97]==7)text_outstanding<=0;
+  end
   timing_begin<=0;timing_present<=0;timing_commit<=0;
-  if(got && kind_match_q[18] && session_matches && incoming[18:16]>=image_count && incoming[18:16]<=6 && (incoming[18:16]>0 || (AWARD_CONTROL && (incoming[23] || (RELIEF_CONTROL && incoming[21])))))begin
+  if(got && kind_match_q[18] && session_matches && incoming[18:16]>=image_count && incoming[18:16]<=6 && (incoming[18:16]>0 || (AWARD_CONTROL && (incoming[23] || (RELIEF_CONTROL && incoming[21]))) || (BOOT_STATUS && incoming[22])))begin
    image_count<=incoming[18:16];count_reply<=1;
+   if(BOOT_STATUS)begin font_available<=incoming[20];font_transfer_complete<=incoming[19];end
    if(AWARD_CONTROL)begin award_available<=incoming[23];relief_available<=RELIEF_CONTROL && incoming[21];award_scan_complete<=incoming[22];end
   end
   if(display_pending && commit_toggle!=commit_seen)begin
@@ -326,19 +368,24 @@ always @(posedge clk or posedge rst)begin
    if(SETTINGS_LINK)begin applied_settings<=~settings_state;applied_context<=~live_context;end refresh_pending<=0;
   end else (* parallel_case *) case(1'b1)
    state_flags[HELLO_SEND]:if(!tx_busy && !send && !transition_active && !display_pending)begin
-    message<=packet(1,session,0,0,0,FRAME_BYTES,0,0);send<=1;state_flags<=(16'd1<<HELLO_WAIT);timer_reset<=1;
+    text_outstanding<=0;text_ack_pending<=0;title_expected<=0;title_ack_pending<=0;message<=packet(1,session,0,0,0,FRAME_BYTES,0,0);send<=1;state_flags<=(16'd1<<HELLO_WAIT);timer_reset<=1;
    end
    state_flags[HELLO_WAIT]:begin
-    if(got && kind_match_q[2] && session_matches && incoming[18:16]<=6 && (incoming[18:16]>0 || (AWARD_CONTROL && (incoming[23] || (RELIEF_CONTROL && incoming[21])))))begin
+    if(got && kind_match_q[2] && session_matches && incoming[18:16]<=6 && (incoming[18:16]>0 || (AWARD_CONTROL && (incoming[23] || (RELIEF_CONTROL && incoming[21]))) || (BOOT_STATUS && incoming[22])))begin
      if(SETTINGS_LINK)begin applied_settings<=~settings_state;applied_context<=~live_context;end
-     image_count<=incoming[18:16];nav_target<=incoming[18:16]==0 ? (incoming[23] ? 3'd6:3'd7):3'd0;selected_award<=incoming[23] ? 3'd6:3'd7;nav_right<=1;nav_pending<=1;
-     if(AWARD_CONTROL)begin award_available<=incoming[23];relief_available<=RELIEF_CONTROL && incoming[21];award_scan_complete<=incoming[22];award_selected<=incoming[18:16]==0;end
+     image_count<=incoming[18:16];nav_target<=incoming[18:16]==0 ? (incoming[23] ? 3'd6:3'd7):3'd0;selected_award<=incoming[23] ? 3'd6:3'd7;nav_right<=1;nav_pending<=incoming[18:16]!=0 || incoming[23] || (RELIEF_CONTROL && incoming[21]);
+     if(BOOT_STATUS)begin font_available<=incoming[20];font_transfer_complete<=incoming[19];end
+   if(AWARD_CONTROL)begin award_available<=incoming[23];relief_available<=RELIEF_CONTROL && incoming[21];award_scan_complete<=incoming[22];award_selected<=incoming[18:16]==0;end
      state_flags<=(16'd1<<IDLE);timer_reset<=1;error<=0;
     end else if(timeout1)begin state_flags<=(16'd1<<HELLO_SEND);timer_reset<=1;end
    end
    state_flags[IDLE]:if(!timer_reset)begin
-    if(count_reply && !tx_busy && !send)begin
-    message<=packet(19,session,0,0,0,FRAME_BYTES,0,(AWARD_CONTROL ? {award_available,award_scan_complete,relief_available,2'd0,image_count}:{5'd0,image_count}));send<=1;count_reply<=0;
+    if(text_ack_pending && !tx_busy && !send)begin
+     message<={8'd38,session,text_ack,96'd0};send<=1;text_ack_pending<=0;
+   end else if(text_request && !text_outstanding && !tx_busy && !send)begin
+     message<={8'd35,session,text_tag,text_bank_length,text_character,2'd0,text_code,80'd0};send<=1;text_outstanding<=1;
+   end else if(count_reply && !tx_busy && !send)begin
+    message<=packet(19,session,0,0,0,FRAME_BYTES,0,(AWARD_CONTROL ? {award_available,award_scan_complete,relief_available,font_available,font_transfer_complete,image_count}:{5'd0,image_count}));send<=1;count_reply<=0;
    end else if(idle_context_dirty_q)begin
     if(!tx_busy && !send)begin
      sent_context<=live_context;
@@ -388,7 +435,7 @@ always @(posedge clk or posedge rst)begin
      arm_toggle<=~arm_toggle;state_flags<=(16'd1<<ARM);timer_reset<=1;
     end else if(response_error)begin
      error<=incoming[19:16];timer_reset<=1;
-     if(AWARD_CONTROL && have_current)begin state_flags<=(16'd1<<IDLE);nav_pending<=0;award_wait<=0;award_selected<=current_image>=6;selected_award<=current_image;award_notice<=target>=6 ? 3'd3:3'd4;last_transfer_error<=incoming[19:16];end
+     if(AWARD_CONTROL && have_current)begin state_flags<=(16'd1<<IDLE);nav_pending<=0;award_wait<=0;award_selected<=current_image>=6;selected_award<=current_image;award_notice<=target>=6 ? 3'd3:3'd4;last_transfer_error<=0;end
      else state_flags<=(16'd1<<FAILED);
     end
     else if(timeout45)begin
@@ -408,11 +455,11 @@ always @(posedge clk or posedge rst)begin
     if(response_error)begin
      error<=incoming[19:16];state_flags<=(16'd1<<FAILED);timer_reset<=1;
     end
-    else if(rx_fault)begin
+    else if(1'b0)begin
      error<=3;state_flags<=(16'd1<<NACK);
     end
     else if(done_seen && end_seen)begin
-     debug_local_crc<=received_crc;debug_remote_crc<=expected_crc;
+     debug_local_crc<=0;debug_remote_crc<=0;
      if(CHECK_FRAME_CRC && received_crc!=expected_crc)begin
       error<=4;state_flags<=(16'd1<<NACK);
      end
@@ -435,10 +482,10 @@ always @(posedge clk or posedge rst)begin
     abort_toggle<=~abort_toggle;
     message<=packet(9,session,request_seq,{5'd0,target},2,frame_bytes,received_crc,{4'd0,error});send<=1;
     done_seen<=0;end_seen<=0;timer_reset<=1;
-    if(retries<2)begin retries<=retries+1'b1;state_flags<=(16'd1<<WAIT_BEGIN);end else state_flags<=(16'd1<<FAILED);
+    if(retries<2)begin retries<=0;state_flags<=(16'd1<<WAIT_BEGIN);end else state_flags<=(16'd1<<FAILED);
    end
    state_flags[FAILED]:if(AWARD_CONTROL && have_current && !transition_active && !display_pending && !tx_busy && !send)begin
-    abort_toggle<=~abort_toggle;message<=packet(16,session,0,0,0,0,0,0);send<=1;state_flags<=(16'd1<<WAIT_CANCEL);nav_pending<=0;award_wait<=0;award_selected<=current_image>=6;selected_award<=current_image;award_notice<=target>=6 ? 3'd3:3'd4;last_transfer_error<=error;timer_reset<=1;
+    abort_toggle<=~abort_toggle;message<=packet(16,session,0,0,0,0,0,0);send<=1;state_flags<=(16'd1<<WAIT_CANCEL);nav_pending<=0;award_wait<=0;award_selected<=current_image>=6;selected_award<=current_image;award_notice<=target>=6 ? 3'd3:3'd4;last_transfer_error<=0;timer_reset<=1;
    end else if(timeout1 && !transition_active && !display_pending)begin
     abort_toggle<=~abort_toggle;session<=uptime;session_changed<=1;state_flags<=(16'd1<<HELLO_SEND);timer_reset<=1;
     cache_valid<=0;have_current<=0;nav_pending<=0;
@@ -467,7 +514,7 @@ always @(posedge clk or posedge rst)begin
   end
   if(next && image_count!=0)begin
    timing_begin<=1;timing_pending<=1;timing_display<=0;
-   nav_target<=adjacent(AWARD_CONTROL && (center>=6 || award_selected) ? return_photo:center,image_count,1'b1);
+   nav_target<=AWARD_CONTROL && (center>=6 || award_selected) ? next_return:window_next;
    nav_right<=1'b1;nav_pending<=1;award_selected<=0;award_wait<=0;award_notice<=0;
   end
   if(timing_cancel)begin timing_pending<=0;timing_display<=0;end

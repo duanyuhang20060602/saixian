@@ -1,0 +1,1063 @@
+{
+  "build_id": "hmi-board-offload-20261027",
+  "hardware_validation": "pending",
+  "current_passed_records": 146,
+  "fresh_records": 52,
+  "unchanged_previous_records": 94,
+  "tests": [
+    {
+      "test": "hybrid_fifo",
+      "validation_group": "compat_audio",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 4.67
+    },
+    {
+      "test": "typed_protocol",
+      "validation_group": "compat_audio",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.75
+    },
+    {
+      "test": "av_link",
+      "validation_group": "compat_audio",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 70.52
+    },
+    {
+      "test": "tb_v4_audio_rate",
+      "validation_group": "compat_extra",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 4.45
+    },
+    {
+      "test": "fast_processing",
+      "validation_group": "compat_fast_processing",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 17.89
+    },
+    {
+      "test": "rebalance_spi",
+      "validation_group": "compat_relief_spi",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 235.77
+    },
+    {
+      "test": "sd_title_final_store",
+      "validation_group": "compat_title",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.19
+    },
+    {
+      "test": "sd_title_first_word_first_word",
+      "validation_group": "compat_title_first",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.12
+    },
+    {
+      "test": "hmi_byte_stream",
+      "validation_group": "hmi",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.34
+    },
+    {
+      "test": "hmi_recovery",
+      "validation_group": "hmi",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.12
+    },
+    {
+      "test": "control_legacy",
+      "validation_group": "compat_controls",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 4.62
+    },
+    {
+      "test": "control_relief",
+      "validation_group": "compat_controls",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 6.06
+    },
+    {
+      "test": "control_wait_catalog",
+      "validation_group": "compat_controls",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 12.64
+    },
+    {
+      "test": "control_only_relief",
+      "validation_group": "compat_controls",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 1.7
+    },
+    {
+      "test": "cache_reverse",
+      "validation_group": "compat_controls",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 111.81
+    },
+    {
+      "test": "cache_paused",
+      "validation_group": "compat_controls",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.08
+    },
+    {
+      "test": "cache_paused_reverse",
+      "validation_group": "compat_controls",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.08
+    },
+    {
+      "test": "display_controls",
+      "validation_group": "compat_display",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.09
+    },
+    {
+      "test": "control",
+      "validation_group": "compat_extra",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.09
+    },
+    {
+      "test": "native_cache",
+      "validation_group": "compat_extra",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.09
+    },
+    {
+      "test": "uart_contract",
+      "validation_group": "compat_extra",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 9.86
+    },
+    {
+      "test": "result_controls",
+      "validation_group": "compat_result_controls",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 1.12
+    },
+    {
+      "test": "source_lock",
+      "validation_group": "compat_source_lock",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.08
+    },
+    {
+      "test": "sd_title_final_store",
+      "validation_group": "compat_title",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.34
+    },
+    {
+      "test": "sd_title_final_protocol",
+      "validation_group": "compat_title",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 16.31
+    },
+    {
+      "test": "sd_title_concurrent_concurrent",
+      "validation_group": "compat_title_concurrent",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 17.27
+    },
+    {
+      "test": "sd_title_first_word_first_word",
+      "validation_group": "compat_title_first",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.17
+    },
+    {
+      "test": "sd_title_media_media_wiring",
+      "validation_group": "compat_title_media",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.09
+    },
+    {
+      "test": "memory",
+      "validation_group": "compat_touch",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 6.31
+    },
+    {
+      "test": "vendor",
+      "validation_group": "compat_touch",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 17.12
+    },
+    {
+      "test": "overlay",
+      "validation_group": "compat_touch",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.08
+    },
+    {
+      "test": "cancel",
+      "validation_group": "compat_touch",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.06
+    },
+    {
+      "test": "pointer",
+      "validation_group": "compat_touch",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.3
+    },
+    {
+      "test": "arrow_removed",
+      "validation_group": "compat_touch",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.06
+    },
+    {
+      "test": "new_phase",
+      "validation_group": "compat_touch",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 1.31
+    },
+    {
+      "test": "touch",
+      "validation_group": "compat_touch",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 21.56
+    },
+    {
+      "test": "offload_deadlines",
+      "validation_group": "deadlines",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 2.66
+    },
+    {
+      "test": "first_reason",
+      "validation_group": "first_reason",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 19.44
+    },
+    {
+      "test": "gain_counts",
+      "validation_group": "gain_counts",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 1.11
+    },
+    {
+      "test": "hmi_byte_stream",
+      "validation_group": "hmi",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.81
+    },
+    {
+      "test": "hmi_remote_spi",
+      "validation_group": "hmi",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 42.61
+    },
+    {
+      "test": "legacy_state_tb_confirm",
+      "validation_group": "legacy_state",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.83
+    },
+    {
+      "test": "legacy_state_tb_crc_snapshot",
+      "validation_group": "legacy_state",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.3
+    },
+    {
+      "test": "legacy_state_tb_no_crc_accept",
+      "validation_group": "legacy_state",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.12
+    },
+    {
+      "test": "legacy_state_tb_no_crc_confirm",
+      "validation_group": "legacy_state",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.12
+    },
+    {
+      "test": "legacy_state_tb_switch_timing_control",
+      "validation_group": "legacy_state",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.2
+    },
+    {
+      "test": "media_deadlines",
+      "validation_group": "media_deadlines",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 1.99
+    },
+    {
+      "test": "model",
+      "validation_group": "pitch",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 290.92,
+      "measurements": {
+        "exact_stereo_frames": 50000,
+        "max_integer_error": 0,
+        "modes": 5,
+        "reference_commit": "c2d2df8008c93f9a89308007c882d9093a808e06",
+        "ring_ram32_lanes_parameter": 8,
+        "compact_dry": true,
+        "dry_history_frames": 1153,
+        "filtered_history_frames": 4096,
+        "native_vendor_ram": false,
+        "clear_zero_frames": 2400
+      }
+    },
+    {
+      "test": "native_model",
+      "validation_group": "pitch",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 396.92,
+      "measurements": {
+        "exact_stereo_frames": 10000,
+        "max_integer_error": 0,
+        "modes": 5,
+        "reference_commit": "c2d2df8008c93f9a89308007c882d9093a808e06",
+        "ring_ram32_lanes_parameter": 8,
+        "compact_dry": true,
+        "dry_history_frames": 1153,
+        "filtered_history_frames": 4096,
+        "native_vendor_ram": true,
+        "clear_zero_frames": 2400
+      }
+    },
+    {
+      "test": "volume",
+      "validation_group": "pitch",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 1.95,
+      "measurements": {}
+    },
+    {
+      "test": "keys",
+      "validation_group": "pitch",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 0.08,
+      "measurements": {}
+    },
+    {
+      "test": "transport",
+      "validation_group": "pitch",
+      "passed": true,
+      "rerun_this_revision": true,
+      "seconds": 319.28,
+      "measurements": {}
+    },
+    {
+      "test": "shared_menu_edge_rom",
+      "validation_group": "shared_rom_final",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.36
+    },
+    {
+      "test": "shared_menu_edge_rom_native",
+      "validation_group": "shared_rom_final",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 1.59
+    },
+    {
+      "test": "shared_menu_edge_pipeline_sim",
+      "validation_group": "shared_rom_final",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 119.41
+    },
+    {
+      "test": "shared_menu_edge_pipeline_native",
+      "validation_group": "shared_rom_final",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 134.62
+    },
+    {
+      "test": "shared_menu_edge_pipeline_pcm",
+      "validation_group": "shared_rom_final",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 135.64
+    },
+    {
+      "test": "memory",
+      "validation_group": "thumbnail_unit",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 5.5
+    },
+    {
+      "test": "vendor",
+      "validation_group": "thumbnail_unit",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 16.14
+    },
+    {
+      "test": "overlay",
+      "validation_group": "thumbnail_unit",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.06
+    },
+    {
+      "test": "cancel",
+      "validation_group": "thumbnail_unit",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.06
+    },
+    {
+      "test": "pointer",
+      "validation_group": "thumbnail_unit",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.3
+    },
+    {
+      "test": "arrow_removed",
+      "validation_group": "thumbnail_unit",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.06
+    },
+    {
+      "test": "new_phase",
+      "validation_group": "thumbnail_unit",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 1.14
+    },
+    {
+      "test": "edge_eram",
+      "validation_group": "legacy_menu_edge",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 83.75
+    },
+    {
+      "test": "menu_geometry",
+      "validation_group": "legacy_menu_edge",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 151.97
+    },
+    {
+      "test": "shared_legacy_rows",
+      "validation_group": "legacy_rows",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 180.09
+    },
+    {
+      "test": "legacy_wave_exact",
+      "validation_group": "legacy_wave",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 124.42
+    },
+    {
+      "test": "video_taps",
+      "validation_group": "native_cache",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 1.73
+    },
+    {
+      "test": "video_taps_native",
+      "validation_group": "native_cache",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 2.81
+    },
+    {
+      "test": "wall_product_native",
+      "validation_group": "native_cache",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.12
+    },
+    {
+      "test": "sd_title_notice_equivalence_notice_equivalence",
+      "validation_group": "notice",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.92
+    },
+    {
+      "test": "bus",
+      "validation_group": "remote_bus",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 331.27
+    },
+    {
+      "test": "bus_native",
+      "validation_group": "remote_bus",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 337.06
+    },
+    {
+      "test": "rebalance_player",
+      "validation_group": "remote_player",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 70.19
+    },
+    {
+      "test": "rebalance_player_native",
+      "validation_group": "remote_player",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 75.7
+    },
+    {
+      "test": "render_cdc",
+      "validation_group": "render_cdc",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 2.89
+    },
+    {
+      "test": "shared_award_math",
+      "validation_group": "shared_math",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.23
+    },
+    {
+      "test": "shared_award_math_native",
+      "validation_group": "shared_math",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.99
+    },
+    {
+      "test": "shared_award_foil",
+      "validation_group": "shared_math",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 28.84
+    },
+    {
+      "test": "shared_award_foil_native",
+      "validation_group": "shared_math",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 31.66
+    },
+    {
+      "test": "shared_award_spotlight",
+      "validation_group": "shared_math",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 13.5
+    },
+    {
+      "test": "shared_award_renderer",
+      "validation_group": "shared_renderer",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 235.2
+    },
+    {
+      "test": "shared_award_renderer_native",
+      "validation_group": "shared_renderer",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 243.03
+    },
+    {
+      "test": "sd_title_final_store",
+      "validation_group": "title_final",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.19
+    },
+    {
+      "test": "sd_title_osd_osd",
+      "validation_group": "title_osd",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 21.12
+    },
+    {
+      "test": "sd_title_map_equivalence_map_equivalence",
+      "validation_group": "title_map_equivalence",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 20.58
+    },
+    {
+      "test": "rebalance_kernel",
+      "validation_group": "rebalance_release",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 6.59
+    },
+    {
+      "test": "rebalance_kernel_native",
+      "validation_group": "rebalance_release",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 8.59
+    },
+    {
+      "test": "rebalance_coprocessor",
+      "validation_group": "rebalance_release",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 6.73
+    },
+    {
+      "test": "rebalance_receiver",
+      "validation_group": "rebalance_release",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.16
+    },
+    {
+      "test": "rebalance_cache",
+      "validation_group": "rebalance_release",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.08
+    },
+    {
+      "test": "effects",
+      "validation_group": "effects",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 42.97
+    },
+    {
+      "test": "dsp_effects",
+      "validation_group": "effects",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 53.45
+    },
+    {
+      "test": "reader",
+      "validation_group": "effects",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 3.48
+    },
+    {
+      "test": "fx_reader",
+      "validation_group": "effects",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 107.08
+    },
+    {
+      "test": "bandwidth_water",
+      "validation_group": "effects",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 134.52
+    },
+    {
+      "test": "bandwidth_metal",
+      "validation_group": "effects",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 117.69
+    },
+    {
+      "test": "bandwidth_tunnel",
+      "validation_group": "effects",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 121.03
+    },
+    {
+      "test": "scanout_water",
+      "validation_group": "effects",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 131.25
+    },
+    {
+      "test": "scanout_dwell",
+      "validation_group": "effects",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 119.01
+    },
+    {
+      "test": "scanout_native",
+      "validation_group": "effects",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 109.16
+    },
+    {
+      "test": "bandwidth_dwell",
+      "validation_group": "effects",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 114.12
+    },
+    {
+      "test": "bandwidth_native",
+      "validation_group": "effects",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 107.8
+    },
+    {
+      "test": "metadata",
+      "validation_group": "audio_compat",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 1.3
+    },
+    {
+      "test": "merged_fifo_full",
+      "validation_group": "transfer",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 432.61
+    },
+    {
+      "test": "merged_fifo_delay",
+      "validation_group": "transfer",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 2.64
+    },
+    {
+      "test": "merged_link_timing",
+      "validation_group": "transfer",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.06
+    },
+    {
+      "test": "merged_link_abort",
+      "validation_group": "transfer",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.08
+    },
+    {
+      "test": "color_surface",
+      "validation_group": "color_surface",
+      "passed": true,
+      "rerun_this_revision": false
+    },
+    {
+      "test": "color_surface_native",
+      "validation_group": "color_surface",
+      "passed": true,
+      "rerun_this_revision": false
+    },
+    {
+      "test": "native_geometry_memory",
+      "validation_group": "color_memory",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.59,
+      "measurements": {
+        "exact_low9_rom_words": 2048,
+        "high_bits_nonzero_only_at": "1..128",
+        "inverse_ram9k_before": 4,
+        "inverse_ram9k_expected": 2,
+        "cache_tail_ram32k_before": 2,
+        "cache_tail_ram9k_expected": 4
+      }
+    },
+    {
+      "test": "color_noise_memory",
+      "validation_group": "color_memory",
+      "passed": true,
+      "rerun_this_revision": false
+    },
+    {
+      "test": "math",
+      "validation_group": "tests_final",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 8.97
+    },
+    {
+      "test": "compact",
+      "validation_group": "tests_final",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.8
+    },
+    {
+      "test": "cache",
+      "validation_group": "tests_final",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.36
+    },
+    {
+      "test": "scene",
+      "validation_group": "tests_final",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.19
+    },
+    {
+      "test": "transition",
+      "validation_group": "tests_final",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.25
+    },
+    {
+      "test": "controls",
+      "validation_group": "tests_final",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.22
+    },
+    {
+      "test": "dsp_math",
+      "validation_group": "tests_final",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 19.17
+    },
+    {
+      "test": "packed_surface",
+      "validation_group": "packed_surface_03",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 1.86
+    },
+    {
+      "test": "packed_surface_native",
+      "validation_group": "packed_surface_03",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 2.39
+    },
+    {
+      "test": "fx_controls",
+      "validation_group": "controls",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.11
+    },
+    {
+      "test": "rgb565_settings",
+      "validation_group": "rgb565_03",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.06
+    },
+    {
+      "test": "blanking_before",
+      "validation_group": "thumbnail_blanking",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 71.69
+    },
+    {
+      "test": "blanking_after",
+      "validation_group": "thumbnail_blanking",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 31.72
+    },
+    {
+      "test": "native_slots",
+      "validation_group": "slots",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.33
+    },
+    {
+      "test": "legacy_reader",
+      "validation_group": "unchanged_previous",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 287.25
+    },
+    {
+      "test": "native_materials",
+      "validation_group": "unchanged_previous",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 1.5
+    },
+    {
+      "test": "catalog",
+      "validation_group": "unchanged_previous",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.73
+    },
+    {
+      "test": "catalog_reverse",
+      "validation_group": "unchanged_previous",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.73
+    },
+    {
+      "test": "model_joins",
+      "validation_group": "unchanged_previous",
+      "passed": true,
+      "rerun_this_revision": false
+    },
+    {
+      "test": "hmi_legacy",
+      "validation_group": "unchanged_previous",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.11
+    },
+    {
+      "test": "hmi_relief",
+      "validation_group": "unchanged_previous",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.11
+    },
+    {
+      "test": "motion",
+      "validation_group": "unchanged_previous",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.16
+    },
+    {
+      "test": "rgb565_scaler",
+      "validation_group": "unchanged_previous",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 84.81
+    },
+    {
+      "test": "timing",
+      "validation_group": "unchanged_previous",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 4.88
+    },
+    {
+      "test": "repair_native",
+      "validation_group": "unchanged_previous",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 145.8
+    },
+    {
+      "test": "delay",
+      "validation_group": "unchanged_previous",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 36.89
+    },
+    {
+      "test": "delay_vendor",
+      "validation_group": "unchanged_previous",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 55.59
+    },
+    {
+      "test": "rgb565_equivalence",
+      "validation_group": "unchanged_previous",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 2.17
+    },
+    {
+      "test": "tb_v4_uart_equivalence",
+      "validation_group": "unchanged_previous",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 39.2
+    },
+    {
+      "test": "blend",
+      "validation_group": "unchanged_previous",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 4.17
+    },
+    {
+      "test": "blend_dsp",
+      "validation_group": "unchanged_previous",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 8.76
+    },
+    {
+      "test": "spi_contract",
+      "validation_group": "unchanged_previous",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 0.12
+    },
+    {
+      "test": "sprite",
+      "validation_group": "unchanged_previous",
+      "passed": true,
+      "rerun_this_revision": false,
+      "seconds": 1.44
+    }
+  ],
+  "report_scope": "Numerical results only. Full local file inventory, hashes, raw logs and intermediate build provenance are not distributed."
+}

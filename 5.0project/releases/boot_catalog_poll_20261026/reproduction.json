@@ -1,0 +1,9 @@
+{
+  "reproduced": true,
+  "expected_failure": true,
+  "inputs_sha256": {
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\tests\\tb_boot_catalog_poll.v": "15caeed796565d264acc40980bb5210932fabe6f9e1dd6b4a7c28eb0bc52a8a0",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\before-boot-pointer-20261026\\common\\photo_audio_link_before_catalog_poll.v": "5bdf4798ae548bfa3ecc6143326bab490d4fcd423472daf052539da7b7c5d4fc",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_boot_screen.v": "7e4ac12f6e9af29c46e2a950a4fe6da7cec41a60afa245a9229cbf3869d4ae0e"
+  }
+}

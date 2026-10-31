@@ -38,7 +38,7 @@ wire arm_toggle,abort_toggle,arm,abort;
 wire [1:0] receive_slot,active_slot,new_slot,ready_slot;
 photo_event_sync sa(.clk(link_clk),.rst(rst_link),.toggle(arm_toggle),.pulse(arm));
 photo_event_sync sb(.clk(link_clk),.rst(rst_link),.toggle(abort_toggle),.pulse(abort));
-photo_link_receiver #(.ENABLE_CRC(1),.LEGACY_TIMING(1),.AWARD_TAIL(1)) rx(.relief_frame(relief_link_sync),.award_frame(award_link_sync),.extended_frame(fluid_link_sync),.clk(link_clk),.rst(rst_image_link),.arm(arm),.abort(abort),.data(link_data),.valid(link_valid),.sof(link_sof),.eof(link_eof),
+photo_link_receiver #(.ENABLE_CRC(0),.LEGACY_TIMING(1),.AWARD_TAIL(1)) rx(.relief_frame(relief_link_sync),.award_frame(award_link_sync),.extended_frame(fluid_link_sync),.clk(link_clk),.rst(rst_image_link),.arm(arm),.abort(abort),.data(link_data),.valid(link_valid),.sof(link_sof),.eof(link_eof),
  .ready(link_ready),.armed(rx_armed),.busy(),.write_req(req),.write_ack(ack),.full(full),.write_en(we),.write_data(packed_data),
  .finish_toggle(finish_toggle),.done(rx_done),.fault(rx_fault),.frame_crc(rx_crc),.fault_detail(rx_fault_detail));
 
@@ -63,7 +63,7 @@ wire [15:0] current_source_width,current_source_height;
 wire award_active=display_valid && current>=3'd6 && current_source_width[15];
 // DISPLAY_CONTROL_REGISTERS
 reg award_menu_select_q,award_display_select_q,preview_enable_q,pointer_nav_display_q;
-frame_store #(.FLIP(0)) store(.write_relief(receive_relief),.write_award(receive_award),.read_award(award_active),
+frame_store #(.FLIP(0),.POINTER_CENTER(1)) store(.write_relief(receive_relief),.write_award(receive_award),.read_award(award_active),
  .display_active(display_valid),.thumbnail_request(thumbnail_request),.thumbnail_cancel(thumbnail_cancel),
  .thumbnail_blank(thumbnail_blank),.thumbnail_slot(thumbnail_slot),
  .thumbnail_address(thumbnail_address),.thumbnail_done(thumbnail_done),.thumbnail_data(thumbnail_data),
@@ -117,11 +117,12 @@ photo_touchpad pointer(.clk(pixel_clk),.rst(rst_pixel),.enable(pointer_enabled),
  .sample_valid(touch_valid),.sample_down(touch_down),.sample_x(touch_x),.sample_y(touch_y),
  .cursor_x(cursor_x),.cursor_y(cursor_y),.click(pointer_click),.contact(pointer_contact));
 wire pointer_menu_click=pointer_click && pointer_enabled && cursor_x>=1152 && cursor_x<1256 && cursor_y>=24 && cursor_y<64;
+localparam THUMBNAIL_X=1096,THUMBNAIL_Y=315;
 wire pointer_navigation_enable=pointer_enabled && !settings_mode && !award_active && !award_loading && count>1;
-wire pointer_next_click=pointer_click && pointer_navigation_enable &&
- ((cursor_x>=1192 && cursor_x<1256 && cursor_y>=328 && cursor_y<392) ||
-  (thumbnail_visible && cursor_x>=1086 && cursor_x<1250 && cursor_y>=514 && cursor_y<620));
-wire pointer_row_click=pointer_click && pointer_enabled && settings_mode && cursor_x>=64 && cursor_x<864 && cursor_y>=144 && cursor_y<592;
+wire pointer_next_click=pointer_click && pointer_navigation_enable && thumbnail_visible &&
+ cursor_x>=THUMBNAIL_X-2 && cursor_x<THUMBNAIL_X+162 &&
+ cursor_y>=THUMBNAIL_Y-14 && cursor_y<THUMBNAIL_Y+92;
+wire pointer_row_click=pointer_click && pointer_enabled && settings_mode && cursor_x>=64 && cursor_x<864 && cursor_y>=144 && cursor_y<624;
 wire [9:0] pointer_row_y=cursor_y-10'd144;
 // Isolate context/hit decoding from the settings controller's update priority.
 reg pointer_menu_event,pointer_row_event,pointer_increase_q;reg [3:0] pointer_item_q;
@@ -144,7 +145,13 @@ always @(posedge pixel_clk or posedge rst_pixel)
 wire hmi_prev,hmi_next,setting_valid,reset_defaults,page_notify;wire [2:0] setting_id,page_id;wire [7:0] setting_value;
 wire edge_valid,edge_value,edge_enable;
 wire effect_valid,auto_valid,auto_value;wire audio_view_valid,audio_view_value,waveform_mode;wire [4:0] effect_value;
-saixian_hmi_uart #(.CLK_FREQ_HZ(75000000)) screen_rx(.clk(pixel_clk),.rst(rst_pixel),.uart_rx(hmi_uart_rx),
+wire text_timeout;wire [15:0] rank_score;wire rank_word_valid;wire [2:0] rank_word_row;wire [5:0] rank_word_index;wire [31:0] rank_word_data;wire [3:0] rank_word_length;
+wire text_active,text_can_start,text_byte_valid,text_request,text_reply,text_reply_error;
+wire [7:0] text_byte,text_tag,text_bank_length,text_character,text_reply_tag,text_reply_position;wire [13:0] text_code;
+photo_serial_text_a serial_text(.rank_score(rank_score),.clk(pixel_clk),.rst(rst_pixel),.byte_valid(text_byte_valid),.byte_data(text_byte),.can_start(text_can_start),.timeout(text_timeout),
+ .reply_valid(text_reply),.reply_tag(text_reply_tag),.reply_position(text_reply_position),.reply_error(text_reply_error),
+ .active(text_active),.request_valid(text_request),.tag(text_tag),.bank_length(text_bank_length),.character_index(text_character),.code(text_code));
+saixian_hmi_uart #(.TEXT_INPUT(1),.CLK_FREQ_HZ(75000000)) screen_rx(.text_timeout(text_timeout),.text_active(text_active),.text_can_start(text_can_start),.text_byte_valid(text_byte_valid),.text_byte(text_byte),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(hmi_uart_rx),
  .award_mode_valid(hmi_award_valid),.award_mode_value(hmi_award_value),
  .touch_valid(touch_valid),.touch_x(touch_x),.touch_y(touch_y),.touch_down(touch_down),
  .touch_mode_valid(touch_mode_valid),.touch_mode_value(touch_mode_value),
@@ -155,15 +162,15 @@ saixian_hmi_uart #(.CLK_FREQ_HZ(75000000)) screen_rx(.clk(pixel_clk),.rst(rst_pi
  .music_next_pulse(hmi_music_next),.prev_pulse(hmi_prev),.next_pulse(hmi_next),.setting_valid(setting_valid),.setting_id(setting_id),.setting_value(setting_value),
  .edge_valid(edge_valid),.edge_value(edge_value),.effect_valid(effect_valid),.effect_value(effect_value),.auto_valid(auto_valid),.auto_value(auto_value),.audio_view_valid(audio_view_valid),.audio_view_value(audio_view_value),
  .reset_defaults_pulse(reset_defaults),.page_id(page_id),.page_notify_pulse(page_notify));
-wire audio_repair_enable;wire [3:0] setting_item;wire [3:0] brightness,contrast,saturation,volume;wire [1:0] sharpness,enhancement;wire invert,vintage;
+wire music_sync_enable;wire audio_repair_enable;wire [3:0] setting_item;wire [3:0] brightness,contrast,saturation,volume;wire [1:0] sharpness,enhancement;wire invert,vintage;
 // Match the single-board photo pipeline: enhancement owns the spatial
 // smoothing/sharpening control; the later colour stage must not sharpen twice.
-photo_unified_settings_controller #(.CLK_FREQ_HZ(75000000),.IMAGE_MENU(0),.POINTER_CONTROL(1),.INTERVAL_CONTROL(1)) settings(.clk(pixel_clk),.rst(rst_pixel),.carousel_mode(carousel_mode),
+photo_unified_settings_controller #(.CLK_FREQ_HZ(75000000),.IMAGE_MENU(0),.MUSIC_SYNC_CONTROL(1),.POINTER_CONTROL(1),.INTERVAL_CONTROL(1)) settings(.clk(pixel_clk),.rst(rst_pixel),.carousel_mode(carousel_mode),
  .pointer_valid(pointer_row_event),.pointer_item(pointer_item_q),.pointer_increase(pointer_increase_q),
  .key_next_item(presses[0]),.key_decrease(presses[1]),.key_enter_exit((presses[2] || pointer_menu_event) && !result_busy),.key_increase(presses[3]),
  .hmi_setting_valid(setting_valid),.hmi_setting_id(setting_id),.hmi_setting_value(setting_value),.hmi_reset_defaults(reset_defaults),
  .edge_valid(edge_valid),.edge_value(edge_value),.effect_valid(effect_valid),.effect_value(effect_value),.auto_valid(auto_valid),.auto_value(auto_value),.audio_view_valid(audio_view_valid),.audio_view_value(audio_view_value),
- .edge_enable(edge_enable),.effect_select(effect_select),.auto_enable(auto_enable),.auto_interval_seconds(auto_interval_seconds),
+ .music_sync_enable(music_sync_enable),.edge_enable(edge_enable),.effect_select(effect_select),.auto_enable(auto_enable),.auto_interval_seconds(auto_interval_seconds),
  .audio_repair_enable(audio_repair_enable),.waveform_mode(waveform_mode),.settings_mode(settings_mode),.setting_item(setting_item),.volume_setting(volume),.brightness_setting(brightness),.contrast_setting(contrast),
  .saturation_setting(saturation),.sharpness_setting(sharpness),.invert_setting(invert),.vintage_setting(vintage),.enhancement_setting(enhancement));
 saixian_event_controller #(.CLK_FREQ_HZ(75000000)) event_controller(.clk(pixel_clk),.rst(rst_pixel),.frame_start(blank_start),
@@ -190,14 +197,16 @@ always @(posedge pixel_clk or posedge rst_pixel)
 
 
 wire [3:0] first_transfer_origin,first_transfer_error;
-reg [3:0] first_link_fault;
+reg auto_run_q,auto_manual_q;
 always @(posedge pixel_clk or posedge rst_pixel)
- if(rst_pixel)first_link_fault<=0;
- else if(presses[0] || hmi_next || pointer_next_click || key4_short)first_link_fault<=0;
- else if(fault_sync && first_link_fault==0)first_link_fault<=rx_fault_detail;
-photo_auto_advance #(.ADJUSTABLE(1)) auto_advance(.clk(pixel_clk),.rst(rst_pixel),.enable(auto_enable && carousel_mode && !award_active && !award_loading && !result_busy),
+ if(rst_pixel)begin auto_run_q<=0;auto_manual_q<=0;end
+ else begin
+  auto_run_q<=auto_enable && carousel_mode && !award_active && !award_loading && !result_busy && !boot_active;
+  auto_manual_q<=presses[0] || key4_short || hmi_next || pointer_next_click || reset_defaults;
+ end
+photo_auto_advance #(.ADJUSTABLE(1)) auto_advance(.clk(pixel_clk),.rst(rst_pixel),.enable(auto_run_q),
  .display_valid(display_valid),.transition_active(transition_active),.busy(busy),.enough_images(count>1),
- .settings_mode(settings_mode),.manual_event(presses[0] || key4_short || hmi_next || pointer_next_click || reset_defaults),
+ .settings_mode(settings_mode),.manual_event(auto_manual_q),
  .interval_seconds(auto_interval_seconds),.next_pulse(auto_next));
 photo_event_sync sd(.clk(pixel_clk),.rst(rst_pixel),.toggle(done_toggle),.pulse(done_pixel));
 reg done_pixel_registered;
@@ -217,15 +226,20 @@ always @(posedge pixel_clk or posedge rst_pixel)
    ((hmi_award_valid && hmi_award_value) || (key4_short && current<6 && (relief_available || !award_scan_complete)));
  end
 wire settings_updating;
+// Render consumers need only the settled update status. Keep the settings
+// comparator/cache-state cone away from the wide RGB output multiplexers.
+reg settings_visual_updating;
+always @(posedge pixel_clk or posedge rst_pixel)
+ if(rst_pixel)settings_visual_updating<=0;else settings_visual_updating<=settings_updating;
 wire timing_begin,timing_present,timing_commit,timing_cancel,timing_running,timing_valid;
 wire [19:0] timing_wait_ms,timing_effect_ms,timing_total_ms;
 wire [5:0] timing_seg_sel,base_seg_sel;wire [7:0] timing_seg_data,base_seg_data;
-photo_switch_timing #(.CLK_HZ(75000000),.PHASES(2)) timing_probe(.clk(pixel_clk),.rst(rst_pixel),
- .start(timing_begin),.mark1(timing_present),.mark2(1'b0),.finish(timing_commit),.cancel(timing_cancel),
- .running(timing_running),.valid(timing_valid),.first_ms(timing_wait_ms),.second_ms(timing_effect_ms),.third_ms(),.total_ms(timing_total_ms));
-photo_switch_timing_display #(.CLK_HZ(75000000),.PAGES(3)) timing_display(.clk(pixel_clk),.rst(rst_pixel),.running(timing_running),
- .first_ms(timing_wait_ms),.second_ms(timing_effect_ms),.third_ms(20'd0),.total_ms(timing_total_ms),.seg_sel(timing_seg_sel),.seg_data(timing_seg_data));
-photo_cached_control_a #(.CHECK_FRAME_CRC(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.EARLY_THUMBNAIL(1),.RELIEF_CONTROL(1)) ctrl(.receive_relief(receive_relief),.receive_award(receive_award),.receive_fluid(receive_fluid),.settings_mode(photo_focus),.settings_state(image_settings),.settings_updating(settings_updating),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
+wire font_available,font_transfer_complete;
+wire title_word_valid;wire [7:0] title_word_index;wire [31:0] title_word_data;wire [4:0] title_word_length,title_length,ticker_length;
+wire [31:0] hmi_session,hmi_word;wire [52:0] hmi_status_bus;
+wire hmi_ack_valid,hmi_reset_request,hmi_begin,hmi_word_valid,hmi_commit;
+wire [7:0] hmi_ack_token;wire [1:0] hmi_word_index;
+photo_cached_control_a #(.CONTROL_BAUD(230400),.BOOT_STATUS(1),.INDEPENDENT_TEXT(1),.TITLE_SD(1),.CHECK_FRAME_CRC(0),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.EARLY_THUMBNAIL(1),.RELIEF_CONTROL(1)) ctrl(.rank_word_valid(rank_word_valid),.rank_word_row(rank_word_row),.rank_word_index(rank_word_index),.rank_word_data(rank_word_data),.rank_word_length(rank_word_length),.text_request(text_request),.text_tag(text_tag),.text_bank_length(text_bank_length),.text_character(text_character),.text_code(text_code),.text_reply(text_reply),.text_reply_tag(text_reply_tag),.text_reply_position(text_reply_position),.text_reply_error(text_reply_error),.hmi_session(hmi_session),.font_available(font_available),.font_transfer_complete(font_transfer_complete),.title_word_valid(title_word_valid),.title_word_index(title_word_index),.title_word_data(title_word_data),.title_word_length(title_word_length),.receive_relief(receive_relief),.receive_award(receive_award),.receive_fluid(receive_fluid),.settings_mode(photo_focus),.settings_state(image_settings),.settings_updating(settings_updating),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
  .thumbnail_read_busy(thumbnail_read_busy),.thumbnail_read_slot(thumbnail_slot),
  .timing_begin(timing_begin),.timing_present(timing_present),.timing_commit(timing_commit),.timing_cancel(timing_cancel),
  .award_toggle(photo_award_event),.relief_toggle(photo_relief_event),.relief_available(relief_available),.award_available(award_available),.award_scan_complete(award_scan_complete),.award_loading(award_loading),.award_notice(award_notice),.last_transfer_error(last_transfer_error),
@@ -244,16 +258,26 @@ photo_transition_page_event page_feedback(.clk(pixel_clk),.rst(rst_pixel),
  .display_valid(display_valid),.image(current),.count(count),.page_event(page_turn_cue));
 wire [2:0] music_count,music_index;wire [7:0] music_epoch;
 wire [3:0] audio_diag_stage,audio_buffer_level;wire audio_header_seen,audio_pcm_seen,audio_nonzero_seen;
-water_scene dwell_water(.clk(pixel_clk),.rst(rst_image_pixel),.frame_tick(blank_start),
+water_scene #(.POINTER_CENTER(1)) dwell_water(.pointer_enabled(touch_mode),.pointer_x(cursor_x),.pointer_y(cursor_y),.clk(pixel_clk),.rst(rst_image_pixel),.frame_tick(blank_start),
  .display_valid(display_valid),.transition_active(transition_active),
- .wave_enable(carousel_mode && !settings_mode && !award_active && !award_loading && !result_busy && !boot_active && !settings_updating),
+ .wave_enable(carousel_mode && !settings_mode && !award_active && !award_loading && !result_busy && !boot_active && !settings_visual_updating),
  .manual_drop(1'b0),.progress(fluid_progress),.cfg(fluid_configuration));
 wire music_buffer_ready,music_catalog_complete;reg startup_released;
 wire audio_sample_valid;wire [23:0] audio_left,audio_right;wire [15:0] audio_packet_errors,audio_underflows;
 wire av_available,av_begin,av_word_valid,av_commit,av_finish,av_stream_reset;
 wire [8:0] av_word_index;wire [31:0] av_word,av_play_position;
-photo_audio_spi_a #(.STARTUP_SYNC(1),.FIFO_AW(11),.FIFO_RAM32_HEAD(2048),.EXTENDED_AV(1),.PAGE_CUE(1),.TYPED_PAGE(1)) audio_link(.page_style(page_turn_style),.page_event(page_turn_cue),.playback_hold(!startup_released),.buffer_ready(music_buffer_ready),.catalog_complete(music_catalog_complete),.clk(pixel_clk),.rst(rst_pixel),.bg_enable(bg_music_enable),.repair_enable(audio_repair_enable),.volume(volume),.cue_event(cue_event),
- .next_track(carousel_mode && !result_busy && ((!settings_mode && !award_active && presses[1]) || hmi_music_next)),
+wire relief_enable=award_active && current==7;
+wire relief_available_spi,relief_begin,relief_word_valid,relief_finish,relief_commit,relief_sent;
+wire [31:0] relief_descriptor,relief_sent_descriptor,relief_word;wire [8:0] relief_word_index;
+wire wall_we;wire [7:0] wall_wa,wall_ra;wire [23:0] wall_wd,wall_rgb;
+photo_audio_spi_a #(.REMOTE_HMI(1),.REMOTE_RELIEF(1),.STARTUP_SYNC(1),.FIFO_AW(11),.FIFO_RAM32_HEAD(2048),.EXTENDED_AV(1),.PAGE_CUE(1),.TYPED_PAGE(1)) audio_link(
+ .hmi_session(hmi_session),.hmi_status(hmi_status_bus),.hmi_ack_valid(hmi_ack_valid),.hmi_ack_token(hmi_ack_token),.hmi_reset_request(hmi_reset_request),
+ .hmi_begin(hmi_begin),.hmi_word_valid(hmi_word_valid),.hmi_word_index(hmi_word_index),.hmi_word(hmi_word),.hmi_commit(hmi_commit),
+ .relief_enable(relief_enable),.relief_available(relief_available_spi),.relief_descriptor(relief_descriptor),
+ .relief_begin(relief_begin),.relief_word_valid(relief_word_valid),.relief_finish(relief_finish),.relief_commit(relief_commit),
+ .relief_sent(relief_sent),.relief_sent_descriptor(relief_sent_descriptor),.relief_word_index(relief_word_index),.relief_word(relief_word),
+ .page_style(page_turn_style),.page_event(page_turn_cue),.playback_hold(!startup_released),.buffer_ready(music_buffer_ready),.catalog_complete(music_catalog_complete),.clk(pixel_clk),.rst(rst_pixel),.bg_enable(bg_music_enable),.repair_enable(audio_repair_enable),.volume(volume),.cue_event(cue_event),
+ .next_track(carousel_mode && !result_busy && ((!settings_mode && !award_active && presses[1]) || hmi_music_next || (music_sync_enable && bg_music_enable && page_turn_cue))),
  .spi_miso(audio_miso),.spi_sclk(audio_sclk),.spi_cs(audio_cs),.spi_mosi(audio_mosi),
  .track_count(music_count),.track_index(music_index),.desired_epoch(music_epoch),
  .diagnostic_stage(audio_diag_stage),.buffer_level(audio_buffer_level),.header_seen(audio_header_seen),.pcm_seen(audio_pcm_seen),.nonzero_seen(audio_nonzero_seen),
@@ -262,14 +286,18 @@ photo_audio_spi_a #(.STARTUP_SYNC(1),.FIFO_AW(11),.FIFO_RAM32_HEAD(2048),.EXTEND
  .av_word_index(av_word_index),.av_word(av_word),.play_position(av_play_position),.stream_reset(av_stream_reset));
 // Keep the known 21-cycle RGB path; send aligned AXI pixels to the single-board
 // HDMI core, including an exact last-pixel marker and first-frame marker.
-wire [11:0] raster_x21,raster_x26,raster_x34;
-wire [10:0] raster_y21,raster_y26,raster_y34;
+wire [11:0] raster_x21,raster_x26,raster_x33,raster_x34;
+wire [10:0] raster_y21,raster_y26,raster_y33,raster_y34;
 wire raster_valid21,raster_valid26,raster_valid34;
-assign thumbnail_blank=raster_valid26 && raster_y26>=11'd720;
+// Stop admitting long preview turns 256 pixels before blanking ends.
+// Already-owned turns drain normally; the display FIFO reserve still wins.
+assign thumbnail_blank=raster_valid26 && raster_y26>=11'd720 &&
+ !(raster_y26==11'd749 && raster_x26>=12'd1394);
 wire [8:0] raster_ui_y;
 photo_raster_delay #(.DELAY(21),.SCALE_Y(1)) raster21(.clk(pixel_clk),.rst(rst_pixel),.x(raster_x21),.y(raster_y21),.valid(raster_valid21),.y_two_thirds(raster_ui_y));
 photo_raster_delay #(.DELAY(26)) raster26(.clk(pixel_clk),.rst(rst_pixel),.x(raster_x26),.y(raster_y26),.valid(raster_valid26));
 photo_raster_delay #(.DELAY(34)) raster34(.clk(pixel_clk),.rst(rst_pixel),.x(raster_x34),.y(raster_y34),.valid(raster_valid34));
+photo_raster_delay #(.DELAY(33)) raster33(.clk(pixel_clk),.rst(rst_pixel),.x(raster_x33),.y(raster_y33),.valid());
 wire raster_de21=raster_valid21 && raster_x21<1280 && raster_y21<720;
 wire raster_de26=raster_valid26 && raster_x26<1280 && raster_y26<720;
 wire raster_sof26=raster_valid26 && raster_x26==0 && raster_y26==0;
@@ -304,6 +332,7 @@ always @(posedge pixel_clk or posedge rst_pixel)
   result_select_sprint_q<=(hmi_result_sprint || key4_long) && carousel_mode && !settings_mode && !award_active && !award_loading;
  end
 saixian_battle_result_fx u_result_animation(
+ .rank_word_valid(rank_word_valid),.rank_word_row(rank_word_row),.rank_word_index(rank_word_index),.rank_word_data(rank_word_data),.rank_word_length(rank_word_length),.rank_word_score(rank_score),
  .clk(pixel_clk),.rst(rst_pixel),.frame_tick(result_frame_tick_q),
  .trigger(result_trigger_q),
  .select_blue(result_select_blue_q),
@@ -313,6 +342,7 @@ saixian_battle_result_fx u_result_animation(
  .sprint_background_valid(display_valid),.x_in(raster_x26[10:0]),.y_in(raster_y26[9:0]),
  .de_in(raster_de26),.vs_in(raster_vs26),.rgb_in(feature_rgb),
  .de_out(result_de),.vs_out(result_vs),.rgb_out(result_rgb));
+wire [6:0] edge_weight_address;wire [7:0] edge_weight;
 wire edge_de,edge_sof,edge_last;wire [23:0] edge_rgb;wire [7:0] edge_level,edge_target;
 // Stage the scene-state decode before the edge renderer's pixel datapath.
 // This changes only control settling by one clock; RGB/DE/SOF/EOL stay aligned.
@@ -321,7 +351,7 @@ always @(posedge pixel_clk or posedge rst_pixel)
  if(rst_pixel)music_drive_q<=0;
  else music_drive_q<=edge_enable && carousel_mode && !settings_mode && !award_active && !award_loading && !result_busy && !boot_active && display_valid;
 // Edge light has a fixed five-clock RGB/DE/SOF/EOL pipeline, even when disabled.
-water_edge #(.EXTERNAL_ENVELOPE(1)) music_edge(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),.external_target(edge_target),
+water_edge #(.EARLY_WEIGHT(1),.SHARED_WEIGHT(1),.EXTERNAL_ENVELOPE(1)) music_edge(.weight_x(raster_x33[10:0]),.weight_y(raster_y33[9:0]),.shared_weight(edge_weight),.weight_address(edge_weight_address),.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),.external_target(edge_target),
  .music_drive(music_drive_q),
  .pcm_valid(audio_sample_valid),.pcm_left(audio_left[23:8]),.pcm_right(audio_right[23:8]),
  .x(raster_x34[10:0]),.y(raster_y34[9:0]),.de(result_de),.sof(raster_sof34),.eol(raster_last34),
@@ -333,11 +363,17 @@ hdmi_1_4b_transmitter_core_wrapper #(.DEVICE("EG"),.HTOTAL(1650),.HSA(40),.HFP(1
  .I_axis_s_user(edge_sof),.I_axis_s_valid(edge_de),.I_axis_s_last(edge_last),.I_axis_s_data(edge_rgb),.O_axis_s_ready(axis_ready),
  .I_audio_valid(audio_sample_valid),.I_audio_left_data(audio_left),.I_audio_right_data(audio_right),.I_acr_valid(acr_valid),.I_acr_cts(acr_cts),.I_acr_n(acr_n),.O_video_locked(hdmi_video_locked),
  .O_ddc_scl(HDMI_DDC_SCL),.IO_ddc_sda(HDMI_DDC_SDA),.O_ch0_tmds_data(blue),.O_ch1_tmds_data(green),.O_ch2_tmds_data(red),.O_clk_tmds_data(hdmi_clock_data));
-saixian_hmi_status_tx #(.CLK_FREQ_HZ(75000000),.ENHANCEMENT_FEEDBACK(1)) screen_tx(.clk(pixel_clk),.rst(rst_pixel),.image_count(count),
- .audio_count(music_count),.error_code(error>7 ? 3'd7:error[2:0]),.initializing(count==0),.page_id(page_id),
- .refresh_request(page_notify || setting_valid || reset_defaults),.sharpness(sharpness),.brightness(brightness),.contrast(contrast),
- .saturation(saturation),.volume(volume),.invert(invert),.vintage(vintage),.enhancement(enhancement),.event_state(event_state),.minutes(event_minutes),.seconds(event_seconds),
- .uart_tx(hmi_uart_tx),.command_sent_pulse());
+// The B formatter sees a coherent status snapshot. Refresh is a toggle so
+// short button/touch pulses survive transport latency.
+reg hmi_refresh_toggle;
+always @(posedge pixel_clk or posedge rst_pixel)
+ if(rst_pixel)hmi_refresh_toggle<=0;
+ else if(page_notify || setting_valid || reset_defaults)hmi_refresh_toggle<=~hmi_refresh_toggle;
+assign hmi_status_bus={hmi_refresh_toggle,count,music_count,(error>7 ? 3'd7:error[2:0]),count==0,page_id,
+ sharpness,brightness,contrast,saturation,volume,invert,vintage,enhancement,event_state,event_minutes,event_seconds};
+photo_hmi_relay_a #(.CHUNK_BYTES(8)) screen_tx(.clk(pixel_clk),.rst(rst_pixel),.session(hmi_session),
+ .packet_begin(hmi_begin),.word_valid(hmi_word_valid),.word_index(hmi_word_index),.word_data(hmi_word),.commit(hmi_commit),
+ .ack_valid(hmi_ack_valid),.ack_token(hmi_ack_token),.reset_request(hmi_reset_request),.uart_tx(hmi_uart_tx));
 // Image enhancement/adjustment is already performed on B. Keep the
 // established 2+15+4=21 clocks without a second neutral processing engine.
 reg [1:0] de_pipe;reg [10:0] x0,x1;reg [9:0] y0,y1;
@@ -347,10 +383,10 @@ always @(posedge pixel_clk or posedge rst_pixel)
 wire [23:0] neutral_rgb,range_rgb;
 photo_neutral_delay neutral(.clk(pixel_clk),.rst(rst_pixel),.de(de_pipe[1]),.rgb_in(raw_rgb),.rgb_out(neutral_rgb));
 photo_display_fade display_fade(.clk(pixel_clk),.rst(rst_pixel),.darkness(darkness),.rgb_in(neutral_rgb),.rgb_out(range_rgb));
-photo_settings_overlay #(.VIDEO_DELAY(21),.INTERVAL_CONTROL(1)) menu_overlay(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),
- .x(x),.y(y),.de(de),.settings_mode(settings_mode),.setting_item(setting_item),.updating(settings_updating),
+photo_settings_overlay #(.COMPACT_MENU(1),.MUSIC_SYNC_CONTROL(1),.SHARED_EDGE_WEIGHT(1),.VIDEO_DELAY(21),.INTERVAL_CONTROL(1)) menu_overlay(.edge_weight_address(edge_weight_address),.edge_weight(edge_weight),.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),
+ .x(x),.y(y),.de(de),.settings_mode(settings_mode),.setting_item(setting_item),.updating(settings_visual_updating),
  .edge_enable(edge_enable),.audio_repair_enable(audio_repair_enable),.volume(volume),.waveform_mode(waveform_mode),.brightness(brightness),.contrast(contrast),.saturation(saturation),.sharpness(sharpness),.enhancement(enhancement),
- .invert(invert),.vintage(vintage),.effect(effect_select),.auto_enable(auto_enable),.auto_interval_seconds(auto_interval_seconds),
+ .music_sync_enable(music_sync_enable),.invert(invert),.vintage(vintage),.effect(effect_select),.auto_enable(auto_enable),.auto_interval_seconds(auto_interval_seconds),
  .rgb_in(award_menu_select_q ? award_menu_rgb:range_rgb),.rgb_out(menu_notice_rgb));
 // Lock the slow status decode in blanking, before the combinational banner.
 reg [2:0] frame_award_notice;
@@ -383,24 +419,28 @@ always @(posedge pixel_clk or posedge rst_pixel)begin
   ui_de<=raster_de21 && !settings_render_mode;end
 end
 wire [10:0] ui_font_addr;wire [15:0] ui_font_bits;
-saixian_font_rom ui_font(.clk(pixel_clk),.glyph_id(ui_font_addr[10:4]),.row(ui_font_addr[3:0]),.bits(ui_font_bits));
+saixian_font_rom #(.DEFAULT_TEXT(1),.SERIAL_TEXT(1),.INDEPENDENT_TEXT(1),.TITLE_SD(1)) ui_font(.word_valid(title_word_valid),.word_index(title_word_index),.word_data(title_word_data),.word_length(title_word_length),.rst(rst_pixel),.frame_tick(blank_start),.title_length(title_length),.ticker_length(ticker_length),.clk(pixel_clk),.glyph_id(ui_font_addr[10:4]),.row(ui_font_addr[3:0]),.bits(ui_font_bits));
 reg [10:0] ticker_x;
 always @(posedge pixel_clk or posedge rst_pixel)
- if(rst_pixel)ticker_x<=0;else if(blank_start)ticker_x<=ticker_x>=864 ? 0:ticker_x+1'b1;
+ if(rst_pixel)ticker_x<=0;else if(blank_start)ticker_x<=ticker_x>=(ticker_length==0 ? 11'd864:11'd640+{1'b0,ticker_length,5'b0}) ? 0:ticker_x+1'b1;
 // Analyze the same post-mix, post-volume PCM delivered to HDMI.
 wire [9:0] visual_x=ui_x-10'd64;
 wire [6:0] visual_height,visual_peak;wire [31:0] visual_wave;
 wire visual_fft_valid,visual_wave_valid;
-photo_av_metadata_a #(.EDGE_METADATA(1)) visual_cache(.clk(pixel_clk),.rst(rst_pixel || av_stream_reset),.frame_tick(blank_start),.edge_target(edge_target),
+reg relief_enable_previous;
+always @(posedge pixel_clk or posedge rst_pixel)if(rst_pixel)relief_enable_previous<=0;else relief_enable_previous<=relief_enable;
+photo_av_metadata_a #(.REMOTE_RELIEF(1),.EDGE_METADATA(1)) visual_cache(
+ .remote_enable(relief_enable),.remote_we(wall_we),.remote_wa(wall_wa),.remote_wd(wall_wd),.remote_ra(wall_ra),.remote_rd(wall_rgb),
+ .clk(pixel_clk),.rst(rst_pixel || av_stream_reset || relief_enable!=relief_enable_previous),.frame_tick(blank_start),.edge_target(edge_target),
  .play_position(av_play_position),.begin_packet(av_begin),.word_valid(av_word_valid),.commit_packet(av_commit),.finish_packet(av_finish),
  .word_index(av_word_index),.word_data(av_word),.available(av_available),
  .read_band(visual_x[8:4]),.read_index(visual_x[8:1]),.height(visual_height),.peak(visual_peak),.extrema(visual_wave),
  .fft_valid(visual_fft_valid),.wave_valid(visual_wave_valid));
-saixian_osd_overlay #(.SHOW_SOURCE_RESOLUTION(0)) music_event_ui(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),.de_i(ui_de),
+saixian_osd_overlay #(.HIDE_CAROUSEL_LABEL(1),.EMPTY_TEXT_BLANK(1),.SHOW_SOURCE_RESOLUTION(0),.SHARED_TITLE(1),.INDEPENDENT_TEXT(1)) music_event_ui(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),.de_i(ui_de),
  .x_i(ui_x),.y_i(ui_y),.rgb_in_i(ui_rgb),.display_valid(display_valid || music_count!=0 || !carousel_mode),
  .loading_phase(3'd0),.state(event_state),.project_id(carousel_mode ? project_select:event_project),
  .minutes(event_minutes),.seconds(event_seconds),.countdown_value(countdown_value),.ticker_x(ticker_x),
- .ticker_text_length(5'd0),.title_text_length(5'd0),.font_addr(ui_font_addr),.font_bits(ui_font_bits),.font_ready(1'b1),
+ .ticker_text_length(ticker_length),.title_text_length(title_length),.font_addr(ui_font_addr),.font_bits(ui_font_bits),.font_ready(1'b1),
  .source_width_bcd(16'd0),.source_height_bcd(16'd0),.error_code(3'd0),
  .visual_height(visual_height),.visual_peak(visual_peak),.visual_wave(visual_wave),
  .visual_fft_valid(visual_fft_valid),.visual_wave_valid(visual_wave_valid),
@@ -421,7 +461,10 @@ always @(posedge pixel_clk or posedge rst_pixel)begin
 end
 // Award input coordinates follow the same two-cycle FIFO latency as raw_rgb.
 // Bypass photo fades and music graphics for the full scene.
-photo_award_render #(.RELIEF_ENABLE(1)) award_render(
+photo_award_render #(.SHARED_MATH(1),.REMOTE_RELIEF(1),.RELIEF_ENABLE(1)) award_render(
+ .relief_descriptor(relief_descriptor),.relief_sent(relief_sent),.relief_sent_descriptor(relief_sent_descriptor),.relief_available(relief_available_spi),
+ .relief_begin(relief_begin),.relief_word_valid(relief_word_valid),.relief_finish(relief_finish),.relief_commit(relief_commit),
+ .relief_word_index(relief_word_index),.relief_word(relief_word),.wall_we(wall_we),.wall_wa(wall_wa),.wall_wd(wall_wd),.wall_ra(wall_ra),.wall_rgb(wall_rgb),
  .relief_mode(current==7),.touch_contact(pointer_contact),.cursor_x(cursor_x),.cursor_y(cursor_y),.mem_clk(mem_clk),.mem_rst(rst_image_mem),.light_base(light_base),
  .light_wide(light_wide),.light_request(light_request),.light_address(light_address),.light_ack(light_ack),.light_data(light_data),.light_valid(light_valid),
  .de_in(award_raw_de[1]),.clk(pixel_clk),.rst(rst_pixel),.enable(award_active),
@@ -442,6 +485,8 @@ always @(posedge pixel_clk or posedge rst_pixel)
  if(rst_pixel)startup_released<=0;
  else if(!boot_active && de && x==0 && y==0)startup_released<=1;
 wire boot_audio_ready=music_buffer_ready || (music_catalog_complete && music_count==0);
+wire boot_scan_complete=award_scan_complete && music_catalog_complete;
+wire boot_font_ready=boot_scan_complete;
 (* async_reg="true" *)reg boot_init_meta,boot_init_sync;
 always @(posedge pixel_clk or posedge rst_pixel)
  if(rst_pixel)begin boot_init_meta<=0;boot_init_sync<=0;end
@@ -452,66 +497,30 @@ reg [3:0] boot_animation_warmup;
 always @(posedge pixel_clk or posedge rst_pixel)
  if(rst_pixel)boot_animation_warmup<=0;
  else if(!(&boot_animation_warmup))boot_animation_warmup<=boot_animation_warmup+1'b1;
-photo_boot_screen #(.VIDEO_DELAY(26),.MIN_FRAMES(90),.STAGED_LOADING(1)) boot_screen(
+photo_boot_screen #(.BAR_ONLY(1),.VIDEO_DELAY(26),.MIN_FRAMES(90),.STAGED_LOADING(1),.COMPLETE_SCAN(1)) boot_screen(
  .clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),.x(x),.y(y),
- .memory_ready(boot_init_sync),.catalog_ready(count!=0 || award_available || relief_available),
+ .scan_ready(boot_scan_complete),.font_ready(boot_font_ready),
+ .photo_present(count!=0 || award_available || relief_available),.music_present(music_count!=0),.font_present(font_available),
+ .memory_ready(boot_init_sync),.catalog_ready(boot_scan_complete),
  .animation_ready(&boot_animation_warmup),.audio_ready(boot_audio_ready),
- .frame_ready(display_valid && started),.active(boot_active),.rgb(boot_rgb));
+ .frame_ready((display_valid && started) || (boot_scan_complete && count==0 && !award_available && !relief_available)),.active(boot_active),.rgb(boot_rgb));
 wire [23:0] pointer_rgb;
 wire [23:0] thumbnail_rgb;
-photo_thumbnail_overlay #(.Y(528),.DELAY(1),.SEPARATE_DISPLAY(1)) preview(.clk(pixel_clk),.rst(rst_image_pixel),.frame_tick(blank_start),
+photo_thumbnail_overlay #(.X(THUMBNAIL_X),.Y(THUMBNAIL_Y),.DELAY(1),.SEPARATE_DISPLAY(1)) preview(.clk(pixel_clk),.rst(rst_image_pixel),.frame_tick(blank_start),
  .enable(preview_enable_q),
- .display_enable(!settings_updating && !transition_active),.read_busy(thumbnail_read_busy),
+ .display_enable(!settings_visual_updating && !transition_active),.read_busy(thumbnail_read_busy),
  .cache_valid(thumbnail_cache_valid),.cache_slot(thumbnail_cache_slot),.identity({1'b0,thumbnail_id,thumbnail_cache_slot}),
  .de(raster_de26),.x(raster_x26),.y(raster_y26),.request(thumbnail_request),.slot(thumbnail_slot),.cancel(thumbnail_cancel),
  .done(thumbnail_done),.data(thumbnail_data),.address(thumbnail_address),.visible(thumbnail_visible),
  .rgb_in(playback_rgb),.rgb_out(thumbnail_rgb));
-photo_pointer_overlay #(.DELAY(5)) pointer_osd(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),
+photo_pointer_overlay #(.DELAY(5),.NAVIGATION_BUTTON(0)) pointer_osd(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),
  .enable(pointer_enabled),.navigation_enable(pointer_nav_display_q),.de(raster_de21),.x(raster_x21),.y(raster_y21),.cursor_x(cursor_x),.cursor_y(cursor_y),
  .rgb_in(thumbnail_rgb),.rgb_out(pointer_rgb));
-assign feature_rgb=boot_active ? boot_rgb:pointer_rgb;
+assign feature_rgb=boot_active ? boot_rgb:(display_valid ? pointer_rgb:24'd0);
 hdmi_phy_wrapper #(.DEVICE("EG")) u_hdmi_phy(.I_pixel_clk(pixel_clk),.I_serial_clk(serial_clk),.I_rst(rst_serial),
  .I_tmds_channel_0(blue),.I_tmds_channel_1(green),.I_tmds_channel_2(red),.I_tmds_channel_clk(hdmi_clock_data),
  .O_tmds_ch0_p(HDMI_D0_P),.O_tmds_ch1_p(HDMI_D1_P),.O_tmds_ch2_p(HDMI_D2_P),.O_tmds_clk_p(HDMI_CLK_P));
-wire scan_valid,scan_fault,clock_valid,clock_fault;
-hdmi_scan_monitor #(.HT(1650),.VT(750),.HA(1280),.VA(720),.HS(40),.VS(5)) u_scan(
- .clk(pixel_clk),.rst(rst_pixel),.x(x),.y(y),.de(de),.hs(hs),.vs(vs),.frame_start(fs),.valid(scan_valid),.fault(scan_fault));
-hdmi_pixel_clock_monitor #(.EXPECTED_PIXELS(7500000),.TOLERANCE_PIXELS(75000)) u_clock_check(
- .ref_clk(clk),.pixel_clk(pixel_clk),.arst(!video_lock),.valid(clock_valid),.fault(clock_fault));
-// Preserve the first image fault until startup succeeds. Audio readiness
-// must not hide why the loading screen is still waiting for its first frame.
-reg [3:0] startup_first_error;
-always @(posedge pixel_clk or posedge rst_pixel)
- if(rst_pixel)startup_first_error<=0;
- else if(!startup_released && startup_first_error==0 && error!=0)startup_first_error<=error;
-wire [15:0] startup_failure_digits={4'd8,4'd0,control_state,startup_first_error};
-reg hpd_meta,hpd_sync;reg [17:0] status_meta,status_sync;
-reg [19:0] audio_diag_meta,audio_diag_sync;
-reg [15:0] award_diag_meta,award_diag_sync;
-reg menu_meta,menu_sync;reg [15:0] menu_digits_meta,menu_digits_sync;
-// photo_status shifts nibble 0 out first, so encode the displayed order in reverse.
-wire [15:0] menu_digits={4'd0,{3'b000,auto_enable},effect_select[3:0],setting_item};
-always @(posedge clk or posedge rst_ref)
- if(rst_ref)begin hpd_meta<=0;hpd_sync<=0;status_meta<=0;status_sync<=0;
-  award_diag_meta<=0;award_diag_sync<=0;audio_diag_meta<=0;audio_diag_sync<=0;menu_meta<=0;menu_sync<=0;menu_digits_meta<=0;menu_digits_sync<=0;end
- else begin hpd_meta<=hdmi_hpd;hpd_sync<=hpd_meta;
-  audio_diag_meta<={audio_diag_stage,{1'b0,music_count},(music_count!=0 ? {1'b0,music_index}+4'd1:4'd0),audio_buffer_level,
-   {1'b0,audio_nonzero_seen,hdmi_video_locked,hpd_audio_sync}};
-  audio_diag_sync<=audio_diag_meta;
-  // Award playback: 4 6 E FF C (E=light error, FF=field 00..77).
-  // Preserve earlier transfer/startup faults ahead of this live diagnostic.
-  award_diag_meta<=first_transfer_origin!=0 ? {4'd4,first_transfer_origin,first_transfer_error,(first_transfer_origin==2 ? first_link_fault:4'd0)}:(!startup_released && startup_first_error!=0) ? startup_failure_digits:award_active ? {4'd6,award_light_error,1'b0,award_light_frame}:{1'b0,(award_loading ? 3'd1:award_notice),3'd0,award_available,3'd0,award_scan_complete,((award_notice==3 || award_notice==4) ? last_transfer_error:error)};award_diag_sync<=award_diag_meta;
-  menu_meta<=settings_mode;menu_sync<=menu_meta;
-  menu_digits_meta<=menu_digits;menu_digits_sync<=menu_digits_meta;
-  status_meta<={count,(display_valid ? current+3'd1:3'd0),control_state,error,
-   (error!=0 || underflow || scan_fault || clock_fault ? 4'd9:busy ? 4'd3:display_valid ? 4'd5:4'd2)};
-  status_sync<=status_meta;end
-photo_status #(.CLK_HZ(50000000)) status(.clk(clk),.rst(rst_ref),.status(menu_sync ? (hpd_sync ? status_sync[3:0]:4'd0):audio_diag_sync[3:0]),
- .error(status_sync[7:4]),.state(status_sync[11:8]),.image(status_sync[14:12]),.count(status_sync[17:15]),
- .diagnostic_page(menu_sync ? 3'd1:award_diag_sync[15:12]!=0 ? 3'd4:3'd5),.diagnostic_crc(menu_sync ? menu_digits_sync:award_diag_sync[15:12]!=0 ? award_diag_sync:audio_diag_sync[19:4]),.seg_sel(base_seg_sel),.seg_data(base_seg_data));
-wire show_timing=timing_valid && !settings_mode && !award_active && !award_loading &&
- first_transfer_origin==0 && startup_first_error==0 && error==0;
-assign seg_sel=show_timing ? timing_seg_sel:base_seg_sel;
-assign seg_data=show_timing ? timing_seg_data:base_seg_data;
-
+// Debug displays and timing/clock/scan monitors removed.
+assign seg_sel=6'b111111;
+assign seg_data=8'hff;
 endmodule

@@ -1,0 +1,2 @@
+PASS RGB565-only menu: rows 1..13, keyboard wrap, repair/edge remapping, interval 1..30 clamp and retired-row rejection
+E:\Codex\Work\saixian-color-ripple-rtl-20261025\candidate\5.0project\tests\tb_rgb565_settings.v:28: $finish called at 2000000 (1ps)

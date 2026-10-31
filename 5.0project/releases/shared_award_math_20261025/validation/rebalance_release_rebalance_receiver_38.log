@@ -1,0 +1,2 @@
+PASS atomic table/angle/light commit, all dual-clock palette and wall words, CRC failure, short packet, mailbox overflow, scene owner replay rejection; writes=1281 wall=639
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\tests\tb_board_rebalance_receiver.v:40: $finish called at 532279946 (1ps)

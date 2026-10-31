@@ -1,0 +1,22 @@
+[
+  {
+    "test": "music_picture_sync",
+    "passed": true,
+    "report": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\preserve-features-20261027\\music_picture_sync\\results.json"
+  },
+  {
+    "test": "complete_boot_top",
+    "passed": true,
+    "report": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\preserve-features-20261027\\complete_boot_top\\results.json"
+  },
+  {
+    "test": "pointer_effects",
+    "passed": true,
+    "report": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\preserve-features-20261027\\pointer_effects\\results.json"
+  },
+  {
+    "test": "boot_pointer",
+    "passed": true,
+    "report": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\preserve-features-20261027\\boot_pointer\\results.json"
+  }
+]

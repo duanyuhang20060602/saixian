@@ -1,0 +1,16 @@
+[
+  {
+    "test": "media_deadlines",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_media_deadlines.v": "dff339091a4fd8f33286226a269028ec7c9b719dd6c163337c0837be7f2236eb",
+      "common/photo_sd_cache.v": "123f9f12c98c1f8a5e106c5eff2a1a2574d644a452a53012eee844c72b4d332b",
+      "tests/reference/media_deadlines/photo_sd_cache_before.v": "a0469b2712094115c3fa01bf06317853e29d17ba923d101bacd00e875c96a262",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\media-deadlines-final-20261027\\hardware_shells.v": "b7cf256cfdc1d206999a8ebe1b83d512bbae132b68089018860eb1bdfa3a6a19",
+      "tools/test_media_deadlines.py": "25f0704e4d1be98d7d76e967b07cc9b4c706d31a48db9825896cce735a43dac6"
+    },
+    "log": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\media-deadlines-final-20261027\\media_deadlines.log",
+    "log_sha256": "52e8a09aafa081920190200b135fdf469453bad8526c12e2c18723b15c3d4fed",
+    "seconds": 1.53
+  }
+]

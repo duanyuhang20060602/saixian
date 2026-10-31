@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "source_lock",
+  "validation_group": "compat_source_lock",
+  "passed": true,
+  "rerun_this_revision": true,
+  "seconds": 0.08
+}

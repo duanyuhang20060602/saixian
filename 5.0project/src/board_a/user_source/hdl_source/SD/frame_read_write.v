@@ -2,6 +2,7 @@
 module frame_read_write
 #
 (
+	parameter POINTER_CENTER = 0,
 	parameter MEM_DATA_BITS          = 32,
 	parameter READ_DATA_BITS         = 32,
 	parameter WRITE_DATA_BITS        = 32,
@@ -113,7 +114,7 @@ assign read_fifo_aclr=fluid_clear;
 assign O_rd_busy=fluid_busy;
 // A pending light request retires a speculative write claim before arbitration.
 assign read_urgent=bus_reserved || fluid_urgent;
-water_reader #(.FIFO_DEPTH(1024)) fluid_reader(
+water_reader #(.POINTER_CENTER(POINTER_CENTER),.FIFO_DEPTH(1024)) fluid_reader(
  .rst(rst),.mem_clk(mem_clk),.Sdr_init_done(Sdr_init_done),
  .Sdr_init_ref_vld(Sdr_init_ref_vld),.Sdr_busy(Sdr_busy || bus_claim),.Sdr_rd_en(Sdr_rd_en),
  .App_wr_busy(App_wr_busy || bus_claim),.Sdr_rd_dout(Sdr_rd_dout),.O_rd_busy(fluid_busy),

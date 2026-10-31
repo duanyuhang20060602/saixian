@@ -1,0 +1,2 @@
+PASS real 75/100/50/25MHz SPI and coprocessor, 48kHz stereo exact, zero underflows, CRC rejection, audio-epoch abort, scene reentry and coherent blanking commits; samples=4394 packets=6 commits=4
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\tests\tb_board_rebalance_spi.v:77: $finish called at 102505525020 (1ps)

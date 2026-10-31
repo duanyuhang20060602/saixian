@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "offload_deadlines",
+  "validation_group": "deadlines",
+  "passed": true,
+  "rerun_this_revision": true,
+  "seconds": 2.66
+}

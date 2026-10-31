@@ -1,0 +1,2 @@
+PASS title transfer interleaved with real A/B UART: extended award length, RGB565 and settings refresh, tagged metadata, immediate entry/exit, settings refresh, CRC and cache-hit photo/award restoration
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\tests\tb_sd_title_concurrent.v:70: $finish called at 6777415000 (1ps)

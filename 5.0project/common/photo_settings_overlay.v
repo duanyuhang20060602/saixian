@@ -1,28 +1,119 @@
 `timescale 1ns/1ps
 // One frame-locked menu for image, audio and playback controls.
-module photo_settings_overlay #(parameter VIDEO_DELAY=21,INTERVAL_CONTROL=0)(
+module photo_settings_overlay #(parameter VIDEO_DELAY=21,INTERVAL_CONTROL=0,SHARED_EDGE_WEIGHT=0,COMPACT_MENU=0,MUSIC_SYNC_CONTROL=0)(
  input clk,rst,frame_tick,de,settings_mode,updating,
  input [11:0] x,input [10:0] y,input [3:0] setting_item,
  input [3:0] volume,brightness,contrast,saturation,input [1:0] sharpness,enhancement,
- input invert,vintage,input [4:0] effect,input edge_enable,auto_enable,waveform_mode,audio_repair_enable,
- input [23:0] rgb_in,output [23:0] rgb_out,input [4:0] auto_interval_seconds
+ input music_sync_enable,input invert,vintage,input [4:0] effect,input edge_enable,auto_enable,waveform_mode,audio_repair_enable,
+ input [23:0] rgb_in,output [23:0] rgb_out,input [4:0] auto_interval_seconds,
+ input [6:0] edge_weight_address,output [7:0] edge_weight
 );
 reg visible,pending;reg [3:0] selected;
-reg [4:0] values[0:13];
+reg [4:0] values[0:14];
 always @(posedge clk or posedge rst)begin
  if(rst)begin visible<=0;pending<=0;selected<=0;
-  values[13]<=5;values[0]<=5;values[1]<=4;values[2]<=4;values[3]<=1;values[4]<=4;
+  values[14]<=0;values[13]<=5;values[0]<=5;values[1]<=4;values[2]<=4;values[3]<=1;values[4]<=4;
   values[5]<=0;values[6]<=0;values[7]<=1;values[8]<=0;values[9]<=0;values[10]<=0;values[11]<=0;values[12]<=0;
  end else if(frame_tick)begin
-  values[13]<=auto_interval_seconds;visible<=settings_mode;pending<=updating;selected<=setting_item;
+  values[14]<={4'd0,music_sync_enable};values[13]<=auto_interval_seconds;visible<=settings_mode;pending<=updating;selected<=setting_item;
   values[0]<=volume;values[1]<=brightness;values[2]<=contrast;values[3]<={2'd0,sharpness};values[4]<=saturation;
   values[5]<={3'd0,invert};values[6]<={3'd0,vintage};values[7]<={2'd0,enhancement};
   values[8]<=effect;values[9]<={3'd0,auto_enable};values[10]<={3'd0,waveform_mode};values[11]<={4'd0,audio_repair_enable};values[12]<={4'd0,edge_enable};
  end
 end
+// begin COMPACT_MENU_ASSETS
+localparam [6:0] COMPACT_DIGIT=7'd39,COMPACT_SECOND=7'd38;
+function [6:0] compact_glyph;
+ input [5:0] text_id;input [4:0] index;
+ begin compact_glyph=0;case(text_id)
+  0:case(index)
+   0:compact_glyph=7'd1;
+   1:compact_glyph=7'd2;
+   default:compact_glyph=0;endcase
+  1:case(index)
+   0:compact_glyph=7'd3;
+   1:compact_glyph=7'd4;
+   default:compact_glyph=0;endcase
+  2:case(index)
+   0:compact_glyph=7'd5;
+   1:compact_glyph=7'd6;
+   default:compact_glyph=0;endcase
+  3:case(index)
+   0:compact_glyph=7'd7;
+   1:compact_glyph=7'd4;
+   default:compact_glyph=0;endcase
+  4:case(index)
+   0:compact_glyph=7'd8;
+   1:compact_glyph=7'd9;
+   default:compact_glyph=0;endcase
+  5:case(index)
+   0:compact_glyph=7'd10;
+   1:compact_glyph=7'd11;
+   default:compact_glyph=0;endcase
+  6:case(index)
+   0:compact_glyph=7'd12;
+   1:compact_glyph=7'd13;
+   default:compact_glyph=0;endcase
+  7:case(index)
+   0:compact_glyph=7'd14;
+   1:compact_glyph=7'd15;
+   default:compact_glyph=0;endcase
+  8:case(index)
+   0:compact_glyph=7'd16;
+   1:compact_glyph=7'd17;
+   default:compact_glyph=0;endcase
+  9:case(index)
+   0:compact_glyph=7'd18;
+   1:compact_glyph=7'd19;
+   default:compact_glyph=0;endcase
+  14:case(index)
+   0:compact_glyph=7'd20;
+   1:compact_glyph=7'd21;
+   default:compact_glyph=0;endcase
+  15:case(index)
+   0:compact_glyph=7'd20;
+   1:compact_glyph=7'd22;
+   default:compact_glyph=0;endcase
+  16:case(index)
+   0:compact_glyph=7'd23;
+   1:compact_glyph=7'd24;
+   default:compact_glyph=0;endcase
+  17:case(index)
+   0:compact_glyph=7'd25;
+   1:compact_glyph=7'd26;
+   default:compact_glyph=0;endcase
+  18:case(index)
+   0:compact_glyph=7'd27;
+   default:compact_glyph=0;endcase
+  19:case(index)
+   0:compact_glyph=7'd28;
+   default:compact_glyph=0;endcase
+  20:case(index)
+   0:compact_glyph=7'd29;
+   1:compact_glyph=7'd30;
+   default:compact_glyph=0;endcase
+  30:case(index)
+   0:compact_glyph=7'd31;
+   1:compact_glyph=7'd12;
+   default:compact_glyph=0;endcase
+  35:case(index)
+   0:compact_glyph=7'd32;
+   1:compact_glyph=7'd33;
+   default:compact_glyph=0;endcase
+  37:case(index)
+   0:compact_glyph=7'd34;
+   1:compact_glyph=7'd35;
+   default:compact_glyph=0;endcase
+  38:case(index)
+   0:compact_glyph=7'd36;
+   1:compact_glyph=7'd37;
+   default:compact_glyph=0;endcase
+  default:compact_glyph=0;endcase end
+endfunction
+// end COMPACT_MENU_ASSETS
 function [6:0] text_glyph;
  input [5:0] text_id;input [4:0] index;
- begin text_glyph=0;case(text_id)
+ begin text_glyph=0;if(COMPACT_MENU)text_glyph=compact_glyph(text_id,index);else case(text_id)
    0:case(index)
     0:text_glyph=7'd48;
     1:text_glyph=7'd49;
@@ -260,7 +351,7 @@ endfunction
 // Register geometric regions and the selected row value before text decode.
 // A later delay tap is removed, so VIDEO_DELAY and RGB passthrough stay exact.
 localparam DECODE_STAGE=VIDEO_DELAY>=6 ? 1:0;
-wire panel_in=de && visible && x>=64 && x<864 && y>=80 && y<688;
+wire panel_in=de && visible && x>=64 && x<864 && y>=80 && y<(COMPACT_MENU ? 656:688);
 wire [10:0] row_y_in=y-11'd144;
 wire [3:0] row_index_in=row_y_in[8:5];
 wire [4:0] row_local_in=row_y_in[4:0];
@@ -272,10 +363,10 @@ wire header_y=DECODE_STAGE ? header_y_d:header_y_in;
 wire header_left_in=x>=96 && x<224;
 reg header_left_d;
 wire header_left=DECODE_STAGE ? header_left_d:header_left_in;
-wire header_right_in=x>=688 && x<784;
+wire header_right_in=!COMPACT_MENU && x>=688 && x<784;
 reg header_right_d;
 wire header_right=DECODE_STAGE ? header_right_d:header_right_in;
-wire body_y_in=y>=144 && y<(INTERVAL_CONTROL ? 592:560) && row_index_in<=(INTERVAL_CONTROL ? 13:12);
+wire body_y_in=y>=144 && y<(MUSIC_SYNC_CONTROL ? 624:INTERVAL_CONTROL ? 592:560) && row_index_in<=(MUSIC_SYNC_CONTROL ? 14:INTERVAL_CONTROL ? 13:12);
 reg body_y_d;
 wire body_y=DECODE_STAGE ? body_y_d:body_y_in;
 wire label_area_in=x>=96 && x<288;
@@ -287,7 +378,7 @@ wire value_area=DECODE_STAGE ? value_area_d:value_area_in;
 wire track_area_in=row_local_in>=10 && row_local_in<22 && x>=320 && x<544;
 reg track_area_d;
 wire track_area=DECODE_STAGE ? track_area_d:track_area_in;
-wire footer_area_in=y>=(INTERVAL_CONTROL ? 608:576) && y<(INTERVAL_CONTROL ? 648:616) && x>=96 && x<400;
+wire footer_area_in=!COMPACT_MENU && y>=(INTERVAL_CONTROL ? 608:576) && y<(INTERVAL_CONTROL ? 648:616) && x>=96 && x<400;
 reg footer_area_d;
 wire footer_area=DECODE_STAGE ? footer_area_d:footer_area_in;
 wire footer_ink_in=(y<(INTERVAL_CONTROL ? 624:592)) || (y>=(INTERVAL_CONTROL ? 632:600));
@@ -403,26 +494,26 @@ always @*begin
     default:bar_width=0;
    endcase
    case(row_index)
-    5,6,9,11,12:value_label=value==0 ? 18:19;
-    8:value_label=value==11 ? 6'd36:value>=7 ? 6'd24+value:6'd20+value;
+    5,6,9,11,12,14:value_label=value==0 ? 18:19;
+    8:value_label=COMPACT_MENU ? (value==0 ? 6'd20:6'd0):value==11 ? 6'd36:value>=7 ? 6'd24+value:6'd20+value;
     10:value_label=value==0 ? 16:17;
     default:value_label=0;
    endcase
    if(label_area)begin
-    use_table=1;glyph_id=row_index==13 ? 6'd37:row_index==12 ? 6'd35:row_index==11 ? 6'd30:row_index==0 ? 5'd14:row_index==10 ? 5'd15:{1'b0,row_index};glyph_index=label_x[8:5];
+    use_table=1;glyph_id=row_index==14 ? 6'd38:row_index==13 ? 6'd37:row_index==12 ? 6'd35:row_index==11 ? 6'd30:row_index==0 ? 5'd14:row_index==10 ? 5'd15:{1'b0,row_index};glyph_index=label_x[8:5];
     font_col=label_x[4:1];font_row=row_local[4:1];text_on=1;
    end else if(value_area)begin
     if(value_label!=0)begin use_table=1;glyph_id=value_label;glyph_index=value_x[8:5];end
-    else if(INTERVAL_CONTROL && row_index==13)begin
+    else if((INTERVAL_CONTROL && row_index==13) || (COMPACT_MENU && row_index==8))begin
      case(value_x[8:5])
-      0:glyph=7'd35+(value>=30 ? 3:value>=20 ? 2:value>=10 ? 1:0);
-      1:glyph=7'd35+(value>=30 ? value-30:value>=20 ? value-20:value>=10 ? value-10:value);
-      2:glyph=7'd126;default:glyph=0;
+      0:glyph=(COMPACT_MENU ? COMPACT_DIGIT:7'd35)+(value>=30 ? 3:value>=20 ? 2:value>=10 ? 1:0);
+      1:glyph=(COMPACT_MENU ? COMPACT_DIGIT:7'd35)+(value>=30 ? value-30:value>=20 ? value-20:value>=10 ? value-10:value);
+      2:glyph=row_index==13 ? (COMPACT_MENU ? COMPACT_SECOND:7'd126):7'd0;default:glyph=0;
      endcase
-    end else glyph=value_x[8:5]==0 ? 7'd35+value:7'd0;
+    end else glyph=value_x[8:5]==0 ? (COMPACT_MENU ? COMPACT_DIGIT:7'd35)+value:7'd0;
     font_col=value_x[4:1];font_row=row_local[4:1];text_on=1;text_color=2'd2;
    end
-   if(value_label==0 && row_index!=13 && track_area)begin track=1;bar=bar_offset<bar_width;end
+   if(value_label==0 && row_index!=13 && !(COMPACT_MENU && row_index==8) && track_area)begin track=1;bar=bar_offset<bar_width;end
   end else if(footer_area)begin
    if(footer_ink)begin
     use_table=1;glyph_id=footer_top ? 12:13;glyph_index=label_x[8:4];font_col=label_x[3:0];
@@ -444,17 +535,20 @@ reg [1:0] bg_s3,color_s3;
 reg [1:0] bg_s1,bg_s2,color_s1,color_s2;
 wire [15:0] font_bits;
 wire [6:0] lookup_glyph;
-generate if(EXTRA_STAGE)begin: text_rom_stage
+wire [7:0] compact_edge_weight;
+generate if(COMPACT_MENU)begin: compact_text
+ assign lookup_glyph=glyph_s1;assign edge_weight=compact_edge_weight;
+end else if(EXTRA_STAGE)begin: text_rom_stage
  wire [7:0] lookup_word;reg table_s1,overflow_s1;reg [6:0] numeric_s1;
- photo_menu_text_lookup text_lookup(.clk(clk),.address({id_q,index_q[3:0]}),.data(lookup_word));
+ photo_menu_text_lookup #(.SHARED_EDGE_WEIGHT(SHARED_EDGE_WEIGHT)) text_lookup(.clk(clk),.address({id_q,index_q[3:0]}),.data(lookup_word),.edge_address(edge_weight_address),.edge_weight(edge_weight));
  always @(posedge clk or posedge rst)
   if(rst)begin table_s1<=0;overflow_s1<=0;numeric_s1<=0;end
   else begin table_s1<=table_q;overflow_s1<=index_q[4];numeric_s1<=numeric_q;end
  assign lookup_glyph=table_s1 ? (overflow_s1 ? 7'd0:lookup_word[6:0]):numeric_s1;
 end else begin: direct_text
- assign lookup_glyph=glyph_s1;
+ assign edge_weight=0;assign lookup_glyph=glyph_s1;
 end endgenerate
-photo_menu_font font(.clk(clk),.glyph(lookup_glyph),.row(row_s1),.bits(font_bits));
+photo_menu_font #(.COMPACT(COMPACT_MENU)) font(.clk(clk),.glyph(lookup_glyph),.row(row_s1),.bits(font_bits),.edge_address(edge_weight_address),.edge_weight(compact_edge_weight));
 reg [VIDEO_DELAY-3-EXTRA_STAGE-DECODE_STAGE:0] panel_pipe;
 // Delay palette indices instead of duplicating constant RGB bits at every tap.
 reg [2:0] color_pipe[0:VIDEO_DELAY-4-EXTRA_STAGE-DECODE_STAGE];integer i;
@@ -497,19 +591,27 @@ assign rgb_out=panel_pipe[VIDEO_DELAY-3-EXTRA_STAGE-DECODE_STAGE] ? palette_rgb(
 endmodule
 
 // Compact text-id/character-position map. Bitmap fonts stay in their original ROMs.
-module photo_menu_text_lookup(input clk,input [9:0] address,output [7:0] data);
+module photo_menu_text_lookup #(parameter SHARED_EDGE_WEIGHT=0,COMPACT_MENU=0,MUSIC_SYNC_CONTROL=0)(input clk,input [9:0] address,output [7:0] data,
+ input [6:0] edge_address,output [7:0] edge_weight);
+// The original table is zero in 896..1023. Port A still returns those zeros;
+// port B reads the packed edge weights there. Both retain one-clock latency.
+wire [7:0] raw_text,raw_edge;reg reserved_text;
+always @(posedge clk)reserved_text<=address[9:7]==3'b111;
+assign data=SHARED_EDGE_WEIGHT && reserved_text ? 8'd0:raw_text;
+assign edge_weight=SHARED_EDGE_WEIGHT ? raw_edge:8'd0;
 `ifdef TOUCHSCREEN_SIM
-reg [7:0] rom[0:1023];reg [7:0] q;
-initial $readmemh("src/board_a/user_source/hdl_source/photo_menu_text_lookup.hex",rom);
-always @(posedge clk)q<=rom[address];
-assign data=q;
+reg [7:0] rom[0:1023];reg [7:0] q,eq;
+initial if(SHARED_EDGE_WEIGHT)$readmemh("src/board_a/user_source/hdl_source/photo_menu_edge_weights.hex",rom);
+else $readmemh("src/board_a/user_source/hdl_source/photo_menu_text_lookup.hex",rom);
+always @(posedge clk)begin q<=rom[address];eq<=rom[{3'b111,edge_address}];end
+assign raw_text=q;assign raw_edge=eq;
 `else
 EG_LOGIC_BRAM #(.DATA_WIDTH_A(8),.ADDR_WIDTH_A(10),.DATA_DEPTH_A(1024),
- .DATA_WIDTH_B(8),.ADDR_WIDTH_B(10),.DATA_DEPTH_B(1024),.BYTE_ENABLE(0),.MODE("SP"),
+ .DATA_WIDTH_B(8),.ADDR_WIDTH_B(10),.DATA_DEPTH_B(1024),.BYTE_ENABLE(0),.MODE(SHARED_EDGE_WEIGHT ? "DP":"SP"),
  .REGMODE_A("NOREG"),.REGMODE_B("NOREG"),.WRITEMODE_A("NORMAL"),.WRITEMODE_B("NORMAL"),
  .RESETMODE("SYNC"),.DEBUGGABLE("NO"),.PACKABLE("NO"),
- .FORCE_KEEP("OFF"),.INIT_FILE("../src/board_a/user_source/hdl_source/photo_menu_text_lookup.mif"),.FILL_ALL("NONE"),.IMPLEMENT("9K")) map_rom(
- .doa(data),.dob(),.dia(8'd0),.dib(8'd0),.cea(1'b1),.ocea(1'b0),.clka(clk),.wea(1'b0),.rsta(1'b0),
- .ceb(1'b0),.oceb(1'b0),.clkb(1'b0),.web(1'b0),.rstb(1'b0),.bea(1'b0),.beb(1'b0),.addra(address),.addrb(10'd0));
+ .FORCE_KEEP("OFF"),.INIT_FILE(SHARED_EDGE_WEIGHT ? "../src/board_a/user_source/hdl_source/photo_menu_edge_weights.mif":"../src/board_a/user_source/hdl_source/photo_menu_text_lookup.mif"),.FILL_ALL("NONE"),.IMPLEMENT("9K")) map_rom(
+ .doa(raw_text),.dob(raw_edge),.dia(8'd0),.dib(8'd0),.cea(1'b1),.ocea(1'b0),.clka(clk),.wea(1'b0),.rsta(1'b0),
+ .ceb(SHARED_EDGE_WEIGHT!=0),.oceb(1'b0),.clkb(clk),.web(1'b0),.rstb(1'b0),.bea(1'b0),.beb(1'b0),.addra(address),.addrb({3'b111,edge_address}));
 `endif
 endmodule

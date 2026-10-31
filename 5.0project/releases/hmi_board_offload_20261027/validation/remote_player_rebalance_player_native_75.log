@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "rebalance_player_native",
+  "validation_group": "remote_player",
+  "passed": true,
+  "rerun_this_revision": false,
+  "seconds": 75.7
+}

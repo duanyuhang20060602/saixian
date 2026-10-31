@@ -1,0 +1,64 @@
+{
+  "a": {
+    "baseline": {
+      "lut": 18588,
+      "reg": 12809,
+      "bram": 62,
+      "bram32k": 16,
+      "dsp": 28
+    },
+    "current": {
+      "lut": 18292,
+      "reg": 12853,
+      "bram": 63,
+      "bram32k": 15,
+      "dsp": 28
+    },
+    "delta": {
+      "lut": -296,
+      "reg": 44,
+      "bram": 1,
+      "bram32k": -1,
+      "dsp": 0
+    },
+    "mslices_baseline": 4819,
+    "mslices_current": 4772,
+    "timing_ns": {
+      "SWNS": 0.127,
+      "STNS": 0.0,
+      "HWNS": 0.019,
+      "HTNS": 0.0
+    }
+  },
+  "b": {
+    "baseline": {
+      "lut": 16357,
+      "reg": 11050,
+      "bram": 57,
+      "bram32k": 16,
+      "dsp": 16
+    },
+    "current": {
+      "lut": 16327,
+      "reg": 11049,
+      "bram": 57,
+      "bram32k": 16,
+      "dsp": 16
+    },
+    "delta": {
+      "lut": -30,
+      "reg": -1,
+      "bram": 0,
+      "bram32k": 0,
+      "dsp": 0
+    },
+    "mslices_baseline": 4506,
+    "mslices_current": 4478,
+    "timing_ns": {
+      "SWNS": 0.111,
+      "STNS": 0.0,
+      "HWNS": 0.027,
+      "HTNS": 0.0
+    }
+  }
+}

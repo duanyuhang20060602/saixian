@@ -640,7 +640,8 @@ endmodule
 module saixian_hmi_status_tx #(
     parameter integer CLK_FREQ_HZ = 75_000_000,
     parameter integer BAUD_RATE = 115_200,
-    parameter integer ENHANCEMENT_FEEDBACK = 0
+    parameter integer ENHANCEMENT_FEEDBACK = 0,
+    parameter integer BYTE_STREAM = 0
 )(
     input wire clk, rst,
     input wire [2:0] image_count,
@@ -657,25 +658,32 @@ module saixian_hmi_status_tx #(
     input wire [6:0] minutes,
     input wire [5:0] seconds,
     output reg uart_tx,
-    output reg command_sent_pulse
+    output reg command_sent_pulse,
+    output wire byte_valid, output wire [7:0] byte_data, input wire byte_ready
 );
 localparam integer CLKS_PER_BIT = CLK_FREQ_HZ / BAUD_RATE;
 localparam [1:0] TX_IDLE=0, TX_START=1, TX_DATA=2, TX_STOP=3;
 reg [1:0] tx_state;
 reg [4:0] next_field;
 reg [2:0] active_page;
-reg [31:0] refresh_count;
+localparam integer REFRESH_COUNT_BITS = CLK_FREQ_HZ/4>1 ? $clog2(CLK_FREQ_HZ/4):1;
+reg [REFRESH_COUNT_BITS-1:0] refresh_count;
 reg [15:0] baud_count;
 reg [4:0] message_id, prepared_id;
 reg [7:0] command_rom [0:1023];
 reg [7:0] prefix_byte;
 integer rom_index;
 reg [47:0] message_suffix, prepared_suffix;
-reg [5:0] prefix_length, suffix_length;
+reg [4:0] prefix_length;
+reg [2:0] suffix_length;
 reg [5:0] message_len, prepared_len, byte_index;
-wire [4:0] next_byte_index=byte_index[4:0]+5'd1;
+// Prepare the following ROM byte on the same edge that consumes this one.
+wire stream_advance=BYTE_STREAM && tx_state==TX_DATA && byte_ready;
+wire [4:0] next_byte_index=byte_index[4:0]+(stream_advance ? 5'd2:5'd1);
 reg [2:0] bit_index;
 reg [7:0] shift_byte;
+assign byte_valid=BYTE_STREAM && tx_state==TX_DATA;
+assign byte_data=shift_byte;
 reg [6:0] minutes_snapshot;
 reg [5:0] seconds_snapshot;
 reg [3:0] state_snapshot;
@@ -685,6 +693,9 @@ reg [21:0] settings_seen;
 wire [1:0] feedback_enhancement=ENHANCEMENT_FEEDBACK ? enhancement:2'd0;
 wire [21:0] settings_live={feedback_enhancement,sharpness,brightness,contrast,saturation,volume,invert,vintage};
 reg [7:0] value;
+reg [23:0] formatted_digits;
+reg [3:0] digit_level;
+reg percent_format;
 integer prefix_len;
 
 // Fixed ASCII prefixes use one synchronous block ROM instead of wide muxes.
@@ -1113,6 +1124,20 @@ function [7:0] percent;
     end
 endfunction
 
+// Encode the finite setting levels directly, without general decimal division.
+function [23:0] percent_digits;
+ input [3:0] level;
+ begin case(level)
+  0:percent_digits="000";1:percent_digits="013";2:percent_digits="025";
+  3:percent_digits="038";4:percent_digits="050";5:percent_digits="063";
+  6:percent_digits="075";7:percent_digits="088";default:percent_digits="100";
+ endcase end
+endfunction
+function [23:0] small_digits;
+ input [3:0] number;
+ begin small_digits={8'h30,(number>=10 ? 8'h31:8'h30),
+  (8'h30+(number>=10 ? {4'd0,number}-8'd10:{4'd0,number}))};end
+endfunction
 // Format a constant prefix and short numeric suffix separately.
 // Numeric settings always use three decimal digits (000..100).
 always @* begin
@@ -1155,10 +1180,22 @@ always @* begin
         end
         default:field_count=0; // settlement/keyboard pages have no telemetry targets
     endcase
+    digit_level=state_snapshot;
+    percent_format=0;
+    if(active_page==1)case(next_field)
+      0,1:digit_level={2'd0,sharpness};
+      2,3:begin digit_level=brightness;percent_format=1;end
+      4,5:begin digit_level=contrast;percent_format=1;end
+      6,7:begin digit_level=saturation;percent_format=1;end
+      8,9:begin digit_level=volume;percent_format=1;end
+      10:digit_level={3'd0,invert};
+      11:digit_level={3'd0,vintage};
+      default:digit_level={2'd0,enhancement};
+    endcase
+    formatted_digits=percent_format ? percent_digits(digit_level):small_digits(digit_level);
     prepared_len=prefix_len;
     if(active_page==1 || (active_page==2 && next_field==2)) begin
-        prepared_suffix={8'h30+value/8'd100,
-            8'h30+(value/8'd10)%8'd10,8'h30+value%8'd10,24'd0};
+        prepared_suffix={formatted_digits,24'd0};
         prepared_len=prefix_len+3;
     end else if(active_page==2) begin
         prepared_suffix={8'h30+{1'b0,minutes_snapshot}/8'd10,
@@ -1211,18 +1248,29 @@ always @(posedge clk or posedge rst) begin
                     prefix_length<=prefix_len;suffix_length<=prepared_len-prefix_len-3;message_len<=prepared_len;
                     next_field<=next_field+1'b1;byte_index<=0;
                     shift_byte<=(active_page==1 ? 8'h73 : active_page==2 ? 8'h67 : 8'h68);bit_index<=0;
-                    baud_count<=0;uart_tx<=0;tx_state<=TX_START;
+                    baud_count<=0;uart_tx<=BYTE_STREAM ? 1'b1:1'b0;tx_state<=TX_START;
                 end else if(refresh_pending || (refresh_count==0 && active_page!=1)) begin
                     refresh_pending<=0;
                     next_field<=0;
                     minutes_snapshot<=minutes;seconds_snapshot<=seconds;state_snapshot<=event_state;
                 end
             end
-            TX_START: if(baud_count==CLKS_PER_BIT-1) begin
+            TX_START: if(BYTE_STREAM) tx_state<=TX_DATA;
+            else if(baud_count==CLKS_PER_BIT-1) begin
                 baud_count<=0;uart_tx<=shift_byte[0];shift_byte<=shift_byte>>1;
                 bit_index<=0;tx_state<=TX_DATA;
             end else baud_count<=baud_count+1'b1;
-            TX_DATA: if(baud_count==CLKS_PER_BIT-1) begin
+            TX_DATA: if(BYTE_STREAM) begin
+                if(byte_ready) begin
+                    if(byte_index+1'b1<message_len) begin
+                        if(byte_index+1'b1<prefix_length) shift_byte<=prefix_byte;
+                        else if(byte_index+1'b1<prefix_length+suffix_length)
+                            begin shift_byte<=message_suffix[47:40];message_suffix<={message_suffix[39:0],8'd0};end
+                        else shift_byte<=8'hff;
+                        byte_index<=byte_index+1'b1;tx_state<=TX_DATA;
+                    end else begin command_sent_pulse<=1;tx_state<=TX_IDLE;end
+                end
+            end else if(baud_count==CLKS_PER_BIT-1) begin
                 baud_count<=0;
                 if(bit_index==7) begin uart_tx<=1;tx_state<=TX_STOP;end
                 else begin uart_tx<=shift_byte[0];shift_byte<=shift_byte>>1;bit_index<=bit_index+1'b1;end
@@ -1233,7 +1281,7 @@ always @(posedge clk or posedge rst) begin
                     if(byte_index+1'b1<prefix_length)
                         shift_byte<=prefix_byte;
                     else if(byte_index+1'b1<prefix_length+suffix_length)
-                        shift_byte<=message_suffix[47-((byte_index+1'b1-prefix_length)*8) -: 8];
+                        begin shift_byte<=message_suffix[47:40];message_suffix<={message_suffix[39:0],8'd0};end
                     else shift_byte<=8'hff;
                     byte_index<=byte_index+1'b1;uart_tx<=0;tx_state<=TX_START;
                 end else begin uart_tx<=1;command_sent_pulse<=1;tx_state<=TX_IDLE;end

@@ -1,0 +1,26 @@
+PASS higher-precision diffuse at bounded display change
+{
+  "channel_error_metrics": {
+    "rb": {
+      "old_max_error": 8,
+      "new_max_error": 1,
+      "old_mean_abs_error": 1.82666015625,
+      "new_mean_abs_error": 0.0843505859375
+    },
+    "g": {
+      "old_max_error": 8,
+      "new_max_error": 1,
+      "old_mean_abs_error": 1.8157958984375,
+      "new_mean_abs_error": 0.0999755859375
+    }
+  },
+  "weighted_mean_luminance_ratio": 1.0112967099005934,
+  "clipped_cup_pixels_before": 0.04056763642246557,
+  "clipped_cup_pixels_after": 0.04231235799965465,
+  "clipped_fraction_change": 0.0017447215771890863,
+  "max_rgb_code_change": 7,
+  "material_pixels_tested": 7343292,
+  "diffuse_coefficient_levels_before": 16,
+  "diffuse_coefficient_levels_after": 256,
+  "scope": "Exhaustive channel arithmetic plus CPU material oracle at four light directions over all 24 views, not a board capture or physical luminance measurement."
+}

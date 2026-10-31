@@ -1,0 +1,2 @@
+PASS elastic link cancellation: pending-read abort, buffered-word abort, request abort, asynchronous reset, 4 clean restarts and CRCs
+E:\Codex\Work\saixian-rebalance-20261025\candidate\5.0project\tests\tb_research_link_abort.v:52: $finish called at 15180000 (1ps)

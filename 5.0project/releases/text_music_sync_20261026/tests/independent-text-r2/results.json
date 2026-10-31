@@ -1,0 +1,25 @@
+[
+  {
+    "test": "store",
+    "passed": true,
+    "seconds": 0.6870000000053551,
+    "inputs_sha256": {
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\independent-text-r2\\store.v": "e56c6d890821c6452747fc481efdcde7eca05abb6b7dbfb42b70a24c4bf3f6e3",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_sd_title_store.v": "c501d919aa698b75b8b110f05abb6cca5727df175ebd507e2ff2ecb0f782e66d"
+    }
+  },
+  {
+    "test": "protocol",
+    "passed": true,
+    "seconds": 124.625,
+    "inputs_sha256": {
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\independent-text-r2\\protocol.v": "4fab66b66b2c7bbc4df614a1ccb3d33364c32969dcd99ec6d6ad42b5cc7e092f",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\tests\\title_font_ram_model.v": "5645c2efe210627dad2e9d131a1a400751b0794b31719ceb3d70b80c6b6e0e87",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_cached_control_a.v": "81b4837355235582fec6a82a9b7f06f9fbfe82431b5e5d9ba7315245caa3ba26",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_control.v": "264c8b5a3559c15f26f6c3a7c847d96a1ae7067877fc782adb634abde45935d9",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_uart.v": "950c721a434aece85dd617f140de2d0891ff036da0a151f3bb55b4b30f5c15df",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_sd_title_store.v": "c501d919aa698b75b8b110f05abb6cca5727df175ebd507e2ff2ecb0f782e66d",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\audio_ui\\saixian_font_rom.v": "77f9e0c7453cc497aa4e11a039877edfd5406c2be8bc7006fb066ec23bc6e0c6"
+    }
+  }
+]

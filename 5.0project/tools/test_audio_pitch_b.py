@@ -1,4 +1,4 @@
-"""B audio integration and bit-exact release-model checks; all outputs on E:."""
+"""B audio integration and bit-exact release-model checks."""
 from pathlib import Path
 import argparse,concurrent.futures,hashlib,importlib.util,json,os,re,subprocess,time
 import numpy as np
@@ -9,15 +9,17 @@ COMMON=['common/photo_audio_link.v','common/photo_audio_features.v','common/phot
 JOBS=('model','native_model','volume','keys','transport')
 def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def main():
- ap=argparse.ArgumentParser();ap.add_argument('--out',type=Path,required=True);ap.add_argument('--only',nargs='+',choices=JOBS);ap.add_argument('--jobs',type=int,default=3);a=ap.parse_args()
- out=a.out.resolve();assert out.drive.upper()=='E:';out.mkdir(parents=True,exist_ok=True)
- env=os.environ.copy();temp=Path('E:/Codex/Temp/audio-pitch-tests');temp.mkdir(parents=True,exist_ok=True);env.update(TEMP=str(temp),TMP=str(temp),TMPDIR=str(temp),PYTHONDONTWRITEBYTECODE='1')
+ ap=argparse.ArgumentParser();ap.add_argument('--out',type=Path,required=True);ap.add_argument('--only',nargs='+',choices=JOBS);ap.add_argument('--jobs',type=int,default=3);ap.add_argument('--iverilog',type=Path,required=True);a=ap.parse_args()
+ out=a.out.resolve();out.mkdir(parents=True,exist_ok=True);iv=a.iverilog.resolve()
+ env=os.environ.copy();env['PATH']=str(iv.parent)+os.pathsep+env['PATH'];temp=out/'temp';temp.mkdir(parents=True,exist_ok=True);env.update(TEMP=str(temp),TMP=str(temp),TMPDIR=str(temp),PYTHONDONTWRITEBYTECODE='1')
  def run(name):
   start=time.monotonic();folder=out/name;folder.mkdir(exist_ok=True);defines=['-DVICTORY_SIM'];flags=[];measurements={}
   if name in ('model','native_model'):
    n=50000 if name=='model' else 10000
    original=ROOT/'tests/reference/audio_pitch/tb_pitch.v'
    text=original.read_text().replace('49999',str(n-1)).replace('50000',str(n))
+   # Keep long Windows workspace paths intact in Verilog plusarg strings.
+   text=text.replace('reg [1023:0] stimulus_path','reg [8191:0] stimulus_path')
    text=text.replace('saixian_audio_pitch dut(.*);','saixian_audio_pitch #(.COMPACT_DRY(1)) dut(.*);')
    bench=folder/'tb_pitch.v';bench.write_text(text,encoding='utf-8');top='tb_pitch'
    files=[bench,ROOT/'common/audio_ui/saixian_audio_pitch.v'];evidence=[original,ROOT/'tests/reference/audio_pitch/quality_model.py',Path(__file__)]
@@ -41,10 +43,10 @@ def main():
   else:
    bench=ROOT/f'tests/tb_pitch_{name}.v';top='tb';files=[bench,*[ROOT/p for p in COMMON]];evidence=[Path(__file__)];extra=[]
   hashes={p.relative_to(ROOT).as_posix() if p.is_relative_to(ROOT) else str(p):sha(p) for p in [*files,*evidence]}
-  binary=folder/'simulation.vvp';c=subprocess.run(['C:/iverilog/bin/iverilog.exe','-g2012',*defines,*flags,'-s',top,'-o',str(binary),*map(str,files)],cwd=ROOT,env=env,capture_output=True,text=True)
+  binary=folder/'simulation.vvp';c=subprocess.run([str(iv),'-g2012',*defines,*flags,'-s',top,'-o',str(binary),*map(str,files)],cwd=ROOT,env=env,capture_output=True,text=True)
   log=c.stdout+c.stderr
   if c.returncode==0:
-   c=subprocess.run(['C:/iverilog/bin/vvp.exe',str(binary),*extra],cwd=ROOT,env=env,capture_output=True,text=True,timeout=900);log+=c.stdout+c.stderr
+   c=subprocess.run([str(iv.with_name('vvp.exe')),str(binary),*extra],cwd=ROOT,env=env,capture_output=True,text=True,timeout=900);log+=c.stdout+c.stderr
   passed=c.returncode==0 and 'PASS ' in log and not re.search(r'(?im)^(ERROR:|FATAL:)',log)
   if passed and name in ('model','native_model'):
    refpath=ROOT/'tests/reference/audio_pitch/quality_model.py';spec=importlib.util.spec_from_file_location('pitch_reference_'+name,refpath);ref=importlib.util.module_from_spec(spec);spec.loader.exec_module(ref);ref.ROOT=folder

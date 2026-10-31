@@ -28,7 +28,7 @@ def main():
     ap=argparse.ArgumentParser();ap.add_argument('--out',type=Path,default=Path('E:/Codex/Work/cooperate-fx11-water-tests-20261018'))
     ap.add_argument('--only',nargs='+',choices=SUITE);ap.add_argument('--jobs',type=int,default=3);args=ap.parse_args()
     out=args.out.resolve();out.mkdir(parents=True,exist_ok=True)
-    env=os.environ.copy();temp=Path('E:/Codex/Temp/cooperate-fx11');temp.mkdir(parents=True,exist_ok=True)
+    env=os.environ.copy();temp=Path(env.get('SAIXIAN_TEMP_ROOT',str(ROOT.parent/'temp')))/'cooperate-fx11';temp.mkdir(parents=True,exist_ok=True)
     env.update(TEMP=str(temp),TMP=str(temp),TMPDIR=str(temp))
     for p in (ROOT/'common/fluid').glob('*.hex'):shutil.copy2(p,out/p.name)
     selected=args.only or list(SUITE)
@@ -43,7 +43,7 @@ def main():
                 (ROOT/'common/fluid'/(name+'.mif')).read_text())}
         assert len(stored)==len(words) and all(stored[i]==(v&65535) for i,v in enumerate(words))
         if name=='water_inverse16':assert [i for i,v in enumerate(words) if v>=65536]==[1]
-    iv=Path('C:/iverilog/bin/iverilog.exe');vvp=iv.with_name('vvp.exe')
+    iv=Path(env.get('IVERILOG',str(ROOT.parents[1]/'.tools/iverilog/bin/iverilog.exe')));vvp=iv.with_name('vvp.exe')
     vendor=Path('C:/Anlogic/TD_6.2.1_Engineer_6.2.168.116/sim_release/eg4/eg_phy_mult18.v')
     native_model=out/'vendor_mult18_functional.v'
     # The vendor supplies a complete plaintext functional module followed by
@@ -57,7 +57,7 @@ def main():
     mux=model[mux_begin:mux_end].replace('always @(param_trig)','always @*').replace('assign ','')
     model=model[:mux_begin]+mux+model[mux_end:]
     native_model.write_text(model,encoding='utf-8')
-    dependencies=[Path(__file__),ROOT/'tools/fx11_vectors.py',*list((ROOT/'tests/reference/fx11_water').glob('*.py')),
+    dependencies=[Path(__file__),ROOT/'tools/fx11_vectors.py',ROOT/'tools/color_ripple_reference.py',*list((ROOT/'tests/reference/fx11_water').glob('*.py')),
                   *list((ROOT/'common/fluid').glob('*.hex')),*list((ROOT/'common/fluid').glob('*.mif'))]
     def run(name):
         started=time.monotonic();scan=name.startswith('scanout_');band=name.startswith('bandwidth_') or scan
@@ -84,7 +84,7 @@ def main():
         binary=out/(name+'.vvp')
         language='-g2012' if name in ('context','legacy','protocol') else '-g2005'
         if name=='legacy':extra+=['-DREFRESH_STRESS']
-        command=[str(iv),language,'-DWATER_SIM','-DFX11_ROM_ROOT=""','-s','tb',*extra,'-o',str(binary),*map(str,files+native_files)]
+        command=[str(iv),language,'-DWATER_SIM','-DFX11_ROM_ROOT="'+out.as_posix()+'/"','-s','tb',*extra,'-o',str(binary),*map(str,files+native_files)]
         result=subprocess.run(command,cwd=out,env=env,capture_output=True,text=True)
         log=result.stdout+result.stderr
         if result.returncode==0:

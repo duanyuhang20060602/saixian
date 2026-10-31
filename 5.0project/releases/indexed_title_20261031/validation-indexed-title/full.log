@@ -1,0 +1,2 @@
+PASS indexed sector font library + real UART + real A/B control: independent title/ticker, ASCII/GB2312 glyph pixels, clear, 16-char boundary, overflow, timeout recovery, HMI coexistence, media/award/settings flow
+C:\Users\MR.HUSKY\Desktop\qian\saixian-serial-title-20261031\5.0project\tests\tb_serial_title_index.v:156: $finish called at 14035966000 (1ps)

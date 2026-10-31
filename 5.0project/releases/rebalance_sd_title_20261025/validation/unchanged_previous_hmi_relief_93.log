@@ -1,0 +1,2 @@
+PASS HMI 0x32 old/new mode mapping, one-cycle pulses, invalid values, reserved byte/trailer rejection, partial-frame timeout and recovery
+E:\Codex\Work\saixian-relief-native-20261024\candidate\5.0project\tests\tb_relief_hmi.v:40: $finish called at 84370000 (1ps)

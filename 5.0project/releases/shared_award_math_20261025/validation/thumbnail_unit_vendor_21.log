@@ -1,0 +1,7 @@
+PASS static eRAM cache: slot=0 color=0, all 7056 pixels including bank boundary, no hold-time SDRAM traffic
+PASS static eRAM cache: slot=1 color=0, all 7056 pixels including bank boundary, no hold-time SDRAM traffic
+PASS static eRAM cache: slot=1 color=0, all 7056 pixels including bank boundary, no hold-time SDRAM traffic
+PASS static eRAM cache: slot=1 color=0, all 7056 pixels including bank boundary, no hold-time SDRAM traffic
+PASS static eRAM cache: slot=0 color=0, all 7056 pixels including bank boundary, no hold-time SDRAM traffic
+PASS whole-cache CDC, RGB565, both native 4MiB slots, refresh, priority, cancellation and restart
+E:\Codex\Work\saixian-resource-sharing-20261025\tests\thumbnail_unit\memory.v:86: $finish called at 7069280000 (1ps)

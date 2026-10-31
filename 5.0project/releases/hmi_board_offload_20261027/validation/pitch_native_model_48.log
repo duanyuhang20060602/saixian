@@ -1,0 +1,20 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "native_model",
+  "validation_group": "pitch",
+  "passed": true,
+  "rerun_this_revision": true,
+  "seconds": 396.92,
+  "measurements": {
+    "exact_stereo_frames": 10000,
+    "max_integer_error": 0,
+    "modes": 5,
+    "reference_commit": "c2d2df8008c93f9a89308007c882d9093a808e06",
+    "ring_ram32_lanes_parameter": 8,
+    "compact_dry": true,
+    "dry_history_frames": 1153,
+    "filtered_history_frames": 4096,
+    "native_vendor_ram": true,
+    "clear_zero_frames": 2400
+  }
+}

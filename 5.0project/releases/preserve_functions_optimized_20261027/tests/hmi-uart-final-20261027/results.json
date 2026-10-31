@@ -1,0 +1,40 @@
+[
+  {
+    "test": "hmi_bytes",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_hmi_byte_stream.v": "af62666d81fd5803ecbbc2d10f1c506e467cbd6607969f87c6bd2fd188be3f15",
+      "common/photo_processing.v": "55d70ec452b2e05af1b2277bcbcbbb00d2d89ac581bd141b5780f06a72b5fea8",
+      "tests/reference/hmi_formatter_before.v": "3ed11deb75786895b792d3cea04d474878946b38d3396b5b96abf845a604b31d"
+    }
+  },
+  {
+    "test": "hmi_recovery",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_hmi_relay_recovery.v": "a104ff5cf90a3d7219c37666010ef25559e51b5789f3a7530f20be858eb63f88",
+      "common/photo_hmi_remote.v": "3843876c81d6eded6656819e30c7b326cfde77bb9751148c509e89de2d29107f"
+    }
+  },
+  {
+    "test": "hmi_spi",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_hmi_remote_spi.v": "a51168e4415ce19479f63073472ee01399e1d12951b2e7969384b3b523eace37",
+      "common/photo_hmi_remote.v": "3843876c81d6eded6656819e30c7b326cfde77bb9751148c509e89de2d29107f",
+      "common/photo_audio_link.v": "a1ba63f65d0aa1fefe64d424e7227b818c5a28bf6f1a8540177ada96adf4f474",
+      "common/photo_audio_spi_b_offload.v": "775f4509bae5481f9eab88846f67d51e13de26dad9700e8fe33a8bab18cb0847",
+      "common/photo_processing.v": "55d70ec452b2e05af1b2277bcbcbbb00d2d89ac581bd141b5780f06a72b5fea8"
+    }
+  },
+  {
+    "test": "deadlines",
+    "passed": true,
+    "inputs_sha256": {
+      "tests/tb_b_deadlines.v": "13afa27108b23e47810970ce87966465f1811904924b1e7a677ff8ae7eec481b",
+      "common/photo_control.v": "03717c47c233262011e5da0dd6b8309ac17eba43b16d1a34296fa2b78d67d5ab",
+      "common/photo_uart.v": "d1f4bb2624ceebcf73dd998ce2c5d925690a6786e8782e20462257ae3e572402",
+      "tests/reference/photo_control_before.v": "0df12686158cc3514769c4ef2b18f1f8c368100bdb02141bce71136ad9b2ec27"
+    }
+  }
+]

@@ -1,0 +1,5 @@
+PASS production frame-store native slot/length CDC: 32 mode masks, both 4MiB slots, 8MiB bounds, two-clock synchronization checks=64
+E:\Codex\Work\saixian-merged-thumbnail-resource-20261025\slots\tb_a.v:21: $finish called at 5191000 (1ps)
+
+PASS production frame-store native slot/length CDC: 32 mode masks, both 4MiB slots, 8MiB bounds, two-clock synchronization checks=64
+E:\Codex\Work\saixian-merged-thumbnail-resource-20261025\slots\tb_b.v:21: $finish called at 5191000 (1ps)

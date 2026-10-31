@@ -1,0 +1,12 @@
+E:\Codex\Work\animation-cache-20261022\animation-tests\vendor_mult18_functional.v:415: warning: Choosing typ expression.
+E:\Codex\Work\animation-cache-20261022\animation-tests\vendor_mult18_functional.v:415: warning: Choosing typ expression.
+E:\Codex\Work\animation-cache-20261022\animation-tests\vendor_mult18_functional.v:416: warning: Choosing typ expression.
+E:\Codex\Work\animation-cache-20261022\animation-tests\vendor_mult18_functional.v:416: warning: Choosing typ expression.
+E:\Codex\Work\animation-cache-20261022\animation-tests\vendor_mult18_functional.v:417: warning: Choosing typ expression.
+E:\Codex\Work\animation-cache-20261022\animation-tests\vendor_mult18_functional.v:417: warning: Choosing typ expression.
+E:\Codex\Work\animation-cache-20261022\animation-tests\vendor_mult18_functional.v:418: warning: Choosing typ expression.
+E:\Codex\Work\animation-cache-20261022\animation-tests\vendor_mult18_functional.v:418: warning: Choosing typ expression.
+E:\Codex\Work\animation-cache-20261022\animation-tests\vendor_mult18_functional.v:419: warning: Choosing typ expression.
+E:\Codex\Work\animation-cache-20261022\animation-tests\vendor_mult18_functional.v:419: warning: Choosing typ expression.
+PASS native blend: 32639 signed products, 80000 randomized word/alpha cycles, endpoint weights, gaps, reset, exact pixels and latency
+E:\Codex\Downloads\qiansai\5.3project\tests\tb_blend_native.v:18: $finish called at 800030000 (1ps)

@@ -1,0 +1,25 @@
+odule hdmi_scan_monitor expects 1 bit(s), given 12.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:527:        : Pruning 11 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:527: warning: Port 4 (y) of module hdmi_scan_monitor expects 1 bit(s), given 11.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:527:        : Pruning 10 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:559: warning: Port 3 (status) of module photo_status expects 1 bit(s), given 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:559:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:559: warning: Port 4 (error) of module photo_status expects 1 bit(s), given 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:559:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:559: warning: Port 5 (state) of module photo_status expects 1 bit(s), given 4.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:559:        : Pruning 3 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:559: warning: Port 6 (image) of module photo_status expects 1 bit(s), given 3.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:559:        : Pruning 2 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:559: warning: Port 7 (count) of module photo_status expects 1 bit(s), given 3.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:559:        : Pruning 2 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:559: warning: Port 8 (diagnostic_page) of module photo_status expects 1 bit(s), given 3.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:559:        : Pruning 2 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:559: warning: Port 9 (diagnostic_crc) of module photo_status expects 1 bit(s), given 16.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:559:        : Pruning 15 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:559: warning: Port 10 (seg_sel) of module photo_status expects 1 bit(s), given 6.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:559:        : Pruning 5 high bits of the expression.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:559: warning: Port 11 (seg_data) of module photo_status expects 1 bit(s), given 8.
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\common\top_photo_a.v:559:        : Pruning 7 high bits of the expression.
+PASS actual top wiring: sync menu on/off/default/reset, one switch per accepted transition, wrap, single/zero tracks, request/failure isolation, boot/result/award/loading/event/music gates, manual music-next
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\validation\preserve-features-20261027\music_picture_sync\sync.v:49: $finish called at 4040000 (1ps)
+

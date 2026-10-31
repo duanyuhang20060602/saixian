@@ -1,0 +1,92 @@
+[
+  {
+    "test": "model",
+    "passed": true,
+    "seconds": 415.92,
+    "inputs_sha256": {
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\pitch-mac-final-20261027\\model\\tb_pitch.v": "29e43e80665ca8b74ebed08c6edac0f40c507e4668d602855799582fc8480879",
+      "common/audio_ui/saixian_audio_pitch.v": "8ef6dd182287b4bdf6cd0d546b5c5a8fd6c28a9f15568a9bbd0ac8244929f720",
+      "tests/reference/audio_pitch/tb_pitch.v": "e646e175bfbecf6b2a64e24214d4ee27bdc00a7604f7efabfce9a32be064dc38",
+      "tests/reference/audio_pitch/quality_model.py": "5067601e91e6d28af1bec4a185ce560ffa676eebec3cdad6709e0b1844a600f3",
+      "tools/test_audio_pitch_b.py": "344f0a5ebd5a635cb64eff6c31acd53483f931c4ffc8cf5d3629fe833881e33b"
+    },
+    "log": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\pitch-mac-final-20261027\\model.log",
+    "log_sha256": "1a66abfa3650a48fe758b01ad5c8e10d6c539c3dc048ab4bdfb4e49b515cc822",
+    "measurements": {
+      "exact_stereo_frames": 50000,
+      "max_integer_error": 0,
+      "modes": 5,
+      "reference_commit": "c2d2df8008c93f9a89308007c882d9093a808e06",
+      "production_history_ram32_blocks": 6,
+      "dry_history_frames": 2048,
+      "filtered_history_frames": 4096,
+      "native_vendor_ram": false,
+      "clear_zero_frames": 2400
+    }
+  },
+  {
+    "test": "native_model",
+    "passed": true,
+    "seconds": 498.34,
+    "inputs_sha256": {
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\pitch-mac-final-20261027\\native_model\\tb_pitch.v": "ba11d95f2dcb1947412689bb570ccb84c7ca207900d90f68051d2eb415264d3b",
+      "common/audio_ui/saixian_audio_pitch.v": "8ef6dd182287b4bdf6cd0d546b5c5a8fd6c28a9f15568a9bbd0ac8244929f720",
+      "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+      "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\pitch-mac-final-20261027\\native_model\\vendor_dram.v": "955bb95168b4cf8a5f34c89b8f270719f50a7528fbf2e7a3d03bce07e0f43162",
+      "tests/reference/audio_pitch/tb_pitch.v": "e646e175bfbecf6b2a64e24214d4ee27bdc00a7604f7efabfce9a32be064dc38",
+      "tests/reference/audio_pitch/quality_model.py": "5067601e91e6d28af1bec4a185ce560ffa676eebec3cdad6709e0b1844a600f3",
+      "tools/test_audio_pitch_b.py": "344f0a5ebd5a635cb64eff6c31acd53483f931c4ffc8cf5d3629fe833881e33b",
+      "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\sim_release\\eg4\\eg_logic_dram.v": "b620cebfe67f8829df3b737d1f75072b5f42bae7a2396b36616e85aa3cc9ea1e"
+    },
+    "log": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\pitch-mac-final-20261027\\native_model.log",
+    "log_sha256": "82937262d16f9072440bc64deb0b456eb12acdea5db11a288e94dc66659d5d1f",
+    "measurements": {
+      "exact_stereo_frames": 10000,
+      "max_integer_error": 0,
+      "modes": 5,
+      "reference_commit": "c2d2df8008c93f9a89308007c882d9093a808e06",
+      "production_history_ram32_blocks": 6,
+      "dry_history_frames": 2048,
+      "filtered_history_frames": 4096,
+      "native_vendor_ram": true,
+      "clear_zero_frames": 2400
+    }
+  },
+  {
+    "test": "volume",
+    "passed": true,
+    "seconds": 2.19,
+    "inputs_sha256": {
+      "tests/tb_pitch_volume.v": "f5433367da81932f5a83a5911b112bd2787d27cc5378faf5d849ed7c562ac8fc",
+      "common/photo_audio_link.v": "a1ba63f65d0aa1fefe64d424e7227b818c5a28bf6f1a8540177ada96adf4f474",
+      "common/photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
+      "common/photo_audio_pitch_b.v": "9fe035e6fc6b9c29da6abaa640261bd84eb5d1fcc8876fb0b0ba2af024b1cb5f",
+      "common/audio_ui/saixian_audio_pitch.v": "8ef6dd182287b4bdf6cd0d546b5c5a8fd6c28a9f15568a9bbd0ac8244929f720",
+      "common/audio_ui/saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+      "common/audio_ui/photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1",
+      "tools/test_audio_pitch_b.py": "344f0a5ebd5a635cb64eff6c31acd53483f931c4ffc8cf5d3629fe833881e33b"
+    },
+    "log": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\pitch-mac-final-20261027\\volume.log",
+    "log_sha256": "5834cadc04d215d4f2c55a87b3ff8f1033291ef01b57954820f13a1c38f238fa",
+    "measurements": {}
+  },
+  {
+    "test": "keys",
+    "passed": true,
+    "seconds": 0.61,
+    "inputs_sha256": {
+      "tests/tb_pitch_keys.v": "18c155d851e80efa811b7de93ee0b00909877e878c4f7d1dca6121f04e453552",
+      "common/photo_audio_link.v": "a1ba63f65d0aa1fefe64d424e7227b818c5a28bf6f1a8540177ada96adf4f474",
+      "common/photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
+      "common/photo_audio_pitch_b.v": "9fe035e6fc6b9c29da6abaa640261bd84eb5d1fcc8876fb0b0ba2af024b1cb5f",
+      "common/audio_ui/saixian_audio_pitch.v": "8ef6dd182287b4bdf6cd0d546b5c5a8fd6c28a9f15568a9bbd0ac8244929f720",
+      "common/audio_ui/saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+      "common/audio_ui/photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1",
+      "tools/test_audio_pitch_b.py": "344f0a5ebd5a635cb64eff6c31acd53483f931c4ffc8cf5d3629fe833881e33b"
+    },
+    "log": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\pitch-mac-final-20261027\\keys.log",
+    "log_sha256": "928ebcafaaf9f2ee8dad9dd2bc7e465c459641a041af2f97a2f58e6bcb77229d",
+    "measurements": {}
+  }
+]

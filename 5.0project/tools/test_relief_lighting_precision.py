@@ -1,0 +1,24 @@
+from pathlib import Path
+import json,hashlib,sys,time,argparse
+import numpy as np
+from PIL import Image,ImageDraw,ImageFont
+parser=argparse.ArgumentParser();parser.add_argument('--out',type=Path,required=True);parser.add_argument('--baseline',type=Path,required=True);parser.add_argument('--vectors',type=Path,required=True);args=parser.parse_args();W=args.out.resolve().parent;ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/'tools'));from test_relief_bus import decode,decode_hq
+out=args.out.resolve();out.mkdir(exist_ok=True);start=time.monotonic();asset=ROOT/'award_media/RELIEF720.DLT';_,plate,tail,_=decode(asset);pal,idx=decode_hq(tail)
+# Exhaustive per-channel evaluation against exact RGB888-times-8bit-gain.
+metrics={}
+for name,n,scale,shift in [('rb',32,33,11),('g',64,65,13)]:
+ c=np.arange(n)[:,None];d=np.arange(256)[None,:];expanded=((c<<3)|(c>>2)) if n==32 else ((c<<2)|(c>>4));ideal=expanded*d//512;old=expanded*(d//16)//32;new=c*d*scale//(1<<shift)
+ assert np.abs(new-ideal).max()<=1
+ metrics[name]=dict(old_max_error=int(abs(old-ideal).max()),new_max_error=int(abs(new-ideal).max()),old_mean_abs_error=float(abs(old-ideal).mean()),new_mean_abs_error=float(abs(new-ideal).mean()))
+# Evaluate unchanged material entries, weighted by all displayed cup pixels.
+weight=0;old_luma=0.;new_luma=0.;old_clip=0;new_clip=0;peak_delta=0
+for a in range(24):
+ w=np.bincount(idx[a].ravel(),minlength=256).astype(float);w[0]=0;c=(pal[a]>>16).astype(np.int32);surf=(pal[a]&65535).astype(np.int32);rgb=np.stack(((((c>>11)&31)<<3)|(((c>>11)&31)>>2),(((c>>5)&63)<<2)|(((c>>5)&63)>>4),((c&31)<<3)|((c&31)>>2)),-1);nx=(surf>>11)&31;ny=(surf>>6)&31;nz=(surf>>1)&31;nx=np.where(nx>=16,nx-32,nx)*2;ny=np.where(ny>=16,ny-32,ny)*2
+ for lx,ly in [(-16,6),(0,6),(-24,-16),(24,16)]:
+  dot=nx*lx+ny*ly+nz*16;d=np.clip(dot//4,0,255);spec=np.clip(dot+nz*16-1024,0,255);highlight=np.stack((spec//2,spec//4,spec//8),-1);old_raw=rgb//2+rgb*(d[:,None]//16)//32+highlight;fine=np.stack(((rgb[:,0]>>3)*d*33//2048,(rgb[:,1]>>2)*d*65//8192,(rgb[:,2]>>3)*d*33//2048),-1);new_raw=rgb//2+fine+highlight
+  old=np.clip(old_raw,0,255);new=np.clip(new_raw,0,255);old=np.rint(510*old/(255+old));new=np.rint(510*new/(255+new));lum=np.array([.2126,.7152,.0722]);old_luma+=float(((old@lum)*w).sum());new_luma+=float(((new@lum)*w).sum());old_clip+=float(((old_raw>=255).any(1)*w).sum());new_clip+=float(((new_raw>=255).any(1)*w).sum());weight+=w.sum();peak_delta=max(peak_delta,int(abs(new-old)[w>0].max()))
+ratio=new_luma/old_luma;clip_increase=(new_clip-old_clip)/weight;assert 1<=ratio<=1.05 and clip_increase<.02,(ratio,clip_increase)
+details=dict(channel_error_metrics=metrics,weighted_mean_luminance_ratio=ratio,clipped_cup_pixels_before=old_clip/weight,clipped_cup_pixels_after=new_clip/weight,clipped_fraction_change=clip_increase,max_rgb_code_change=peak_delta,material_pixels_tested=int(weight),diffuse_coefficient_levels_before=16,diffuse_coefficient_levels_after=256,scope='Exhaustive channel arithmetic plus CPU material oracle at four light directions over all 24 views, not a board capture or physical luminance measurement.')
+# Software render comparison at the same initial light and view.
+v=np.loadtxt(args.vectors,dtype=np.uint32,max_rows=1280*720,converters={0:lambda x:int(x,16)}).reshape(720,1280);new_rgb=np.stack((v>>16,(v>>8)&255,v&255),-1).astype(np.uint8);preview=W/'preview';preview.mkdir(exist_ok=True);Image.fromarray(new_rgb).save(preview/'rtl_reference_0.png');old_im=Image.open(args.baseline/'releases/relief_joinfix_20261024/rtl_reference_0.png').convert('RGB');combined=Image.new('RGB',(1152,620),(25,25,25));combined.paste(old_im.crop((352,48,928,624)),(0,40));combined.paste(Image.fromarray(new_rgb).crop((352,48,928,624)),(576,40));draw=ImageDraw.Draw(combined);font=ImageFont.truetype('C:/Windows/Fonts/msyh.ttc',20);draw.text((12,8),'当前：16 档漫反射',font=font,fill='white');draw.text((588,8),'候选：256 档漫反射',font=font,fill='white');combined.save(preview/'lighting_comparison.png')
+files=[Path(__file__),ROOT/'common/photo_relief_player.v',ROOT/'tools/test_relief_bus.py',asset,args.baseline/'common/photo_relief_player.v',args.baseline/'releases/relief_joinfix_20261024/rtl_reference_0.png',args.vectors];sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest();hashes={p.relative_to(ROOT).as_posix() if p.is_relative_to(ROOT) else str(p):sha(p) for p in files};log=out/'lighting_precision.log';log.write_text('PASS higher-precision diffuse at bounded display change\n'+json.dumps(details,indent=2)+'\n',encoding='utf-8');record=dict(test='lighting_precision',passed=True,inputs_unchanged=True,inputs_sha256=hashes,asset_sha256=sha(asset),seconds=round(time.monotonic()-start,2),log=str(log),log_sha256=sha(log),details=details);(out/'results.json').write_text(json.dumps([record],indent=2)+'\n',encoding='utf-8');print(log.read_text(),flush=True)

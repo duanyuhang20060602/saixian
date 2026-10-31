@@ -1,0 +1,22 @@
+[
+  {
+    "name": "boot_10",
+    "baud": 230400,
+    "passed": true,
+    "inputs_sha256": {
+      "common\\photo_audio_link.v": "a1ba63f65d0aa1fefe64d424e7227b818c5a28bf6f1a8540177ada96adf4f474",
+      "common\\photo_audio_spi_b_offload.v": "775f4509bae5481f9eab88846f67d51e13de26dad9700e8fe33a8bab18cb0847",
+      "common\\photo_boot_screen.v": "7e4ac12f6e9af29c46e2a950a4fe6da7cec41a60afa245a9229cbf3869d4ae0e"
+    }
+  },
+  {
+    "name": "boot_11",
+    "baud": 230400,
+    "passed": true,
+    "inputs_sha256": {
+      "common\\photo_audio_link.v": "a1ba63f65d0aa1fefe64d424e7227b818c5a28bf6f1a8540177ada96adf4f474",
+      "common\\photo_audio_spi_b_offload.v": "775f4509bae5481f9eab88846f67d51e13de26dad9700e8fe33a8bab18cb0847",
+      "common\\photo_boot_screen.v": "7e4ac12f6e9af29c46e2a950a4fe6da7cec41a60afa245a9229cbf3869d4ae0e"
+    }
+  }
+]

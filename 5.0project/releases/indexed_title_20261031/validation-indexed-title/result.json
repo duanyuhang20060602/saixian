@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "inputs_sha256": {
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-serial-title-20261031\\5.0project\\tests\\tb_serial_title_index.v": "18486b78d833358b43c0f7c5e4cf5cfdc0dab7e7b6298997c22905444cc3748c",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-serial-title-20261031\\5.0project\\tests\\serial_title_ram_model.v": "687220b6e718ee4f24c58931a6cdb60be308ce09d357dc18bb72a40c7adfd03a",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-serial-title-20261031\\5.0project\\common\\photo_cached_control_a.v": "dad8f254f36e7de29cb519fba2ae63b3ee3de02b94dea742b5b44e1dbec04dba",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-serial-title-20261031\\5.0project\\common\\photo_control.v": "bebb87f9d7723b1019c2431df03ffeed4a2951e5fb8082b90867f853727ac522",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-serial-title-20261031\\5.0project\\common\\photo_uart.v": "99262aac12d6107353786166feeeef319ffa5a53e0bfb449734d9779f62d78f5",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-serial-title-20261031\\5.0project\\common\\photo_link.v": "de1faebbb7fe85711ae84f28d428c7dd524e4074bd007cec25461dcf9e084a3c",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-serial-title-20261031\\5.0project\\common\\photo_serial_text.v": "d438265fc8da4769c1621b1bfbf519f4139cd01cc60fb46a8d4dffc656ed673c",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-serial-title-20261031\\5.0project\\common\\photo_scan_font_index.v": "c48587c632b346364b075437a4d550dc9e05c143d9e658b0a1d861151dde3dc8",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-serial-title-20261031\\5.0project\\common\\photo_scan_glyph_b.v": "c11479092a50c0fa51191ce87983f73adeecc02ca5630a416f8d6764cb63c495",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-serial-title-20261031\\5.0project\\common\\saixian_hmi_uart.v": "5bfb3eea7634511d4f66cce969ab1610d83fb98be1b1c2337df8b83950a23679",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-serial-title-20261031\\5.0project\\common\\audio_ui\\saixian_font_rom.v": "dcd18137d708ed5df4300646bb5d706de8dc771b16a497a8456dd207f4a7a39f"
+  }
+}

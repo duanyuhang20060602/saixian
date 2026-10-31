@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "pixels": 921600,
+  "seconds": 165.46899999999732,
+  "inputs_sha256": {
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\compact-menu-r1\\menu.v": "b8a5fe652eb1d0f661906d7163e0ad826f3076db38223452b6c488362f0feb16",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_settings_overlay.v": "c77cf2f68ee99ed1987b2d7c47db60488d6e525c1b6303c3fee0f9eb239d5a55",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_menu_font.v": "94a4207afc7b269b013c8065e627bad4831fe064000f2ae8232b5f9778b43bc9",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\tests\\ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+    "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95"
+  }
+}

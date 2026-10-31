@@ -1,0 +1,12 @@
+PASS scan/font boot gate, 1/3-2/3-3/3 milestones, blank missing resources and stationary progress bar
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\tb_complete_scan_boot.v:31: $finish called at 33060000 (1ps)
+
+PASS transition pointer origin snapshot, next-switch update, corner clamp and disabled fallback
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\tb_pointer_transition_origin.v:19: $finish called at 331000 (1ps)
+
+PASS blank missing SD title/ticker/center: 122880 pixels, four projects; all 16 shared center glyphs, static short title and preserved running state
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\tb_empty_sd_text.v:43: $finish called at 7374050000 (1ps)
+
+PASS real duplex UART boot catalog: absent photos/music/font, delayed scan, validated font presence, all 256 words, final ACK and both A font banks
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\tb_boot_catalog_status.v:28: $finish called at 10852820000 (1ps)
+

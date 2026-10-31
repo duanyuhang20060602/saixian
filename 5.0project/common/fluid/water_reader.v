@@ -1,7 +1,7 @@
 // The SDRAM IP executes aligned four-word bursts, not per-word random reads.
 // Stream sequential rows into a 16-row RAM32K window; displace only on chip.
 // Row prefetch overlaps geometry. Two alternating rows hold the second image.
-module water_reader #(parameter ADDR_BITS=21,BURST_SIZE=128,FIFO_DEPTH=1024,FRAME_WIDTH=320,HEIGHT=720)(
+module water_reader #(parameter POINTER_CENTER=0,ADDR_BITS=21,BURST_SIZE=128,FIFO_DEPTH=1024,FRAME_WIDTH=320,HEIGHT=720)(
  input rst,mem_clk,Sdr_init_done,Sdr_init_ref_vld,Sdr_busy,Sdr_rd_en,App_wr_busy,
  input[31:0] Sdr_rd_dout,output O_rd_busy,output App_rd_en,output[ADDR_BITS-1:0] App_rd_addr,
  input read_req,output reg read_req_ack,output read_finish,
@@ -83,7 +83,7 @@ water_warp warp(.clk(mem_clk),.rst(rst||state==ACK),.valid(feed),.xword({ix[8:0]
  .cx0(cfg[74:64]),.cx1(cfg[63:53]),.cy0(cfg[52:43]),.cy1(cfg[42:33]),
  .radius0(cfg[32:21]),.radius1(cfg[20:9]),.out_valid(warp_valid),.sxword(wx),.sy(wy),.out_xword(ox),.out_y(oy));
 wire mapped_valid;wire[9:0] old_x,old_y,new_x,bx,by;wire[8:0] map_alpha;wire[4:0] map_shade;wire[2:0] map_shine;
-water_effect_map mapping(.clk(mem_clk),.rst(rst||state==ACK),.valid(warp_valid),.enabled(effect_active),
+water_effect_map #(.POINTER_CENTER(POINTER_CENTER)) mapping(.center_x(cfg[74:64]),.center_y(cfg[52:43]),.clk(mem_clk),.rst(rst||state==ACK),.valid(warp_valid),.enabled(effect_active),
  .right(right),.effect(effect),.progress(cfg[8:0]),.ox(ox),.oy(oy),.wx(wx),.wy(wy),
  .out_valid(mapped_valid),.old_x(old_x),.old_y(old_y),.new_x(new_x),.out_x(bx),.out_y(by),
  .alpha(map_alpha),.shade(map_shade),.shine(map_shine));
@@ -103,19 +103,19 @@ water_native_cache native_cache(.clk(mem_clk),.ra(native_ra),.wa(fetch_cache_add
  .rst(rst||state==ACK),.read_valid(mapped_valid));
 reg[2:0] cache_valid;reg[8:0] alpha0,alpha1;
 reg[7:0] last_q,affected_q;
-reg[4:0] shade_q[0:5];reg[2:0] shine_q[0:5];integer light_stage;
+reg[4:0] shade_q[0:7];reg[2:0] shine_q[0:7];integer light_stage;
 reg[63:0] native0,native1,native2,native3,native4,native5;
 always @(posedge mem_clk)begin
  if(rst||state==ACK)begin
   cache_valid<=0;alpha0<=0;alpha1<=0;last_q<=0;affected_q<=0;native0<=0;native1<=0;native2<=0;native3<=0;native4<=0;native5<=0;
-  for(light_stage=0;light_stage<6;light_stage=light_stage+1)begin shade_q[light_stage]<=0;shine_q[light_stage]<=0;end
+  for(light_stage=0;light_stage<8;light_stage=light_stage+1)begin shade_q[light_stage]<=0;shine_q[light_stage]<=0;end
  end
  else begin
   cache_valid<={cache_valid[1:0],mapped_valid};alpha0<=map_alpha;alpha1<=alpha0;
   last_q<={last_q[6:0],mapped_valid&&bx==638};
   affected_q<={affected_q[6:0],force_effect||effect_active||(!final_view&&(old_x!=bx||old_y!=by))};
   shade_q[0]<=map_shade;shine_q[0]<=map_shine;
-  for(light_stage=1;light_stage<6;light_stage=light_stage+1)begin shade_q[light_stage]<=shade_q[light_stage-1];shine_q[light_stage]<=shine_q[light_stage-1];end
+  for(light_stage=1;light_stage<8;light_stage=light_stage+1)begin shade_q[light_stage]<=shade_q[light_stage-1];shine_q[light_stage]<=shine_q[light_stage-1];end
   native0<=cached_native;native1<=native0;native2<=native1;native3<=native2;native4<=native3;native5<=native4;
  end
 end
@@ -125,10 +125,14 @@ water_blend mixer(.clk(mem_clk),.rst(rst||state==ACK),.valid(cache_valid[1]),
  .alpha(blend ? alpha1:9'd0),.out_valid(blend_valid),.word_out(blended));
 wire[31:0] illuminated;wire surface_valid;
 water_surface_light surface(.clk(mem_clk),.rst(rst||state==ACK),.valid(blend_valid),
- .rgb(blended),.shade(shade_q[5]),.shine(shine_q[5]),.out_valid(surface_valid),.lit(illuminated));
+ .color_mode(effect_active&&effect==6),.rgb(blended),.shade(shade_q[5]),.shine(shine_q[5]),.out_valid(surface_valid),.lit(illuminated));
+wire color_valid,color_last;wire[31:0] color_pixels;
+water_color_fringe fringe(.clk(mem_clk),.rst(rst||state==ACK),.enabled(effect_active&&effect==6),
+ .valid(surface_valid),.last(last_q[7]),.amount(shine_q[7]),.rgb(illuminated),
+ .out_valid(color_valid),.out_last(color_last),.pixels(color_pixels));
 wire reconstructed_valid;wire[31:0] reconstructed_word;
-water_reconstruct reconstruct(.clk(mem_clk),.rst(rst||state==ACK),.valid(surface_valid),
- .last(last_q[7]),.affected(affected_q[7]),.effect_word(illuminated),.native_pixels(native5),
+water_reconstruct reconstruct(.clk(mem_clk),.rst(rst||state==ACK),.valid(color_valid),
+ .last(color_last),.affected(effect_active&&effect==6 ? 1'b1:affected_q[7]),.effect_word(color_pixels),.native_pixels(native5),
  .out_valid(reconstructed_valid),.word_out(reconstructed_word));
 assign fifo_we=state==ROW_RUN&&reconstructed_valid;
 assign fifo_data=reconstructed_word;

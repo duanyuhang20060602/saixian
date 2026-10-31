@@ -1,0 +1,2 @@
+PASS B deadline pipeline: 92939 clocks exactly match accepted UART controller, all threshold predicates, timeout/reset priority, transaction/settings/cancel traffic and 32-bit wrap
+C:\Users\MR.HUSKY\Desktop\qian\saixian-independent-text-music-20261026\5.0project\tests\tb_b_deadlines.v:58: $finish called at 929590000 (1ps)

@@ -1,0 +1,2 @@
+PASS lossless sparse row decode: 652800 words, 8160 paired rows, all 120 fields, wrap, SDRAM contention and refresh
+E:\Codex\Work\saixian-relief-lightopt-20261024\candidate\5.0project\tests\tb_award_v5_rows.v:41: $finish called at 82436080000 (1ps)

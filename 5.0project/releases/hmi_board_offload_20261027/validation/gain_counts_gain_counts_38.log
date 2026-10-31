@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "gain_counts",
+  "validation_group": "gain_counts",
+  "passed": true,
+  "rerun_this_revision": true,
+  "seconds": 1.11
+}

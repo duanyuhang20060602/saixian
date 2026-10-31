@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "menu_geometry",
+  "validation_group": "legacy_menu_edge",
+  "passed": true,
+  "rerun_this_revision": false,
+  "seconds": 151.97
+}

@@ -2,6 +2,9 @@
 import math
 
 def mapped(fx,p,right,x,y,wx=None,wy=None,enabled=True):
+    if fx==6 and enabled:
+        from color_ripple_reference import mapped as color_map
+        return color_map(p,x,y)
     wx=x if wx is None else wx;wy=y if wy is None else wy
     px=2*x;u=1279-px if right else px
     a=b=px;mix=p;shade=shine=0

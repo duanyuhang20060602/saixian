@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "inputs_sha256": {
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\sd-cache-title-final-20261027\\cache.v": "756f1975c1055ea5a54ff2a72a48733487642b8e1ce3eb9c71e80246c73e6514",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\sd-cache-title-final-20261027\\shells.v": "59d15606a3710d1f25a5bcd67445a96271e8347e20f4817928c93706a88a2380",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_sd_cache.v": "123f9f12c98c1f8a5e106c5eff2a1a2574d644a452a53012eee844c72b4d332b",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\common\\photo_sd_title_store.v": "c501d919aa698b75b8b110f05abb6cca5727df175ebd507e2ff2ecb0f782e66d",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\5.0project\\tests\\tb_sd_title_media.v": "418ed7439d5fb6ce6a70a627913ee0a0fe21ef608dafdd8f14d7f39aa849ffca",
+    "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-independent-text-music-20261026\\validation\\sd-cache-title-final-20261027\\title_records.hex": "7437937cf6d6dfce535f9a879a4f0feec232e8bf28613e862372847d61f9e80b"
+  },
+  "scope": "Actual independent SD title storage through cache owner gating; all 256 words and both lengths; registered complete-scan predicate on 128 flag combinations. SD/decoders are port shells."
+}

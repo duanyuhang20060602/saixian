@@ -1,0 +1,2 @@
+PASS relief_pipeline_equivalence all 65536 surface words in four contexts, random RGB565 and signed lights, reset and cycle-aligned exact RGB888 output; checks=262163
+E:\Codex\Work\saixian-resource-save-20261024\candidate\5.0project\tests\tb_relief_pipeline_equivalence.v:22: $finish called at 2621637000 (1ps)

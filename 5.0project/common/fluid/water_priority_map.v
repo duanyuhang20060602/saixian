@@ -17,10 +17,11 @@
 `endif
 // One projected coordinate arrives every two clocks. All eleven effects share
 // one exact 17x17 multiplier: primary on the first slot, secondary on the next.
-module water_effect_map(input clk,rst,valid,enabled,right,input[3:0] effect,
+module water_effect_map #(parameter POINTER_CENTER=0)(input clk,rst,valid,enabled,right,input[3:0] effect,
  input[8:0] progress,input[9:0] ox,oy,wx,wy,
  output out_valid,output[9:0] old_x,old_y,new_x,out_x,out_y,
- output[8:0] alpha,output[4:0] shade,output[2:0] shine);
+ output[8:0] alpha,output[4:0] shade,output[2:0] shine,
+ input[10:0] center_x,input[9:0] center_y);
 wire bv,ev;wire[9:0] ba,by,bb,bx,bo,ea,ey,eb,ex,eo;
 wire[8:0] bq,eq;wire[4:0] bs,es;wire[2:0] bh,eh;
 wire extra_mode=effect==3||effect==4||effect==5||effect>=7;
@@ -48,18 +49,24 @@ end
 always @(posedge clk)if(!rst&&pending&&valid1)$fatal(1,"effect coordinate interval must be at least two clocks");
 `endif
 water_base_effect_map base(clk,rst,iv,ie,ir,fx[2:0],ip,ix,iy,iwx,iwy,bv,ba,by,bb,bx,bo,bq,bs,bh,primary_product,shared_t,shared_scale,shared_bend);
-water_extra_effect_map extra(clk,rst,valid,enabled,right,effect,progress,ox,oy,wx,wy,
- ev,ea,ey,eb,ex,eo,eq,es,eh,primary_product,shared_product,extra_a,extra_b,extra_c,extra_d,base_packet,shared_bend);
+water_extra_effect_map #(.POINTER_CENTER(POINTER_CENTER)) extra(clk,rst,valid,enabled,right,effect,progress,ox,oy,wx,wy,
+ ev,ea,ey,eb,ex,eo,eq,es,eh,primary_product,shared_product,extra_a,extra_b,extra_c,extra_d,base_packet,shared_bend,center_x,center_y);
+wire cv;wire[9:0] ca,cy,cb,cx,co;wire[8:0] cq;wire[4:0] cs;wire[2:0] ch;
+water_color_map #(.POINTER_CENTER(POINTER_CENTER)) color_map(clk,rst,valid&&enabled&&effect==6,progress,ox,oy,
+ cv,ca,cy,cb,cx,co,cq,cs,ch,center_x,center_y);
+// The frame snapshot keeps this selector constant until all pixels drain.
 assign {out_valid,old_x,old_y,new_x,out_x,out_y,alpha,shade,shine}=
+ (enabled&&effect==6) ? {cv,ca,cy,cb,cx,co,cq,cs,ch}:
  selection[5] ? {ev,ea,ey,eb,ex,eo,eq,es,eh}:{bv,ba,by,bb,bx,bo,bq,bs,bh};
 endmodule
 
-module water_extra_effect_map(input clk,rst,valid,enabled,right,input[3:0] effect,
+module water_extra_effect_map #(parameter POINTER_CENTER=0)(input clk,rst,valid,enabled,right,input[3:0] effect,
  input[8:0] progress,input[9:0] ox,oy,wx,wy,
  output reg out_valid,output reg[9:0] old_x,old_y,new_x,out_x,out_y,
  output reg[8:0] alpha,output reg[4:0] shade,output reg[2:0] shine,
  input signed[33:0] product,second_product,output signed[16:0] multiply_a,multiply_b,multiply_c,multiply_d,
- output[73:0] base_packet,output signed[17:0] shared_bend);
+ output[73:0] base_packet,output signed[17:0] shared_bend,
+ input[10:0] center_x,input[9:0] center_y);
 reg signed[7:0] ribbon_shape[0:89];
 initial $readmemh({`FX11_ROM_ROOT,"water_strip.hex"},ribbon_shape);
 wire[10:0] px={ox,1'b0};wire[10:0] u=right ? 11'd1279-px:px;
@@ -122,19 +129,25 @@ end
 // Six stages keep classification, reciprocal lookup, shared multiplication,
 // geometry and final clipping separate. Two exact DSP operations share the
 // two slots of each input block; latency is six clocks, throughput unchanged.
-wire[150:0] packet={px,u,origin,ox,oy,wx,wy,progress,local_t,scale,envelope,
- local_x,tilted,ribbon_local_y,glass_col,effect,enabled,right,valid&&!rst};
-reg[150:0] token0,token1;
+// Effect, direction and progress come from the atomic reader frame snapshot.
+// Do not duplicate frame controls (or px == 2*ox) in every coordinate token.
+wire[115:0] packet={u,origin,ox,oy,wx,wy,local_t,scale,
+ local_x,tilted,ribbon_local_y,glass_col,valid&&!rst};
+reg[115:0] token0,token1;
 reg write_slot,front_slot;reg[3:0] tags,tokens;
-wire[150:0] packet_a=front_slot ? token1:token0;
-wire[150:0] delayed_packet=tags[3] ? token1:token0;
+wire[115:0] packet_a=front_slot ? token1:token0;
+wire[115:0] delayed_packet=tags[3] ? token1:token0;
 // Capture the retiring bank before its next write. This is the same
 // four-clock metadata boundary, with no bank mux on the geometry path.
-wire[150:0] retiring_packet=tags[2] ? token1:token0;
-reg[150:0] packet_c;
+wire[115:0] retiring_packet=tags[2] ? token1:token0;
+reg[115:0] packet_c;
+reg geometry_c;
 always @(posedge clk)begin
- if(rst)packet_c<=0;
- else packet_c<={retiring_packet[150:1],tokens[2]};
+ if(rst)begin packet_c<=0;geometry_c<=0;end
+ else begin
+  packet_c<={retiring_packet[115:1],tokens[2]};
+  geometry_c<=enabled && progress!=0 && progress!=256;
+ end
 end
 always @(posedge clk)begin
  tags<={tags[2:0],write_slot};tokens<={tokens[2:0],valid&&!rst};
@@ -148,10 +161,12 @@ end
 wire[10:0] px_a,u_a,origin_a;wire[9:0] x_a,y_a,wx_a,wy_a;
 wire[8:0] p_a,local_t_a,scale_a,env_a;wire signed[12:0] lx_a,tilt_a;
 wire[6:0] ribbon_y_a;wire[1:0] gc_a;wire[3:0] fx_a;wire e_a,r_a,v_a;
-assign {px_a,u_a,origin_a,x_a,y_a,wx_a,wy_a,p_a,local_t_a,scale_a,env_a,
- lx_a,tilt_a,ribbon_y_a,gc_a,fx_a,e_a,r_a,v_a}=packet_a;
-wire signed[12:0] cx_a=$signed({2'd0,px_a})-13'sd640;
-wire signed[11:0] cy_a=$signed({2'd0,y_a})-12'sd360;
+assign {u_a,origin_a,x_a,y_a,wx_a,wy_a,local_t_a,scale_a,
+ lx_a,tilt_a,ribbon_y_a,gc_a,v_a}=packet_a;
+assign px_a={x_a,1'b0};assign p_a=progress;assign env_a=envelope;
+assign fx_a=effect;assign e_a=enabled;assign r_a=right;
+wire signed[12:0] cx_a=$signed({2'd0,px_a})-$signed({2'd0,(POINTER_CENTER && effect==7 ? center_x:11'd640)});
+wire signed[11:0] cy_a=$signed({2'd0,y_a})-$signed({2'd0,(POINTER_CENTER && effect==7 ? center_y:10'd360)});
 wire[5:0] wave_index_a=y_a[5:0]+{y_a[8:6],3'd0};
 // Quantized sine has exact quarter-wave symmetry: only seventeen
 // distinct nonnegative magnitudes. Keep this small table in logic so the
@@ -234,8 +249,23 @@ assign multiply_a=ma_b;assign multiply_b=mb_b;assign multiply_c=na_b;assign mult
 wire[10:0] px0,u0,origin0;wire[9:0] x0,y0,wx0,wy0;
 wire[8:0] p0,t0,scale0,env0;wire signed[12:0] lx0,tilt0;
 wire[6:0] ribbon_y0;wire[1:0] gc0;wire[3:0] fx0;wire e0,r0,v0;
-assign {px0,u0,origin0,x0,y0,wx0,wy0,p0,t0,scale0,env0,
- lx0,tilt0,ribbon_y0,gc0,fx0,e0,r0,v0}=packet_c;
+assign {u0,origin0,x0,y0,wx0,wy0,t0,scale0,
+ lx0,tilt0,ribbon_y0,gc0,v0}=packet_c;
+// Register frame geometry once rather than repeating it in every token.
+// Precompute the long constant-progress fronts before the pixel path.
+reg[8:0] geometry_progress,geometry_envelope;reg[3:0] geometry_effect;
+reg geometry_enable,geometry_right;
+reg signed[12:0] accordion_front,metal_front;
+reg signed[11:0] tunnel_radius;
+always @(posedge clk)begin
+ geometry_progress<=progress;geometry_envelope<=envelope;
+ geometry_effect<=effect;geometry_enable<=enabled;geometry_right<=right;
+ accordion_front<=13'd1280-(({4'd0,progress}<<2)+{4'd0,progress});
+ metal_front<=(({4'd0,progress}<<2)+({4'd0,progress}<<1))-13'd128;
+ tunnel_radius<=({3'd0,progress}<<1)+{3'd0,progress};
+end
+assign px0={x0,1'b0};assign p0=geometry_progress;assign env0=geometry_envelope;
+assign fx0=geometry_effect;assign e0=geometry_enable;assign r0=geometry_right;
 assign base_packet={v0,e0,r0,fx0,p0,t0,scale0,x0,y0,wx0,wy0};
 assign shared_bend=wave_product[17:0];
 always @(posedge clk)begin
@@ -272,7 +302,7 @@ reg signed[12:0] front,metric;
 reg signed[13:0] distance;
 reg signed[17:0] projection;
 reg signed[10:0] travel;
-reg signed[21:0] delta;
+reg signed[(POINTER_CENTER ? 23:21):0] delta;
 reg use_alpha;reg[8:0] bounded_alpha;reg[4:0] alpha_steps;
 always @*begin
  a=px0;b=px0;mix=p0;darkness=0;glint=0;use_alpha=0;bounded_alpha=0;alpha_steps=0;
@@ -288,7 +318,7 @@ always @*begin
    // Reflection is shared after the mode geometry.
   end
   4:begin // Accordion: a progressively compressed texture with shaded folds.
-   front=(256-p0);front=(front<<2)+front;a=product>>>10;b=u0;
+   front=accordion_front;a=product>>>10;b=u0;
    distance=$signed({1'b0,u0})-front;use_alpha=1;
    if(distance<0)begin
     metric=fold_phase(a[10:0]);darkness=metric<80 ? p0>>4:p0>>3;
@@ -298,7 +328,7 @@ always @*begin
    // Reflection is shared after the mode geometry.
   end
   5:begin // Metallic liquid front, local refraction, silver rim and shadow.
-   projection=wave_product>>>7;front=({23'd0,p0}<<2)+({23'd0,p0}<<1)-128+projection;distance=$signed({1'b0,u0})-front;
+   projection=wave_product>>>7;front=metal_front+projection;distance=$signed({1'b0,u0})-front;
    use_alpha=1;a=u0;b=u0;
    if((distance>-22'sd32&&distance<22'sd32))a=a+(distance>>>1);
    if(distance>0&&distance<32)darkness=6;
@@ -306,7 +336,7 @@ always @*begin
    // Reflection is shared after the mode geometry.
   end
   7:begin // True circular distance squared; no square-root or frame buffer.
-   delta=(wave_product<<<3)+wave_product-product-second_product;
+   delta=POINTER_CENTER ? (wave_product<<<5)+(wave_product<<<2)-product-second_product:(wave_product<<<3)+wave_product-product-second_product;
    use_alpha=1;
    if((delta>-22'sd24576&&delta<22'sd24576))a=a+(delta>>>11);
    glint=(delta>-22'sd8192&&delta<22'sd8192) ? 7:(delta>-22'sd16384&&delta<22'sd16384) ? 2:0;
@@ -321,7 +351,7 @@ always @*begin
   end
   9:begin // Horizontal tunnel: old panel contracts, new panel expands.
    a=640+(product>>>10);b=640+(second_product>>>10);
-   half_width=({23'd0,p0}<<1)+{23'd0,p0};distance=half_width-magnitude($signed({1'b0,px0})-640);
+   half_width=tunnel_radius;distance=half_width-magnitude($signed({1'b0,px0})-640);
    use_alpha=1;
    if(magnitude($signed({1'b0,px0})-640)>((((256-p0)<<2)+(256-p0))>>1)&&distance<0)darkness=24;
    else darkness=env0>>4;
@@ -365,7 +395,7 @@ always @*begin
  if(e0 && r0 && (fx0==3 || fx0==4 || fx0==5 || fx0==8))begin
   a=17'sd1279-a;b=17'sd1279-b;
  end
- if(!e0||p0==0||p0==256)begin
+ if(!geometry_c)begin
   a={wx0,1'b0};b=px0;mix=e0 ? p0:0;darkness=0;glint=0;
  end
 end
@@ -412,4 +442,166 @@ assign value=product[15:0];
 `else
 assign value=$signed(a)*$signed({1'b0,b});
 `endif
+endmodule
+
+// Fixed-point approximation of the selected web ripple: advected coherent
+// noise, eased radial reveal, local refraction, envelope and chromatic amount.
+// Four smooth periodic noise projections share one dual-port RAM over two
+// clocks. No per-pixel interpolation multiplier or frame-sized effect storage.
+module water_color_map #(parameter POINTER_CENTER=0)(input clk,rst,valid,input[8:0] progress,input[9:0] x,y,
+ output reg out_valid,output reg[9:0] old_x,old_y,new_x,out_x,out_y,
+ output reg[8:0] alpha,output reg[4:0] shade,output reg[2:0] shine,
+ input[10:0] center_x,input[9:0] center_y);
+wire[8:0] phase;
+water_color_phase eased_phase(progress,phase);
+reg pending;reg[9:0] next_a,next_b;
+wire[7:0] ia=({1'b0,x}+({1'b0,y}>>1)+{2'd0,phase})>>1;
+wire[7:0] ib=({1'b0,y}+({1'b0,x}>>1)-{2'd0,phase})>>1;
+wire[7:0] ic=x+(y<<1)+(phase<<1);
+wire[7:0] id=(x<<1)+x-y+(phase<<1)+phase;
+wire[9:0] ra=pending ? next_a:{2'b00,ia};
+wire[9:0] rb=pending ? next_b:{2'b01,ib};
+wire signed[8:0] qa,qb;reg signed[8:0] top_a,top_b;
+water_color_noise_rom noise_rom(clk,ra,rb,qa,qb);
+reg[6:0] v;reg[19:0] meta4,meta5,meta6;reg[10:0] radial4;
+reg[3:0] token_write,token_read;wire[19:0] token;
+// Progress is part of the reader's atomic frame snapshot; retain coordinates only.
+water_color_lutram #(20) token_queue(clk,valid&&!rst,token_write,{x,y},token_read,token);
+wire[9:0] token_x=token[19:10],token_y=token[9:0];
+wire[10:0] px={token_x,1'b0};
+wire[10:0] origin_x=POINTER_CENTER ? center_x:11'd640;
+wire[9:0] origin_y=POINTER_CENTER ? center_y:10'd360;
+wire[10:0] ax=px>=origin_x ? px-origin_x:origin_x-px;
+wire[9:0] ay=token_y>=origin_y ? token_y-origin_y:origin_y-token_y;
+wire[10:0] major=ax>ay ? ax:{1'b0,ay};
+wire[10:0] minor=ax>ay ? {1'b0,ay}:ax;
+wire[10:0] radius=major+(minor>>2)+(minor>>3);
+reg signed[10:0] noise2,noise3,noise;
+wire signed[10:0] first_sum=$signed({{2{top_a[8]}},top_a})+$signed({{2{top_b[8]}},top_b});
+wire signed[9:0] second_sum=$signed({qa[8],qa})+$signed({qb[8],qb});
+reg signed[12:0] delta;wire[8:0] phase4=phase;
+wire[12:0] front4=POINTER_CENTER ? ({4'd0,phase4}<<2)+({4'd0,phase4}<<1)+({4'd0,phase4}>>2):({4'd0,phase4}<<2)+({4'd0,phase4}>>1)+({4'd0,phase4}>>3);
+wire[12:0] ad=delta<0 ? -delta:delta;
+function[4:0] envelope;input[5:0] a;begin case(a)
+ 0:envelope=5'd31;
+ 1:envelope=5'd31;
+ 2:envelope=5'd30;
+ 3:envelope=5'd30;
+ 4:envelope=5'd29;
+ 5:envelope=5'd28;
+ 6:envelope=5'd27;
+ 7:envelope=5'd25;
+ 8:envelope=5'd24;
+ 9:envelope=5'd22;
+ 10:envelope=5'd20;
+ 11:envelope=5'd19;
+ 12:envelope=5'd17;
+ 13:envelope=5'd15;
+ 14:envelope=5'd13;
+ 15:envelope=5'd12;
+ 16:envelope=5'd10;
+ 17:envelope=5'd9;
+ 18:envelope=5'd7;
+ 19:envelope=5'd6;
+ 20:envelope=5'd5;
+ 21:envelope=5'd4;
+ 22:envelope=5'd3;
+ 23:envelope=5'd2;
+ 24:envelope=5'd2;
+ 25:envelope=5'd1;
+ 26:envelope=5'd1;
+ 27:envelope=5'd0;
+ 28:envelope=5'd0;
+ 29:envelope=5'd0;
+ 30:envelope=5'd0;
+ 31:envelope=5'd0;
+ 32:envelope=5'd0;
+ 33:envelope=5'd0;
+ 34:envelope=5'd0;
+ 35:envelope=5'd0;
+ 36:envelope=5'd0;
+ 37:envelope=5'd0;
+ 38:envelope=5'd0;
+ 39:envelope=5'd0;
+ 40:envelope=5'd0;
+ 41:envelope=5'd0;
+ 42:envelope=5'd0;
+ 43:envelope=5'd0;
+ 44:envelope=5'd0;
+ default:envelope=0;endcase end endfunction
+reg[8:0] alpha6;reg[4:0] env6;
+wire[8:0] phase5=phase;
+wire[4:0] ungated_env=ad>=512 ? 5'd0:envelope(ad[8:3]);
+wire[4:0] gate_limit=phase5<8 ? {phase5[2:0],2'd0}:phase5>224 ? (9'd256-phase5):5'd31;
+wire[4:0] gated_env=ungated_env>gate_limit ? gate_limit:ungated_env;
+wire[9:0] x6=meta6[19:10],y6=meta6[9:0];
+// Dominant horizontal projection permits the existing sequential row caches
+// to serve both photos, with no random SDRAM reads or additional RAM rows.
+wire[6:0] push={env6,1'b0};
+wire signed[11:0] projected=$signed({2'd0,x6})+(x6<320 ? $signed({5'd0,push}):-$signed({5'd0,push}));
+wire[9:0] bounded=projected<0 ? 10'd0:projected>638 ? 10'd638:{projected[9:1],1'b0};
+always @(posedge clk)begin
+ pending<=valid&&!rst;
+ if(valid)begin next_a<={2'b10,ic};next_b<={2'b11,id};end
+ if(pending)begin top_a<=qa;top_b<=qb;end
+ v<={v[5:0],valid&&!rst};
+ if(valid&&!rst)token_write<=token_write+1'b1;
+ if(v[3])begin meta4<=token;radial4<=radius;token_read<=token_read+1'b1;end
+ meta5<=meta4;meta6<=meta5;
+ noise2<=first_sum+($signed(second_sum)>>>1);noise3<=noise2;noise<=noise3;
+ delta<=$signed({2'd0,radial4})+$signed(noise)-$signed(front4);
+ alpha6<=delta<=-64 ? 9'd256:delta>=64 ? 9'd0:9'd128-($signed(delta)<<<1);
+ env6<=gated_env;
+ out_valid<=v[6]&&!rst;old_x<=bounded;new_x<=bounded;old_y<=y6;out_x<=x6;out_y<=y6;
+ alpha<=phase==0 ? 0:phase==256 ? 256:alpha6;
+ shade<=(phase==0||phase==256) ? 0:env6;
+ shine<=(phase==0||phase==256) ? 0:env6[4:2];
+ if(rst)begin v<=0;pending<=0;out_valid<=0;token_write<=0;token_read<=0;end
+end
+endmodule
+module water_color_noise_rom(input clk,input[9:0] ra,rb,output signed[8:0] qa,qb);
+`ifdef WATER_SIM
+reg[8:0] mem[0:1023];reg[8:0] a,b;
+initial $readmemh({`FX11_ROM_ROOT,"water_color_noise.hex"},mem);
+always @(posedge clk)begin a<=mem[ra];b<=mem[rb];end
+assign qa=a;assign qb=b;
+`else
+EG_LOGIC_BRAM #(.DATA_WIDTH_A(9),.ADDR_WIDTH_A(10),.DATA_DEPTH_A(1024),
+ .DATA_WIDTH_B(9),.ADDR_WIDTH_B(10),.DATA_DEPTH_B(1024),.BYTE_ENABLE(0),
+ .MODE("DP"),.REGMODE_A("NOREG"),.REGMODE_B("NOREG"),
+ .WRITEMODE_A("NORMAL"),.WRITEMODE_B("NORMAL"),.RESETMODE("SYNC"),
+ .IMPLEMENT("9K"),.INIT_FILE("water_color_noise.mif")) rom(
+ .clka(clk),.rsta(1'b0),.cea(1'b1),.wea(1'b0),.ocea(1'b1),.bea(1'b0),.addra(ra),.dia(9'd0),.doa(qa),
+ .clkb(clk),.rstb(1'b0),.ceb(1'b1),.web(1'b0),.oceb(1'b1),.beb(1'b0),.addrb(rb),.dib(9'd0),.dob(qb));
+`endif
+endmodule
+module water_color_lutram #(parameter W=5)(input clk,we,input[3:0] wa,input[W-1:0] wd,
+ input[3:0] ra,output[W-1:0] rd);
+`ifdef WATER_SIM
+reg[W-1:0] mem[0:15];always @(posedge clk)if(we)mem[wa]<=wd;
+assign rd=mem[ra];
+`else
+EG_LOGIC_DRAM #(.DATA_WIDTH_W(W),.DATA_WIDTH_R(W),.ADDR_WIDTH_W(4),.ADDR_WIDTH_R(4),
+ .DATA_DEPTH_W(16),.DATA_DEPTH_R(16)) ram(.di(wd),.waddr(wa),.we(we),.wclk(clk),.raddr(ra),.do(rd));
+`endif
+endmodule
+
+// Piecewise cubic timing. One spare DSP replaces five parallel shift/add terms.
+module water_color_phase(input[8:0] p,output[8:0] phase);
+reg[8:0] base;reg[6:0] slope;
+always @*case(p[7:5])
+ 0:begin base=0;slope=2;end 1:begin base=2;slope=14;end
+ 2:begin base=16;slope=38;end 3:begin base=54;slope=74;end
+ 4:begin base=128;slope=74;end 5:begin base=202;slope=38;end
+ 6:begin base=240;slope=14;end default:begin base=254;slope=2;end endcase
+wire[35:0] product;
+`ifdef FX11_NATIVE_DSP
+EG_PHY_MULT18 #(.INPUTREGA("DISABLE"),.INPUTREGB("DISABLE"),.OUTPUTREG("DISABLE")) multiply(
+ .a({11'd0,slope}),.b({13'd0,p[4:0]}),.p(product),.signeda(1'b0),.signedb(1'b0),
+ .acin(18'd0),.bcin(18'd0),.sourcea(1'b1),.sourceb(1'b1),.acout(),.bcout(),
+ .cea(1'b1),.ceb(1'b1),.cepd(1'b1),.clk(1'b0),.rstan(1'b1),.rstbn(1'b1),.rstpdn(1'b1));
+`else
+assign product=slope*p[4:0];
+`endif
+assign phase=p[8] ? 9'd256:base+product[11:5];
 endmodule

@@ -1,0 +1,3 @@
+mismatch check=15767 xy=403,24 mode=0 rgb=9fe7ff ref=6e5a44 font=000 ref=000
+FATAL: E:\Codex\Work\saixian-color-ripple-rtl-20261025\baseline\5.0project\tests\fx11_water\tb_visual_plot.v:55: visual plot retiming changes pixels or font timing
+       Time: 157676000  Scope: tb

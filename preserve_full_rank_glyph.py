@@ -1,0 +1,4 @@
+from pathlib import Path
+p=Path('5.0project/common/saixian_battle_result_fx_pipelined.v');s=p.read_text().replace('!row_id[3] && row_text_offset<32 && (rank_mode || raster_y>=row_y)','!row_id[3] && (row_text_offset<30 || row_text_offset>=62)');p.write_text(s,newline='\n')
+p=Path('5.0project/common/photo_rank_text.v');s=p.read_text().replace('name_region<=name_y_valid && read_y<28 &&','name_region<=name_y_valid &&');p.write_text(s,newline='\n')
+p=Path('5.0project/tests/tb_rank_pixels.v');s=p.read_text().replace('(x>=164 && x<196 && y>=151 && y<183):(x>=184 && x<216 && y>=214 && y<246)','(x>=268 && x<300 && y>=149 && y<181):(x>=328 && x<360 && y>=212 && y<244)').replace('(j==0 ? 158:178)','(j==0 ? 262:322)').replace('(j==0 ? 147:210)','(j==0 ? 145:208)');Path('5.0project/tests/tb_rank_full_glyph.v').write_text(s,newline='\n')

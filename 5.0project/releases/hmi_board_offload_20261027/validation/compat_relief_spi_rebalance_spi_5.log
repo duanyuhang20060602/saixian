@@ -1,0 +1,8 @@
+Public validation result summary. Raw local logs are not distributed.
+{
+  "test": "rebalance_spi",
+  "validation_group": "compat_relief_spi",
+  "passed": true,
+  "rerun_this_revision": true,
+  "seconds": 235.77
+}
