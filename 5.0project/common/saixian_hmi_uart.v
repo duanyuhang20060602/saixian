@@ -4,11 +4,13 @@
 // recover from a byte slip without resetting the FPGA.
 module saixian_hmi_uart #(
     parameter integer CLK_FREQ_HZ = 25_000_000,
+    parameter TEXT_INPUT=0,
     parameter integer BAUD_RATE   = 115_200
 )(
     input  wire       clk,
     input  wire       rst,
     input  wire       uart_rx,
+    input text_active,output text_timeout,output text_can_start,output text_byte_valid,output [7:0] text_byte,
     output reg award_mode_valid,award_mode_value,
     output reg touch_valid,output wire [9:0] touch_x,output wire [8:0] touch_y,
     output wire touch_down,output reg touch_mode_valid,touch_mode_value,
@@ -126,12 +128,16 @@ reg touch_frame_state;reg [7:0] touch_sum;
 // Payload is meaningful only with touch_valid; reuse the pending frame storage.
 assign touch_x=touch_frame_x;assign touch_y=touch_frame_y;assign touch_down=touch_frame_state;
 reg touch_check_ok;
+assign text_can_start=frame_index==0;
+assign text_byte_valid=rx_byte_valid;assign text_byte=rx_byte;
 reg [7:0] frame_command;
 reg [7:0] frame_value;
 // Abandon incomplete messages after four character times of silence.
 localparam integer FRAME_TIMEOUT = CLKS_PER_BIT * 40;
 localparam integer FRAME_IDLE_BITS = FRAME_TIMEOUT>1 ? $clog2(FRAME_TIMEOUT):1;
 reg [FRAME_IDLE_BITS-1:0] frame_idle;
+assign text_timeout=TEXT_INPUT && text_active && frame_idle>=FRAME_TIMEOUT-1;
+
 
 task decode_frame;
     begin
@@ -243,7 +249,7 @@ always @(posedge clk or posedge rst) begin
         reset_defaults_pulse <= 1'b0;
         frame_error_pulse    <= 1'b0;
 
-        if (frame_index == 0 || rx_byte_valid)
+        if ((frame_index == 0 && !(TEXT_INPUT && text_active)) || rx_byte_valid)
             frame_idle <= 0;
         else if (frame_idle >= FRAME_TIMEOUT-1) begin
             frame_idle <= 0;
@@ -251,7 +257,7 @@ always @(posedge clk or posedge rst) begin
             frame_error_pulse <= 1'b1;
         end else frame_idle <= frame_idle + 1'b1;
 
-        if (rx_byte_valid) begin
+        if (rx_byte_valid && (!TEXT_INPUT || (!text_active && !(frame_index==0 && rx_byte=="@")))) begin
             case (frame_index)
                 3'd0: begin
                     if (rx_byte == 8'h55) frame_index <= 4'd1;

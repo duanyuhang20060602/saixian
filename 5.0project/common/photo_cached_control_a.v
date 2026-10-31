@@ -4,6 +4,8 @@
 module photo_cached_control_a #(
  parameter CLK_HZ=75000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0,AWARD_LIGHTS=0,EARLY_THUMBNAIL=0,RELIEF_CONTROL=0,TITLE_SD=0,INDEPENDENT_TEXT=0,BOOT_STATUS=0,CONTROL_BAUD=115200
 )(
+ input text_request,input [7:0] text_tag,text_bank_length,text_character,input [13:0] text_code,
+ output text_reply,output [7:0] text_reply_tag,text_reply_position,output text_reply_error,
  output reg font_available,font_transfer_complete,
  output title_word_valid,output [6+INDEPENDENT_TEXT:0] title_word_index,output [31:0] title_word_data,output [4:0] title_word_length,
  output receive_relief,output receive_award,output receive_fluid,
@@ -159,12 +161,14 @@ reg session_changed;
 // one clock after any local session write; the next sample sees the new id.
 wire session_matches=session_match_q && !session_changed;
 wire matching=1'b1;
-wire title_packet=TITLE_SD && got && kind==33 && session_matches &&
- (INDEPENDENT_TEXT || incoming[119]==0) && incoming[111:104]!=0 && incoming[111:104]<=16;
-assign title_word_valid=title_packet && incoming[119:112]==title_expected && title_expected<(INDEPENDENT_TEXT ? 256:128);
-assign title_word_index=incoming[112+:7+INDEPENDENT_TEXT];
-assign title_word_data=incoming[103:72];
-assign title_word_length=incoming[108:104];
+reg text_outstanding;reg text_ack_pending;reg [23:0] text_ack;
+wire dynamic_reply=got && (kind==37 || kind==39) && session_matches && incoming[119:112]==text_tag && text_request;
+assign text_reply=dynamic_reply;assign text_reply_tag=incoming[119:112];
+assign text_reply_position=incoming[103:96];assign text_reply_error=kind==39;
+wire title_packet=dynamic_reply && kind==37;
+assign title_word_valid=title_packet;
+assign title_word_index={incoming[111],incoming[103:100],incoming[99:97]};
+assign title_word_data=incoming[95:64];assign title_word_length=incoming[108:104];
 
 always @(posedge clk or posedge rst)begin
  if(rst)begin session_match_q<=0;transaction_match_q<=0;begin_fields_match_q<=0;end
@@ -314,7 +318,7 @@ always @(posedge clk or posedge rst)begin
 end
 always @(posedge clk or posedge rst)begin
  if(rst)begin
-  font_available<=0;font_transfer_complete<=0;title_expected<=0;title_ack_pending<=0;title_ack_index<=0;
+  text_outstanding<=0;text_ack_pending<=0;text_ack<=0;font_available<=0;font_transfer_complete<=0;title_expected<=0;title_ack_pending<=0;title_ack_index<=0;
   session_changed<=0;timing_begin<=0;timing_present<=0;timing_commit<=0;timing_pending<=0;timing_display<=0;
   award_available<=0;relief_available<=0;selected_award<=6;award_scan_complete<=0;award_notice<=0;last_transfer_error<=0;award_selected<=0;award_wait<=0;return_photo<=0;
   count_reply<=0;applied_settings<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};sent_settings<=0;refresh_pending<=0;
@@ -328,10 +332,10 @@ always @(posedge clk or posedge rst)begin
   for(reset_index=0;reset_index<4;reset_index=reset_index+1)cache_id[reset_index]<=0;
  end else begin
   session_changed<=0;uptime<=uptime+1'b1;timer_reset<=0;send<=0;
-  if(title_packet && (incoming[119:112]==title_expected ||
-      (title_expected!=0 && incoming[119:112]==title_expected-1'b1)))begin
-   title_ack_pending<=1;title_ack_index<=incoming[112+:7+INDEPENDENT_TEXT];
-   if(incoming[119:112]==title_expected)title_expected<=title_expected+1'b1;
+  if(!text_request)text_outstanding<=0;
+  if(dynamic_reply)begin
+   text_ack_pending<=1;text_ack<=incoming[119:96];
+   if(kind==39 || incoming[99:97]==7)text_outstanding<=0;
   end
   timing_begin<=0;timing_present<=0;timing_commit<=0;
   if(got && kind_match_q[18] && session_matches && incoming[18:16]>=image_count && incoming[18:16]<=6 && (incoming[18:16]>0 || (AWARD_CONTROL && (incoming[23] || (RELIEF_CONTROL && incoming[21]))) || (BOOT_STATUS && incoming[22])))begin
@@ -359,7 +363,7 @@ always @(posedge clk or posedge rst)begin
    if(SETTINGS_LINK)begin applied_settings<=~settings_state;applied_context<=~live_context;end refresh_pending<=0;
   end else (* parallel_case *) case(1'b1)
    state_flags[HELLO_SEND]:if(!tx_busy && !send && !transition_active && !display_pending)begin
-    title_expected<=0;title_ack_pending<=0;message<=packet(1,session,0,0,0,FRAME_BYTES,0,0);send<=1;state_flags<=(16'd1<<HELLO_WAIT);timer_reset<=1;
+    text_outstanding<=0;text_ack_pending<=0;title_expected<=0;title_ack_pending<=0;message<=packet(1,session,0,0,0,FRAME_BYTES,0,0);send<=1;state_flags<=(16'd1<<HELLO_WAIT);timer_reset<=1;
    end
    state_flags[HELLO_WAIT]:begin
     if(got && kind_match_q[2] && session_matches && incoming[18:16]<=6 && (incoming[18:16]>0 || (AWARD_CONTROL && (incoming[23] || (RELIEF_CONTROL && incoming[21]))) || (BOOT_STATUS && incoming[22])))begin
@@ -371,8 +375,10 @@ always @(posedge clk or posedge rst)begin
     end else if(timeout1)begin state_flags<=(16'd1<<HELLO_SEND);timer_reset<=1;end
    end
    state_flags[IDLE]:if(!timer_reset)begin
-    if(TITLE_SD && title_ack_pending && !tx_busy && !send)begin
-    message<={8'd34,session,{{(1-INDEPENDENT_TEXT){1'b0}},title_ack_index},112'd0};send<=1;title_ack_pending<=0;
+    if(text_ack_pending && !tx_busy && !send)begin
+     message<={8'd38,session,text_ack,96'd0};send<=1;text_ack_pending<=0;
+   end else if(text_request && !text_outstanding && !tx_busy && !send)begin
+     message<={8'd35,session,text_tag,text_bank_length,text_character,2'd0,text_code,80'd0};send<=1;text_outstanding<=1;
    end else if(count_reply && !tx_busy && !send)begin
     message<=packet(19,session,0,0,0,FRAME_BYTES,0,(AWARD_CONTROL ? {award_available,award_scan_complete,relief_available,font_available,font_transfer_complete,image_count}:{5'd0,image_count}));send<=1;count_reply<=0;
    end else if(idle_context_dirty_q)begin

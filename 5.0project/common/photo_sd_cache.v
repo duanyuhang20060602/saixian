@@ -2,6 +2,7 @@
 // Six-entry directory, two external SDRAM slots. A locked transmit slot is never a
 // load destination. Neighbour prefetch runs while the link consumes its slot.
 module photo_sd_cache #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=1048575,FRAME_WORDS=460800,FORWARD_ONLY=0,DISPLAY_PIN=0,EARLY_PREFETCH=0,TITLE_SD=0,INDEPENDENT_TEXT=0)(
+ input text_load,input [13:0] text_code,input text_clear,input text_consume,output text_ready,text_failed,output [31:0] text_word,
  output title_ready,output [4:0] title_length,input [6+INDEPENDENT_TEXT:0] title_address,output [31:0] title_data,
  input display_valid,input [2:0] display_image,input prefetch_pause,
  input audio_packet_active,input audio_request_valid,input [7:0] requested_audio_epoch,input [2:0] requested_audio_track,
@@ -16,7 +17,7 @@ module photo_sd_cache #(parameter CLK_HZ=100000000,SCAN_MAX_SECTOR=1048575,FRAME
  output write_en,output [31:0] write_data,input finish_toggle,
  output sd_ncs,sd_dclk,sd_mosi,input sd_miso
 );
-reg demand,scanned,scanning,loading,load_started;
+reg abort_op;reg demand,scanned,scanning,loading,load_started;
 
 wire initialized,bmp_ready,scan_done,scan_exhausted,found,scaler_pixel;
 wire [31:0] sector;wire [15:0] width,height;wire [23:0] pixel,bmp_pixel;
@@ -31,20 +32,35 @@ assign write_top_down=loading && load_is_dlt;
 wire load_ready=load_is_dlt ? (dlt_ready && dlt_done):bmp_ready;
 wire [3:0] bmp_state;wire [31:0] bmp_read_addr;wire bmp_read_req;
 wire sector_end,byte_valid,scaler_fault;wire [7:0] byte_data;
-reg [1:0] read_owner;reg read_settle;reg [31:0] read_address;
-generate if(TITLE_SD)begin:title_storage
-photo_sd_title_store #(.INDEPENDENT_TEXT(INDEPENDENT_TEXT)) title_store(.clk(clk),.rst(rst),
- .valid(TITLE_SD && byte_valid && read_owner==1),.data(byte_data),
- .sector_end(sector_end && read_owner==1),.ready(title_ready),.length(title_length),
- .address(title_address),.word(title_data));
-end else begin:no_sd_title
- assign title_ready=0;assign title_length=0;assign title_data=0;
-end endgenerate
+reg [2:0] read_owner;reg read_settle;reg [31:0] read_address;
+wire font_read,font_catalog_complete,font_map_valid;wire [31:0] font_sector,font_map_sector;
+wire font_failed;reg font_aborted;
+always @(posedge clk or posedge rst)
+ if(rst)font_aborted<=0;
+ else if(!text_load)font_aborted<=0;
+ else if(abort_op)font_aborted<=1;
+assign text_failed=font_failed || font_aborted;
+reg font_pending;reg [31:0] font_pending_sector;
+always @(posedge clk or posedge rst)begin
+ if(rst || abort_op)begin font_pending<=0;font_pending_sector<=0;end
+ else begin
+  if(font_read)begin font_pending<=1;font_pending_sector<=font_sector;end
+  if(read_owner==4 && sector_end)font_pending<=0;
+ end
+end
+photo_scan_font_index font_index(.clk(clk),.rst(rst),.valid(byte_valid && read_owner==1),.data(byte_data),
+ .sector_end(sector_end && read_owner==1),.sector_address(read_address),.query(text_code[13:3]),
+ .query_valid(font_map_valid),.query_sector(font_map_sector),.complete(font_catalog_complete));
+photo_scan_glyph_b font_loader(.clk(clk),.rst(rst || abort_op),.request(text_load),.code(text_code),.clear_line(text_clear),
+ .map_valid(font_map_valid),.map_sector(font_map_sector),.scan_complete(award_scan_complete),
+ .ready(text_ready),.failed(font_failed),.consume(text_consume),.word(text_word),.read_sector(font_read),.sector(font_sector),
+ .byte_valid(byte_valid && read_owner==4),.byte_data(byte_data),.sector_end(sector_end && read_owner==4));
+assign title_ready=0;assign title_length=0;assign title_data=0;
 assign scaler_fault=load_is_dlt ? dlt_error!=0:bmp_fault;
-reg scan_start,scan_resume,scan_complete,scan_yield;reg load_start,load_launch,abort_op;reg [31:0] load_sector;
+reg scan_start,scan_resume,scan_complete,scan_yield;reg load_start,load_launch;reg [31:0] load_sector;
 reg scan_stop_q;
 always @(posedge clk or posedge rst)
- if(rst)scan_stop_q<=0;else scan_stop_q<=(image_count!=0 || award_available || relief_available) && (!scanned || scan_yield || (image_count==6 && audio_count==5 && award_available && relief_available && (!TITLE_SD || title_ready)));
+ if(rst)scan_stop_q<=0;else scan_stop_q<=(image_count!=0 || award_available || relief_available) && (!scanned || scan_yield || (image_count==6 && audio_count==5 && award_available && relief_available && font_catalog_complete));
 reg [31:0] directory[0:7];reg [2:0] cache_id[0:1];reg [1:0] cache_valid;
 reg [15:0] directory_width[0:7],directory_height[0:7];
 reg [1:0] load_slot;reg [2:0] load_image,current_image,wanted,playback_image;
@@ -160,6 +176,7 @@ always @(posedge clk or posedge rst)begin
  else if(read_owner==0)begin
   // Sector-granular arbitration: refill music before the next picture sector.
   if(audio_sd_req && !audio_switching)begin read_owner<=2;read_address<=audio_sd_addr;end
+  else if(font_pending)begin read_owner<=4;read_address<=font_pending_sector;end
   else if(bmp_read_req)begin read_owner<=1;read_address<=bmp_read_addr;end
   else if(dlt_req)begin read_owner<=3;read_address<=dlt_sector;end
  end
@@ -233,7 +250,7 @@ always @(posedge clk or posedge rst)begin
    end
    if(scan_done && !scan_start && !scan_resume)begin
     scanning<=0;scanned<=1;scan_yield<=0;
-    scan_complete<=scan_exhausted || (image_count==6 && audio_count==5 && award_available && relief_available && (!TITLE_SD || title_ready));
+    scan_complete<=scan_exhausted || (image_count==6 && audio_count==5 && award_available && relief_available && font_catalog_complete);
     if(image_count==0 && !award_available && !relief_available && !found)error<=1;
    end
    if(scanned && (request || demand || release_slot || found))scan_yield<=1;

@@ -1,5 +1,5 @@
 // 128 glyphs x 16 rows x 16 bits, stored in one EG4 32K block RAM.
-module saixian_font_rom #(parameter TITLE_SD=0,INDEPENDENT_TEXT=0)(
+module saixian_font_rom #(parameter SERIAL_TEXT=0,TITLE_SD=0,INDEPENDENT_TEXT=0)(
     input word_valid,input [6+INDEPENDENT_TEXT:0] word_index,input [31:0] word_data,input [4:0] word_length,
     input rst,frame_tick,output reg [4:0] title_length,output reg [4:0] ticker_length,
     input  wire        clk,
@@ -27,10 +27,10 @@ always @(posedge clk or posedge rst)begin
    if(word_index[6:0]==0)begin
     if(word_bank)begin ticker_length<=0;candidate_ticker_length<=word_length;end
     else begin title_length<=0;candidate_length<=word_length;end
-    invalid<=word_length==0 || word_length>16;complete[word_bank]<=0;
+    invalid<=(!SERIAL_TEXT && word_length==0) || word_length>16;complete[word_bank]<=0;
    end else if(word_length!=(word_bank ? candidate_ticker_length:candidate_length))invalid<=1;
   end
-  if(pending && low_index[6:0]==127 && !invalid)complete[low_bank]<=1;
+  if(pending && (SERIAL_TEXT ? (candidate_length==0 && !low_bank || candidate_ticker_length==0 && low_bank || low_index[6:0]==({2'd0,(low_bank ? candidate_ticker_length:candidate_length)}<<3)-1'b1):low_index[6:0]==127) && !invalid)complete[low_bank]<=1;
   if(frame_tick)begin
    if(complete[0] && !(word_valid && word_index==0))title_length<=candidate_length;
    if(complete[1] && !(word_valid && word_index==128))ticker_length<=candidate_ticker_length;

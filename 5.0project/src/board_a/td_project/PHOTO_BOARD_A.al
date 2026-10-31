@@ -546,8 +546,10 @@
                 </FileInfo>
             </File>
         <File Path="../../../common/photo_relief_remote.v"><FileInfo><Attr Name="UsedInSyn" Val="true"/><Attr Name="UsedInP&amp;R" Val="true"/><Attr Name="BelongTo" Val="design_1"/><Attr Name="CompileOrder" Val="67"/></FileInfo></File><File Path="../../../common/photo_relief_remote_tables.v"><FileInfo><Attr Name="UsedInSyn" Val="true"/><Attr Name="UsedInP&amp;R" Val="true"/><Attr Name="BelongTo" Val="design_1"/><Attr Name="CompileOrder" Val="68"/></FileInfo></File><File Path="../../../common/photo_relief_tables_compact_a.v"><FileInfo><Attr Name="UsedInSyn" Val="true"/><Attr Name="UsedInP&amp;R" Val="true"/><Attr Name="BelongTo" Val="design_1"/><Attr Name="CompileOrder" Val="69"/></FileInfo></File><File Path="../../../common/photo_relief_decode_cache.v"><FileInfo><Attr Name="UsedInSyn" Val="true"/><Attr Name="UsedInP&amp;R" Val="true"/><Attr Name="BelongTo" Val="design_1"/><Attr Name="CompileOrder" Val="70"/></FileInfo></File><File Path="../../../common/photo_award_math_bank.v"><FileInfo><Attr Name="UsedInSyn" Val="true"/><Attr Name="UsedInP&amp;R" Val="true"/><Attr Name="BelongTo" Val="design_1"/><Attr Name="CompileOrder" Val="71"/></FileInfo></File><File Path="../../../common/photo_hmi_remote.v"><FileInfo><Attr Name="UsedInSyn" Val="true"/><Attr Name="UsedInP&amp;R" Val="true"/><Attr Name="BelongTo" Val="design_1"/><Attr Name="CompileOrder" Val="72"/></FileInfo></File>
-        </Verilog>
-    </Source_Files>
+        
+    <File Path="../../../common/photo_serial_text.v"><FileInfo><Attr Name="UsedInSyn" Val="true"/><Attr Name="UsedInP&amp;R" Val="true"/><Attr Name="BelongTo" Val="design_1"/><Attr Name="CompileOrder" Val="72"/></FileInfo></File>
+</Verilog>
+</Source_Files>
     <FileSets>
         <FileSet Name="design_1" Type="DesignFiles">
         </FileSet>

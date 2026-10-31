@@ -1,0 +1,26 @@
+[
+  {
+    "test": "tb_hmi",
+    "passed": true,
+    "inputs_sha256": {
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-serial-title-20261031\\5.0project\\tests\\tb_hmi.v": "c3c51d898e2d41e18861a5b18a4d20982b0d834dd2cccbcb783165df4831b20a",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-serial-title-20261031\\5.0project\\common\\saixian_hmi_uart.v": "5bfb3eea7634511d4f66cce969ab1610d83fb98be1b1c2337df8b83950a23679"
+    }
+  },
+  {
+    "test": "tb_touch_uart_trim",
+    "passed": true,
+    "inputs_sha256": {
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-serial-title-20261031\\5.0project\\tests\\tb_touch_uart_trim.v": "7ce1aa90840977011c1d8ce3c14f56022d398b6ada1cc6d8ebcd0d0d4ea03ec4",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-serial-title-20261031\\5.0project\\common\\saixian_hmi_uart.v": "5bfb3eea7634511d4f66cce969ab1610d83fb98be1b1c2337df8b83950a23679"
+    }
+  },
+  {
+    "test": "tb_touch_uart_trim_75m",
+    "passed": true,
+    "inputs_sha256": {
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-serial-title-20261031\\5.0project\\tests\\tb_touch_uart_trim_75m.v": "4953b743096710342d8b0a361495cd3890c6a14273e08e52cdea1582bf0cfa74",
+      "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-serial-title-20261031\\5.0project\\common\\saixian_hmi_uart.v": "5bfb3eea7634511d4f66cce969ab1610d83fb98be1b1c2337df8b83950a23679"
+    }
+  }
+]

@@ -111,6 +111,7 @@ end
 endmodule
 
 module photo_control_b #(parameter CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SEND_SOURCE_SIZE=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0,AWARD_LIGHTS=0,RELIEF_CONTROL=0,TITLE_SD=0,INDEPENDENT_TEXT=0,BOOT_STATUS=0,CONTROL_BAUD=115200)(
+ output reg text_load,output reg [13:0] text_code,output text_clear,input text_ready,text_failed,input [31:0] text_word,output reg text_consume,
  input title_ready,input [4:0] title_length,input [31:0] title_data,output [6+INDEPENDENT_TEXT:0] title_address,
  input award_available,award_scan_complete,relief_available,
  input clk,rst,uart_rx,output uart_tx,input [2:0] image_count,input media_ready,
@@ -124,6 +125,8 @@ module photo_control_b #(parameter CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=18
 ,output [31:0] hmi_session
 );
 
+reg [7:0] text_tag,text_bank_length;reg [3:0] text_character;reg [2:0] text_row;reg text_wait;
+assign text_clear=text_bank_length[4:0]==0;
 reg [6+INDEPENDENT_TEXT:0] title_index;reg title_wait,title_complete,title_read_settle;
 assign title_address=title_index;
 wire tx_busy,got,bad;wire [159:0] incoming;
@@ -184,7 +187,7 @@ end
 assign timing_cancel=media_cancel || error!=0 || (got && matching && kind==9);
 assign busy=!state_flags[IDLE] && !state_flags[DISCOVER];
 always @(posedge clk or posedge rst)begin
- if(rst)begin title_index<=0;title_wait<=0;title_complete<=0;title_read_settle<=0;announced_count<=0;display_valid<=0;display_image<=0;prefetch_pause<=0;context_reply<=0;cancel_reply<=0;settings_state<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};settings_reply<=0;state_flags<=11'd1<<DISCOVER;session<=0;request_seq<=0;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;direction<=1;retries<=0;send<=0;message<=0;
+ if(rst)begin text_load<=0;text_code<=0;text_tag<=0;text_bank_length<=0;text_character<=0;text_row<=0;text_wait<=0;text_consume<=0;title_index<=0;title_wait<=0;title_complete<=0;title_read_settle<=0;announced_count<=0;display_valid<=0;display_image<=0;prefetch_pause<=0;context_reply<=0;cancel_reply<=0;settings_state<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};settings_reply<=0;state_flags<=11'd1<<DISCOVER;session<=0;request_seq<=0;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;direction<=1;retries<=0;send<=0;message<=0;
   media_request<=0;media_target<=0;media_release<=0;media_cancel<=0;transmit_slot<=0;start_toggle<=0;abort_toggle<=0;error<=0;completed_crc<=0;
   source_width<=0;source_height<=0;timing_begin<=0;timing_ready<=0;timing_send<=0;timing_done<=0;end
  else begin
@@ -197,6 +200,14 @@ always @(posedge clk or posedge rst)begin
   if(TITLE_SD && got && kind==34 && session_matches &&
      incoming[119:112]==title_index && title_wait)begin
    title_wait<=0;title_read_settle<=1;if(title_index==(INDEPENDENT_TEXT ? 255:127))title_complete<=1;else title_index<=title_index+1'b1;
+  end
+  text_consume<=0;
+  if(got && kind==35 && session_matches && !text_load)begin
+   text_load<=1;text_code<=incoming[93:80];text_tag<=incoming[119:112];text_bank_length<=incoming[111:104];text_character<=incoming[99:96];text_row<=0;text_wait<=0;
+  end
+  if(got && kind==38 && session_matches && incoming[119:112]==text_tag && incoming[111:104]==text_bank_length && incoming[103:96]=={text_character,text_row,1'b0} && text_wait)begin
+   text_wait<=0;text_consume<=1;
+   if(text_row==7 || text_failed)text_load<=0;else text_row<=text_row+1'b1;
   end
   timing_begin<=0;timing_ready<=0;timing_send<=0;timing_done<=0;
   if(got && kind==19 && session_matches && incoming[23:16]==catalog)announced_count<=incoming[23:16];media_release<=0;media_cancel<=0;
@@ -233,9 +244,10 @@ always @(posedge clk or posedge rst)begin
    end else if(catalog!=announced_count && (image_count>0 || (AWARD_CONTROL && (award_available || has_relief)) || (BOOT_STATUS && award_scan_complete)) && due_catalog && tx_idle_q && !send)begin
     // Reliable count growth notification; acknowledgement never resets caches.
     message<=packet(18,session,0,0,0,FRAME_BYTES,0,catalog);send<=1;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;
-   end else if(TITLE_SD && title_ready && !title_complete && !title_read_settle && !(got && kind==34) && (!title_wait || due_one) && tx_idle_q && !send)begin
-    message<={8'd33,session,{{(1-INDEPENDENT_TEXT){1'b0}},title_index},{3'd0,title_length},title_data,72'd0};
-    send<=1;title_wait<=1;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;
+   end else if(text_load && (text_ready || text_failed) && !text_wait && !text_consume && !(got && kind==38) && tx_idle_q && !send)begin
+    message<={(text_failed ? 8'd39:8'd37),session,text_tag,text_bank_length,text_character,text_row,1'b0,text_word,64'd0};
+    send<=1;text_wait<=1;
+
    end
    state_flags[LOAD]:begin
     if(media_ready)begin
