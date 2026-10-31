@@ -1,0 +1,6 @@
+results/tmp/
+results/tests/
+*.vvp
+*.ppm
+*.pyc
+__pycache__/
