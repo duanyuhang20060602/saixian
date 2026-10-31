@@ -1,0 +1,2 @@
+PASS real A/B SPI: 5078 PCM words exact, 116 UART bytes exact, reserved-slot errors=0 AV=2 relief=4 pages=1 HMI-only=3 underflows=0
+5.0project/tests/tb_spi_trophy_compact.v:80: $finish called at 88000693298 (1ps)
