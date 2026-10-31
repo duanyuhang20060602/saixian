@@ -1,0 +1,2 @@
+PASS video integration: 34-clock RGB/DE,      921600 full scoreboard pixels,      921600 legacy pixels, blank-only mode switching
+E:\Codex\Downloads\qiansai\5.0project\tests\tb_match_video.v:26: $finish called at 24755380000 (1ps)

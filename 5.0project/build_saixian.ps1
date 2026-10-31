@@ -7,7 +7,7 @@ param(
 )
 $ErrorActionPreference='Stop'
 $env:PYTHONDONTWRITEBYTECODE='1'
-$env:TEMP=Join-Path $PSScriptRoot '../temp'
+$env:TEMP='E:/Codex/Temp/saixian-5_0'
 $env:TMP=$env:TEMP
 $env:SAIXIAN_TEMP_ROOT=$env:TEMP
 New-Item -ItemType Directory -Force -Path $env:TEMP | Out-Null
@@ -16,7 +16,7 @@ if(!$Python){
  if(Test-Path -LiteralPath $runtime){$Python=$runtime}
  else {$Python=(Get-Command python -ErrorAction Stop).Source}
 }
-if(!$WorkDir){$WorkDir=Join-Path $PSScriptRoot ('../builds/5.0-'+(Get-Date -Format 'yyyyMMdd_HHmmss'))}
+if(!$WorkDir){$WorkDir=Join-Path 'E:/Codex/Work' ('5.0-build-'+(Get-Date -Format 'yyyyMMdd_HHmmss'))}
 $buildArgs=@('-B',(Join-Path $PSScriptRoot 'tools/build_saved_project.py'),'--board',$Board.ToLowerInvariant())
 if($WorkDir){$buildArgs+=@('--work',$WorkDir)}
 if($TdRoot){$buildArgs+=@('--td-root',$TdRoot)}

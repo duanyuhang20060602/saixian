@@ -1,0 +1,2 @@
+PASS simultaneous serial/physical events: distinct teams, duration/start serialization, absolute0/999 priority, pause and final-edge correction
+E:\Codex\Downloads\qiansai\5.0project\tests\tb_match_priority.v:17: $finish called at 570000 (1ps)

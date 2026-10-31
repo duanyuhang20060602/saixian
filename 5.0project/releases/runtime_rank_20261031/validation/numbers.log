@@ -1,0 +1,2 @@
+PASS match arithmetic: 3072 exhaustive/boundary cases; max 558 clocks in blanking
+E:\Codex\Downloads\qiansai\5.0project\tests\tb_match_numbers.v:23: $finish called at 9053920000 (1ps)

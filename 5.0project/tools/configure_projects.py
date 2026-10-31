@@ -57,6 +57,7 @@ for role,top in [('board_a','top_photo_a'),('board_b','top_photo_b')]:
     shared+=['fluid/'+p.name for p in sorted((ROOT/'common/fluid').glob('*.v')) if p.name!='water_pack.v'] if role=='board_a' else ['fluid/water_pack.v']
     if role=='board_b':shared+=['audio_ui/saixian_audio_visualizer.v','audio_ui/saixian_audio_repair.v']
     if role=='board_a':shared+=['award_fx.v','award_sprite_rom.v','photo_award_render.v','photo_boot_screen.v','saixian_battle_result_fx_pipelined.v']
+    if role=='board_a':shared+=['match/'+p.name for p in sorted((ROOT/'common/match').glob('*.v'))]
     paths+=['../../../common/'+p for p in shared]
     if role=='board_a':paths+=['../../../common/photo_thumbnail.v']
     if role=='board_b':paths+=['../../../common/photo_sd/'+p.name for p in (ROOT/'common/photo_sd').glob('*.v')]

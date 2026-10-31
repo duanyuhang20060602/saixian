@@ -1,11 +1,11 @@
 // Input follows frame_pixels (two clocks from the raster). The original
 // award effect takes five clocks; nineteen more align with HDMI's 26 clocks.
-module photo_award_render #(parameter RELIEF_ENABLE=0,SHARED_ENABLE=1,REMOTE_RELIEF=0,SHARED_MATH=0)(
+module photo_award_render #(parameter RELIEF_ENABLE=0,SHARED_ENABLE=1,REMOTE_RELIEF=0,SHARED_MATH=0,EARLY_COLUMN=0)(
  input relief_mode,touch_contact,input [10:0] cursor_x,input [9:0] cursor_y,
  input mem_clk,mem_rst,input [20:0] light_base,
  output light_wide,output light_request,output [20:0] light_address,input light_ack,input [31:0] light_data,input light_valid,
  input de_in,input clk,rst,enable,pause,frame_tick,
- input [10:0] x,input [9:0] y,input [23:0] tagged_rgb,
+ input [10:0] x,early_x,input [9:0] y,input [23:0] tagged_rgb,
  output [23:0] rgb,output [23:0] menu_rgb,
  output [3:0] light_error,output [6:0] light_frame,
  output [31:0] relief_descriptor,input relief_sent,input [31:0] relief_sent_descriptor,
@@ -102,10 +102,10 @@ wire [4:0] blue=pixel[0] ? {1'b0,pixel[10:7]} : {pixel[4:1],1'b0};
 wire [5:0] green=pixel[0] ? {pixel[10:6],1'b0} : pixel[10:5];
 wire [23:0] base={pixel[15:11],pixel[15:13],green,green[5:4],blue,blue[4:2]};
 wire [23:0] effect_rgb;
-award_fx #(.SHARED_MATH(SHARED_MATH),.INITIAL_HOLD_FRAMES(0)) effect(
+award_fx #(.SHARED_MATH(SHARED_MATH),.EARLY_COLUMN(EARLY_COLUMN),.INITIAL_HOLD_FRAMES(0)) effect(
  .math_delta_r(blend_delta_r),.math_delta_g(blend_delta_g),.math_alpha(blend_alpha),.math_request(blend_request),
  .math_product_r(shared_product_x),.math_product_g(shared_product_y),.clk(clk),.rst(rst),.enable(enable && !relief),.pause(pause),.frame_tick(frame_tick),
- .x(x),.y(y),.base_rgb(base),.tag(pixel[5:0]),.rgb(effect_rgb));
+ .x(x),.early_x(early_x),.y(y),.base_rgb(base),.tag(pixel[5:0]),.rgb(effect_rgb));
 wire [23:0] light_rgb;
 reg [4:0] light_de,light_vs;
 always @(posedge clk)if(rst)begin light_de<=0;light_vs<=0;end

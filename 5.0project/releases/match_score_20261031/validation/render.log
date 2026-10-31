@@ -1,0 +1,9 @@
+PASS rendered                        setup.ppm:      921600 pixels
+PASS rendered                    countdown.ppm:      921600 pixels
+PASS rendered                      running.ppm:      921600 pixels
+PASS rendered                       paused.ppm:      921600 pixels
+PASS rendered                     winner_a.ppm:      921600 pixels
+PASS rendered                     winner_b.ppm:      921600 pixels
+PASS rendered                          tie.ppm:      921600 pixels
+PASS atomic frame publication
+E:\Codex\Work\integrate-match-a74-20261031\tests11\render\render.v:48: $finish called at 86625800000 (1ps)

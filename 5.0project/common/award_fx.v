@@ -1,11 +1,11 @@
 // Antialiased foil sprites, graded mesh/node glow and wall-lamp breathing.
 // Five pipeline stages; delta_video delays DE/VS/boot by the same latency.
-module award_fx #(parameter INITIAL_HOLD_FRAMES=61,SHARED_MATH=0)(
+module award_fx #(parameter INITIAL_HOLD_FRAMES=61,SHARED_MATH=0,EARLY_COLUMN=0)(
  input clk,input rst,input enable,input pause,input frame_tick,
  input [10:0] x,input [9:0] y,input [23:0] base_rgb,input [5:0] tag,
  output [23:0] rgb,
  output signed [8:0] math_delta_r,math_delta_g,output [3:0] math_alpha,output math_request,
- input signed [14:0] math_product_r,math_product_g
+ input signed [14:0] math_product_r,math_product_g,input[10:0] early_x
 );
 (* async_reg="true" *) reg pause_meta,pause_sync;
 reg [9:0] motion,fraction;reg [6:0] initial_frames;
@@ -282,14 +282,24 @@ function [6:0] phase_curve;input [8:0] p;begin case(p[8:3])
  default:phase_curve=0;endcase end endfunction
 
 wire live=enable && initial_frames>=INITIAL_HOLD_FRAMES;
-wire [8:0] phase=motion[8:0]+y[8:0]+bend(x[10:5]);
+wire[8:0] column_bend;wire[15:0] seed;
+// x0 is available one clock before the FIFO-aligned x1. Capture only the
+// column lookup results there; motion, pixel coordinates, RGB and the five
+// shader stages keep exactly their original clock relationship.
+generate if(EARLY_COLUMN)begin:early_column
+ reg[8:0] bend_q;reg[15:0] seed_q;
+ always @(posedge clk)begin bend_q<=bend(early_x[10:5]);seed_q<=seed_for_column(early_x[10:5]);end
+ assign column_bend=bend_q;assign seed=seed_q;
+end else begin:direct_column
+ assign column_bend=bend(x[10:5]);assign seed=seed_for_column(x[10:5]);
+end endgenerate
+wire [8:0] phase=motion[8:0]+y[8:0]+column_bend;
 reg [6:0] wave0,breath0;reg [10:0] x0;reg [9:0] y0;
 reg [23:0] base0;reg [5:0] tag0;reg live0;
 wire [8:0] distance=phase[8] ? (~phase+9'd1) : phase;
 // Both effects have a dark phase: the plate highlights must not hide the sweep.
 wire signed [7:0] intensity=tag0[5] ? $signed({1'b0,breath0})-8'sd32 : $signed({1'b0,wave0})-8'sd32;
 wire signed [12:0] weighted=$signed({1'b0,tag0[4:1]})*intensity;
-wire [15:0] seed=seed_for_column(x[10:5]);
 // Compute centers alongside the original input capture. The following
 // stage only measures pixel offsets; the five-clock shader latency stays fixed.
 function [18:0] sprite_components;

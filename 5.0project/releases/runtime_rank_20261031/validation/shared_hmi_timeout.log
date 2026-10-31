@@ -1,0 +1,2 @@
+PASS actual HMI UART: mode, teams, durations, direct0..999, +/- keys/buttons, pause, result lock, caption/binary coexistence, timeout and exit-key isolation
+E:\Codex\Work\complete-hmi-20261031\shared_timeout01\bench.v:57: $finish called at 246015000 (1ps)

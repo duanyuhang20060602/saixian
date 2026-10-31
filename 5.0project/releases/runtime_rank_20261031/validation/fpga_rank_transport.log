@@ -1,0 +1,2 @@
+PASS real screen UART -> A controller -> B indexed SD glyph loader -> rank RAM for first/last rows, Chinese/ASCII names, exact times; automatic default title/ticker on cold and soft reset; captions and old media/match controls preserved
+E:\Codex\Downloads\qiansai\5.0project\tests\tb_fpga_rank_transport.v:220: $finish called at 30758574000 (1ps)

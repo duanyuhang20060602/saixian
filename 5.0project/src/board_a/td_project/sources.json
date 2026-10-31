@@ -71,5 +71,18 @@
   "../../../common/photo_relief_decode_cache.v",
   "../../../common/photo_award_math_bank.v",
   "../../../common/photo_hmi_remote.v",
-  "../../../common/photo_serial_text.v"
+  "../../../common/photo_serial_text.v",
+  "../../../common/match/photo_match_control.v",
+  "../../../common/match/photo_match_serial.v",
+  "../../../common/match/photo_match_manager.v",
+  "../../../common/match/photo_match_numbers.v",
+  "../../../common/match/photo_match_font.v",
+  "../../../common/match/photo_match_render.v",
+  "../../../common/match/photo_match_video.v",
+  "../../../common/match/photo_match_text_query.v",
+  "../../../common/match/photo_match_audio_fifo.v",
+  "../../../common/match/photo_match_audio_spi.v",
+  "../../../common/match/photo_match_columns.v",
+  "../../../common/match/photo_serial_text_runtime.v",
+  "../../../common/match/photo_visual_reset.v"
 ]

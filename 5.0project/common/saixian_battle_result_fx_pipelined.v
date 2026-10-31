@@ -1,6 +1,8 @@
 // Blue or red victory -> eight-runner ranking -> compact top three.
 // A generic trigger advances from a held page; direct inputs select a result.
 module saixian_battle_result_fx(
+    input wire rank_begin,rank_finish,rank_failed,input wire[2:0] rank_index,input wire[3:0] rank_length,input wire[15:0] rank_time,
+    input wire rank_word_valid,input wire[8:0] rank_word_index,input wire[31:0] rank_word_data,
     input wire clk, rst, frame_tick, trigger,
     input wire select_blue, select_red, select_sprint, stop,
     input wire [10:0] x_in,
@@ -419,7 +421,7 @@ end
 // Victory and passthrough pixels take the same extra clock.
 reg [10:0] pre_x;
 reg [9:0] pre_y;
-reg pre_row_text_valid;
+reg pre_row_text_valid;reg [3:0] pre_row_font_y;
 // Selected rank bands span offsets -8..35 and podium bands -34..61.
 // Their low six bits are <28 exactly for the visible text offsets 0..27.
 // Evaluate this before Stage 0 so row-id decode/add/compare is not serialized.
@@ -456,7 +458,7 @@ reg pre_de, pre_vs, pre_ink, pre_red_ink, pre_red;
 reg [23:0] pre_rgb;
 always @(posedge clk or posedge rst) begin
     if(rst) begin
-        pre_x<=0; pre_y<=0; pre_row_text_valid<=0; pre_row_shift<=0;
+        pre_x<=0; pre_y<=0; pre_row_text_valid<=0;pre_row_font_y<=0; pre_row_shift<=0;
         pre_medal_positive<=0;pre_medal_negative<=0;
         pre_x_atlas<=0;
         pre_header_x<=0;pre_header_y<=0;
@@ -466,7 +468,7 @@ always @(posedge clk or posedge rst) begin
         pre_active<=0; pre_hold<=0; pre_rank<=0; pre_podium<=0;
         pre_rgb<=0;
     end else begin
-        pre_x<=raster_x; pre_y<=raster_y; pre_row_text_valid<=row_text_valid;
+        pre_x<=raster_x; pre_y<=raster_y; pre_row_text_valid<=row_text_valid;pre_row_font_y<={1'b0,row_text_offset[4:1]}+1'b1;
         pre_row_shift<=row_shift;
         // Move constant center subtraction before the displacement addition.
         // Both signs are computed in parallel; no extra video clock latency.
@@ -524,8 +526,11 @@ always @* begin
     end
 end
 wire [31:0] result_word;
-saixian_sprint_atlas u_sprint_atlas(
-    .clk(clk),.addr({result_atlas_y,result_atlas_x[8:4]}),.bits(result_word));
+saixian_sprint_runtime #(.EARLY_METADATA(1)) u_sprint_atlas(.early_row_id(row_id[2:0]),
+ .clk(clk),.rst(rst),.header(result_header_address),.header_addr({result_atlas_y[4:0],result_atlas_x[8:4]}),
+ .row_id(pre_row_id[2:0]),.x(result_atlas_x),.font_y(pre_row_font_y),.bits(result_word),
+ .rank_begin(rank_begin),.rank_finish(rank_finish),.rank_failed(rank_failed),.rank_index(rank_index),.rank_length(rank_length),.rank_time(rank_time),
+ .word_valid(rank_word_valid),.word_index(rank_word_index),.word_data(rank_word_data));
 
 // Three ribboned medals are drawn from registered geometry, not bitmap ROM.
 // Their octagonal rims and central star read clearly at 720p without spending
@@ -1051,5 +1056,96 @@ EG_LOGIC_BRAM #(
  .cea(1'b1),.ocea(1'b0),.clka(clk),.wea(1'b0),.rsta(1'b0),
  .ceb(1'b1),.oceb(1'b0),.clkb(clk),.web(1'b0),.rstb(1'b0),
  .bea(1'b0),.beb(1'b0),.addra({index_q,1'b0}),.addrb({index_q,1'b1}));
+`endif
+endmodule
+
+// Two physical RAM32 blocks replace the static sprint dictionary/index.
+// Keep the original anti-aliased heading. One write port receives SD glyphs;
+// the independent read port supplies any of eight 8-character runner names.
+module saixian_sprint_runtime #(parameter EARLY_METADATA=0,EARLY_COLUMNS=0)(input clk,rst,input[2:0] early_row_id,input[8:0] early_x,input header,input[9:0] header_addr,
+ input[2:0] row_id,input[8:0] x,input[3:0] font_y,output reg[31:0] bits,
+ input rank_begin,rank_finish,rank_failed,input[2:0] rank_index,input[3:0] rank_length,input[15:0] rank_time,
+ input word_valid,input[8:0] word_index,input[31:0] word_data);
+reg[7:0] custom;
+wire[15:0] stored_time;reg[3:0] lengths[0:7];integer length_i;
+wire[2:0] metadata_address=EARLY_METADATA ? early_row_id:row_id;
+always @(posedge clk or posedge rst)
+ if(rst)begin custom<=0;for(length_i=0;length_i<8;length_i=length_i+1)lengths[length_i]<=4;end
+ else begin
+  if(rank_begin || rank_failed)custom[rank_index]<=0;
+  if(rank_finish)begin lengths[rank_index]<=rank_length;custom[rank_index]<=1;end
+ end
+function[15:0] default_time;input[2:0] n;begin case(n)
+ 0:default_time=16'h1023;1:default_time=16'h1031;2:default_time=16'h1038;3:default_time=16'h1046;
+ 4:default_time=16'h1055;5:default_time=16'h1063;6:default_time=16'h1076;7:default_time=16'h1091;
+endcase end endfunction
+wire[3:0] name_length=custom[row_id] ? lengths[row_id]:4'd4;
+wire[15:0] mark=custom[row_id] ? stored_time:default_time(row_id);
+function[3:0] lane;input[2:0] n;begin case(n)0:lane=4;1:lane=5;2:lane=3;3:lane=6;4:lane=2;5:lane=7;6:lane=1;7:lane=8;endcase end endfunction
+// Sixteen aligned32-pixel cells keep the live glyph address carry-free.
+// Rank, lane, lane label, eight name cells and SS.CC fill the same512px row.
+wire[3:0] column_cell=x[8:5];
+wire name_cell=column_cell>=3 && column_cell<=10 && custom[row_id];
+wire[3:0] name_id=column_cell-4'd3;
+wire ink=column_cell<3 || column_cell>10 || name_id<name_length;
+reg[3:0] fixed_id;
+always @*begin
+ fixed_id=15;
+ case(column_cell)
+ 0:fixed_id={1'b0,row_id}+1'b1;
+ 1:fixed_id=lane(row_id);
+ 2:fixed_id=11;
+ 3:fixed_id=13;
+ 4:fixed_id=14;
+ 5:fixed_id=0;
+ 6:fixed_id={1'b0,row_id}+1'b1;
+ 11:fixed_id=mark[15:12];12:fixed_id=mark[11:8];13:fixed_id=10;
+ 14:fixed_id=mark[7:4];15:fixed_id=mark[3:0];
+ endcase
+end
+wire[10:0] font_address=name_cell ? {1'b0,row_id,name_id[2:0],font_y}:{3'b100,fixed_id,font_y};
+reg header_q,ink_q;reg[3:0] column_q;
+wire[15:0] header_lo,header_hi,font_bits;
+reg pending;reg[8:0] low_index;reg[15:0] low_data;
+always @(posedge clk or posedge rst)
+ if(rst)begin pending<=0;low_index<=0;low_data<=0;header_q<=0;ink_q<=0;column_q<=0;bits<=0;end
+ else begin
+  pending<=word_valid;
+  if(word_valid)begin low_index<=word_index;low_data<=word_data[15:0];end
+  header_q<=header;ink_q<=ink;column_q<=x[4:1];
+  bits<=header_q ? {header_hi,header_lo}:{32{ink_q && font_bits[15-column_q]}};
+ end
+wire write_enable=word_valid || pending;
+wire[10:0] write_address={1'b0,(pending ? low_index:word_index),pending};
+wire[15:0] write_data=pending ? low_data:word_data[31:16];
+`ifdef RANK_SIM
+reg[15:0] heading_memory[0:2047],font_memory[0:2047];
+reg[15:0] hl,hh,fr;reg[15:0] time_memory[0:7];reg[15:0] time_q;
+always @(posedge clk)begin time_q<=time_memory[metadata_address];if(rank_finish)time_memory[rank_index]<=rank_time;end
+initial begin $readmemh("photo_rank_header.hex",heading_memory);$readmemh("photo_rank_glyphs.hex",font_memory);end
+always @(posedge clk)begin
+ hl<=heading_memory[{header_addr,1'b0}];hh<=heading_memory[{header_addr,1'b1}];
+ fr<=font_memory[font_address];if(write_enable)font_memory[write_address]<=write_data;
+end
+assign header_lo=hl;assign header_hi=hh;assign font_bits=fr;assign stored_time=time_q;
+`else
+EG_LOGIC_BRAM #(.DATA_WIDTH_A(16),.ADDR_WIDTH_A(3),.DATA_DEPTH_A(8),
+ .DATA_WIDTH_B(16),.ADDR_WIDTH_B(3),.DATA_DEPTH_B(8),.MODE("DP"),
+ .REGMODE_A("NOREG"),.REGMODE_B("NOREG"),.WRITEMODE_A("NORMAL"),.WRITEMODE_B("NORMAL"),
+ .RESETMODE("SYNC"),.IMPLEMENT("9K")) time_metadata(
+ .clka(clk),.rsta(1'b0),.cea(1'b1),.wea(1'b0),.ocea(1'b0),.bea(1'b0),.addra(metadata_address),.dia(16'd0),.doa(stored_time),
+ .clkb(clk),.rstb(1'b0),.ceb(1'b1),.web(rank_finish),.oceb(1'b0),.beb(1'b0),.addrb(rank_index),.dib(rank_time),.dob());
+EG_LOGIC_BRAM #(.DATA_WIDTH_A(16),.ADDR_WIDTH_A(11),.DATA_DEPTH_A(2048),
+ .DATA_WIDTH_B(16),.ADDR_WIDTH_B(11),.DATA_DEPTH_B(2048),.MODE("DP"),
+ .REGMODE_A("NOREG"),.REGMODE_B("NOREG"),.WRITEMODE_A("NORMAL"),.WRITEMODE_B("NORMAL"),
+ .RESETMODE("SYNC"),.INIT_FILE("photo_rank_header.mif"),.IMPLEMENT("32K")) heading(
+ .clka(clk),.rsta(1'b0),.cea(1'b1),.wea(1'b0),.ocea(1'b0),.bea(1'b0),.addra({header_addr,1'b0}),.dia(16'd0),.doa(header_lo),
+ .clkb(clk),.rstb(1'b0),.ceb(1'b1),.web(1'b0),.oceb(1'b0),.beb(1'b0),.addrb({header_addr,1'b1}),.dib(16'd0),.dob(header_hi));
+EG_LOGIC_BRAM #(.DATA_WIDTH_A(16),.ADDR_WIDTH_A(11),.DATA_DEPTH_A(2048),
+ .DATA_WIDTH_B(16),.ADDR_WIDTH_B(11),.DATA_DEPTH_B(2048),.MODE("DP"),
+ .REGMODE_A("NOREG"),.REGMODE_B("NOREG"),.WRITEMODE_A("NORMAL"),.WRITEMODE_B("NORMAL"),
+ .RESETMODE("SYNC"),.INIT_FILE("photo_rank_glyphs.mif"),.IMPLEMENT("32K")) glyphs(
+ .clka(clk),.rsta(1'b0),.cea(1'b1),.wea(1'b0),.ocea(1'b0),.bea(1'b0),.addra(font_address),.dia(16'd0),.doa(font_bits),
+ .clkb(clk),.rstb(1'b0),.ceb(1'b1),.web(write_enable),.oceb(1'b0),.beb(1'b0),.addrb(write_address),.dib(write_data),.dob());
 `endif
 endmodule

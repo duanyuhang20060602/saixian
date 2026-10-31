@@ -1,0 +1,640 @@
+{
+  "build_id": "runtime-rank-20261031",
+  "version": "5.0",
+  "passed": true,
+  "fpga_only": true,
+  "scope": "Current FPGA UART/defaults/ranking pixels/native RAM plus retained qualified regressions; exact original B inputs verified.",
+  "base_commit": "8797178900367d0686735622de20c8c22e098342",
+  "previous_release": "match_score_20261031",
+  "hardware_validation": "pending",
+  "screen_modified": false,
+  "screen_flashed": false,
+  "defaults": {
+    "title": "100米",
+    "ticker": "欢迎来到运动会",
+    "auto_enable": 1,
+    "effect_select": 0,
+    "edge_enable": 1
+  },
+  "resources": {
+    "a": {
+      "lut": 18646,
+      "reg": 12901,
+      "bram": 63,
+      "bram32k": 15,
+      "dsp": 28
+    },
+    "b": {
+      "lut": 15709,
+      "reg": 10962,
+      "bram": 64,
+      "bram32k": 16,
+      "dsp": 16
+    }
+  },
+  "timing_ns": {
+    "a": {
+      "SWNS": 0.133,
+      "STNS": 0.0,
+      "HWNS": 0.022,
+      "HTNS": 0.0
+    },
+    "b": {
+      "SWNS": 0.109,
+      "STNS": 0.0,
+      "HWNS": 0.022,
+      "HTNS": 0.0
+    }
+  },
+  "a_mslices": 4863,
+  "b_local_recompile": false,
+  "b_reuse_record": "releases/runtime_rank_20261031/board_b_reuse.json",
+  "test_count": 30,
+  "tests": [
+    {
+      "test": "control",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_match_integration.py": "1d82a77f6ccb693d34850929b081b06defb2c4a1fdc60d44a119ee29a11396c0",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_match_original_control.v": "330087d7e366373ae913563ed1eee752487b3956c73b8e6c0ffd8d439f8a7fe4",
+        "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests11\\control\\control.v": "bd3f76f4bd530e16e0cfb8a32a0db3629ddbc0c9a5d6e8ce793b3a98b6c41b72",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_control.v": "3fcf33d1a5aff859b9a0dd219f4cf73c1329ee942cd85fb3f94c192f36a23005"
+      },
+      "log": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests11\\control\\run.log",
+      "log_sha256": "7c6fd96d9f1d9246cc9ac1985af375252fb00b10ad4b9e22f00c8593c975aead",
+      "origin_results_json": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests11\\results.json",
+      "origin_results_sha256": "ed036d6ef3c8808738eb731d9ece7910ec501c08a879a6e6bfac661067e09f12",
+      "saved_log": "releases/runtime_rank_20261031/validation/control.log"
+    },
+    {
+      "test": "keys",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_match_integration.py": "1d82a77f6ccb693d34850929b081b06defb2c4a1fdc60d44a119ee29a11396c0",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_match_original_keys.v": "8e5c88fd17148843a3f707e3d0177a6c8859510637e5e003ca8ca19c9639bfd2",
+        "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests11\\keys\\keys.v": "c4eaa59a33e8fc412f0ce872aec12ea793d5f438b3887b9883ce39916af38677",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_control.v": "3fcf33d1a5aff859b9a0dd219f4cf73c1329ee942cd85fb3f94c192f36a23005"
+      },
+      "log": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests11\\keys\\run.log",
+      "log_sha256": "91e16b27ca0317a82bd0c9bd432e9d04b087d96035f4188b39096579ad798bee",
+      "origin_results_json": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests11\\results.json",
+      "origin_results_sha256": "ed036d6ef3c8808738eb731d9ece7910ec501c08a879a6e6bfac661067e09f12",
+      "saved_log": "releases/runtime_rank_20261031/validation/keys.log"
+    },
+    {
+      "test": "numbers",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_match_integration.py": "1d82a77f6ccb693d34850929b081b06defb2c4a1fdc60d44a119ee29a11396c0",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_match_numbers.v": "514a99d8d2afa133660d7ad5b94b74637d8b3dd996131eccd2cf379bc7a21ebc",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_numbers.v": "879f63d954d522bc3feae2436beb00541865c6d8a44b90d67812491d46bb1434"
+      },
+      "log": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests11\\numbers\\run.log",
+      "log_sha256": "1bc3361554f3a78426872516a8cb7e1e229774140dd2f76a10308ebc3e236678",
+      "origin_results_json": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests11\\results.json",
+      "origin_results_sha256": "ed036d6ef3c8808738eb731d9ece7910ec501c08a879a6e6bfac661067e09f12",
+      "saved_log": "releases/runtime_rank_20261031/validation/numbers.log"
+    },
+    {
+      "test": "render",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_match_integration.py": "1d82a77f6ccb693d34850929b081b06defb2c4a1fdc60d44a119ee29a11396c0",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_match_original_render.v": "bfefb738c24e7b6fa3f5de26762b8312fb4d775dc5d2e2ae91edf6d971c6ddc9",
+        "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests11\\render\\render.v": "8bbc010a4bd68e543a1d82a4b6f8545721f5358b30b24f4e351db44af8540f1b",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_render.v": "1d7275023bf3617e0ca5ecde98e04af9dc089aa723a29116f729ffe9a5f7612f",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_numbers.v": "879f63d954d522bc3feae2436beb00541865c6d8a44b90d67812491d46bb1434",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_font.v": "33d3e92bb08f22d87f162898b1b74caac39f2ce0cf353b5b9a009f553efb19e8",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_text_query.v": "8ae1334764b03e46f21e22f0ffa32ed3079b8e8bde41b1b93513a3b8b444657d",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_columns.v": "2b35c1901dd78c21da50faf0c88c174003777d27ad9e1d0c9c800f0f06b2ab7d",
+        "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests11\\render\\reference_render.v": "38fb91c23cd4ed8242ea8a04c69acba020484062c7499874c76ab1231e6d7dab",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\reference\\match_single\\match_render.v": "ade4188e7ee18b0e6ae761717e4ff3ba1d822799b689acb81fe91fdb5c57e0de",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\reference\\match_single\\match_text.vh": "ce50af94409eac3b062755f7771ecf75d42860e71d3f6341d68ac3735ba9f4a2",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\reference\\match_single\\match_font.hex": "e574ebbc6c4d9dd98ebf00ca859b68939da613afb350ce3ae88ba75a0a4c347d",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_text.vh": "ce50af94409eac3b062755f7771ecf75d42860e71d3f6341d68ac3735ba9f4a2",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_font.hex": "b73bd5456fbcc7c1a7a0baf391817c3c000f1d49be580eba1d89edf7793a315b",
+        "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests11\\render\\match_font.hex": "e574ebbc6c4d9dd98ebf00ca859b68939da613afb350ce3ae88ba75a0a4c347d",
+        "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests11\\render\\photo_match_font.hex": "b73bd5456fbcc7c1a7a0baf391817c3c000f1d49be580eba1d89edf7793a315b",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_columns.hex": "9ac5d4da1df0e4e742b3c90e1b851a3a787831e8e46f997a11a442ac72e513c4",
+        "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests11\\render\\photo_match_columns.hex": "9ac5d4da1df0e4e742b3c90e1b851a3a787831e8e46f997a11a442ac72e513c4"
+      },
+      "log": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests11\\render\\run.log",
+      "log_sha256": "da79d32280a293d1fb06238c9010871fc47f87d043047205214f7652a0f274d2",
+      "origin_results_json": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests11\\results.json",
+      "origin_results_sha256": "ed036d6ef3c8808738eb731d9ece7910ec501c08a879a6e6bfac661067e09f12",
+      "saved_log": "releases/runtime_rank_20261031/validation/render.log"
+    },
+    {
+      "test": "keys_tick",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_match_resources.py": "d07962b8f9f77a91581d22825e40e96a799583f613b0fbdf7d66205a3112a026",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_match_keys_tick.v": "913333217070954e2cfd6969779782cda9b78185c94e24e2e1394e5a7f244f9b",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_control.v": "3fcf33d1a5aff859b9a0dd219f4cf73c1329ee942cd85fb3f94c192f36a23005"
+      },
+      "log": "E:\\Codex\\Work\\complete-hmi-20261031\\match_resources_final\\keys_tick\\run.log",
+      "log_sha256": "ce4c2e10473699b07e736c77129b5517064500eb0be6debde668aa08b51d6534",
+      "saved_log": "releases/runtime_rank_20261031/validation/keys_tick.log"
+    },
+    {
+      "test": "font_native",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_match_resources.py": "d07962b8f9f77a91581d22825e40e96a799583f613b0fbdf7d66205a3112a026",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_match_font_native.v": "356f639c350d4874304d938ca67d921b88549950235e0e6b93eaa870479c73a2",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_font.v": "33d3e92bb08f22d87f162898b1b74caac39f2ce0cf353b5b9a009f553efb19e8",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_font.mif": "e7a3178478f6d63e2ca49e97dfacd06ad01a71ef2eae58ccc1ab48afbf7f241a",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\reference\\match_single\\match_font.hex": "e574ebbc6c4d9dd98ebf00ca859b68939da613afb350ce3ae88ba75a0a4c347d",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\reference\\match_single\\match_text.vh": "ce50af94409eac3b062755f7771ecf75d42860e71d3f6341d68ac3735ba9f4a2",
+        "E:\\Codex\\Work\\complete-hmi-20261031\\match_resources_final\\font_native\\strings.v": "0f4f2c52bc8b84d5bc49d0edea134443aab63717315e757393880255a8336e7d",
+        "E:\\Codex\\Work\\complete-hmi-20261031\\match_resources_final\\font_native\\font_from_mif.hex": "b73bd5456fbcc7c1a7a0baf391817c3c000f1d49be580eba1d89edf7793a315b",
+        "E:\\Codex\\Work\\complete-hmi-20261031\\match_resources_final\\font_native\\text_ids.hex": "021d533ad5fd576a39677c35817ed100a46a2683ee9a3ea1bbeb25628c564416",
+        "E:\\Codex\\Work\\complete-hmi-20261031\\match_resources_final\\font_native\\ip_init_map.vh": "4b74460ec9189d164d2142b73012a64bed674db86b86f85a4c2cf6e418da6dab"
+      },
+      "log": "E:\\Codex\\Work\\complete-hmi-20261031\\match_resources_final\\font_native\\run.log",
+      "log_sha256": "c1e30878f06a74b2e003a9b57bc7b9fcdca1ec9432f7759822c014d608cf116d",
+      "saved_log": "releases/runtime_rank_20261031/validation/font_native.log"
+    },
+    {
+      "test": "video",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_match_resources.py": "d07962b8f9f77a91581d22825e40e96a799583f613b0fbdf7d66205a3112a026",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_match_video.v": "d74a87da9fc5f192601d0149e2ae7cc496f5d62c59e94182716dc5d04df4387d",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_video.v": "088d79e350149d572edb3b0c3c4bc96754d60f3c52efe5d9b54df52156943f08",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_render.v": "1d7275023bf3617e0ca5ecde98e04af9dc089aa723a29116f729ffe9a5f7612f",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_numbers.v": "879f63d954d522bc3feae2436beb00541865c6d8a44b90d67812491d46bb1434",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_font.v": "33d3e92bb08f22d87f162898b1b74caac39f2ce0cf353b5b9a009f553efb19e8",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_text_query.v": "8ae1334764b03e46f21e22f0ffa32ed3079b8e8bde41b1b93513a3b8b444657d",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_columns.v": "2b35c1901dd78c21da50faf0c88c174003777d27ad9e1d0c9c800f0f06b2ab7d",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_font.hex": "b73bd5456fbcc7c1a7a0baf391817c3c000f1d49be580eba1d89edf7793a315b",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_columns.hex": "9ac5d4da1df0e4e742b3c90e1b851a3a787831e8e46f997a11a442ac72e513c4"
+      },
+      "log": "E:\\Codex\\Work\\complete-hmi-20261031\\match_resources_final\\video\\run.log",
+      "log_sha256": "e66f5921bae6245ea192b90ae8fe515160c164af707c89d68e63438a0ccc5b31",
+      "saved_log": "releases/runtime_rank_20261031/validation/video.log"
+    },
+    {
+      "test": "hmi_spi_compact",
+      "passed": true,
+      "inputs_sha256": {
+        "tests/tb_hmi_spi_compact.v": "97b0ddd954149d36a631a06d2479b1e0ac6771e4223211e7a1b6d2890d419f1b",
+        "common/photo_hmi_remote.v": "3f70f215ef5a03e9adb87f0056949c61aa8eb5d51953ae47588e0a06dc6d96a6",
+        "common/photo_audio_link.v": "6b6c7d5d4028079768c08478a43c72a0124716934c0e7293f84af1fe6a345e46",
+        "common/photo_audio_spi_b_offload.v": "eddce5724930582ae737fce109d12e5289ff1f9288fbf274a19200b693f23a93",
+        "common/photo_processing.v": "e27a9874122e1393e1d765db349858c6f7b4900d05847101652624804373e8ac"
+      },
+      "log": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests_existing01\\hmi_spi_compact\\run.log",
+      "log_sha256": "e4709ff4bbf05090242ed1d2719c5f4ee57ce43549ca272c46d2b37e9ebb5519",
+      "origin_results_json": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests_existing01\\results.json",
+      "origin_results_sha256": "9ad3904282f08896d12d66aa56194c3df9090d1c6af171d8dbae250ccba67fa4",
+      "saved_log": "releases/runtime_rank_20261031/validation/hmi_spi_compact.log"
+    },
+    {
+      "test": "hmi_uart",
+      "passed": true,
+      "inputs_sha256": {
+        "tests/tb_hmi.v": "c3c51d898e2d41e18861a5b18a4d20982b0d834dd2cccbcb783165df4831b20a",
+        "common/saixian_hmi_uart.v": "5bfb3eea7634511d4f66cce969ab1610d83fb98be1b1c2337df8b83950a23679"
+      },
+      "log": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests_existing01\\hmi_uart\\run.log",
+      "log_sha256": "34883a768533d222b9992840e2d5939aa60d4ada5e6db7c70b743988e83cb656",
+      "origin_results_json": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests_existing01\\results.json",
+      "origin_results_sha256": "9ad3904282f08896d12d66aa56194c3df9090d1c6af171d8dbae250ccba67fa4",
+      "saved_log": "releases/runtime_rank_20261031/validation/hmi_uart.log"
+    },
+    {
+      "test": "fifo_8",
+      "passed": true,
+      "inputs_sha256": {
+        "tests/tb_match_audio_fifo.v": "cc6e914b814dd8a3c544706a18b8493be4f6863a19f73d140dbf949258544546",
+        "common/photo_audio_link.v": "6b6c7d5d4028079768c08478a43c72a0124716934c0e7293f84af1fe6a345e46",
+        "common/match/photo_match_audio_fifo.v": "68104e17faaba25bd7fb48a817cc248610a76080303814fe49a9188662879dd4"
+      },
+      "log": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests_audio11\\fifo_8\\run.log",
+      "log_sha256": "2d63910b6a30a0585467aaf77adb5d64cfd50af7d8abd5d9f359e81798070954",
+      "origin_results_json": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests_audio11\\results.json",
+      "origin_results_sha256": "bea02496e6bdae667340004f117bf634446772aa39dc3d83dcbbbebe4cee29f2",
+      "saved_log": "releases/runtime_rank_20261031/validation/fifo_8.log"
+    },
+    {
+      "test": "fifo_2048",
+      "passed": true,
+      "inputs_sha256": {
+        "tests/tb_match_audio_fifo.v": "cc6e914b814dd8a3c544706a18b8493be4f6863a19f73d140dbf949258544546",
+        "common/photo_audio_link.v": "6b6c7d5d4028079768c08478a43c72a0124716934c0e7293f84af1fe6a345e46",
+        "common/match/photo_match_audio_fifo.v": "68104e17faaba25bd7fb48a817cc248610a76080303814fe49a9188662879dd4"
+      },
+      "log": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests_audio11\\fifo_2048\\run.log",
+      "log_sha256": "a4b7fc8d922af2dd68a4bbd52b0319ece68a4265fe1b4a1d4266a10a761536b8",
+      "origin_results_json": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests_audio11\\results.json",
+      "origin_results_sha256": "bea02496e6bdae667340004f117bf634446772aa39dc3d83dcbbbebe4cee29f2",
+      "saved_log": "releases/runtime_rank_20261031/validation/fifo_2048.log"
+    },
+    {
+      "test": "award_column",
+      "passed": true,
+      "inputs_sha256": {
+        "tests/tb_match_award_column.v": "e0a5f4c36f97bc534369e34654517ca292df0a2c3f092a830b0fd95705c703a8",
+        "tests/reference/match_single/award_fx_before_match.v": "225c48e9abf03d6fd4c23ca786de7f5acd0e1ed2f2cb246d911bd3284ad2745e",
+        "common/award_fx.v": "e6bc0c6f7d88085f41969b21771980700f53a6fce18e904b38b2720aeb190e3f",
+        "common/award_sprite_rom.v": "f92edd17e605ded17d834eb408475ac66f061f99c7b94edfdad9d4997242f768"
+      },
+      "log": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests_audio11\\award_column\\run.log",
+      "log_sha256": "494dda0a1a5f92048a473dbd6fcb72c152f7a9cbab750fa2d3721edc32e5cd40",
+      "origin_results_json": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests_audio11\\results.json",
+      "origin_results_sha256": "bea02496e6bdae667340004f117bf634446772aa39dc3d83dcbbbebe4cee29f2",
+      "saved_log": "releases/runtime_rank_20261031/validation/award_column.log"
+    },
+    {
+      "test": "award_column_shared",
+      "passed": true,
+      "inputs_sha256": {
+        "tests/tb_match_award_column.v": "e0a5f4c36f97bc534369e34654517ca292df0a2c3f092a830b0fd95705c703a8",
+        "tests/reference/match_single/award_fx_before_match.v": "225c48e9abf03d6fd4c23ca786de7f5acd0e1ed2f2cb246d911bd3284ad2745e",
+        "common/award_fx.v": "e6bc0c6f7d88085f41969b21771980700f53a6fce18e904b38b2720aeb190e3f",
+        "common/award_sprite_rom.v": "f92edd17e605ded17d834eb408475ac66f061f99c7b94edfdad9d4997242f768"
+      },
+      "log": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests_audio11\\award_column_shared\\run.log",
+      "log_sha256": "494dda0a1a5f92048a473dbd6fcb72c152f7a9cbab750fa2d3721edc32e5cd40",
+      "origin_results_json": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests_audio11\\results.json",
+      "origin_results_sha256": "bea02496e6bdae667340004f117bf634446772aa39dc3d83dcbbbebe4cee29f2",
+      "saved_log": "releases/runtime_rank_20261031/validation/award_column_shared.log"
+    },
+    {
+      "test": "priority",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_match_priority.v": "abb9bddb5b3c427f1e1180425b7984f66652d893a8266ed18f89d237ac04e20d",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_control.v": "3fcf33d1a5aff859b9a0dd219f4cf73c1329ee942cd85fb3f94c192f36a23005"
+      },
+      "log": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests_extra01\\priority\\run.log",
+      "log_sha256": "cda6ce970db51483f9fdc83779b6ea3005ece76b70bf7b84ac83b5031ebf3761",
+      "origin_results_json": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests_extra01\\results.json",
+      "origin_results_sha256": "0685a43212924624c7f58a0c79ff290abb94d6ba3fc357e31b77745f04775854",
+      "saved_log": "releases/runtime_rank_20261031/validation/priority.log"
+    },
+    {
+      "test": "columns_native",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_match_columns_native.v": "8199fc0bc6fe7f11073d2071c093ee277ca9eef8d1df18a1f8cbd1f020fe1b8c",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_columns.v": "2b35c1901dd78c21da50faf0c88c174003777d27ad9e1d0c9c800f0f06b2ab7d",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_columns.mif": "37901d5abe03ddf0a3a314736dd0ed4b48e38736758765136a9fe7317916ac90",
+        "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests_extra01\\columns_native\\columns_from_mif.hex": "9ac5d4da1df0e4e742b3c90e1b851a3a787831e8e46f997a11a442ac72e513c4",
+        "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests_extra01\\columns_native\\ip_init_map.vh": "6c0e2fd5cf48755c2287889c71da7c077a7062b71addd48ac990f70c9189d8b5"
+      },
+      "log": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests_extra01\\columns_native\\run.log",
+      "log_sha256": "75abac7ff37df7413c3b4f656f4fb3983ef438cb25c88a1d1a67a746390505cb",
+      "origin_results_json": "E:\\Codex\\Work\\integrate-match-a74-20261031\\tests_extra01\\results.json",
+      "origin_results_sha256": "0685a43212924624c7f58a0c79ff290abb94d6ba3fc357e31b77745f04775854",
+      "saved_log": "releases/runtime_rank_20261031/validation/columns_native.log"
+    },
+    {
+      "test": "complete_hmi_parser",
+      "passed": true,
+      "inputs_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_complete_hmi_fpga.py": "5b860f7ad0eaa7e575ca0bbde112fd1cceec101165333d9c2b3f28d6b33bd2b5",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_complete_hmi_parser.v": "7ee1a48785b874cecc8ebd687e6eedbd4aceee4d42dbdde46c8c92930f4d8004",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_serial_text_runtime.v": "6dcab337579835333ffa32cc402bc8390db145f5a7ee435776bb64cd61792d0d"
+      },
+      "log": "E:\\Codex\\Work\\complete-hmi-20261031\\final_protocol14\\parser\\run.log",
+      "log_sha256": "d048ae3ae20cbe185b623f3da4e1ddc35a55f53a16052f925f034782d8dc8ba1",
+      "saved_log": "releases/runtime_rank_20261031/validation/complete_hmi_parser.log"
+    },
+    {
+      "test": "complete_hmi_rank_pixels",
+      "passed": true,
+      "inputs_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_complete_hmi_fpga.py": "5b860f7ad0eaa7e575ca0bbde112fd1cceec101165333d9c2b3f28d6b33bd2b5",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_complete_hmi_rank_pixels.v": "ac3eb3e613eb166ce28acd7eb919ef21af90d6aef21833b0a7260c0e54e623c6",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\saixian_battle_result_fx_pipelined.v": "3640248008ea56cf6679a726a6f4c3628c55f6c7514406bef4a343bc9496b9f4"
+      },
+      "log": "E:\\Codex\\Work\\complete-hmi-20261031\\final_protocol14\\rank_pixels\\run.log",
+      "log_sha256": "b8ef34fc01886ef7a22e73363515c7d23afa847f225cd7250c6575826a9c5098",
+      "saved_log": "releases/runtime_rank_20261031/validation/complete_hmi_rank_pixels.log"
+    },
+    {
+      "test": "rank_metadata_pipeline",
+      "passed": true,
+      "inputs_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_rank_metadata_pipeline.py": "a4c926fbd4eb39e179b33af12f6b58826eb9837a06438bcbbad79933fb2a3ea6",
+        "E:\\Codex\\Work\\complete-hmi-20261031\\aligned_pipeline03\\bench.v": "6a7b84ba9cc1814829427f9736d170917d45fafd79989e448f49aaf3ad4b8bb5",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\saixian_battle_result_fx_pipelined.v": "3640248008ea56cf6679a726a6f4c3628c55f6c7514406bef4a343bc9496b9f4",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_rank_header.hex": "8995b04e60c653b438bf42bcce8f2ee0f54c409bea922dc6fedef0f2b4e1fb41",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_rank_glyphs.hex": "0b5ca62b9074d7deecf399b431eb05008ab36d857cd50b2dabb00d6064be03a5",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_rank_columns.hex": "b272519d98cc2fce14e7ecae909fa06dcec1d1ff75f9b0a09016c4a8ab355d16"
+      },
+      "log": "E:\\Codex\\Work\\complete-hmi-20261031\\aligned_pipeline03\\run.log",
+      "log_sha256": "9e38fa1c89b9608d9008f82a5e6581c6140ab50bd62cb762b1e282c01197d4da",
+      "saved_log": "releases/runtime_rank_20261031/validation/rank_metadata_pipeline.log"
+    },
+    {
+      "test": "fpga_rank_transport",
+      "passed": true,
+      "inputs_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_fpga_rank_transport.py": "744e2a0b16a5efd382830ac2f6b5bf72b6690a1dcdbc54f2589f988b0624f2c7",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_fpga_rank_transport.v": "eec5e3b6ca5bd99af7bce2a71e046b6d9b3bd6be37eba35113fb6bb32be0ed9f",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\reference\\match_single\\photo_cached_control_before_match.v": "1480723f7255325d58cd8c3104422ceb30a15211804588b20fa708a76172107d",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\serial_title_ram_model.v": "687220b6e718ee4f24c58931a6cdb60be308ce09d357dc18bb72a40c7adfd03a",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_cached_control_a.v": "c760bb47a0b480b9df22ef1c4ee90a97801ce69c632e36f8f877302ca23db860",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_control.v": "bebb87f9d7723b1019c2431df03ffeed4a2951e5fb8082b90867f853727ac522",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_uart.v": "99262aac12d6107353786166feeeef319ffa5a53e0bfb449734d9779f62d78f5",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_link.v": "de1faebbb7fe85711ae84f28d428c7dd524e4074bd007cec25461dcf9e084a3c",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_serial_text.v": "d438265fc8da4769c1621b1bfbf519f4139cd01cc60fb46a8d4dffc656ed673c",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_serial_text_runtime.v": "6dcab337579835333ffa32cc402bc8390db145f5a7ee435776bb64cd61792d0d",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_scan_font_index.v": "c48587c632b346364b075437a4d550dc9e05c143d9e658b0a1d861151dde3dc8",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_scan_glyph_b.v": "c11479092a50c0fa51191ce87983f73adeecc02ca5630a416f8d6764cb63c495",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\saixian_hmi_uart.v": "5bfb3eea7634511d4f66cce969ab1610d83fb98be1b1c2337df8b83950a23679",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\saixian_font_rom.v": "dcd18137d708ed5df4300646bb5d706de8dc771b16a497a8456dd207f4a7a39f",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\saixian_battle_result_fx_pipelined.v": "3640248008ea56cf6679a726a6f4c3628c55f6c7514406bef4a343bc9496b9f4",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_control.v": "3fcf33d1a5aff859b9a0dd219f4cf73c1329ee942cd85fb3f94c192f36a23005",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_serial.v": "3f6a1e1d71e88fb57c8c379c3228bf6ebeafa265f273e60b517cedf731737e23",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_manager.v": "e6ba4117bd75ecf0c2b8c931ef7c0f81dd24b1d5f0235000cf2594fc74c90248",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_rank_header.hex": "8995b04e60c653b438bf42bcce8f2ee0f54c409bea922dc6fedef0f2b4e1fb41",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_rank_glyphs.hex": "0b5ca62b9074d7deecf399b431eb05008ab36d857cd50b2dabb00d6064be03a5",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_rank_columns.hex": "b272519d98cc2fce14e7ecae909fa06dcec1d1ff75f9b0a09016c4a8ab355d16"
+      },
+      "log": "E:\\Codex\\Work\\complete-hmi-20261031\\final_transport09\\run.log",
+      "log_sha256": "0de4e7772fde07043ed04222718bcf8b9851a39b99d78c5886e6e1c26ea528f8",
+      "saved_log": "releases/runtime_rank_20261031/validation/fpga_rank_transport.log"
+    },
+    {
+      "test": "fpga_legacy_controls",
+      "passed": true,
+      "inputs_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_fpga_legacy_controls.py": "815de92ad5c26fd33f13de5655e92ee5cf967f222304c2c461276441a5c2fe5c",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_fpga_legacy_controls.v": "c5e5c65e555a182a092de1e53d4fa76b69ea89e613312f45bdf16acb2ca08192",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\saixian_hmi_uart.v": "5bfb3eea7634511d4f66cce969ab1610d83fb98be1b1c2337df8b83950a23679",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_unified_settings_controller.v": "3fc33b7e3058956e495f76f5d93dea229611fe96196ae34d82f5deb492d7536f",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\saixian_event_controller.v": "c27a9a51687b5ad7b45e9fa7a17a20b259cfe84cbd950efaf3a4a5e0dd6bb5c2",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\saixian_osd_overlay.v": "9b472982f8fb323dea62e02c87d57fcee6f5a1897fff7f7e4bdcd79bb34af451"
+      },
+      "log": "E:\\Codex\\Work\\complete-hmi-20261031\\legacy_controls02\\run.log",
+      "log_sha256": "c18f6b8d893b967ae0a091d69f6cbe8fb4047a58962da2c4f3b2d3c331daff89",
+      "saved_log": "releases/runtime_rank_20261031/validation/fpga_legacy_controls.log"
+    },
+    {
+      "test": "native_rank_parser",
+      "passed": true,
+      "inputs_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_runtime_rank_native.py": "2b274cc508795f67ebeb2ea8cd5f1114971d56a545cec61e66a10960a337ea60",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_rank_metadata_pipeline.py": "a4c926fbd4eb39e179b33af12f6b58826eb9837a06438bcbbad79933fb2a3ea6",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_complete_hmi_parser.v": "7ee1a48785b874cecc8ebd687e6eedbd4aceee4d42dbdde46c8c92930f4d8004",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_serial_text_runtime.v": "6dcab337579835333ffa32cc402bc8390db145f5a7ee435776bb64cd61792d0d",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Work\\complete-hmi-20261031\\final_native08\\parser\\ip_init_map.vh": "3ded3ecf8fa300431827850887101138a7a9f8452fd66f163fbd3f154de9bcc6",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_rank_header.mif": "878e012d7d0447d4bb104b29ff184859e955ab1c39efdbea42f4beaba98607a9",
+        "E:\\Codex\\Work\\complete-hmi-20261031\\final_native08\\parser\\photo_rank_header.hex": "8995b04e60c653b438bf42bcce8f2ee0f54c409bea922dc6fedef0f2b4e1fb41",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_rank_glyphs.mif": "d7b62e4b503406848083085905b3e2734eaa2df3605ed30a6ab520c3af2c1eec",
+        "E:\\Codex\\Work\\complete-hmi-20261031\\final_native08\\parser\\photo_rank_glyphs.hex": "0b5ca62b9074d7deecf399b431eb05008ab36d857cd50b2dabb00d6064be03a5",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_rank_columns.mif": "fdedf8d1f15c1b4025f546a2d1f5a36b63c98fc170ecc8b2e18948ad29793d9c",
+        "E:\\Codex\\Work\\complete-hmi-20261031\\final_native08\\parser\\photo_rank_columns.hex": "b272519d98cc2fce14e7ecae909fa06dcec1d1ff75f9b0a09016c4a8ab355d16"
+      },
+      "log": "E:\\Codex\\Work\\complete-hmi-20261031\\final_native08\\parser\\run.log",
+      "log_sha256": "d048ae3ae20cbe185b623f3da4e1ddc35a55f53a16052f925f034782d8dc8ba1",
+      "saved_log": "releases/runtime_rank_20261031/validation/native_rank_parser.log"
+    },
+    {
+      "test": "native_rank_pixels",
+      "passed": true,
+      "inputs_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_runtime_rank_native.py": "2b274cc508795f67ebeb2ea8cd5f1114971d56a545cec61e66a10960a337ea60",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_rank_metadata_pipeline.py": "a4c926fbd4eb39e179b33af12f6b58826eb9837a06438bcbbad79933fb2a3ea6",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_complete_hmi_rank_pixels.v": "ac3eb3e613eb166ce28acd7eb919ef21af90d6aef21833b0a7260c0e54e623c6",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\saixian_battle_result_fx_pipelined.v": "3640248008ea56cf6679a726a6f4c3628c55f6c7514406bef4a343bc9496b9f4",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Work\\complete-hmi-20261031\\final_native08\\pixels\\ip_init_map.vh": "3ded3ecf8fa300431827850887101138a7a9f8452fd66f163fbd3f154de9bcc6",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_rank_header.mif": "878e012d7d0447d4bb104b29ff184859e955ab1c39efdbea42f4beaba98607a9",
+        "E:\\Codex\\Work\\complete-hmi-20261031\\final_native08\\pixels\\photo_rank_header.hex": "8995b04e60c653b438bf42bcce8f2ee0f54c409bea922dc6fedef0f2b4e1fb41",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_rank_glyphs.mif": "d7b62e4b503406848083085905b3e2734eaa2df3605ed30a6ab520c3af2c1eec",
+        "E:\\Codex\\Work\\complete-hmi-20261031\\final_native08\\pixels\\photo_rank_glyphs.hex": "0b5ca62b9074d7deecf399b431eb05008ab36d857cd50b2dabb00d6064be03a5",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_rank_columns.mif": "fdedf8d1f15c1b4025f546a2d1f5a36b63c98fc170ecc8b2e18948ad29793d9c",
+        "E:\\Codex\\Work\\complete-hmi-20261031\\final_native08\\pixels\\photo_rank_columns.hex": "b272519d98cc2fce14e7ecae909fa06dcec1d1ff75f9b0a09016c4a8ab355d16"
+      },
+      "log": "E:\\Codex\\Work\\complete-hmi-20261031\\final_native08\\pixels\\run.log",
+      "log_sha256": "99ed48e2f87614a0fe45a30ba9333f506d3cc94fbce946767a5352f36bc85e08",
+      "saved_log": "releases/runtime_rank_20261031/validation/native_rank_pixels.log"
+    },
+    {
+      "test": "native_rank_pipeline",
+      "passed": true,
+      "inputs_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_runtime_rank_native.py": "2b274cc508795f67ebeb2ea8cd5f1114971d56a545cec61e66a10960a337ea60",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_rank_metadata_pipeline.py": "a4c926fbd4eb39e179b33af12f6b58826eb9837a06438bcbbad79933fb2a3ea6",
+        "E:\\Codex\\Work\\complete-hmi-20261031\\final_native08\\pipeline\\bench.v": "6a7b84ba9cc1814829427f9736d170917d45fafd79989e448f49aaf3ad4b8bb5",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\saixian_battle_result_fx_pipelined.v": "3640248008ea56cf6679a726a6f4c3628c55f6c7514406bef4a343bc9496b9f4",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Work\\complete-hmi-20261031\\final_native08\\pipeline\\ip_init_map.vh": "3ded3ecf8fa300431827850887101138a7a9f8452fd66f163fbd3f154de9bcc6",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_rank_header.mif": "878e012d7d0447d4bb104b29ff184859e955ab1c39efdbea42f4beaba98607a9",
+        "E:\\Codex\\Work\\complete-hmi-20261031\\final_native08\\pipeline\\photo_rank_header.hex": "8995b04e60c653b438bf42bcce8f2ee0f54c409bea922dc6fedef0f2b4e1fb41",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_rank_glyphs.mif": "d7b62e4b503406848083085905b3e2734eaa2df3605ed30a6ab520c3af2c1eec",
+        "E:\\Codex\\Work\\complete-hmi-20261031\\final_native08\\pipeline\\photo_rank_glyphs.hex": "0b5ca62b9074d7deecf399b431eb05008ab36d857cd50b2dabb00d6064be03a5",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_rank_columns.mif": "fdedf8d1f15c1b4025f546a2d1f5a36b63c98fc170ecc8b2e18948ad29793d9c",
+        "E:\\Codex\\Work\\complete-hmi-20261031\\final_native08\\pipeline\\photo_rank_columns.hex": "b272519d98cc2fce14e7ecae909fa06dcec1d1ff75f9b0a09016c4a8ab355d16"
+      },
+      "log": "E:\\Codex\\Work\\complete-hmi-20261031\\final_native08\\pipeline\\run.log",
+      "log_sha256": "b5557ba27aa9ea9174e6eba281c988641d5fae62d8b6a5d8eb51368f2ab4c73a",
+      "saved_log": "releases/runtime_rank_20261031/validation/native_rank_pipeline.log"
+    },
+    {
+      "test": "av_stream_reset",
+      "passed": true,
+      "inputs_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_av_stream_reset.py": "6d4006fc5eee35c70fc7e94b39a01608071d2e48e165347d3775b8fe6a000f79",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_resource_metadata.v": "dbb5393c89f91df66889a66b4610c04b183edf0515d0845182f4b1d64552864a",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\top_photo_a.v": "1c1ed37127004ab7d097e15f0513791e3a2c5f3abd75a7ecc59f1e3993df7fe1",
+        "E:\\Codex\\Work\\complete-hmi-20261031\\av_stream_reset_final\\bench.v": "c0b2771c4a0f73127c5eaeafbd7fa5f29b5d345dd262e9fd875e1e358c63a491",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_visual_reset.v": "323f6d156789557fd50b12fe919810639da830359316a14ffa49cfdf62f31ede",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_av_metadata.v": "ac49f27edce4408f9fee0da1aa67bf60b76bde19790a7e8aea1337faafd236ad",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_av_receiver.v": "24b7ec06e1f822bf68805f18a3f7e90b2e2be0ad9d445726abf81be538318eb5",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\saixian_audio_visualizer.v": "7563a700a7cc89c04351d9fb55049c77adcf78e0807133ef501a51e6d041894d",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\av_bram_model.v": "b18886a5c572acf0aabfcb37cc7aab704c15526cd79193fb0b5b1fa49b7540a6",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\saixian_av_hann_half.hex": "fc9247268b83a9aca0d5f6022efa586c98c9102fa304ffec024f4cd562375081",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\saixian_av_twiddle_serial.hex": "dc321b9f2e3779a52b27467170a829039be71b054742e259beb53ffa3c5782f0"
+      },
+      "log": "E:\\Codex\\Work\\complete-hmi-20261031\\av_stream_reset_final\\run.log",
+      "log_sha256": "e42f3557593119f93a068dceb12fb924124aa867c991278859fec569fe2a1b34",
+      "saved_log": "releases/runtime_rank_20261031/validation/av_stream_reset.log"
+    },
+    {
+      "test": "spi_registered",
+      "passed": true,
+      "inputs_sha256": {
+        "tests/tb_match_audio_spi.v": "bb5d054015c66a3a6db8d597be7a44b9a94aebc00b8312f4a7f4e1acce55a187",
+        "common/photo_hmi_remote.v": "3f70f215ef5a03e9adb87f0056949c61aa8eb5d51953ae47588e0a06dc6d96a6",
+        "common/photo_audio_link.v": "6b6c7d5d4028079768c08478a43c72a0124716934c0e7293f84af1fe6a345e46",
+        "common/photo_audio_spi_b_offload.v": "eddce5724930582ae737fce109d12e5289ff1f9288fbf274a19200b693f23a93",
+        "common/photo_processing.v": "e27a9874122e1393e1d765db349858c6f7b4900d05847101652624804373e8ac",
+        "common/match/photo_match_audio_spi.v": "27bc235e298f6d0b55b0cde79905a6dc1c8eb5b9787d44362ad382d714195496",
+        "common/match/photo_match_audio_fifo.v": "68104e17faaba25bd7fb48a817cc248610a76080303814fe49a9188662879dd4"
+      },
+      "log": "E:\\Codex\\Work\\complete-hmi-20261031\\audio_launch01\\spi_registered\\run.log",
+      "log_sha256": "d090cca9fd5ccc7c89bc668548728b1dd46fb928d345e947aeef90ae8c9fd968",
+      "saved_log": "releases/runtime_rank_20261031/validation/spi_registered.log"
+    },
+    {
+      "test": "serial",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_match_integration.py": "1d82a77f6ccb693d34850929b081b06defb2c4a1fdc60d44a119ee29a11396c0",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_match_serial.v": "4cd62a4dacc43177022a6ab87347705f4b6681d2af88deeac51cec79999d0f8f",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\saixian_hmi_uart.v": "5bfb3eea7634511d4f66cce969ab1610d83fb98be1b1c2337df8b83950a23679",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_serial.v": "3f6a1e1d71e88fb57c8c379c3228bf6ebeafa265f273e60b517cedf731737e23",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_manager.v": "e6ba4117bd75ecf0c2b8c931ef7c0f81dd24b1d5f0235000cf2594fc74c90248",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_control.v": "3fcf33d1a5aff859b9a0dd219f4cf73c1329ee942cd85fb3f94c192f36a23005"
+      },
+      "log": "E:\\Codex\\Work\\complete-hmi-20261031\\match_serial_final\\serial\\run.log",
+      "log_sha256": "8ab1eb6300e4942532f6a51d98b48e1e5f6b65b85c8e827da7285fa1f4fe0805",
+      "saved_log": "releases/runtime_rank_20261031/validation/serial.log"
+    },
+    {
+      "test": "legacy_keys",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_match_resources.py": "d07962b8f9f77a91581d22825e40e96a799583f613b0fbdf7d66205a3112a026",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_match_legacy_keys.v": "b5dd86e80aff5c253286b6a456aad9a704d7c1e55b2f4c266021d3d9eac6cca1",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_manager.v": "e6ba4117bd75ecf0c2b8c931ef7c0f81dd24b1d5f0235000cf2594fc74c90248",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_serial.v": "3f6a1e1d71e88fb57c8c379c3228bf6ebeafa265f273e60b517cedf731737e23",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_control.v": "3fcf33d1a5aff859b9a0dd219f4cf73c1329ee942cd85fb3f94c192f36a23005"
+      },
+      "log": "E:\\Codex\\Work\\complete-hmi-20261031\\match_resources_final\\legacy_keys\\run.log",
+      "log_sha256": "7103ebe8d81abec756fcee991a5d6f23796d68f1dc41064f04bbb687dce23542",
+      "saved_log": "releases/runtime_rank_20261031/validation/legacy_keys.log"
+    },
+    {
+      "test": "title_index_match",
+      "passed": true,
+      "inputs_sha256": {
+        "tests/tb_match_title_index.v": "b7e7f06e85c2e5e3ff4325d363868a6410ad48881bd3086c853658f9d2179635",
+        "tests/reference/match_single/photo_cached_control_before_match.v": "1480723f7255325d58cd8c3104422ceb30a15211804588b20fa708a76172107d",
+        "tests/serial_title_ram_model.v": "687220b6e718ee4f24c58931a6cdb60be308ce09d357dc18bb72a40c7adfd03a",
+        "common/photo_cached_control_a.v": "c760bb47a0b480b9df22ef1c4ee90a97801ce69c632e36f8f877302ca23db860",
+        "common/photo_control.v": "bebb87f9d7723b1019c2431df03ffeed4a2951e5fb8082b90867f853727ac522",
+        "common/photo_uart.v": "99262aac12d6107353786166feeeef319ffa5a53e0bfb449734d9779f62d78f5",
+        "common/photo_link.v": "de1faebbb7fe85711ae84f28d428c7dd524e4074bd007cec25461dcf9e084a3c",
+        "common/photo_serial_text.v": "d438265fc8da4769c1621b1bfbf519f4139cd01cc60fb46a8d4dffc656ed673c",
+        "common/photo_scan_font_index.v": "c48587c632b346364b075437a4d550dc9e05c143d9e658b0a1d861151dde3dc8",
+        "common/photo_scan_glyph_b.v": "c11479092a50c0fa51191ce87983f73adeecc02ca5630a416f8d6764cb63c495",
+        "common/saixian_hmi_uart.v": "5bfb3eea7634511d4f66cce969ab1610d83fb98be1b1c2337df8b83950a23679",
+        "common/audio_ui/saixian_font_rom.v": "dcd18137d708ed5df4300646bb5d706de8dc771b16a497a8456dd207f4a7a39f",
+        "common/match/photo_match_control.v": "3fcf33d1a5aff859b9a0dd219f4cf73c1329ee942cd85fb3f94c192f36a23005",
+        "common/match/photo_match_serial.v": "3f6a1e1d71e88fb57c8c379c3228bf6ebeafa265f273e60b517cedf731737e23",
+        "common/match/photo_match_manager.v": "e6ba4117bd75ecf0c2b8c931ef7c0f81dd24b1d5f0235000cf2594fc74c90248"
+      },
+      "log": "E:\\Codex\\Work\\complete-hmi-20261031\\title_final\\title_index_match\\run.log",
+      "log_sha256": "af920bed67d999bb113a98d1b87dff571b2c9b43ef0e7be73d52e356163c6c03",
+      "saved_log": "releases/runtime_rank_20261031/validation/title_index_match.log"
+    },
+    {
+      "test": "shared_hmi_timeout",
+      "passed": true,
+      "inputs_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_shared_hmi_timeout.py": "6ebd2ea2e4b88c625773aa8c9e61c0185892de29c3fcb1c0ec4762504c5f43e6",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_match_serial.v": "4cd62a4dacc43177022a6ab87347705f4b6681d2af88deeac51cec79999d0f8f",
+        "E:\\Codex\\Work\\complete-hmi-20261031\\shared_timeout01\\bench.v": "68b9cf5c4792c378b3e6b649926006c765bcc5972890020f4103b4f3904d574f",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\saixian_hmi_uart.v": "5bfb3eea7634511d4f66cce969ab1610d83fb98be1b1c2337df8b83950a23679",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_serial.v": "3f6a1e1d71e88fb57c8c379c3228bf6ebeafa265f273e60b517cedf731737e23",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_manager.v": "e6ba4117bd75ecf0c2b8c931ef7c0f81dd24b1d5f0235000cf2594fc74c90248",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\match\\photo_match_control.v": "3fcf33d1a5aff859b9a0dd219f4cf73c1329ee942cd85fb3f94c192f36a23005"
+      },
+      "log": "E:\\Codex\\Work\\complete-hmi-20261031\\shared_timeout01\\run.log",
+      "log_sha256": "b38324dfebb39492d530e35dc72049ab81e603345254ef9be57d4232e7068a4a",
+      "saved_log": "releases/runtime_rank_20261031/validation/shared_hmi_timeout.log"
+    },
+    {
+      "test": "map_equivalence",
+      "passed": true,
+      "seconds": 19.78,
+      "inputs_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_sd_title_map_equivalence.v": "e93ba70cf5766961a8df98997bdacb2acd05cc1a79bd4f3865f1e65ccdf20354",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\fluid\\water_priority_map.v": "bd9153339e9db42893051a5b4e49fc07cb38bbad26731b2b80d3626419af84b6",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\fluid\\water_effect_map_base.v": "1056c6d9e4ea8fb0c2fe4000835c2f067d0e2f560a6bae2cef39fff3eae08b03",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\reference\\sd_title\\water_priority_map.v": "f1abefd4dae626a726f7fa38ec130aa93ebef4cc2eb1a7f76d00ef13253518d9",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\fluid\\water_color_noise.hex": "f6abf65ce42bfef2acc694d7960b563135673d841b800b94fa0e1c2348202c04",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\fluid\\water_edge.hex": "d9a786982b4fe9f4ce127354883e63c34c4b83129a14649ca37cfc0676b70622",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\fluid\\water_flip.hex": "d17e9e73cc1f254f29a01207e4dca51ae7788a2a2cbf7fa6a33f1655aeaad7e0",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\fluid\\water_fx_recip.hex": "341714eb805da03724e3be255ccc2819757fad84b60656855fc798c58486e8ec",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\fluid\\water_fx_wave.hex": "27bd311f82331651a07dfc99d7b26c94e1552a404484bf2eaad1d4e307f2ae11",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\fluid\\water_inverse.hex": "b9fbfae7e04c6daae1b3fc777195abff9a6c1d6ac80b8e3d42a91b594366aff8",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\fluid\\water_inverse_low9.hex": "eab879ab54d2b54f167e555226a186142994234d3ec452101df4e39166934019",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\fluid\\water_roll.hex": "2720f93c3fbc5eb62b853d8044bf0ef0b5244c2c86611c99a912418e8ff8eca3",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\fluid\\water_sine.hex": "675dbabe21c8dde85807e72f502a8ae0c99d1dcdedaaecee4190b31feabb0973",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\fluid\\water_strip.hex": "16cf5e9d397e015da5223c63ba34ae59dad858e2526a8204fd6df04dd8ac218b",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\fluid\\water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\fluid\\water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_sd_title_map_equivalence.py": "949c16cb57a921f8d8c61e626a8e183a983566347187073054a92ac04d71ba12"
+      },
+      "log_sha256": "954ea02589f94e06bed00513797723c8a57dbf06cccfa64dc5849b0e5d26f2e9",
+      "log": "E:\\Codex\\Work\\complete-hmi-20261031\\glass_geometry02\\map_equivalence.log",
+      "saved_log": "releases/runtime_rank_20261031/validation/map_equivalence.log"
+    }
+  ],
+  "development_checks": [
+    {
+      "test": "av_spi_reset_development",
+      "status": "timed_out",
+      "timeout_seconds": 240,
+      "counted_as_pass": false,
+      "script": "E:\\Codex\\Work\\complete-hmi-20261031\\av_spi_reset_development.py",
+      "script_sha256": "f305f59b70cbe19d726eb134dfb1350ac5b85619b52132c6841cb05c40795641",
+      "scope": "Development extension of an older full-SPI bench; no completed result was produced.",
+      "current_replacement": "Focused real analysis/cache test verifies the changed reset stage, CRC and incomplete-header rejection, scene change during a packet, stream reset and fresh publication. Existing current full A/B SPI/PCM regression retained separately."
+    }
+  ],
+  "prior_historical_failed_regressions": [
+    {
+      "test": "hmi_recovery",
+      "passed": false,
+      "inputs_sha256": {
+        "tests/tb_hmi_relay_recovery.v": "a104ff5cf90a3d7219c37666010ef25559e51b5789f3a7530f20be858eb63f88",
+        "common/photo_hmi_remote.v": "3f70f215ef5a03e9adb87f0056949c61aa8eb5d51953ae47588e0a06dc6d96a6"
+      },
+      "classification": "unchanged879_inputs_historical_test_failure",
+      "counted_as_pass": false,
+      "baseline_rerun": false,
+      "saved_log": "releases/match_score_20261031/validation/historical_hmi_recovery.log"
+    },
+    {
+      "test": "hmi_spi",
+      "passed": false,
+      "inputs_sha256": {
+        "tests/tb_hmi_remote_spi.v": "a51168e4415ce19479f63073472ee01399e1d12951b2e7969384b3b523eace37",
+        "common/photo_hmi_remote.v": "3f70f215ef5a03e9adb87f0056949c61aa8eb5d51953ae47588e0a06dc6d96a6",
+        "common/photo_audio_link.v": "6b6c7d5d4028079768c08478a43c72a0124716934c0e7293f84af1fe6a345e46",
+        "common/photo_audio_spi_b_offload.v": "eddce5724930582ae737fce109d12e5289ff1f9288fbf274a19200b693f23a93",
+        "common/photo_processing.v": "e27a9874122e1393e1d765db349858c6f7b4900d05847101652624804373e8ac"
+      },
+      "classification": "unchanged879_inputs_historical_test_failure",
+      "counted_as_pass": false,
+      "baseline_rerun": false,
+      "saved_log": "releases/match_score_20261031/validation/historical_hmi_spi.log"
+    },
+    {
+      "test": "deadlines",
+      "passed": false,
+      "inputs_sha256": {
+        "tests/tb_b_deadlines.v": "13afa27108b23e47810970ce87966465f1811904924b1e7a677ff8ae7eec481b",
+        "common/photo_control.v": "bebb87f9d7723b1019c2431df03ffeed4a2951e5fb8082b90867f853727ac522",
+        "common/photo_uart.v": "99262aac12d6107353786166feeeef319ffa5a53e0bfb449734d9779f62d78f5",
+        "tests/reference/photo_control_before.v": "0df12686158cc3514769c4ef2b18f1f8c368100bdb02141bce71136ad9b2ec27"
+      },
+      "classification": "unchanged879_inputs_historical_test_failure",
+      "counted_as_pass": false,
+      "baseline_rerun": false,
+      "saved_log": "releases/match_score_20261031/validation/historical_deadlines.log"
+    }
+  ],
+  "firmware_sha256": {
+    "releases/PHOTO_BOARD_A_5_0.bit": "103875f54ba6eabba9ff121bbfe369f70be83a3b3a4173419b97cae346b55639",
+    "releases/PHOTO_BOARD_B_5_0.bit": "cd3a4ae5555f56e4d87b60ac4f55de3bf254c193c12a1e59ee2790b819054843"
+  }
+}

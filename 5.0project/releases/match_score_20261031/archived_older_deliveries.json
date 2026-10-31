@@ -1,0 +1,52 @@
+[
+  {
+    "relative": "releases/compact_no_crc_trophy_fixed_20261029/firmware_and_reports.zip",
+    "archive": "E:\\Codex\\Work\\integrate-match-a74-20261031\\archived_older_deliveries\\releases\\compact_no_crc_trophy_fixed_20261029\\firmware_and_reports.zip",
+    "sha256": "25547e429c15b6992e9e7c488b441e0abbdfd8ca622be00763661cf8a3a7734d"
+  },
+  {
+    "relative": "releases/compact_no_crc_trophy_fixed_20261029/PHOTO_BOARD_A.bit",
+    "archive": "E:\\Codex\\Work\\integrate-match-a74-20261031\\archived_older_deliveries\\releases\\compact_no_crc_trophy_fixed_20261029\\PHOTO_BOARD_A.bit",
+    "sha256": "a289484efb96678022a4612d1b00f7442a2b81808bbd3027352339a65912fcc3"
+  },
+  {
+    "relative": "releases/compact_no_crc_trophy_fixed_20261029/PHOTO_BOARD_B.bit",
+    "archive": "E:\\Codex\\Work\\integrate-match-a74-20261031\\archived_older_deliveries\\releases\\compact_no_crc_trophy_fixed_20261029\\PHOTO_BOARD_B.bit",
+    "sha256": "08c6ac933aeb46b99e6ce7deef71e741045406bc1dc61628c4a74f19e57b6a17"
+  },
+  {
+    "relative": "releases/compact_no_crc_trophy_fixed_20261029/source_patch.zip",
+    "archive": "E:\\Codex\\Work\\integrate-match-a74-20261031\\archived_older_deliveries\\releases\\compact_no_crc_trophy_fixed_20261029\\source_patch.zip",
+    "sha256": "dd0382770da3160a312961a0de44669882ee2d323199a44418a09706c170c16d"
+  },
+  {
+    "relative": "releases/hmi_width_trim_20261030/PHOTO_BOARD_A.bit",
+    "archive": "E:\\Codex\\Work\\integrate-match-a74-20261031\\archived_older_deliveries\\releases\\hmi_width_trim_20261030\\PHOTO_BOARD_A.bit",
+    "sha256": "3c406fbc308f62cf60f0df843fa9bb987da357ce3311ae9740bebdc2a944c3b9"
+  },
+  {
+    "relative": "releases/hmi_width_trim_20261030/PHOTO_BOARD_B.bit",
+    "archive": "E:\\Codex\\Work\\integrate-match-a74-20261031\\archived_older_deliveries\\releases\\hmi_width_trim_20261030\\PHOTO_BOARD_B.bit",
+    "sha256": "ba6b16d0dc75b7d5c12339f784297c71851e8ddefce75ccd98f1450a16b75553"
+  },
+  {
+    "relative": "releases/hmi_width_trim_20261030/source_and_tests.zip",
+    "archive": "E:\\Codex\\Work\\integrate-match-a74-20261031\\archived_older_deliveries\\releases\\hmi_width_trim_20261030\\source_and_tests.zip",
+    "sha256": "3eb6f05e16ba8ba0842c7605dd7878ac68ec0018d8b598ca5b9e021fb39a068b"
+  },
+  {
+    "relative": "releases/indexed_title_20261031/delivery-indexed-title-20261031.zip",
+    "archive": "E:\\Codex\\Work\\integrate-match-a74-20261031\\archived_older_deliveries\\releases\\indexed_title_20261031\\delivery-indexed-title-20261031.zip",
+    "sha256": "264c4760cad3a00b825ab58d954c8ba1c917910ca7fade7db4c2c547e96b13c6"
+  },
+  {
+    "relative": "releases/indexed_title_20261031/serial-test-vectors-20261031.zip",
+    "archive": "E:\\Codex\\Work\\integrate-match-a74-20261031\\archived_older_deliveries\\releases\\indexed_title_20261031\\serial-test-vectors-20261031.zip",
+    "sha256": "d62fad372edff59b0d2fc1ce0c1b468e6a54cfee12ee3a55682aa6e231eb7ec5"
+  },
+  {
+    "relative": "releases/logic_bubbles_f6_20261030/delivery-logic-f6-20261030.zip",
+    "archive": "E:\\Codex\\Work\\integrate-match-a74-20261031\\archived_older_deliveries\\releases\\logic_bubbles_f6_20261030\\delivery-logic-f6-20261030.zip",
+    "sha256": "9746d03bc0814f4dd8467e86cd3978a042a61031ee3bbaac633dc78a33f52a2c"
+  }
+]

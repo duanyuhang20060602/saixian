@@ -1,0 +1,2 @@
+PASS actual HMI UART: mode, teams, durations, direct0..999, +/- keys/buttons, pause, result lock, caption/binary coexistence, timeout and exit-key isolation
+E:\Codex\Downloads\qiansai\5.0project\tests\tb_match_serial.v:57: $finish called at 246015000 (1ps)

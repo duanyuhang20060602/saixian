@@ -2,12 +2,13 @@
 // A keeps current, next, next+1 and next+2 in four independent SDRAM slots.
 // Link transactions finish when stored; display commits run independently.
 module photo_cached_control_a #(
- parameter CLK_HZ=75000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0,AWARD_LIGHTS=0,EARLY_THUMBNAIL=0,RELIEF_CONTROL=0,TITLE_SD=0,INDEPENDENT_TEXT=0,BOOT_STATUS=0,CONTROL_BAUD=115200
+ parameter RANK_TEXT=0,CLK_HZ=75000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0,AWARD_LIGHTS=0,EARLY_THUMBNAIL=0,RELIEF_CONTROL=0,TITLE_SD=0,INDEPENDENT_TEXT=0,BOOT_STATUS=0,CONTROL_BAUD=115200
 )(
  input text_request,input [7:0] text_tag,text_bank_length,text_character,input [13:0] text_code,
  output text_reply,output [7:0] text_reply_tag,text_reply_position,output text_reply_error,
  output reg font_available,font_transfer_complete,
  output title_word_valid,output [6+INDEPENDENT_TEXT:0] title_word_index,output [31:0] title_word_data,output [4:0] title_word_length,
+ output rank_word_valid,output [8:0] rank_word_index,output [31:0] rank_word_data,
  output receive_relief,output receive_award,output receive_fluid,
  input settings_mode,input [18:0] settings_state,output settings_updating,
  input award_toggle,relief_toggle,output reg award_available,award_scan_complete,relief_available,
@@ -93,12 +94,25 @@ photo_uart #(.PAYLOAD_BYTES(18),.BAUD(CONTROL_BAUD),.CLK_HZ(CLK_HZ),.PULSE_PAYLO
  .send(send),.message(message),.busy(tx_busy),.received(got),.received_message(incoming),.bad_packet(bad));
 wire [7:0] kind=incoming[159:152];
 // begin REGISTERED_PACKET_KIND
-// PULSE_PAYLOAD settles throughout both CRC bytes before got is published.
+// PULSE_PAYLOAD settles before the delayed got pulse is published.
 reg [18:0] kind_match_q;
 always @(posedge clk or posedge rst)
  if(rst)kind_match_q<=0;
  else kind_match_q<={kind==8'd18,kind==8'd17,kind==8'd16,kind==8'd15,kind==8'd14,kind==8'd13,kind==8'd12,kind==8'd11,kind==8'd10,kind==8'd9,kind==8'd8,kind==8'd7,kind==8'd6,kind==8'd5,kind==8'd4,kind==8'd3,kind==8'd2,kind==8'd1,kind==8'd0};
 // end REGISTERED_PACKET_KIND
+// Payload settles before the UART's delayed got pulse. Predecode the
+// acceptance predicates so no live payload comparator drives the FSM CE.
+// This preserves the original receive/accept cycle and every field check.
+reg hello_fields_ok_q,catalog_fields_ok_q,context_ack_ok_q,settings_ack_ok_q;
+always @(posedge clk or posedge rst)
+ if(rst)begin hello_fields_ok_q<=0;catalog_fields_ok_q<=0;context_ack_ok_q<=0;settings_ack_ok_q<=0;end
+ else begin
+  hello_fields_ok_q<=incoming[18:16]<=6 && (incoming[18:16]>0 || (AWARD_CONTROL && (incoming[23] || (RELIEF_CONTROL && incoming[21]))) || (BOOT_STATUS && incoming[22]));
+  catalog_fields_ok_q<=incoming[18:16]>=image_count && incoming[18:16]<=6 && (incoming[18:16]>0 || (AWARD_CONTROL && (incoming[23] || (RELIEF_CONTROL && incoming[21]))) || (BOOT_STATUS && incoming[22]));
+  context_ack_ok_q<={incoming[89],incoming[98:96],incoming[88]}==sent_context;
+  settings_ack_ok_q<=incoming[42:24]==sent_settings;
+ end
+
 assign timing_cancel=award_toggle || relief_command || settings_dirty || refresh_pending || state_flags[FAILED] || (got && kind_match_q[10]);
 reg [31:0] session,uptime;
 assign hmi_session=session;reg [15:0] request_seq;
@@ -165,7 +179,10 @@ reg text_outstanding;reg text_ack_pending;reg [23:0] text_ack;
 wire dynamic_reply=got && (kind==37 || kind==39) && session_matches && incoming[119:112]==text_tag && text_request;
 assign text_reply=dynamic_reply;assign text_reply_tag=incoming[119:112];
 assign text_reply_position=incoming[103:96];assign text_reply_error=kind==39;
-wire title_packet=dynamic_reply && kind==37;
+wire title_packet=dynamic_reply && kind==37 && !(RANK_TEXT && incoming[119]);
+assign rank_word_valid=RANK_TEXT && dynamic_reply && kind==37 && incoming[119];
+assign rank_word_index={incoming[111:109],incoming[102:100],incoming[99:97]};
+assign rank_word_data=incoming[95:64];
 assign title_word_valid=title_packet;
 assign title_word_index={incoming[111],incoming[103:100],incoming[99:97]};
 assign title_word_data=incoming[95:64];assign title_word_length=incoming[108:104];
@@ -338,7 +355,7 @@ always @(posedge clk or posedge rst)begin
    if(kind==39 || incoming[99:97]==7)text_outstanding<=0;
   end
   timing_begin<=0;timing_present<=0;timing_commit<=0;
-  if(got && kind_match_q[18] && session_matches && incoming[18:16]>=image_count && incoming[18:16]<=6 && (incoming[18:16]>0 || (AWARD_CONTROL && (incoming[23] || (RELIEF_CONTROL && incoming[21]))) || (BOOT_STATUS && incoming[22])))begin
+  if(got && kind_match_q[18] && session_matches && catalog_fields_ok_q)begin
    image_count<=incoming[18:16];count_reply<=1;
    if(BOOT_STATUS)begin font_available<=incoming[20];font_transfer_complete<=incoming[19];end
    if(AWARD_CONTROL)begin award_available<=incoming[23];relief_available<=RELIEF_CONTROL && incoming[21];award_scan_complete<=incoming[22];end
@@ -366,7 +383,7 @@ always @(posedge clk or posedge rst)begin
     text_outstanding<=0;text_ack_pending<=0;title_expected<=0;title_ack_pending<=0;message<=packet(1,session,0,0,0,FRAME_BYTES,0,0);send<=1;state_flags<=(16'd1<<HELLO_WAIT);timer_reset<=1;
    end
    state_flags[HELLO_WAIT]:begin
-    if(got && kind_match_q[2] && session_matches && incoming[18:16]<=6 && (incoming[18:16]>0 || (AWARD_CONTROL && (incoming[23] || (RELIEF_CONTROL && incoming[21]))) || (BOOT_STATUS && incoming[22])))begin
+    if(got && kind_match_q[2] && session_matches && hello_fields_ok_q)begin
      if(SETTINGS_LINK)begin applied_settings<=~settings_state;applied_context<=~live_context;end
      image_count<=incoming[18:16];nav_target<=incoming[18:16]==0 ? (incoming[23] ? 3'd6:3'd7):3'd0;selected_award<=incoming[23] ? 3'd6:3'd7;nav_right<=1;nav_pending<=incoming[18:16]!=0 || incoming[23] || (RELIEF_CONTROL && incoming[21]);
      if(BOOT_STATUS)begin font_available<=incoming[20];font_transfer_complete<=incoming[19];end
@@ -402,7 +419,7 @@ always @(posedge clk or posedge rst)begin
    end
    end
    state_flags[WAIT_CONTEXT]:begin
-    if(got && kind_match_q[15] && session_matches && {incoming[89],incoming[98:96],incoming[88]}==sent_context)begin
+    if(got && kind_match_q[15] && session_matches && context_ack_ok_q)begin
      applied_context<=sent_context;state_flags<=(16'd1<<IDLE);timer_reset<=1;
     end else if(timeout1)begin applied_context<=~live_context;state_flags<=(16'd1<<IDLE);timer_reset<=1;end
    end
@@ -411,7 +428,7 @@ always @(posedge clk or posedge rst)begin
     else if(timeout1 && !tx_busy && !send)begin message<=packet(16,session,0,0,0,0,0,0);send<=1;timer_reset<=1;end
    end
    state_flags[WAIT_SETTINGS]:begin
-    if(got && kind_match_q[13] && session_matches && incoming[42:24]==sent_settings)begin
+    if(got && kind_match_q[13] && session_matches && settings_ack_ok_q)begin
      applied_settings<=sent_settings;refresh_pending<=1;state_flags<=(16'd1<<IDLE);timer_reset<=1;
     end else if(timeout1)begin applied_settings<=~settings_state;state_flags<=(16'd1<<IDLE);timer_reset<=1;end
    end

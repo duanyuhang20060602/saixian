@@ -32,7 +32,7 @@ lappend phyWildParams gate pack_effort high
 lappend phyWildParams rtl resource_sharing auto
 lappend phyWildParams rtl shifter_style shifter_reg
 # Consolidate small clock-enable groups to reduce slice control fragmentation.
-lappend phyWildParams rtl min_ce_fanout 128
+lappend phyWildParams rtl min_ce_fanout 256
 # This high-utilization design needs the explicit route hold-fix stage.  The
 # automatic in-route pass is skipped above 90% slice utilization.  Keep the
 # normal route phase enabled, then invoke the tool's official fix_hold phase

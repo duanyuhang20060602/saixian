@@ -1,0 +1,2 @@
+PASS exact FIFO and511/512/half thresholds: AW=11, 54062 cycles, full/empty, concurrent push/pop, resets and RAM data
+E:\Codex\Downloads\qiansai\5.0project\tests\tb_match_audio_fifo.v:24: $finish called at 541170000 (1ps)

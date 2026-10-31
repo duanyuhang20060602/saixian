@@ -1,0 +1,2 @@
+PASS real A/B SPI: 3072 PCM words exact, 85 UART bytes exact, reserved-slot errors=0 AV=2 relief=1 pages=1 HMI-only=3 underflows=0
+E:\Codex\Downloads\qiansai\5.0project\tests\tb_hmi_spi_compact.v:74: $finish called at 46000693298 (1ps)

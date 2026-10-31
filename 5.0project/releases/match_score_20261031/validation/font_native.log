@@ -1,0 +1,3 @@
+WARNING: E:\Codex\Downloads\qiansai\5.0project\tests\ip_vendor_ram_adapter.v:27: $readmemh: The behaviour for reg[...] mem[N:0]; $readmemh("...", mem); changed in the 1364-2005 standard. To avoid ambiguity, use mem[0:N] or explicit range parameters $readmemh("...", mem, start, stop);. Defaulting to 1364-2005 behavior.
+PASS native dual-port font:        9904 bitmap/string/row checks using independent MIF conversion
+E:\Codex\Downloads\qiansai\5.0project\tests\tb_match_font_native.v:18: $finish called at 198086000 (1ps)

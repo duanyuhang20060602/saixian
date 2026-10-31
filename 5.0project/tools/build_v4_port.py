@@ -38,10 +38,11 @@ def inputs(role):
     paths += list((td.parent/'user_source/hdl_source/include').glob('*'))
     paths += list((ROOT/'common').rglob('*.mif'))
     paths += list((ROOT/'common').rglob('*.hex'))
+    paths += list((ROOT/'common').rglob('*.vh'))
     return {p.relative_to(ROOT).as_posix(): digest(p) for p in sorted(set(paths)) if p.is_file()}
 
 def build(board, work, mapped_from=None, checkpoint_stage='gate'):
-    assert checkpoint_stage in ('gate', 'place')
+    assert checkpoint_stage in ('gate', 'place','pr')
     assert mapped_from or checkpoint_stage == 'gate'
     role = 'board_'+board
     out = work/'builds'/role
@@ -70,7 +71,7 @@ def build(board, work, mapped_from=None, checkpoint_stage='gate'):
     record['local_project_sha256'] = digest(al)
     # ROM readers normally resolve relative to their source file. Also make
     # basename-only IP initialization references available in the build cwd.
-    for mif in [*(project/'common').rglob('*.mif'), *(project/'common').rglob('*.hex'), *(td.parent/'user_source').rglob('*.mif')]:
+    for mif in [*(project/'common').rglob('*.mif'), *(project/'common').rglob('*.hex'), *(project/'common').rglob('*.vh'), *(td.parent/'user_source').rglob('*.mif')]:
         destination = td/mif.name
         if destination.exists() and digest(destination) != digest(mif):
             raise SystemExit('Conflicting ROM basename: '+mif.name)
@@ -87,7 +88,7 @@ def build(board, work, mapped_from=None, checkpoint_stage='gate'):
         record['mapped_origin'] = {'result': str(origin_path), 'result_sha256': digest(origin_path),
                                    'checkpoint': str(checkpoint), 'checkpoint_sha256': digest(checkpoint),
                                    'checkpoint_stage': checkpoint_stage}
-        shutil.copy2(checkpoint, td/checkpoint.name)
+        shutil.copy2(checkpoint, td/(name+'_place.db' if checkpoint_stage=='pr' else checkpoint.name))
         flow = td/'build_board.tcl'
         recipe = flow.read_text(encoding='utf-8')
         assert recipe.count('set start_step read_design') == 1
@@ -116,7 +117,7 @@ def build(board, work, mapped_from=None, checkpoint_stage='gate'):
     compact_macro = physical_strategy in ('TimingUltraEmbeddedCompactMacroRoute','TimingUltraEmbeddedCompactMacroExtraRoute','TimingUltraEmbeddedCompactMacroGuardRoute','TimingUltraEmbeddedCompactMacroGuardAll')
     if compact_macro:
         physical_strategy = 'TimingUltraEmbeddedCompactRoute'
-    if mapped_from and checkpoint_stage == 'place':
+    if mapped_from and checkpoint_stage in ('place','pr'):
         assert physical_strategy, 'Placed retry requires an explicit routing profile'
     if physical_strategy:
         catalog = td_root/'doc/strategies/official_strategy_ph1.json'
@@ -163,6 +164,9 @@ def build(board, work, mapped_from=None, checkpoint_stage='gate'):
             # for B's remaining sub-nanosecond routed setup paths.
             strategy['params'] += [{'step':'route','param':'post_route_opt','val':'high'},
                                    {'step':'route','param':'postrt_opt_extra_round','val':'4'}]
+        if environment.get('SAIXIAN_ROUTE_POST_OPT')=='high':
+            strategy['params'] += [{'step':'route','param':'post_route_opt','val':'high'},
+                                   {'step':'route','param':'postrt_opt_extra_round','val':'4'}]
         if clean_guard:
             # B has spare logic area. Explicitly re-enable restructuring
             # instead of inheriting the compact gate checkpoint's settings.
@@ -178,7 +182,7 @@ def build(board, work, mapped_from=None, checkpoint_stage='gate'):
         if route_swap:
             assert route_swap in ('on','off'), 'Supported route pin-swap overrides: on/off'
             strategy['params'] += [{'step':'route','param':'swap_pin','val':route_swap}]
-        if mapped_from and checkpoint_stage == 'place':
+        if mapped_from and checkpoint_stage in ('place','pr'):
             assert record['place_seed_override'] == origin['place_seed_override'], 'Keep the accepted placement seed'
             original_place = [p for p in origin['physical_strategy']['parameters'] if p['step'] == 'place']
             assert [p for p in strategy['params'] if p['step'] == 'place'] == original_place, 'Placed retry may change routing parameters only'
@@ -219,13 +223,40 @@ def build(board, work, mapped_from=None, checkpoint_stage='gate'):
             # exactly 0.20 ns. Remove ONLY our named group before final STA.
             original_flow = td_root/'doc/scripts/DefaultFlow.tcl'
             derived = original_flow.read_text(encoding='utf-8')
-            margin_command = '  set_path_margin -group codex_setup_guard -setup -global 0.20\n'
+            route_margin = environment.get('SAIXIAN_ROUTE_SETUP_MARGIN', '0.20')
+            assert route_margin in ('0.20','0.50','1.00'), 'Supported positive routing setup targets'
+            margin_command = '  set_path_margin -group codex_setup_guard -setup -global '+route_margin+'\n'
             route_start = derived.index('proc opt_route_fun {}')
             route_end = derived.index('proc bitgen_fun {}', route_start)
             route_body = derived[route_start:route_end]
             marker = '### Editable zone for opt_route ###\n'
             assert route_body.count(marker) == 1
             route_body = route_body.replace(marker, marker+margin_command, 1)
+            if checkpoint_stage=='pr':
+                assert route_body.count('\n  route\n')==1
+                route_body=route_body.replace('\n  route\n','\n  route -incremental\n',1)
+                move_location=environment.get('SAIXIAN_HDMI_REGISTER_LOCATION')
+                if move_location:
+                    assert re.fullmatch(r'x0[0-5][0-9]y0[0-7][0-9]',move_location)
+                    cell='match_video/render/numbers/tens_reg[1]_syn_36'
+                    marker='\n  route -incremental\n'
+                    route_body=route_body.replace(marker,'\n  move_cells -inst {'+cell+'} -location {'+move_location+'} -mode enforce -step route\n'+marker,1)
+                    record['physical_cell_relocation']={'cell':cell,'location':move_location,'mode':'enforce','stage':'route'}
+                mode=environment.get('SAIXIAN_INCREMENTAL_PHYS_OPT')
+                if mode:
+                    assert mode in ('relocation','reroute')
+                    marker='\n  route -incremental\n'
+                    route_body=route_body.replace(marker,marker+'  phys_opt -post_route -effort ultra -mode '+mode+'\n  route -incremental\n',1)
+                    record['post_route_physical_optimization']={'effort':'ultra','mode':mode,'incremental_route_after':True}
+                if environment.get('SAIXIAN_ROUTE_ENDPOINT_RETRY')=='1':
+                    summary=Path(origin['timing']['path']).read_text(errors='replace')
+                    sinks=[]
+                    for match in re.finditer(r'Slack\s*:\s*(-?[0-9.]+)ns\nBegin Point[^\n]*\nEnd Point\s*:\s*(\S+)',summary):
+                        if float(match[1])<0 and match[2] not in sinks:sinks.append(match[2])
+                    assert sinks and all(re.fullmatch(r'[A-Za-z0-9_/.$\[\]-]+',sink) for sink in sinks)
+                    marker='\n  route -incremental\n'
+                    route_body=route_body.replace(marker,marker+''.join('  multi_try_route -sink {'+sink+'}\n' for sink in sinks)+'  route -incremental\n',1)
+                    record['endpoint_route_retries']=sinks
             marker = '  report_area -io_info -file ${prj_name}_phy.area\n'
             assert route_body.count(marker) == 1
             route_body = route_body.replace(marker, '  reset_path_margin -group codex_setup_guard\n  report_path_margin\n'+marker, 1)
@@ -233,15 +264,19 @@ def build(board, work, mapped_from=None, checkpoint_stage='gate'):
             if guard_place:
                 marker = '### Editable zone for opt_place ###\n'
                 assert derived.count(marker) == 1
-                derived = derived.replace(marker, marker+margin_command, 1)
+                derived = derived.replace(marker, marker+'  set_path_margin -group codex_setup_guard -setup -global 0.20\n', 1)
+                if environment.get('SAIXIAN_HDMI_NEAR_BOUND')=='1':
+                    bound='  create_bound codex_hdmi_output_near -mode soft -origin {25 1} -width 15 -height 20\n  set hdmi_output_cells [get_cells -hier -regexp {u_hdmi_phy/u2_lane_lvds_8_1/S_oddr_data_reg\\[1\\]}]\n  add_cells_to_bound -bound codex_hdmi_output_near -cells $hdmi_output_cells\n'
+                    derived=derived.replace(marker,marker+bound,1)
+                    record['physical_soft_bound']={'name':'codex_hdmi_output_near','origin':[25,1],'width':15,'height':20,'rtl_register':'u_hdmi_phy/u2_lane_lvds_8_1/S_oddr_data_reg[1]'}
             local_flow = td/'physical_flow.tcl'
             local_flow.write_text(derived, encoding='utf-8', newline='\n')
             record['local_flow'] = {'path': str(local_flow), 'sha256': digest(local_flow),
                                     'base': str(original_flow), 'base_sha256': digest(original_flow),
-                                    'change': 'Use +0.20ns setup optimization margin; reset its named group before final routed timing.'}
-            record['optimization_guard'] = {'setup_margin_ns': 0.20,
+                                    'change': 'Use +0.20ns placement and +'+route_margin+'ns routing setup optimization targets; reset the named group before final routed timing.'}
+            record['optimization_guard'] = {'setup_margin_ns': 0.20,'route_setup_margin_ns':float(route_margin),
                 'during': ['place','route'] if guard_place else ['route'],
-                'restored_before_final_timing': True}
+                'restored_before_final_timing': True,'incremental_routing':checkpoint_stage=='pr'}
             recipe = flow.read_text(encoding='utf-8')
             marker = 'source [file join $tdRoot doc scripts DefaultFlow.tcl]'
             assert recipe.count(marker) == 1

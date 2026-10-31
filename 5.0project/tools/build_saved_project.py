@@ -13,6 +13,12 @@ def main():
     verify(strict=args.verify_only)
     verify_compact_menu()
     if args.board in ('a','both'):
+        from prepare_match_audio import verify as verify_match_audio
+        verify_match_audio()
+        from prepare_match_columns import verify as verify_match_columns
+        verify_match_columns()
+        from prepare_runtime_rank import verify as verify_runtime_rank
+        verify_runtime_rank()
         from prepare_menu_edge_rom import verify as verify_packed_rom
         verify_packed_rom()
     if args.verify_only:print('PASS saved project verification');return
@@ -23,6 +29,9 @@ def main():
     explicit_synthesis=os.environ.get('SAIXIAN_SYNTHESIS_STRATEGY')
     explicit_route_effort=os.environ.get('SAIXIAN_ROUTE_EFFORT')
     explicit_route_swap=os.environ.get('SAIXIAN_ROUTE_SWAP_PIN')
+    explicit_route_margin=os.environ.get('SAIXIAN_ROUTE_SETUP_MARGIN')
+    explicit_post_opt=os.environ.get('SAIXIAN_ROUTE_POST_OPT')
+    explicit_near_bound=os.environ.get('SAIXIAN_HDMI_NEAR_BOUND')
     manifest=json.loads((ROOT/'package_manifest.json').read_text(encoding='utf-8'))
     profiles={r['board']:r for r in manifest.get('release_builds',[])}
     if args.td_root:os.environ['SAIXIAN_TD_ROOT']=args.td_root.as_posix()
@@ -42,6 +51,13 @@ def main():
         else:os.environ.pop('SAIXIAN_ROUTE_EFFORT',None)
         if route_swap:os.environ['SAIXIAN_ROUTE_SWAP_PIN']=route_swap
         else:os.environ.pop('SAIXIAN_ROUTE_SWAP_PIN',None)
+        margin=explicit_route_margin or str(accepted.get('optimization_guard',{}).get('route_setup_margin_ns','0.20'))
+        os.environ['SAIXIAN_ROUTE_SETUP_MARGIN']={'0.2':'0.20','0.5':'0.50','1.0':'1.00'}.get(margin,margin)
+        post_opt=explicit_post_opt or ('high' if route_params.get('post_route_opt')=='high' else None)
+        if post_opt:os.environ['SAIXIAN_ROUTE_POST_OPT']=post_opt
+        else:os.environ.pop('SAIXIAN_ROUTE_POST_OPT',None)
+        if explicit_near_bound or accepted.get('physical_soft_bound'):os.environ['SAIXIAN_HDMI_NEAR_BOUND']=explicit_near_bound or '1'
+        else:os.environ.pop('SAIXIAN_HDMI_NEAR_BOUND',None)
         synthesis=explicit_synthesis or accepted.get('synthesis_strategy',{}).get('name')
         if synthesis:os.environ['SAIXIAN_SYNTHESIS_STRATEGY']=synthesis
         else:os.environ.pop('SAIXIAN_SYNTHESIS_STRATEGY',None)

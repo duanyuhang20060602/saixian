@@ -1,0 +1,2 @@
+PASS shared tick keys DIV4: debounce, short, one-shot long, key_scene consumption and rearm
+E:\Codex\Downloads\qiansai\5.0project\tests\tb_match_keys_tick.v:21: $finish called at 9360000 (1ps)

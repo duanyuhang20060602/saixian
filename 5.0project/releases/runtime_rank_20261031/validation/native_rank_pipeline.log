@@ -1,0 +1,4 @@
+WARNING: E:\Codex\Downloads\qiansai\5.0project\tests\ip_vendor_ram_adapter.v:27: $readmemh: The behaviour for reg[...] mem[N:0]; $readmemh("...", mem); changed in the 1364-2005 standard. To avoid ambiguity, use mem[0:N] or explicit range parameters $readmemh("...", mem, start, stop);. Defaulting to 1364-2005 behavior.
+WARNING: E:\Codex\Downloads\qiansai\5.0project\tests\ip_vendor_ram_adapter.v:27: $readmemh: The behaviour for reg[...] mem[N:0]; $readmemh("...", mem); changed in the 1364-2005 standard. To avoid ambiguity, use mem[0:N] or explicit range parameters $readmemh("...", mem, start, stop);. Defaulting to 1364-2005 behavior.
+PASS 19996 changing-row digit pixels: early metadata lookup preserves the original two-clock video phase
+E:\Codex\Work\complete-hmi-20261031\final_native08\pipeline\bench.v:37: $finish called at 200260000 (1ps)

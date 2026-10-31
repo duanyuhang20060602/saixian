@@ -1,0 +1,2 @@
+PASS real UART carousel settings/reset; original 100m countdown/start/pause/resume/finish; green running/yellow paused border pixels; paused timer freeze and return to carousel
+E:\Codex\Downloads\qiansai\5.0project\tests\tb_fpga_legacy_controls.v:51: $finish called at 1271845000 (1ps)

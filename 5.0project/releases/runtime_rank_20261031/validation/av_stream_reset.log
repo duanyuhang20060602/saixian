@@ -1,0 +1,12 @@
+E:\Codex\Downloads\qiansai\5.0project\common\photo_av_receiver.v:70: warning: Port 2 (dob) of module EG_LOGIC_BRAM expects 16 bit(s), given 18.
+E:\Codex\Downloads\qiansai\5.0project\common\photo_av_receiver.v:70:        : Padding 2 high bits of the expression.
+E:\Codex\Downloads\qiansai\5.0project\common\photo_av_receiver.v:70: warning: Port 3 (dia) of module EG_LOGIC_BRAM expects 16 bit(s), given 18.
+E:\Codex\Downloads\qiansai\5.0project\common\photo_av_receiver.v:70:        : Pruning 2 high bits of the expression.
+E:\Codex\Downloads\qiansai\5.0project\common\photo_av_receiver.v:70: warning: Port 4 (dib) of module EG_LOGIC_BRAM expects 16 bit(s), given 18.
+E:\Codex\Downloads\qiansai\5.0project\common\photo_av_receiver.v:70:        : Pruning 2 high bits of the expression.
+E:\Codex\Downloads\qiansai\5.0project\common\photo_av_receiver.v:70: warning: Port 17 (addra) of module EG_LOGIC_BRAM expects 7 bit(s), given 8.
+E:\Codex\Downloads\qiansai\5.0project\common\photo_av_receiver.v:70:        : Pruning 1 high bits of the expression.
+E:\Codex\Downloads\qiansai\5.0project\common\photo_av_receiver.v:70: warning: Port 18 (addrb) of module EG_LOGIC_BRAM expects 7 bit(s), given 8.
+E:\Codex\Downloads\qiansai\5.0project\common\photo_av_receiver.v:70:        : Pruning 1 high bits of the expression.
+PASS registered visual reset:18k stereo samples, CRC/truncated headers, sample eligibility, 520 generations, scene reset during packet, stream reset and fresh publication
+E:\Codex\Work\complete-hmi-20261031\av_stream_reset_final\bench.v:114: $finish called at 466800000 (1ps)

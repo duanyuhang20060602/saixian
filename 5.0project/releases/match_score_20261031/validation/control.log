@@ -1,0 +1,2 @@
+PASS control: selection, durations, countdown, scores, freeze, alerts, tie, lock, cap, cancel
+E:\Codex\Work\integrate-match-a74-20261031\tests11\control\control.v:33: $finish called at 28866000 (1ps)
