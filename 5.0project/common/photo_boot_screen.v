@@ -1,6 +1,6 @@
 // A-board startup UI; no SD asset, SDRAM read or board-B dependency to draw.
 // One-shot exit occurs in vertical blanking after a real frame is available.
-module photo_boot_screen #(parameter VIDEO_DELAY=26,MIN_FRAMES=90,STAGED_LOADING=0,COMPLETE_SCAN=0)(
+module photo_boot_screen #(parameter BAR_ONLY=0,VIDEO_DELAY=26,MIN_FRAMES=90,STAGED_LOADING=0,COMPLETE_SCAN=0)(
  input clk,rst,frame_tick,input [11:0] x,input [10:0] y,
  input memory_ready,catalog_ready,frame_ready,animation_ready,audio_ready,
  input scan_ready,font_ready,photo_present,music_present,font_present,
@@ -145,9 +145,12 @@ end endfunction
 // Four registered rendering stages split stage selection, character lookup,
 // glyph lookup and bit selection. Subtract these stages from the colour delay
 // so the RGB output remains on the original VIDEO_DELAY edge.
-localparam PIPE_DELAY=VIDEO_DELAY>=5 ? VIDEO_DELAY-4:VIDEO_DELAY;
+localparam PIPE_DELAY=BAR_ONLY ? VIDEO_DELAY:VIDEO_DELAY>=5 ? VIDEO_DELAY-4:VIDEO_DELAY;
 wire[3:0] output_color;
-generate if(VIDEO_DELAY>=5)begin:render_pipeline
+generate if(BAR_ONLY)begin:bar_only
+ assign output_color=(x>=400 && x<880 && y>=374 && y<386) ? (bar_x<progress ? 4'd9:4'd10):
+                     (x>=398 && x<882 && y>=372 && y<388) ? 4'd8:4'd0;
+end else if(VIDEO_DELAY>=5)begin:render_pipeline
  reg[2:0] stage0,index0,phase0,dot0;
  reg[5:0] position0,position1,position2;
  reg[6:0] flags0,flags1,flags2,flags3;

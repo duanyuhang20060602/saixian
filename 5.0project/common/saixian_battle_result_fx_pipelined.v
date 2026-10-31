@@ -1,6 +1,7 @@
 // Blue or red victory -> eight-runner ranking -> compact top three.
 // A generic trigger advances from a held page; direct inputs select a result.
 module saixian_battle_result_fx(
+    input rank_word_valid,input [2:0] rank_word_row,input [5:0] rank_word_index,input [31:0] rank_word_data,input [3:0] rank_word_length,input [15:0] rank_word_score,
     input wire clk, rst, frame_tick, trigger,
     input wire select_blue, select_red, select_sprint, stop,
     input wire [10:0] x_in,
@@ -419,7 +420,7 @@ end
 // Victory and passthrough pixels take the same extra clock.
 reg [10:0] pre_x;
 reg [9:0] pre_y;
-reg pre_row_text_valid;
+reg pre_row_text_valid,pre_name_y_valid;reg [5:0] pre_text_y;
 // Selected rank bands span offsets -8..35 and podium bands -34..61.
 // Their low six bits are <28 exactly for the visible text offsets 0..27.
 // Evaluate this before Stage 0 so row-id decode/add/compare is not serialized.
@@ -456,7 +457,7 @@ reg pre_de, pre_vs, pre_ink, pre_red_ink, pre_red;
 reg [23:0] pre_rgb;
 always @(posedge clk or posedge rst) begin
     if(rst) begin
-        pre_x<=0; pre_y<=0; pre_row_text_valid<=0; pre_row_shift<=0;
+        pre_x<=0; pre_y<=0; pre_row_text_valid<=0;pre_name_y_valid<=0;pre_text_y<=0; pre_row_shift<=0;
         pre_medal_positive<=0;pre_medal_negative<=0;
         pre_x_atlas<=0;
         pre_header_x<=0;pre_header_y<=0;
@@ -467,6 +468,7 @@ always @(posedge clk or posedge rst) begin
         pre_rgb<=0;
     end else begin
         pre_x<=raster_x; pre_y<=raster_y; pre_row_text_valid<=row_text_valid;
+        pre_text_y<=row_text_offset;pre_name_y_valid<=!row_id[3] && (row_text_offset<30 || row_text_offset>=62);
         pre_row_shift<=row_shift;
         // Move constant center subtraction before the displacement addition.
         // Both signs are computed in parallel; no extra video clock latency.
@@ -526,6 +528,16 @@ end
 wire [31:0] result_word;
 saixian_sprint_atlas u_sprint_atlas(
     .clk(clk),.addr({result_atlas_y,result_atlas_x[8:4]}),.bits(result_word));
+
+wire rank_custom,rank_custom_ink;wire [1:0] rank_custom_alpha;
+photo_rank_text editable_ranking(.clk(clk),.rst(rst),.frame_tick(frame_tick),
+ .word_valid(rank_word_valid),.word_row(rank_word_row),.word_index(rank_word_index),.word_data(rank_word_data),.word_length(rank_word_length),.word_score(rank_word_score),
+ .read_valid((pre_rank || pre_podium) && pre_row_id<8),.rank_view(pre_rank),.read_row(pre_row_id[2:0]),.read_x(pre_row_x_virtual),
+ .read_y(pre_text_y),.name_y_valid(pre_name_y_valid),.digit_y_valid(pre_row_text_valid),.custom(rank_custom),.ink(rank_custom_ink),.alpha(rank_custom_alpha));
+reg [1:0] custom_pipe;reg [3:0] custom_alpha_pipe;
+always @(posedge clk or posedge rst)
+ if(rst)begin custom_pipe<=0;custom_alpha_pipe<=0;end
+ else begin custom_pipe<={custom_pipe[0],rank_custom};custom_alpha_pipe<={custom_alpha_pipe[1:0],rank_custom_alpha};end
 
 // Three ribboned medals are drawn from registered geometry, not bitmap ROM.
 // Their octagonal rims and central star read clearly at 720p without spending
@@ -909,8 +921,8 @@ always @(posedge clk or posedge rst) begin
         scene_raw<=scene_token_q[23:0];scene_palette_valid<=scene_token_q[30];
         victory_alpha<=atlas_word_q >> bit_offset_q;
         red_alpha<=red_word_q >> red_bit_offset_q;
-        result_alpha<=result_word_q >> result_bit_offset_q;
-        victory_mask<=ink_raw;red_mask<=red_ink_raw;result_mask<=result_ink_raw;
+        result_alpha<=custom_pipe[1] ? custom_alpha_pipe[3:2]:result_word_q >> result_bit_offset_q;
+        victory_mask<=ink_raw;red_mask<=red_ink_raw;result_mask<=result_ink_raw || custom_pipe[1];
         scene_delay<=scene_palette_valid ? scene_palette_rgb : scene_raw;de_delay<=de_raw;vs_delay<=vs_raw;red_delay<=red_raw;
         alpha_q2<=result_mask ? result_alpha : red_mask ? red_alpha : victory_mask ? victory_alpha : 2'd0;
         base_q2<=scene_delay; de_q2<=de_delay; vs_q2<=vs_delay; red_q2<=red_delay;

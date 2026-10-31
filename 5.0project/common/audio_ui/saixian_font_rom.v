@@ -1,5 +1,5 @@
 // 128 glyphs x 16 rows x 16 bits, stored in one EG4 32K block RAM.
-module saixian_font_rom #(parameter SERIAL_TEXT=0,TITLE_SD=0,INDEPENDENT_TEXT=0)(
+module saixian_font_rom #(parameter DEFAULT_TEXT=0,SERIAL_TEXT=0,TITLE_SD=0,INDEPENDENT_TEXT=0)(
     input word_valid,input [6+INDEPENDENT_TEXT:0] word_index,input [31:0] word_data,input [4:0] word_length,
     input rst,frame_tick,output reg [4:0] title_length,output reg [4:0] ticker_length,
     input  wire        clk,
@@ -19,7 +19,7 @@ wire [7:0] extended_index=pending ? low_index:word_index;
 wire [10:0] font_wa=INDEPENDENT_TEXT ? {2'b11,extended_index,pending}:{3'b110,(pending ? low_index[6:0]:word_index[6:0]),pending};
 wire [15:0] font_wd=pending ? low_bits:word_data[31:16];
 always @(posedge clk or posedge rst)begin
- if(rst)begin pending<=0;complete<=0;invalid<=0;low_index<=0;low_bits<=0;candidate_length<=0;candidate_ticker_length<=0;title_length<=0;ticker_length<=0;end
+ if(rst)begin pending<=0;complete<=0;invalid<=0;low_index<=0;low_bits<=0;candidate_length<=0;candidate_ticker_length<=0;title_length<=DEFAULT_TEXT ? 4:0;ticker_length<=DEFAULT_TEXT ? 7:0;end
  else if(TITLE_SD)begin
   pending<=word_valid;
   if(word_valid)begin

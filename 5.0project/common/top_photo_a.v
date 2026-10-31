@@ -145,9 +145,10 @@ always @(posedge pixel_clk or posedge rst_pixel)
 wire hmi_prev,hmi_next,setting_valid,reset_defaults,page_notify;wire [2:0] setting_id,page_id;wire [7:0] setting_value;
 wire edge_valid,edge_value,edge_enable;
 wire effect_valid,auto_valid,auto_value;wire audio_view_valid,audio_view_value,waveform_mode;wire [4:0] effect_value;
-wire text_timeout;wire text_active,text_can_start,text_byte_valid,text_request,text_reply,text_reply_error;
+wire text_timeout;wire [15:0] rank_score;wire rank_word_valid;wire [2:0] rank_word_row;wire [5:0] rank_word_index;wire [31:0] rank_word_data;wire [3:0] rank_word_length;
+wire text_active,text_can_start,text_byte_valid,text_request,text_reply,text_reply_error;
 wire [7:0] text_byte,text_tag,text_bank_length,text_character,text_reply_tag,text_reply_position;wire [13:0] text_code;
-photo_serial_text_a serial_text(.clk(pixel_clk),.rst(rst_pixel),.byte_valid(text_byte_valid),.byte_data(text_byte),.can_start(text_can_start),.timeout(text_timeout),
+photo_serial_text_a serial_text(.rank_score(rank_score),.clk(pixel_clk),.rst(rst_pixel),.byte_valid(text_byte_valid),.byte_data(text_byte),.can_start(text_can_start),.timeout(text_timeout),
  .reply_valid(text_reply),.reply_tag(text_reply_tag),.reply_position(text_reply_position),.reply_error(text_reply_error),
  .active(text_active),.request_valid(text_request),.tag(text_tag),.bank_length(text_bank_length),.character_index(text_character),.code(text_code));
 saixian_hmi_uart #(.TEXT_INPUT(1),.CLK_FREQ_HZ(75000000)) screen_rx(.text_timeout(text_timeout),.text_active(text_active),.text_can_start(text_can_start),.text_byte_valid(text_byte_valid),.text_byte(text_byte),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(hmi_uart_rx),
@@ -238,7 +239,7 @@ wire title_word_valid;wire [7:0] title_word_index;wire [31:0] title_word_data;wi
 wire [31:0] hmi_session,hmi_word;wire [52:0] hmi_status_bus;
 wire hmi_ack_valid,hmi_reset_request,hmi_begin,hmi_word_valid,hmi_commit;
 wire [7:0] hmi_ack_token;wire [1:0] hmi_word_index;
-photo_cached_control_a #(.CONTROL_BAUD(230400),.BOOT_STATUS(1),.INDEPENDENT_TEXT(1),.TITLE_SD(1),.CHECK_FRAME_CRC(0),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.EARLY_THUMBNAIL(1),.RELIEF_CONTROL(1)) ctrl(.text_request(text_request),.text_tag(text_tag),.text_bank_length(text_bank_length),.text_character(text_character),.text_code(text_code),.text_reply(text_reply),.text_reply_tag(text_reply_tag),.text_reply_position(text_reply_position),.text_reply_error(text_reply_error),.hmi_session(hmi_session),.font_available(font_available),.font_transfer_complete(font_transfer_complete),.title_word_valid(title_word_valid),.title_word_index(title_word_index),.title_word_data(title_word_data),.title_word_length(title_word_length),.receive_relief(receive_relief),.receive_award(receive_award),.receive_fluid(receive_fluid),.settings_mode(photo_focus),.settings_state(image_settings),.settings_updating(settings_updating),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
+photo_cached_control_a #(.CONTROL_BAUD(230400),.BOOT_STATUS(1),.INDEPENDENT_TEXT(1),.TITLE_SD(1),.CHECK_FRAME_CRC(0),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.EARLY_THUMBNAIL(1),.RELIEF_CONTROL(1)) ctrl(.rank_word_valid(rank_word_valid),.rank_word_row(rank_word_row),.rank_word_index(rank_word_index),.rank_word_data(rank_word_data),.rank_word_length(rank_word_length),.text_request(text_request),.text_tag(text_tag),.text_bank_length(text_bank_length),.text_character(text_character),.text_code(text_code),.text_reply(text_reply),.text_reply_tag(text_reply_tag),.text_reply_position(text_reply_position),.text_reply_error(text_reply_error),.hmi_session(hmi_session),.font_available(font_available),.font_transfer_complete(font_transfer_complete),.title_word_valid(title_word_valid),.title_word_index(title_word_index),.title_word_data(title_word_data),.title_word_length(title_word_length),.receive_relief(receive_relief),.receive_award(receive_award),.receive_fluid(receive_fluid),.settings_mode(photo_focus),.settings_state(image_settings),.settings_updating(settings_updating),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
  .thumbnail_read_busy(thumbnail_read_busy),.thumbnail_read_slot(thumbnail_slot),
  .timing_begin(timing_begin),.timing_present(timing_present),.timing_commit(timing_commit),.timing_cancel(timing_cancel),
  .award_toggle(photo_award_event),.relief_toggle(photo_relief_event),.relief_available(relief_available),.award_available(award_available),.award_scan_complete(award_scan_complete),.award_loading(award_loading),.award_notice(award_notice),.last_transfer_error(last_transfer_error),
@@ -331,6 +332,7 @@ always @(posedge pixel_clk or posedge rst_pixel)
   result_select_sprint_q<=(hmi_result_sprint || key4_long) && carousel_mode && !settings_mode && !award_active && !award_loading;
  end
 saixian_battle_result_fx u_result_animation(
+ .rank_word_valid(rank_word_valid),.rank_word_row(rank_word_row),.rank_word_index(rank_word_index),.rank_word_data(rank_word_data),.rank_word_length(rank_word_length),.rank_word_score(rank_score),
  .clk(pixel_clk),.rst(rst_pixel),.frame_tick(result_frame_tick_q),
  .trigger(result_trigger_q),
  .select_blue(result_select_blue_q),
@@ -417,7 +419,7 @@ always @(posedge pixel_clk or posedge rst_pixel)begin
   ui_de<=raster_de21 && !settings_render_mode;end
 end
 wire [10:0] ui_font_addr;wire [15:0] ui_font_bits;
-saixian_font_rom #(.SERIAL_TEXT(1),.INDEPENDENT_TEXT(1),.TITLE_SD(1)) ui_font(.word_valid(title_word_valid),.word_index(title_word_index),.word_data(title_word_data),.word_length(title_word_length),.rst(rst_pixel),.frame_tick(blank_start),.title_length(title_length),.ticker_length(ticker_length),.clk(pixel_clk),.glyph_id(ui_font_addr[10:4]),.row(ui_font_addr[3:0]),.bits(ui_font_bits));
+saixian_font_rom #(.DEFAULT_TEXT(1),.SERIAL_TEXT(1),.INDEPENDENT_TEXT(1),.TITLE_SD(1)) ui_font(.word_valid(title_word_valid),.word_index(title_word_index),.word_data(title_word_data),.word_length(title_word_length),.rst(rst_pixel),.frame_tick(blank_start),.title_length(title_length),.ticker_length(ticker_length),.clk(pixel_clk),.glyph_id(ui_font_addr[10:4]),.row(ui_font_addr[3:0]),.bits(ui_font_bits));
 reg [10:0] ticker_x;
 always @(posedge pixel_clk or posedge rst_pixel)
  if(rst_pixel)ticker_x<=0;else if(blank_start)ticker_x<=ticker_x>=(ticker_length==0 ? 11'd864:11'd640+{1'b0,ticker_length,5'b0}) ? 0:ticker_x+1'b1;
@@ -495,7 +497,7 @@ reg [3:0] boot_animation_warmup;
 always @(posedge pixel_clk or posedge rst_pixel)
  if(rst_pixel)boot_animation_warmup<=0;
  else if(!(&boot_animation_warmup))boot_animation_warmup<=boot_animation_warmup+1'b1;
-photo_boot_screen #(.VIDEO_DELAY(26),.MIN_FRAMES(90),.STAGED_LOADING(1),.COMPLETE_SCAN(1)) boot_screen(
+photo_boot_screen #(.BAR_ONLY(1),.VIDEO_DELAY(26),.MIN_FRAMES(90),.STAGED_LOADING(1),.COMPLETE_SCAN(1)) boot_screen(
  .clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),.x(x),.y(y),
  .scan_ready(boot_scan_complete),.font_ready(boot_font_ready),
  .photo_present(count!=0 || award_available || relief_available),.music_present(music_count!=0),.font_present(font_available),

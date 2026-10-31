@@ -6,6 +6,7 @@ module photo_cached_control_a #(
 )(
  input text_request,input [7:0] text_tag,text_bank_length,text_character,input [13:0] text_code,
  output text_reply,output [7:0] text_reply_tag,text_reply_position,output text_reply_error,
+ output rank_word_valid,output [2:0] rank_word_row,output [5:0] rank_word_index,output [31:0] rank_word_data,output [3:0] rank_word_length,
  output reg font_available,font_transfer_complete,
  output title_word_valid,output [6+INDEPENDENT_TEXT:0] title_word_index,output [31:0] title_word_data,output [4:0] title_word_length,
  output receive_relief,output receive_award,output receive_fluid,
@@ -166,7 +167,11 @@ wire dynamic_reply=got && (kind==37 || kind==39) && session_matches && incoming[
 assign text_reply=dynamic_reply;assign text_reply_tag=incoming[119:112];
 assign text_reply_position=incoming[103:96];assign text_reply_error=kind==39;
 wire title_packet=dynamic_reply && kind==37;
-assign title_word_valid=title_packet;
+assign title_word_valid=title_packet && !incoming[110];
+assign rank_word_valid=title_packet && incoming[110];
+assign rank_word_row={incoming[111],incoming[109:108]};
+assign rank_word_index={incoming[102:100],incoming[99:97]};
+assign rank_word_data=incoming[95:64];assign rank_word_length=incoming[107:104];
 assign title_word_index={incoming[111],incoming[103:100],incoming[99:97]};
 assign title_word_data=incoming[95:64];assign title_word_length=incoming[108:104];
 

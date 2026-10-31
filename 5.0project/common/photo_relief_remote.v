@@ -315,9 +315,9 @@ always @(posedge clk)begin
  // Stages 8..11 preserve the shared award menu/HDMI taps.
  color7<=color6;specular7<=specular;cup7<=cup_pipe[3];
  if(cup7)delay8<={
-  sat({2'b00,color7[23:17]}+{1'b0,fine_r}+{2'b00,specular7[7:1]}),
-  sat({2'b00,color7[15:9]}+{1'b0,fine_g}+{3'b000,specular7[7:2]}),
-  sat({2'b00,color7[7:1]}+{1'b0,fine_b}+{4'b0000,specular7[7:3]})};
+  sat({2'b00,color7[23:17]}+{1'b0,fine_r}+{1'b0,specular7}),
+  sat({2'b00,color7[15:9]}+{1'b0,fine_g}+{2'b00,specular7[7:1]}),
+  sat({2'b00,color7[7:1]}+{1'b0,fine_b}+{3'b000,specular7[7:2]})};
  else delay8<=wall7 ? wall_shaded7:color7;
  delay9<=delay8;delay10<=delay9;delay11<={exposure2(delay10[23:16]),exposure2(delay10[15:8]),exposure2(delay10[7:0])};
  if(rst)begin

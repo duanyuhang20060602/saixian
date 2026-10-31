@@ -71,5 +71,6 @@
   "../../../common/photo_relief_decode_cache.v",
   "../../../common/photo_award_math_bank.v",
   "../../../common/photo_hmi_remote.v",
-  "../../../common/photo_serial_text.v"
+  "../../../common/photo_serial_text.v",
+  "../../../common/photo_rank_text.v"
 ]

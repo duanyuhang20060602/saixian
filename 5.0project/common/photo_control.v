@@ -126,7 +126,7 @@ module photo_control_b #(parameter CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=18
 );
 
 reg [7:0] text_tag,text_bank_length;reg [3:0] text_character;reg [2:0] text_row;reg text_wait;
-assign text_clear=text_bank_length[4:0]==0;
+assign text_clear=text_bank_length[6] ? text_bank_length[3:0]==0:text_bank_length[4:0]==0;
 reg [6+INDEPENDENT_TEXT:0] title_index;reg title_wait,title_complete,title_read_settle;
 assign title_address=title_index;
 wire tx_busy,got,bad;wire [159:0] incoming;

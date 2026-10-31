@@ -1,0 +1,50 @@
+[
+  {
+    "rank": 1,
+    "name": "张三",
+    "score": "12.34",
+    "hex": "40 52 31 3A D5 C5 C8 FD 2C 31 32 2E 33 34 0D 0A"
+  },
+  {
+    "rank": 2,
+    "name": "李四",
+    "score": "12.56",
+    "hex": "40 52 32 3A C0 EE CB C4 2C 31 32 2E 35 36 0D 0A"
+  },
+  {
+    "rank": 3,
+    "name": "王五",
+    "score": "12.78",
+    "hex": "40 52 33 3A CD F5 CE E5 2C 31 32 2E 37 38 0D 0A"
+  },
+  {
+    "rank": 4,
+    "name": "赵六",
+    "score": "13.02",
+    "hex": "40 52 34 3A D5 D4 C1 F9 2C 31 33 2E 30 32 0D 0A"
+  },
+  {
+    "rank": 5,
+    "name": "钱七",
+    "score": "13.15",
+    "hex": "40 52 35 3A C7 AE C6 DF 2C 31 33 2E 31 35 0D 0A"
+  },
+  {
+    "rank": 6,
+    "name": "孙八",
+    "score": "13.30",
+    "hex": "40 52 36 3A CB EF B0 CB 2C 31 33 2E 33 30 0D 0A"
+  },
+  {
+    "rank": 7,
+    "name": "周九",
+    "score": "13.44",
+    "hex": "40 52 37 3A D6 DC BE C5 2C 31 33 2E 34 34 0D 0A"
+  },
+  {
+    "rank": 8,
+    "name": "吴十",
+    "score": "13.68",
+    "hex": "40 52 38 3A CE E2 CA AE 2C 31 33 2E 36 38 0D 0A"
+  }
+]
