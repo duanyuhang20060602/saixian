@@ -145,7 +145,16 @@ always @(posedge pixel_clk or posedge rst_pixel)
 wire hmi_prev,hmi_next,setting_valid,reset_defaults,page_notify;wire [2:0] setting_id,page_id;wire [7:0] setting_value;
 wire edge_valid,edge_value,edge_enable;
 wire effect_valid,auto_valid,auto_value;wire audio_view_valid,audio_view_value,waveform_mode;wire [4:0] effect_value;
-saixian_hmi_uart #(.CLK_FREQ_HZ(75000000)) screen_rx(.clk(pixel_clk),.rst(rst_pixel),.uart_rx(hmi_uart_rx),
+wire[31:0] hmi_session;
+wire text_capture,text_byte_valid,text_line_valid,text_line_ready,text_input_error;
+wire[7:0] text_byte_data;wire[255:0] text_line;
+wire text_pending,text_sent,text_received,text_busy;wire[159:0] text_message,text_incoming;
+wire typed_word_valid;wire[7:0] typed_word_index;wire[31:0] typed_word_data;wire[4:0] typed_word_length;wire[15:0] typed_word_mask;
+reg typed_text_mode;
+always @(posedge pixel_clk or posedge rst_pixel)if(rst_pixel)typed_text_mode<=0;else if(typed_word_valid && typed_word_index==128)typed_text_mode<=1;
+photo_text_input_a text_input(.clk(pixel_clk),.rst(rst_pixel),.byte_valid(text_byte_valid),.byte_data(text_byte_data),.ready(text_line_ready),.capture(text_capture),.valid(text_line_valid),.line(text_line),.error(text_input_error));
+photo_text_bridge_a text_bridge(.frame_tick(blank_start),.text_busy(text_busy),.clk(pixel_clk),.rst(rst_pixel),.session(hmi_session),.line_valid(text_line_valid),.line(text_line),.line_ready(text_line_ready),.pending(text_pending),.message(text_message),.sent(text_sent),.received(text_received),.incoming(text_incoming),.word_valid(typed_word_valid),.word_index(typed_word_index),.word_data(typed_word_data),.word_length(typed_word_length),.word_mask(typed_word_mask));
+saixian_hmi_uart #(.TEXT_INPUT(1),.CLK_FREQ_HZ(75000000)) screen_rx(.text_capture(text_capture),.raw_byte_valid(text_byte_valid),.raw_byte_data(text_byte_data),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(hmi_uart_rx),
  .award_mode_valid(hmi_award_valid),.award_mode_value(hmi_award_value),
  .touch_valid(touch_valid),.touch_x(touch_x),.touch_y(touch_y),.touch_down(touch_down),
  .touch_mode_valid(touch_mode_valid),.touch_mode_value(touch_mode_value),
@@ -230,10 +239,10 @@ wire [19:0] timing_wait_ms,timing_effect_ms,timing_total_ms;
 wire [5:0] timing_seg_sel,base_seg_sel;wire [7:0] timing_seg_data,base_seg_data;
 wire font_available,font_transfer_complete;
 wire title_word_valid;wire [7:0] title_word_index;wire [31:0] title_word_data;wire [4:0] title_word_length,title_length,ticker_length;
-wire [31:0] hmi_session,hmi_word;wire [52:0] hmi_status_bus;
+wire [31:0] hmi_word;wire [52:0] hmi_status_bus;
 wire hmi_ack_valid,hmi_reset_request,hmi_begin,hmi_word_valid,hmi_commit;
 wire [7:0] hmi_ack_token;wire [1:0] hmi_word_index;
-photo_cached_control_a #(.CONTROL_BAUD(230400),.BOOT_STATUS(1),.INDEPENDENT_TEXT(1),.TITLE_SD(1),.CHECK_FRAME_CRC(0),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.EARLY_THUMBNAIL(1),.RELIEF_CONTROL(1)) ctrl(.hmi_session(hmi_session),.font_available(font_available),.font_transfer_complete(font_transfer_complete),.title_word_valid(title_word_valid),.title_word_index(title_word_index),.title_word_data(title_word_data),.title_word_length(title_word_length),.receive_relief(receive_relief),.receive_award(receive_award),.receive_fluid(receive_fluid),.settings_mode(photo_focus),.settings_state(image_settings),.settings_updating(settings_updating),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
+photo_cached_control_a #(.TYPED_TEXT(1),.CONTROL_BAUD(230400),.BOOT_STATUS(1),.INDEPENDENT_TEXT(1),.TITLE_SD(1),.CHECK_FRAME_CRC(0),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.EARLY_THUMBNAIL(1),.RELIEF_CONTROL(1)) ctrl(.text_busy(text_busy),.text_pending(text_pending),.text_message(text_message),.text_sent(text_sent),.text_received(text_received),.text_incoming(text_incoming),.hmi_session(hmi_session),.font_available(font_available),.font_transfer_complete(font_transfer_complete),.title_word_valid(title_word_valid),.title_word_index(title_word_index),.title_word_data(title_word_data),.title_word_length(title_word_length),.receive_relief(receive_relief),.receive_award(receive_award),.receive_fluid(receive_fluid),.settings_mode(photo_focus),.settings_state(image_settings),.settings_updating(settings_updating),.clk(pixel_clk),.rst(rst_pixel),.uart_rx(control_rx),.uart_tx(control_tx),
  .thumbnail_read_busy(thumbnail_read_busy),.thumbnail_read_slot(thumbnail_slot),
  .timing_begin(timing_begin),.timing_present(timing_present),.timing_commit(timing_commit),.timing_cancel(timing_cancel),
  .award_toggle(photo_award_event),.relief_toggle(photo_relief_event),.relief_available(relief_available),.award_available(award_available),.award_scan_complete(award_scan_complete),.award_loading(award_loading),.award_notice(award_notice),.last_transfer_error(last_transfer_error),
@@ -311,16 +320,16 @@ wire [23:0] result_rgb;wire result_de,result_vs;
 // Capture the complete command gates before the result renderer's pixel
 // registers. Events settle one clock later; the video pipeline is unchanged.
 reg result_select_blue_q,result_select_red_q,result_select_sprint_q;
-reg result_trigger_q,result_stop_q,result_frame_tick_q;
+reg result_trigger_q,result_stop_q,result_frame_tick_q,result_background_valid_q;
 always @(posedge pixel_clk or posedge rst_pixel)
  if(rst_pixel)begin
   result_select_blue_q<=0;result_select_red_q<=0;result_select_sprint_q<=0;
-  result_trigger_q<=0;result_stop_q<=0;result_frame_tick_q<=0;
+  result_trigger_q<=0;result_stop_q<=0;result_frame_tick_q<=0;result_background_valid_q<=0;
  end
  else begin
   result_trigger_q<=(result_busy && carousel_mode && !settings_mode) && (presses[0] || hmi_next);
   result_stop_q<=hmi_result_stop || (key4_long && result_busy);
-  result_frame_tick_q<=raster_tick26;
+  result_frame_tick_q<=raster_tick26;result_background_valid_q<=display_valid;
   result_select_blue_q<=(hmi_result_blue || (result_busy && presses[1])) && carousel_mode && !settings_mode && !award_active && !award_loading;
   result_select_red_q<=(hmi_result_red || (result_busy && presses[2])) && carousel_mode && !settings_mode && !award_active && !award_loading;
   result_select_sprint_q<=(hmi_result_sprint || key4_long) && carousel_mode && !settings_mode && !award_active && !award_loading;
@@ -332,7 +341,7 @@ saixian_battle_result_fx u_result_animation(
  .select_red(result_select_red_q),
   .select_sprint(result_select_sprint_q),
   .stop(result_stop_q),.busy(result_busy),.sprint_active(result_sprint_active),
- .sprint_background_valid(display_valid),.x_in(raster_x26[10:0]),.y_in(raster_y26[9:0]),
+ .sprint_background_valid(result_background_valid_q),.x_in(raster_x26[10:0]),.y_in(raster_y26[9:0]),
  .de_in(raster_de26),.vs_in(raster_vs26),.rgb_in(feature_rgb),
  .de_out(result_de),.vs_out(result_vs),.rgb_out(result_rgb));
 wire [6:0] edge_weight_address;wire [7:0] edge_weight;
@@ -412,7 +421,7 @@ always @(posedge pixel_clk or posedge rst_pixel)begin
   ui_de<=raster_de21 && !settings_render_mode;end
 end
 wire [10:0] ui_font_addr;wire [15:0] ui_font_bits;
-saixian_font_rom #(.INDEPENDENT_TEXT(1),.TITLE_SD(1)) ui_font(.word_valid(title_word_valid),.word_index(title_word_index),.word_data(title_word_data),.word_length(title_word_length),.rst(rst_pixel),.frame_tick(blank_start),.title_length(title_length),.ticker_length(ticker_length),.clk(pixel_clk),.glyph_id(ui_font_addr[10:4]),.row(ui_font_addr[3:0]),.bits(ui_font_bits));
+saixian_font_rom #(.TYPED_TEXT(1),.INDEPENDENT_TEXT(1),.TITLE_SD(1)) ui_font(.typed_mask(typed_word_mask),.word_valid(typed_word_valid || title_word_valid),.word_index(typed_word_valid ? typed_word_index:title_word_index),.word_data(typed_word_valid ? typed_word_data:title_word_data),.word_length(typed_word_valid ? typed_word_length:title_word_length),.rst(rst_pixel),.frame_tick(blank_start),.title_length(title_length),.ticker_length(ticker_length),.clk(pixel_clk),.glyph_id(ui_font_addr[10:4]),.row(ui_font_addr[3:0]),.bits(ui_font_bits));
 reg [10:0] ticker_x;
 always @(posedge pixel_clk or posedge rst_pixel)
  if(rst_pixel)ticker_x<=0;else if(blank_start)ticker_x<=ticker_x>=(ticker_length==0 ? 11'd864:11'd640+{1'b0,ticker_length,5'b0}) ? 0:ticker_x+1'b1;
@@ -429,7 +438,7 @@ photo_av_metadata_a #(.REMOTE_RELIEF(1),.EDGE_METADATA(1)) visual_cache(
  .word_index(av_word_index),.word_data(av_word),.available(av_available),
  .read_band(visual_x[8:4]),.read_index(visual_x[8:1]),.height(visual_height),.peak(visual_peak),.extrema(visual_wave),
  .fft_valid(visual_fft_valid),.wave_valid(visual_wave_valid));
-saixian_osd_overlay #(.HIDE_CAROUSEL_LABEL(1),.EMPTY_TEXT_BLANK(1),.SHOW_SOURCE_RESOLUTION(0),.SHARED_TITLE(1),.INDEPENDENT_TEXT(1)) music_event_ui(.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),.de_i(ui_de),
+saixian_osd_overlay #(.TYPED_CAROUSEL(1),.HIDE_CAROUSEL_LABEL(1),.EMPTY_TEXT_BLANK(1),.SHOW_SOURCE_RESOLUTION(0),.SHARED_TITLE(1),.INDEPENDENT_TEXT(1)) music_event_ui(.typed_text_mode(typed_text_mode),.clk(pixel_clk),.rst(rst_pixel),.frame_tick(blank_start),.de_i(ui_de),
  .x_i(ui_x),.y_i(ui_y),.rgb_in_i(ui_rgb),.display_valid(display_valid || music_count!=0 || !carousel_mode),
  .loading_phase(3'd0),.state(event_state),.project_id(carousel_mode ? project_select:event_project),
  .minutes(event_minutes),.seconds(event_seconds),.countdown_value(countdown_value),.ticker_x(ticker_x),

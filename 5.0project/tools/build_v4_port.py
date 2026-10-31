@@ -107,13 +107,13 @@ def build(board, work, mapped_from=None, checkpoint_stage='gate'):
     environment['SAIXIAN_TD_ROOT'] = td_root.as_posix()
     physical_strategy = environment.get('SAIXIAN_PHYSICAL_STRATEGY')
     requested_physical_strategy = physical_strategy
-    macro_extra = physical_strategy == 'TimingUltraEmbeddedCompactMacroExtraRoute'
+    macro_extra = physical_strategy in ('TimingUltraEmbeddedCompactMacroExtraRoute','TimingUltraEmbeddedCompactMacroGuardExtraRoute')
     clean_guard = physical_strategy == 'MacroTimingEmbeddedCleanGuardAll'
-    guard_route = physical_strategy in ('TimingUltraEmbeddedCompactMacroGuardRoute','TimingUltraEmbeddedCompactMacroGuardAll','MacroTimingEmbeddedCleanGuardAll')
-    guard_place = physical_strategy in ('TimingUltraEmbeddedCompactMacroGuardAll','MacroTimingEmbeddedCleanGuardAll')
+    guard_route = physical_strategy in ('TimingUltraEmbeddedCompactMacroGuardRoute','TimingUltraEmbeddedCompactMacroGuardAll','TimingUltraEmbeddedCompactMacroGuardExtraRoute','MacroTimingEmbeddedCleanGuardAll')
+    guard_place = physical_strategy in ('TimingUltraEmbeddedCompactMacroGuardAll','TimingUltraEmbeddedCompactMacroGuardExtraRoute','MacroTimingEmbeddedCleanGuardAll')
     if clean_guard:
         physical_strategy = 'MacroTimingEmbeddedCleanRoute'
-    compact_macro = physical_strategy in ('TimingUltraEmbeddedCompactMacroRoute','TimingUltraEmbeddedCompactMacroExtraRoute','TimingUltraEmbeddedCompactMacroGuardRoute','TimingUltraEmbeddedCompactMacroGuardAll')
+    compact_macro = physical_strategy in ('TimingUltraEmbeddedCompactMacroRoute','TimingUltraEmbeddedCompactMacroExtraRoute','TimingUltraEmbeddedCompactMacroGuardRoute','TimingUltraEmbeddedCompactMacroGuardAll','TimingUltraEmbeddedCompactMacroGuardExtraRoute')
     if compact_macro:
         physical_strategy = 'TimingUltraEmbeddedCompactRoute'
     if mapped_from and checkpoint_stage == 'place':
@@ -219,13 +219,23 @@ def build(board, work, mapped_from=None, checkpoint_stage='gate'):
             # exactly 0.20 ns. Remove ONLY our named group before final STA.
             original_flow = td_root/'doc/scripts/DefaultFlow.tcl'
             derived = original_flow.read_text(encoding='utf-8')
-            margin_command = '  set_path_margin -group codex_setup_guard -setup -global 0.20\n'
+            guard_ns=float(environment.get('SAIXIAN_SETUP_GUARD_NS','0.20'))
+            assert guard_ns in (0.0,0.2), 'Optimization reserve must be 0.00 or 0.20 ns; SDC clocks stay unchanged'
+            margin_command = f'  set_path_margin -group codex_setup_guard -setup -global {guard_ns:.2f}\n'
             route_start = derived.index('proc opt_route_fun {}')
             route_end = derived.index('proc bitgen_fun {}', route_start)
             route_body = derived[route_start:route_end]
             marker = '### Editable zone for opt_route ###\n'
             assert route_body.count(marker) == 1
             route_body = route_body.replace(marker, marker+margin_command, 1)
+            # Preserve diagnostic timing and routing before TD's standalone
+            # hold-repair loader, which can crash on embedded SDRAM pads.
+            # Final acceptance still uses the post-repair original-clock STA.
+            assert route_body.count('  route\n') == 1
+            route_body = route_body.replace('  route\n',
+                '  route\n  update_timing -mode final\n'
+                '  report_timing_summary -file ${prj_name}_pre_hold.timing\n'
+                '  export_db ${prj_name}_pre_hold.db\n', 1)
             marker = '  report_area -io_info -file ${prj_name}_phy.area\n'
             assert route_body.count(marker) == 1
             route_body = route_body.replace(marker, '  reset_path_margin -group codex_setup_guard\n  report_path_margin\n'+marker, 1)
@@ -238,8 +248,8 @@ def build(board, work, mapped_from=None, checkpoint_stage='gate'):
             local_flow.write_text(derived, encoding='utf-8', newline='\n')
             record['local_flow'] = {'path': str(local_flow), 'sha256': digest(local_flow),
                                     'base': str(original_flow), 'base_sha256': digest(original_flow),
-                                    'change': 'Use +0.20ns setup optimization margin; reset its named group before final routed timing.'}
-            record['optimization_guard'] = {'setup_margin_ns': 0.20,
+                                    'change': f'Use +{guard_ns:.2f}ns optimization reserve; original SDC clocks unchanged and named margin reset before final STA.'}
+            record['optimization_guard'] = {'setup_margin_ns': guard_ns,
                 'during': ['place','route'] if guard_place else ['route'],
                 'restored_before_final_timing': True}
             recipe = flow.read_text(encoding='utf-8')
@@ -256,13 +266,13 @@ def build(board, work, mapped_from=None, checkpoint_stage='gate'):
             assert digest(Path(record['synthesis_strategy']['catalog'])) == record['synthesis_strategy']['catalog_sha256']
     elif synthesis_strategy:
         catalog = td_root/'doc/strategies/official_strategy_ph1.json'
-        synthesis_base = {'AreaOptimizeSparseCE': 'AreaOptimizeHigh', 'AreaOptimizeGlobalHFN': 'AreaOptimizeHigh','AreaPackHigh':'AreaOptimizeHigh'}.get(synthesis_strategy, synthesis_strategy)
+        synthesis_base = {'AreaPackHighSparseCE128':'AreaOptimizeHigh','AreaPackHighSparseCE':'AreaOptimizeHigh','AreaOptimizeSparseCE': 'AreaOptimizeHigh', 'AreaOptimizeGlobalHFN': 'AreaOptimizeHigh','AreaPackHigh':'AreaOptimizeHigh'}.get(synthesis_strategy, synthesis_strategy)
         strategy = dict(json.loads(catalog.read_text(encoding='utf-8'))[synthesis_base])
         strategy['params'] = list(strategy['params'])
-        if synthesis_strategy == 'AreaPackHigh':
+        if synthesis_strategy in ('AreaPackHigh','AreaPackHighSparseCE','AreaPackHighSparseCE128'):
             strategy['params'].append({'step':'gate','param':'pack_effort','val':'high'})
-        if synthesis_strategy == 'AreaOptimizeSparseCE':
-            strategy['params'].append({'step': 'rtl', 'param': 'min_ce_fanout', 'val': '64'})
+        if synthesis_strategy in ('AreaOptimizeSparseCE','AreaPackHighSparseCE','AreaPackHighSparseCE128'):
+            strategy['params'].append({'step': 'rtl', 'param': 'min_ce_fanout', 'val': '128' if synthesis_strategy.endswith('128') else '64'})
         if synthesis_strategy == 'AreaOptimizeGlobalHFN':
             strategy['params'].append({'step': 'flow', 'param': 'hfn_to_clock', 'val': '1000'})
         assert strategy['is_syn'] == 'syn'

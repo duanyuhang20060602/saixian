@@ -2,7 +2,7 @@
   "board": "a",
   "status": "passed",
   "hardware_validation": "pending",
-  "started_utc": "2026-10-30T02:23:02.876969+00:00",
+  "started_utc": "2026-10-30T11:16:55.211367+00:00",
   "inputs_sha256": {
     "common/audio_ui/photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1",
     "common/audio_ui/saixian_av_hann_half.hex": "fc9247268b83a9aca0d5f6022efa586c98c9102fa304ffec024f4cd562375081",
@@ -11,8 +11,8 @@
     "common/audio_ui/saixian_av_twiddle_serial.hex_0_0.mif": "3a8f16aa903cdec0694a435544827c1303f7f60f97c92a37900e3166f4a1c8cf",
     "common/audio_ui/saixian_event_controller.v": "c27a9a51687b5ad7b45e9fa7a17a20b259cfe84cbd950efaf3a4a5e0dd6bb5c2",
     "common/audio_ui/saixian_font_rom.mif": "ca162d9ef72efee747c5b83cb09a145e15bc03bb19766655790aa78227717f7a",
-    "common/audio_ui/saixian_font_rom.v": "77f9e0c7453cc497aa4e11a039877edfd5406c2be8bc7006fb066ec23bc6e0c6",
-    "common/audio_ui/saixian_osd_overlay.v": "9b472982f8fb323dea62e02c87d57fcee6f5a1897fff7f7e4bdcd79bb34af451",
+    "common/audio_ui/saixian_font_rom.v": "e062e76432b2040950ae07a0784aacc680b388e1d01c11c6bef58bd05853b834",
+    "common/audio_ui/saixian_osd_overlay.v": "486b4173cb68b026bf916bc75f433530aadde64de723c7bdf25bdb227c86bdcf",
     "common/audio_ui/saixian_pitch_coeff.hex": "56cf1e157030bece90ac1ae77d657b4240d89c70a8cf1a6997fa307b0fb634f9",
     "common/audio_ui/saixian_pitch_coeff.mif": "e8692b5200b6c170368b34b81f7694c94c75c6a4a55489f194cfa9502bb11369",
     "common/audio_vendor/audio_arc_calculate.v": "b3b55c90ad7ba679b0f4cb550cdf656230d15a3facab00ce7f561f32bd63eb0d",
@@ -49,17 +49,17 @@
     "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
     "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
     "common/photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
-    "common/photo_audio_link.v": "6b6c7d5d4028079768c08478a43c72a0124716934c0e7293f84af1fe6a345e46",
+    "common/photo_audio_link.v": "7770c900e4b0b88a87deca5cdefa5af9502321ef55c8fdd22bcccda6ecfc9b6e",
     "common/photo_auto_advance.v": "f9a152567fa93f8a376879aba4678a45c3d1c7db07ec6b7cf38f21b71585dbb0",
     "common/photo_av_receiver.v": "24b7ec06e1f822bf68805f18a3f7e90b2e2be0ad9d445726abf81be538318eb5",
     "common/photo_award_math_bank.v": "3de137c4368328037a009ce35c7df68ceb3f111fb8da8a8416a07a206e438281",
     "common/photo_award_memory.v": "1be0c8ecc7fe974b7eb9f294883cea34c8db0acdd00ead25e31996f6b13a0185",
     "common/photo_award_render.v": "1a9d48916bbfe7d94aa1ae04d1da99300fe14d1e2ad7599dd0ceac3eeb230d1d",
     "common/photo_boot_screen.v": "7e4ac12f6e9af29c46e2a950a4fe6da7cec41a60afa245a9229cbf3869d4ae0e",
-    "common/photo_cached_control_a.v": "704418db736b4ad308775892d359915829657fde3e8820ea830d004c6398572f",
+    "common/photo_cached_control_a.v": "bd83d90eda4aa6c7b0a915c5131086816840d33cc3c48f90d7f2ceee90d68ca7",
     "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
     "common/photo_compact_menu_font.mif": "1dcea8d5995e87956dfdcee470dd78ee27286e4e8e8d6afddbd207c1ce61e5ae",
-    "common/photo_control.v": "7a5a49f15fed14de507a4ba73d1f4545c479657fa6af52c7f791661763643deb",
+    "common/photo_control.v": "65918b0e7894a3b2d028a380764c4deffe0c4d60ef6ef30d2ebc3d3f23e96646",
     "common/photo_display_pipe.v": "e6ba29eb4142b690a5abb9be5b07c0b880040736485cdbeb1013f040559718c3",
     "common/photo_hmi_remote.v": "3f70f215ef5a03e9adb87f0056949c61aa8eb5d51953ae47588e0a06dc6d96a6",
     "common/photo_link.v": "de1faebbb7fe85711ae84f28d428c7dd524e4074bd007cec25461dcf9e084a3c",
@@ -77,18 +77,20 @@
     "common/photo_spotlight_player.v": "806dfd95a3add9a95d16d89ad99e1f288e3673cb8b35f8d59356caedbc12adff",
     "common/photo_status.v": "1bf2e6134aa9daa8c5e14c5f1e28ece7502f31840767e3cf9d5a63ccc5d21cc4",
     "common/photo_switch_timing.v": "f7f05a978d079181da57519a489a9a25b107840a888ad3c944151d31a0b0528b",
-    "common/photo_thumbnail.v": "d9d390cbc745cedce4d5f56148b16d07db9885701cf14f5ad4562fa81c240f3d",
+    "common/photo_text_crc.v": "6edf7f987cd9bdae50ce600a04824bb1f879e11db54f649f222ffea321ed9941",
+    "common/photo_thumbnail.v": "db61ad60ccaf3b9ecac50104fc19e841e0869b09b6d9288fff3800bd3b5a686b",
     "common/photo_touchpad.v": "c29700dcfde3ef60713af7db8cfc1ae9fdfa44363cb2bf6d69c464062e0e54ca",
+    "common/photo_typed_text_a.v": "08c14ff5e4c66b5927dcf2a9c724fc3e1822a8e37eea3ab2c3bf9e5bf5e658fd",
     "common/photo_uart.v": "99262aac12d6107353786166feeeef319ffa5a53e0bfb449734d9779f62d78f5",
     "common/photo_unified_settings_controller.v": "702fd7b38c3aae4b408041b05b70cd4feb00381b5c22192644b7aa98f77b2d14",
     "common/saixian_battle_result_fx_pipelined.v": "5c8d134b87235052054374c635dbb127ca2f38b764fe5e2d211926c894caefe8",
-    "common/saixian_hmi_uart.v": "4baa5933d492a6668ef1c8fa3fb3ba807f338523e959e14cc737ec6e01dfa335",
+    "common/saixian_hmi_uart.v": "3b8c65376c533d73c494b04de05bfa25ae163fd1b3816c99c95d3b05a182a70c",
     "common/saixian_key_debounce.v": "0ce5ef658b14de16b3d74c81c055ebfadaa7276d9f73aec02417329c80648968",
     "common/saixian_transition.v": "e18ca5b455b383fb0e93e0853ce62ea8fe08e7e4317d08b18162b02106a98295",
-    "common/top_photo_a.v": "2d13446a51c77468c4d365c18722f15945084d073107469dcb70c4f53874e68b",
+    "common/top_photo_a.v": "4b9b3ecbd16d0d16f80c0a54454f0d4a54206150f617e143fd15ac04a7541a3d",
     "src/board_a/td_project/build_board.tcl": "e16c8262a4a617313d27842ac780829f43cc2a1daed4dce3b078c283345ca278",
-    "src/board_a/td_project/PHOTO_BOARD_A.al": "a7049a95b3d4555e293181663dbcb75c6c2b52dbc8ea507e9c58db0acdaebfbd",
-    "src/board_a/td_project/sources.json": "047e6ed5633c93c289ff5602d685930b56d8d1da3dcbe9059f2448381c093b86",
+    "src/board_a/td_project/PHOTO_BOARD_A.al": "4708d5dae8685b99ae52bcad75a6b845c43086792cbe3bd59b68d91eef47e531",
+    "src/board_a/td_project/sources.json": "36553854ae36319552397b67cd02202aaa24e9386a4b98b9cbbf8b93bec910bb",
     "src/board_a/user_source/constraints_source/BOARD_A_RECEIVER_pins.adc": "0cb2f3cb2b05a6abed729626068a29466c608dd448406ae70b18833c13e3f921",
     "src/board_a/user_source/constraints_source/BOARD_A_RECEIVER_timing.sdc": "be6b1c822c4852fc875faa2b97c79c417ec6c244d62d19b830886556ca359e89",
     "src/board_a/user_source/hdl_source/dual_still_reset_sync.v": "86a363f9bf457e59e19470eadc14b89eef30a3d9142874ab0c20ced49b8cecac",
@@ -125,8 +127,8 @@
     "src/board_a/user_source/hdl_source/SD/sdram.v": "beb0a3e8497f8e30a7c0fc6ba6981316f571443460455f4f3b4d5c843d3830fb",
     "src/board_a/user_source/hdl_source/video_pll.v": "30e49bd3ccdccfcf7f7a874448be75a84a4790e89e82526ddd660fc2af891faf"
   },
-  "work_project": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-no-crc-20261029\\build-formatter-trim-20261030\\builds\\board_a\\project",
-  "local_project_sha256": "0a228aab5584c664f810d82716e33a32991f49733c3d598853e267c244762820",
+  "work_project": "E:\\Codex\\Work\\dualboard-font-20261030\\build14_a_control_pipe\\builds\\board_a\\project",
+  "local_project_sha256": "e3cdb6809a7b174856ee540b7b39c7cdde2460c2dc51480639026fb7b662f400",
   "place_seed_override": "19",
   "physical_strategy": {
     "name": "TimingUltraEmbeddedCompactMacroRoute",
@@ -268,10 +270,15 @@
         "step": "place",
         "param": "macro_performance",
         "val": "macro_congestion"
+      },
+      {
+        "step": "route",
+        "param": "swap_pin",
+        "val": "off"
       }
     ]
   },
-  "local_physical_recipe_sha256": "1462ebc91c22a3dd17f9c85a8ee1f54a0c61b3b0add266a4e6ec68747c853632",
+  "local_physical_recipe_sha256": "10a5b2277911030e08d6459f8f6f702d5a3a7e734fe19572c9c858df582cf6a7",
   "toolchain_sha256": {
     "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\bin\\td_commands_prompt.exe": "e2e04ada5e256dccd017240c0f4dcface7f96dca67cde0e56e606ac0e02f827a",
     "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\doc\\scripts\\DefaultFlow.tcl": "d1a5d4291706dac224cc33008d8945e79ed2eb1adf8ce86cca46be564975bade",
@@ -280,32 +287,32 @@
     "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\doc\\scripts\\SynIpFlow.tcl": "d53d0bfd6d60f76ea720375d33972beed2f69edeaa4c53cd9bb9db33eae71e95"
   },
   "returncode": 0,
-  "seconds": 271.0,
+  "seconds": 439.8,
   "inputs_unchanged": true,
   "toolchain_unchanged": true,
   "timing_ns": {
-    "SWNS": 0.153,
+    "SWNS": 0.189,
     "STNS": 0.0,
-    "HWNS": 0.02,
+    "HWNS": 0.022,
     "HTNS": 0.0
   },
   "resources": {
-    "lut": 17253,
-    "reg": 12305,
+    "lut": 18212,
+    "reg": 13000,
     "bram": 62,
     "bram32k": 15,
-    "dsp": 27
+    "dsp": 28
   },
   "bit": {
-    "path": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-no-crc-20261029\\build-formatter-trim-20261030\\builds\\board_a\\project\\src\\board_a\\td_project\\PHOTO_BOARD_A.bit",
-    "sha256": "3c406fbc308f62cf60f0df843fa9bb987da357ce3311ae9740bebdc2a944c3b9"
+    "path": "E:\\Codex\\Work\\dualboard-font-20261030\\build14_a_control_pipe\\builds\\board_a\\project\\src\\board_a\\td_project\\PHOTO_BOARD_A.bit",
+    "sha256": "a3126ae99f077af0ac88e5a05793a6793dd17b01db727f1bde9317faba15dac9"
   },
   "timing": {
-    "path": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-no-crc-20261029\\build-formatter-trim-20261030\\builds\\board_a\\project\\src\\board_a\\td_project\\PHOTO_BOARD_A_pr.timing",
-    "sha256": "86f725f506c54dca570ade748326bc041506375fbc0970111f4e446d417cae79"
+    "path": "E:\\Codex\\Work\\dualboard-font-20261030\\build14_a_control_pipe\\builds\\board_a\\project\\src\\board_a\\td_project\\PHOTO_BOARD_A_pr.timing",
+    "sha256": "f6e879954556f9dfe35ce632040f08567d2dca74085dd94cc4dfa616bc5b6c24"
   },
   "area": {
-    "path": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-no-crc-20261029\\build-formatter-trim-20261030\\builds\\board_a\\project\\src\\board_a\\td_project\\PHOTO_BOARD_A_phy.area",
-    "sha256": "7a1a197d5e0395b80d2f41db19b2896fc5d8bc344e13d0e9dbb5680047ff3a45"
+    "path": "E:\\Codex\\Work\\dualboard-font-20261030\\build14_a_control_pipe\\builds\\board_a\\project\\src\\board_a\\td_project\\PHOTO_BOARD_A_phy.area",
+    "sha256": "ff0b98bf741be15418e862ee85a6d9c402b770b03995650a8adec35dfd374137"
   }
 }

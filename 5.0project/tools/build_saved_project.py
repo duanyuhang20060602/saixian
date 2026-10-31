@@ -18,6 +18,7 @@ def main():
     if args.verify_only:print('PASS saved project verification');return
     stamp=datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
     work=args.work or Path('E:/Codex/Work')/((json.loads((ROOT/'package_manifest.json').read_text(encoding='utf-8'))['version']+'project-build-'+stamp))
+    explicit_guard=os.environ.get('SAIXIAN_SETUP_GUARD_NS')
     explicit_seed=os.environ.get('SAIXIAN_PLACE_SEED')
     explicit_strategy=os.environ.get('SAIXIAN_PHYSICAL_STRATEGY')
     explicit_synthesis=os.environ.get('SAIXIAN_SYNTHESIS_STRATEGY')
@@ -30,12 +31,13 @@ def main():
     for board in (('a','b') if args.board=='both' else (args.board,)):
         profile=profiles.get(board,{})
         accepted=json.loads((ROOT/profile['record']).read_text(encoding='utf-8')) if profile.get('record') else {}
+        os.environ['SAIXIAN_SETUP_GUARD_NS']=explicit_guard or str(accepted.get('optimization_guard',{}).get('setup_margin_ns',0.20))
         # Reproduce each accepted board's placement recipe, while retaining
         # explicit user overrides for source-development experiments.
         os.environ['SAIXIAN_PLACE_SEED']=explicit_seed or accepted.get('place_seed_override') or ('17' if board=='a' else '11')
         os.environ['SAIXIAN_PHYSICAL_STRATEGY']=explicit_strategy or accepted.get('physical_strategy',{}).get('name','TimingUltraEmbedded')
         route_params={p['param']:p['val'] for p in accepted.get('physical_strategy',{}).get('parameters',[]) if p['step']=='route'}
-        saved_default_effort=accepted.get('physical_strategy',{}).get('name') in ('TimingUltraEmbeddedCompactRoute','TimingUltraEmbeddedCleanRoute') and 'effort' not in route_params
+        saved_default_effort=bool(accepted) and 'effort' not in route_params
         route_effort=explicit_route_effort or ('default' if saved_default_effort and not explicit_strategy else None)
         route_swap=explicit_route_swap or ('on' if route_params.get('swap_pin')=='on' and not explicit_strategy else None)
         if route_effort:os.environ['SAIXIAN_ROUTE_EFFORT']=route_effort

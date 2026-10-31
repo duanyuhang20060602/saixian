@@ -2,10 +2,10 @@
   "board": "b",
   "status": "passed",
   "hardware_validation": "pending",
-  "started_utc": "2026-10-30T02:23:02.856066+00:00",
+  "started_utc": "2026-10-30T19:49:51.343574+00:00",
   "inputs_sha256": {
-    "common/audio_ui/photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1",
-    "common/audio_ui/saixian_audio_pitch.v": "8ef6dd182287b4bdf6cd0d546b5c5a8fd6c28a9f15568a9bbd0ac8244929f720",
+    "common/audio_ui/photo_audio_cue_b.v": "1c1e6d0b5b6be241b95bc537d2fb9c8fca63b9c862b2732249951cb60725e167",
+    "common/audio_ui/saixian_audio_pitch.v": "7f6a26c67f6b724e6f1e8bc7eb5fe1db60ee389b5e8d2fd4f6a3ffbca5ae12ea",
     "common/audio_ui/saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
     "common/audio_ui/saixian_audio_visualizer.v": "7563a700a7cc89c04351d9fb55049c77adcf78e0807133ef501a51e6d041894d",
     "common/audio_ui/saixian_av_hann_half.hex": "fc9247268b83a9aca0d5f6022efa586c98c9102fa304ffec024f4cd562375081",
@@ -36,38 +36,44 @@
     "common/fluid/water_tone.hex": "7e831cbdc99dcce6415f798cc93652d101d622635a8028f86eede7c891a9faa0",
     "common/fluid/water_wave.hex": "52296e95e52359b680d5f5d6bd5228d21eee5d66f07100d6b75c8214f91b5cf3",
     "common/photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
-    "common/photo_audio_link.v": "6b6c7d5d4028079768c08478a43c72a0124716934c0e7293f84af1fe6a345e46",
-    "common/photo_audio_pitch_b.v": "9fe035e6fc6b9c29da6abaa640261bd84eb5d1fcc8876fb0b0ba2af024b1cb5f",
+    "common/photo_audio_link.v": "7770c900e4b0b88a87deca5cdefa5af9502321ef55c8fdd22bcccda6ecfc9b6e",
+    "common/photo_audio_pitch_b.v": "995d8f4d92c4bd2dc74a6e44223f664b8c29234af158c368790ba2b81498fb8f",
     "common/photo_audio_spi_b_offload.v": "eddce5724930582ae737fce109d12e5289ff1f9288fbf274a19200b693f23a93",
     "common/photo_av_metadata.v": "ac49f27edce4408f9fee0da1aa67bf60b76bde19790a7e8aea1337faafd236ad",
     "common/photo_b_processing.v": "cfa81c7f137b4ceae49e05cf11fa6ec21c0b4192bb9e68a1754d0acaf95e7404",
     "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
     "common/photo_compact_menu_font.mif": "1dcea8d5995e87956dfdcee470dd78ee27286e4e8e8d6afddbd207c1ce61e5ae",
-    "common/photo_control.v": "7a5a49f15fed14de507a4ba73d1f4545c479657fa6af52c7f791661763643deb",
+    "common/photo_control.v": "65918b0e7894a3b2d028a380764c4deffe0c4d60ef6ef30d2ebc3d3f23e96646",
+    "common/photo_font_engine_b.v": "28eddefd408ff6333f9bc1389acf3f221e5192fe8622a2e45a08fd3a01502e1f",
+    "common/photo_font_fat.v": "434473695d0ece084100dc1824c654dece90da5e551c3fa03830c030693fb6fa",
+    "common/photo_font_file_b.v": "42b7b497fc6f650e6771755b3bae61d8cf62d09fa7522f048dd6b15d9f5be7b2",
     "common/photo_hmi_remote.v": "3f70f215ef5a03e9adb87f0056949c61aa8eb5d51953ae47588e0a06dc6d96a6",
     "common/photo_link.v": "de1faebbb7fe85711ae84f28d428c7dd524e4074bd007cec25461dcf9e084a3c",
     "common/photo_menu_font.mif": "2bc93d7d132dcd858edf436d5c55e73896996cf89a2d224cbd8f78bf337d4c5d",
     "common/photo_processing.v": "36660dc4fcefb1c592a150ef8d83bb3c2842ff0d8d0a0661ac8cdccee7032e35",
     "common/photo_relief_remote.v": "600b91e67d739eabef29f0ea2ecc62c210936de008fd0c92a9c41d0bf3d2cddf",
     "common/photo_relief_remote_tables.v": "22549b085ce1ce8e8c98fb86d19e77c68a1afd17cae506890643f2399c9fafb9",
-    "common/photo_sd/bmp_read.v": "7df5ab8f3690d311f2d3f1cd36c082b314e96251a3c0d59e110815f9af8692d1",
+    "common/photo_sd/bmp_read.v": "6d0878b3323c8507d720ed1ba1fb172df516d12d82a7858841d35a47e2a92569",
     "common/photo_sd/photo_dlt_header.v": "a68b4fea22cb09cf52bfa56f605ecae507caeabd171b335bc88a31af834b937c",
-    "common/photo_sd/photo_dlt_reader.v": "b8b084efc84322b8200c22e8a498879c9d529dad02120dd64619019886338cc6",
+    "common/photo_sd/photo_dlt_reader.v": "bccbc45b5c20a6d54f5eb2a0c56186b14960ecf528caf739fa6f383fe1a3b94c",
     "common/photo_sd/saixian_media_header.v": "f8092e34232ab7d5a379903b7f8602168ca3b89d5397d8a222c55ba45332271e",
     "common/photo_sd/sd_card_cmd.v": "ee93ef4fce483306a204c8d0232f35418e4e4a6b94df7f11e912048f7d8aa46c",
     "common/photo_sd/sd_card_sec_read_write.v": "2c51c66e347595d20ddd5d6b3a5cad9252fb308a754aa59140f739636b3d7dd6",
     "common/photo_sd/sd_card_top.v": "96a83af8c155514f4fe8a802d207caea1577702d97bf362b0955bdc2f243214f",
     "common/photo_sd/spi_master.v": "f3f04df5bc162fba03beff74fc506bace4038d2667505e498731a06f6b5a27e9",
-    "common/photo_sd_audio_stream.v": "5c1c0196bed7661ba9fdf2edab80630f3860223e6a8858935012083738c95a7a",
-    "common/photo_sd_cache.v": "4e7734df8f325fa53503fe354348fab93d0d3e63523298311e7a39e2b46fffb4",
+    "common/photo_sd_audio_stream.v": "06f7841f736a1f2b097e0e706551735040aacec966fe3946589c6067abe259fc",
+    "common/photo_sd_cache.v": "e6b02f64072d2f92c737083c5394550f81686e092115f1cb9309c7c9ac28ba7e",
     "common/photo_sd_title_store.v": "7f616b4263e13c541d3cc57ecf84cedd240efc8cdbdc5ae22c30402974a814dc",
     "common/photo_status.v": "1bf2e6134aa9daa8c5e14c5f1e28ece7502f31840767e3cf9d5a63ccc5d21cc4",
     "common/photo_switch_timing.v": "f7f05a978d079181da57519a489a9a25b107840a888ad3c944151d31a0b0528b",
+    "common/photo_text_crc.v": "6edf7f987cd9bdae50ce600a04824bb1f879e11db54f649f222ffea321ed9941",
+    "common/photo_typed_control_b.v": "598e9ad94a9560c4014297272a233bf2878e06a41e9b92f2d3c071ce673998ba",
+    "common/photo_typed_text_b.v": "bcdd4a72823cf1289b9bf7f6dd8421fa13ccf3a25f5eac588a79ff7f8463ed6c",
     "common/photo_uart.v": "99262aac12d6107353786166feeeef319ffa5a53e0bfb449734d9779f62d78f5",
-    "common/top_photo_b.v": "5b3ae0e90c52350b0fd651c6b144eb5f7524fa6d0f63367154761d3b106bfb69",
+    "common/top_photo_b.v": "aabccbe55a36305ceccc0ef7ada9d90925cf44326f1a279e029d7786447965ad",
     "src/board_b/td_project/build_board.tcl": "e7f1c14f21a5957a126ceefbc9bc766666e285dc24fba3dbef91d5fca4982b09",
-    "src/board_b/td_project/PHOTO_BOARD_B.al": "7edd07ad2f637246d73e6be2149976a8ac5b1ed90a7547854d38baea0e5d506b",
-    "src/board_b/td_project/sources.json": "7b2c53626a9a39f23bb8f4672ce87e4bb6e3d724d04dbaeeedd962dececc5292",
+    "src/board_b/td_project/PHOTO_BOARD_B.al": "7c9704f2715cac46b81b8af8ca330a2f2d79879b3f527b7b0587701b8a2c9035",
+    "src/board_b/td_project/sources.json": "e2003544b7d9d493703d9d453e2908f4ce8ae1773dafb4216bff47330910a497",
     "src/board_b/user_source/constraints_source/BOARD_B_SENDER_pins.adc": "06837a5d940dee08e8ef21241f5ad785781ad70306da4a79a8d3891ba26c8d1f",
     "src/board_b/user_source/constraints_source/BOARD_B_SENDER_timing.sdc": "26a38e0c5bedead6d5314e27e98676b369862176f57d3f74479a42db2fd36f2b",
     "src/board_b/user_source/hdl_source/builtin_link_pll.v": "1638b5aa0640ef61e7a0f27b621ec0788fc0cb5b7ec8d4dcb2addea27b5afdc4",
@@ -87,11 +93,19 @@
     "src/board_b/user_source/hdl_source/SD/frame_read_write.v": "1f3cf38e143c20906064a359da4a7738bc5aea5eec392c2329a761e218105a34",
     "src/board_b/user_source/hdl_source/SD/sdram.v": "beb0a3e8497f8e30a7c0fc6ba6981316f571443460455f4f3b4d5c843d3830fb"
   },
-  "work_project": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-no-crc-20261029\\build-formatter-trim-20261030\\builds\\board_b\\project",
-  "local_project_sha256": "62fd177491a9a918feb4c2bde805e4e79a833cd8797560278fd5609c563a67b7",
+  "work_project": "E:\\Codex\\Work\\dualboard-font-20261030\\build44_b_cue_extra_route\\builds\\board_b\\project",
+  "local_project_sha256": "3b470cc075fe1a9e74e1f3be1017030bc211f7ea6cf7296962df22772c650fdf",
+  "mapped_origin": {
+    "result": "E:\\Codex\\Work\\dualboard-font-20261030\\build42_b_cue_onehot\\builds\\board_b\\result.json",
+    "result_sha256": "b748fe038a8614250d8214d232dac69cd444ba8e8b386d3c12b6441291b579c4",
+    "checkpoint": "E:\\Codex\\Work\\dualboard-font-20261030\\build42_b_cue_onehot\\builds\\board_b\\project\\src\\board_b\\td_project\\PHOTO_BOARD_B_place.db",
+    "checkpoint_sha256": "408a7dd4609e6c748005443f4fb0592c3cb385f474fb7bd551f3776fee8372ef",
+    "checkpoint_stage": "place"
+  },
+  "local_physical_recipe_sha256": "a8cb53016cd7c0c3c41c9043f9ba57a0db61e6d0ae4e55be8d2cb6cdd290960b",
   "place_seed_override": "19",
   "physical_strategy": {
-    "name": "TimingUltraEmbeddedCompactMacroGuardAll",
+    "name": "TimingUltraEmbeddedCompactMacroGuardExtraRoute",
     "base": "TimingUltra",
     "catalog": "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\doc\\strategies\\official_strategy_ph1.json",
     "catalog_sha256": "b264a5c4ae939a4be0fcf5d2c242a8005132c4812f01d4d060590adee2030729",
@@ -230,16 +244,30 @@
         "step": "place",
         "param": "macro_performance",
         "val": "macro_congestion"
+      },
+      {
+        "step": "route",
+        "param": "post_route_opt",
+        "val": "high"
+      },
+      {
+        "step": "route",
+        "param": "postrt_opt_extra_round",
+        "val": "4"
+      },
+      {
+        "step": "route",
+        "param": "swap_pin",
+        "val": "off"
       }
     ]
   },
-  "local_physical_recipe_sha256": "479ead378ab3705f55e0440c2314a4125ecf49b1f1f47d8675280aed8ce7e755",
   "local_flow": {
-    "path": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-no-crc-20261029\\build-formatter-trim-20261030\\builds\\board_b\\project\\src\\board_b\\td_project\\physical_flow.tcl",
-    "sha256": "e0e0957de076b20ad9efd959201c81e21a6eedffd102323f7bedb12df688a056",
+    "path": "E:\\Codex\\Work\\dualboard-font-20261030\\build44_b_cue_extra_route\\builds\\board_b\\project\\src\\board_b\\td_project\\physical_flow.tcl",
+    "sha256": "773767d685e0d2fb397d0cdd4afb6f737bf529baa078aeb5218ddc5d1a318df0",
     "base": "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\doc\\scripts\\DefaultFlow.tcl",
     "base_sha256": "d1a5d4291706dac224cc33008d8945e79ed2eb1adf8ce86cca46be564975bade",
-    "change": "Use +0.20ns setup optimization margin; reset its named group before final routed timing."
+    "change": "Use +0.20ns optimization reserve; original SDC clocks unchanged and named margin reset before final STA."
   },
   "optimization_guard": {
     "setup_margin_ns": 0.2,
@@ -249,6 +277,49 @@
     ],
     "restored_before_final_timing": true
   },
+  "synthesis_strategy": {
+    "name": "AreaPackHighSparseCE128",
+    "base": "AreaOptimizeHigh",
+    "catalog": "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\doc\\strategies\\official_strategy_ph1.json",
+    "catalog_sha256": "b264a5c4ae939a4be0fcf5d2c242a8005132c4812f01d4d060590adee2030729",
+    "parameters": [
+      {
+        "step": "gate",
+        "param": "add_map_lut_struct",
+        "val": "high"
+      },
+      {
+        "step": "gate",
+        "param": "map_mode",
+        "val": "area_prior"
+      },
+      {
+        "step": "gate",
+        "param": "multi_thread_mapping",
+        "val": "partition"
+      },
+      {
+        "step": "rtl",
+        "param": "resource_sharing",
+        "val": "auto"
+      },
+      {
+        "step": "rtl",
+        "param": "shifter_style",
+        "val": "shifter_reg"
+      },
+      {
+        "step": "gate",
+        "param": "pack_effort",
+        "val": "high"
+      },
+      {
+        "step": "rtl",
+        "param": "min_ce_fanout",
+        "val": "128"
+      }
+    ]
+  },
   "toolchain_sha256": {
     "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\bin\\td_commands_prompt.exe": "e2e04ada5e256dccd017240c0f4dcface7f96dca67cde0e56e606ac0e02f827a",
     "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\doc\\scripts\\DefaultFlow.tcl": "d1a5d4291706dac224cc33008d8945e79ed2eb1adf8ce86cca46be564975bade",
@@ -257,33 +328,34 @@
     "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\doc\\scripts\\SynIpFlow.tcl": "d53d0bfd6d60f76ea720375d33972beed2f69edeaa4c53cd9bb9db33eae71e95"
   },
   "returncode": 0,
-  "seconds": 332.6,
+  "seconds": 184.3,
   "inputs_unchanged": true,
   "toolchain_unchanged": true,
   "local_flow_unchanged": true,
+  "mapped_origin_unchanged": true,
   "timing_ns": {
-    "SWNS": 0.106,
+    "SWNS": 0.195,
     "STNS": 0.0,
-    "HWNS": 0.027,
+    "HWNS": 0.019,
     "HTNS": 0.0
   },
   "resources": {
-    "lut": 15549,
-    "reg": 10875,
-    "bram": 58,
+    "lut": 17341,
+    "reg": 13040,
+    "bram": 61,
     "bram32k": 16,
     "dsp": 16
   },
   "bit": {
-    "path": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-no-crc-20261029\\build-formatter-trim-20261030\\builds\\board_b\\project\\src\\board_b\\td_project\\PHOTO_BOARD_B.bit",
-    "sha256": "ba6b16d0dc75b7d5c12339f784297c71851e8ddefce75ccd98f1450a16b75553"
+    "path": "E:\\Codex\\Work\\dualboard-font-20261030\\build44_b_cue_extra_route\\builds\\board_b\\project\\src\\board_b\\td_project\\PHOTO_BOARD_B.bit",
+    "sha256": "104c11b3d16b8c7c82659ff9a5d4da86b8d16404b6fbc950c76c1c1a3fccdeab"
   },
   "timing": {
-    "path": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-no-crc-20261029\\build-formatter-trim-20261030\\builds\\board_b\\project\\src\\board_b\\td_project\\PHOTO_BOARD_B_pr.timing",
-    "sha256": "f3d148f253490639643ce788ee0e84fde1e315e8bdcbd419f2e2528378872d3e"
+    "path": "E:\\Codex\\Work\\dualboard-font-20261030\\build44_b_cue_extra_route\\builds\\board_b\\project\\src\\board_b\\td_project\\PHOTO_BOARD_B_pr.timing",
+    "sha256": "f92410877a83fb0fb742e9d919519fb8a2a29e2682f968d7830bcdc8b950c0d7"
   },
   "area": {
-    "path": "C:\\Users\\MR.HUSKY\\Desktop\\qian\\saixian-no-crc-20261029\\build-formatter-trim-20261030\\builds\\board_b\\project\\src\\board_b\\td_project\\PHOTO_BOARD_B_phy.area",
-    "sha256": "bb53444955163a9b913518142c288a199771c55db2887e6607fb0bf2756c51ba"
+    "path": "E:\\Codex\\Work\\dualboard-font-20261030\\build44_b_cue_extra_route\\builds\\board_b\\project\\src\\board_b\\td_project\\PHOTO_BOARD_B_phy.area",
+    "sha256": "ace17c0a3fb067007fbe389b607648c421f811fab6709590a97adefa8d28df4f"
   }
 }

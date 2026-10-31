@@ -1,0 +1,73 @@
+{
+  "build_id": "uart-font-dual-20261030",
+  "upstream_commit": "f6f73053b29eed2b5ac463002dd87c311c142f8a",
+  "hardware_validation": "pending",
+  "boards": {
+    "a": {
+      "resources": {
+        "lut": 18212,
+        "reg": 13000,
+        "bram": 62,
+        "bram32k": 15,
+        "dsp": 28
+      },
+      "timing_ns": {
+        "SWNS": 0.189,
+        "STNS": 0.0,
+        "HWNS": 0.022,
+        "HTNS": 0.0
+      }
+    },
+    "b": {
+      "resources": {
+        "lut": 17341,
+        "reg": 13040,
+        "bram": 61,
+        "bram32k": 16,
+        "dsp": 16
+      },
+      "timing_ns": {
+        "SWNS": 0.195,
+        "STNS": 0.0,
+        "HWNS": 0.019,
+        "HTNS": 0.0
+      }
+    }
+  },
+  "files_sha256": {
+    "releases/PHOTO_BOARD_A_5_0.bit": "a3126ae99f077af0ac88e5a05793a6793dd17b01db727f1bde9317faba15dac9",
+    "releases/PHOTO_BOARD_B_5_0.bit": "104c11b3d16b8c7c82659ff9a5d4da86b8d16404b6fbc950c76c1c1a3fccdeab"
+  },
+  "test_groups": {
+    "typed_text": 3,
+    "fat": 12,
+    "slow_fat": 2,
+    "legacy_font_boot": 1,
+    "bmp_bounds": 2,
+    "audio_window": 1,
+    "dlt_encoding": 2,
+    "slow_uart": 1,
+    "glyph_cache_vendor": 1,
+    "controls": 7,
+    "music_sync": 1,
+    "audio_flow": 1,
+    "audio_transport": 1,
+    "audio_native": 1,
+    "cue_equivalence": 1,
+    "compact_spi": 1,
+    "late_catalog": 2,
+    "audio_boot": 1,
+    "formatter": 1
+  },
+  "current_passed_test_count": 42,
+  "validation_scope": "Focused current tests and original-clock routed setup/hold checks; not a full rerun of all historical tests.",
+  "known_baseline_fixture_failures": [
+    "tb_audio_transport_repair",
+    "tb_page_audio"
+  ],
+  "limitations": [
+    "HMI/TFT keyboard page requires screen-model-specific authoring; event scripts provided.",
+    "FAT font addressing below 64GiB, GB2312, volatile text slots.",
+    "Mount consistency checks and detailed internal fault codes reduced by user authorization; read boundaries and link CRC/retries retained."
+  ]
+}

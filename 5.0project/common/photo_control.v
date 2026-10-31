@@ -110,7 +110,7 @@ always @(posedge clk or posedge rst)begin
 end
 endmodule
 
-module photo_control_b #(parameter CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SEND_SOURCE_SIZE=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0,AWARD_LIGHTS=0,RELIEF_CONTROL=0,TITLE_SD=0,INDEPENDENT_TEXT=0,BOOT_STATUS=0,CONTROL_BAUD=115200)(
+module photo_control_b #(parameter TYPED_TEXT=0,CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SEND_SOURCE_SIZE=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0,AWARD_LIGHTS=0,RELIEF_CONTROL=0,TITLE_SD=0,INDEPENDENT_TEXT=0,BOOT_STATUS=0,CONTROL_BAUD=115200)(
  input title_ready,input [4:0] title_length,input [31:0] title_data,output [6+INDEPENDENT_TEXT:0] title_address,
  input award_available,award_scan_complete,relief_available,
  input clk,rst,uart_rx,output uart_tx,input [2:0] image_count,input media_ready,
@@ -121,6 +121,7 @@ module photo_control_b #(parameter CLK_HZ=100000000,TIMER_SCALE=1,FRAME_BYTES=18
  output reg display_valid,prefetch_pause,output reg [2:0] display_image,
  output reg [18:0] settings_state,input tx_done,input [31:0] tx_crc,output busy,output reg [3:0] error,output [3:0] debug_state,
  output reg timing_begin,timing_ready,timing_send,timing_done,output timing_cancel
+,input text_pending,input[159:0] text_message,output reg text_sent,output text_received,output[159:0] text_incoming,output text_boot_ready
 ,output [31:0] hmi_session
 );
 
@@ -153,6 +154,8 @@ always @(posedge clk or posedge rst)
 // Explicit wrap handling preserves the original 32-bit counter semantics.
 reg due_one,due_five,due_load,due_catalog;
 
+assign text_boot_ready=title_complete || (award_scan_complete && !title_ready);
+assign text_received=TYPED_TEXT && got;assign text_incoming=incoming;
 assign hmi_session=session;reg [15:0] request_seq;
 assign debug_state=state;
 reg settings_reply,context_reply,cancel_reply;reg [7:0] announced_count;
@@ -184,7 +187,7 @@ end
 assign timing_cancel=media_cancel || error!=0 || (got && matching && kind==9);
 assign busy=!state_flags[IDLE] && !state_flags[DISCOVER];
 always @(posedge clk or posedge rst)begin
- if(rst)begin title_index<=0;title_wait<=0;title_complete<=0;title_read_settle<=0;announced_count<=0;display_valid<=0;display_image<=0;prefetch_pause<=0;context_reply<=0;cancel_reply<=0;settings_state<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};settings_reply<=0;state_flags<=11'd1<<DISCOVER;session<=0;request_seq<=0;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;direction<=1;retries<=0;send<=0;message<=0;
+ if(rst)begin text_sent<=0;title_index<=0;title_wait<=0;title_complete<=0;title_read_settle<=0;announced_count<=0;display_valid<=0;display_image<=0;prefetch_pause<=0;context_reply<=0;cancel_reply<=0;settings_state<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};settings_reply<=0;state_flags<=11'd1<<DISCOVER;session<=0;request_seq<=0;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;direction<=1;retries<=0;send<=0;message<=0;
   media_request<=0;media_target<=0;media_release<=0;media_cancel<=0;transmit_slot<=0;start_toggle<=0;abort_toggle<=0;error<=0;completed_crc<=0;
   source_width<=0;source_height<=0;timing_begin<=0;timing_ready<=0;timing_send<=0;timing_done<=0;end
  else begin
@@ -193,7 +196,7 @@ always @(posedge clk or posedge rst)begin
   due_five<=0;
   due_load<=0;
   due_catalog<=timer_reset ? TIME_HZ/10<=1:TIME_HZ/10==0 || (timer_count>=TIME_HZ/10-1 && !(&timer_count));
-  timer_reset<=0;send<=0;media_request<=0;title_read_settle<=0;
+  text_sent<=0;timer_reset<=0;send<=0;media_request<=0;title_read_settle<=0;
   if(TITLE_SD && got && kind==34 && session_matches &&
      incoming[119:112]==title_index && title_wait)begin
    title_wait<=0;title_read_settle<=1;if(title_index==(INDEPENDENT_TEXT ? 255:127))title_complete<=1;else title_index<=title_index+1'b1;
@@ -227,6 +230,8 @@ always @(posedge clk or posedge rst)begin
     message<=packet(15,session,0,{5'd0,display_image},{6'd0,display_valid,prefetch_pause},0,0,0);send<=1;context_reply<=0;
    end else if(SETTINGS_LINK && settings_reply && settings_state[18]==1'b0 && tx_idle_q && !send)begin
     message<=packet(13,session,0,0,0,0,{13'd0,settings_state},0);send<=1;settings_reply<=0;
+   end else if(TYPED_TEXT && text_pending && tx_idle_q && !send && !got)begin
+    message<=text_message;send<=1;text_sent<=1;
    end else if(got && kind==3 && session_matches && valid_target && incoming[87:56]==request_bytes && incoming[93]==request_fluid && incoming[94]==1'b0 && settings_state[18]==1'b0)begin
     request_seq<=incoming[119:104];media_target<=incoming[98:96];direction<=incoming[88];retries<=0;
     media_request<=1;state_flags<=11'd1<<LOAD;timer_reset<=1;due_one<=TIME_HZ==0;due_five<=0;due_load<=0;due_catalog<=TIME_HZ/10==0;error<=0;timing_begin<=1;

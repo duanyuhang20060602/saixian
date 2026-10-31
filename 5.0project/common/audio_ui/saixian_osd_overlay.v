@@ -1,4 +1,5 @@
-module saixian_osd_overlay #(parameter SHOW_SOURCE_RESOLUTION=1,SHARED_TITLE=0,INDEPENDENT_TEXT=0,EMPTY_TEXT_BLANK=0,CAROUSEL_TITLE=0,HIDE_CAROUSEL_LABEL=0)(
+module saixian_osd_overlay #(parameter TYPED_CAROUSEL=0,SHOW_SOURCE_RESOLUTION=1,SHARED_TITLE=0,INDEPENDENT_TEXT=0,EMPTY_TEXT_BLANK=0,CAROUSEL_TITLE=0,HIDE_CAROUSEL_LABEL=0)(
+    input typed_text_mode,
     input  wire        clk,
     input  wire        rst,
     input  wire        frame_tick,
@@ -91,7 +92,7 @@ reg [23:0] rgb_in;
 wire font_pixel_q = font_ready && font_bits[15-font_col_q2];
 wire [11:0] ticker_width = (ticker_text_length == 0) ? 12'd224 :
                            {2'b0,ticker_text_length,5'b0};
-wire [11:0] ticker_local_x = {2'b0, x} + ticker_width - {1'b0, ticker_x};
+wire [11:0] ticker_local_x = (TYPED_CAROUSEL && typed_text_mode) ? {2'b0,x}-12'd64:{2'b0, x}+ticker_width-{1'b0,ticker_x};
 wire [10:0] title_scroll_x;
 // Independent contents reuse the existing ticker phase. Its shortest period
 // is 672 pixels, covering every 16-character header plus the 128-pixel window.

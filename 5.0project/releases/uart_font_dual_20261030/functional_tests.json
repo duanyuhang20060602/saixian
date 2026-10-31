@@ -1,0 +1,672 @@
+{
+  "typed_text": [
+    {
+      "test": "memory",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Work\\dualboard-font-20261030\\typed_slow_arch01\\memory.v": "bdfe0e6bcb426e6a965229baa237676d730f3d105fe022e26ccb436315c9c268",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_text_crc.v": "6edf7f987cd9bdae50ce600a04824bb1f879e11db54f649f222ffea321ed9941",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_typed_text_a.v": "08c14ff5e4c66b5927dcf2a9c724fc3e1822a8e37eea3ab2c3bf9e5bf5e658fd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_typed_text_b.v": "bcdd4a72823cf1289b9bf7f6dd8421fa13ccf3a25f5eac588a79ff7f8463ed6c",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_typed_control_b.v": "598e9ad94a9560c4014297272a233bf2878e06a41e9b92f2d3c071ce673998ba",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\saixian_font_rom.v": "e062e76432b2040950ae07a0784aacc680b388e1d01c11c6bef58bd05853b834",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\title_font_ram_model.v": "5645c2efe210627dad2e9d131a1a400751b0794b31719ceb3d70b80c6b6e0e87"
+      }
+    },
+    {
+      "test": "uart",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Work\\dualboard-font-20261030\\typed_slow_arch01\\uart.v": "5d14a6ee81c0e2c61cb14ea691bf6af9087a464b9a0c213d3736bb1be9f5c71a",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_text_crc.v": "6edf7f987cd9bdae50ce600a04824bb1f879e11db54f649f222ffea321ed9941",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_typed_text_a.v": "08c14ff5e4c66b5927dcf2a9c724fc3e1822a8e37eea3ab2c3bf9e5bf5e658fd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_typed_text_b.v": "bcdd4a72823cf1289b9bf7f6dd8421fa13ccf3a25f5eac588a79ff7f8463ed6c",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_typed_control_b.v": "598e9ad94a9560c4014297272a233bf2878e06a41e9b92f2d3c071ce673998ba",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\saixian_font_rom.v": "e062e76432b2040950ae07a0784aacc680b388e1d01c11c6bef58bd05853b834",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\title_font_ram_model.v": "5645c2efe210627dad2e9d131a1a400751b0794b31719ceb3d70b80c6b6e0e87",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_cached_control_a.v": "bd83d90eda4aa6c7b0a915c5131086816840d33cc3c48f90d7f2ceee90d68ca7",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_control.v": "65918b0e7894a3b2d028a380764c4deffe0c4d60ef6ef30d2ebc3d3f23e96646",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_uart.v": "99262aac12d6107353786166feeeef319ffa5a53e0bfb449734d9779f62d78f5"
+      }
+    },
+    {
+      "test": "uart_fat",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Work\\dualboard-font-20261030\\typed_slow_arch01\\uart_fat.v": "d21e161d9db2283afa644a3d37b535bc14287130e00b48523bb48e1a0de8b6c3",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_text_crc.v": "6edf7f987cd9bdae50ce600a04824bb1f879e11db54f649f222ffea321ed9941",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_typed_text_a.v": "08c14ff5e4c66b5927dcf2a9c724fc3e1822a8e37eea3ab2c3bf9e5bf5e658fd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_typed_text_b.v": "bcdd4a72823cf1289b9bf7f6dd8421fa13ccf3a25f5eac588a79ff7f8463ed6c",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_typed_control_b.v": "598e9ad94a9560c4014297272a233bf2878e06a41e9b92f2d3c071ce673998ba",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\saixian_font_rom.v": "e062e76432b2040950ae07a0784aacc680b388e1d01c11c6bef58bd05853b834",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\title_font_ram_model.v": "5645c2efe210627dad2e9d131a1a400751b0794b31719ceb3d70b80c6b6e0e87",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_cached_control_a.v": "bd83d90eda4aa6c7b0a915c5131086816840d33cc3c48f90d7f2ceee90d68ca7",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_control.v": "65918b0e7894a3b2d028a380764c4deffe0c4d60ef6ef30d2ebc3d3f23e96646",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_uart.v": "99262aac12d6107353786166feeeef319ffa5a53e0bfb449734d9779f62d78f5",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_fat.v": "434473695d0ece084100dc1824c654dece90da5e551c3fa03830c030693fb6fa"
+      }
+    }
+  ],
+  "fat": [
+    {
+      "test": "fat16_mbr",
+      "passed": true,
+      "bytes_compared": 4096,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_font_fat.py": "f462731f5f9f385f51d70d01e7cfc4630be0fb41145d927c169a90fb7495c7cd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_fat.v": "434473695d0ece084100dc1824c654dece90da5e551c3fa03830c030693fb6fa",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_font_fat.v": "089fae6fce450a1eaa6285cee0f51441c9270255ae1fcea12850a9ad9f299d41",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\sd_config\\TF\u5b57\u5e93\\FONTS.BIN": "d9b4ba441bf7951ea768dec17f5dc00c90d98f312be5e5baa1a04d8fce260f26"
+      }
+    },
+    {
+      "test": "fat16_superfloppy",
+      "passed": true,
+      "bytes_compared": 4096,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_font_fat.py": "f462731f5f9f385f51d70d01e7cfc4630be0fb41145d927c169a90fb7495c7cd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_fat.v": "434473695d0ece084100dc1824c654dece90da5e551c3fa03830c030693fb6fa",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_font_fat.v": "089fae6fce450a1eaa6285cee0f51441c9270255ae1fcea12850a9ad9f299d41",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\sd_config\\TF\u5b57\u5e93\\FONTS.BIN": "d9b4ba441bf7951ea768dec17f5dc00c90d98f312be5e5baa1a04d8fce260f26"
+      }
+    },
+    {
+      "test": "fat32_active_fat1",
+      "passed": true,
+      "bytes_compared": 4096,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_font_fat.py": "f462731f5f9f385f51d70d01e7cfc4630be0fb41145d927c169a90fb7495c7cd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_fat.v": "434473695d0ece084100dc1824c654dece90da5e551c3fa03830c030693fb6fa",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_font_fat.v": "089fae6fce450a1eaa6285cee0f51441c9270255ae1fcea12850a9ad9f299d41",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\sd_config\\TF\u5b57\u5e93\\FONTS.BIN": "d9b4ba441bf7951ea768dec17f5dc00c90d98f312be5e5baa1a04d8fce260f26"
+      }
+    },
+    {
+      "test": "fat32_superfloppy",
+      "passed": true,
+      "bytes_compared": 4096,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_font_fat.py": "f462731f5f9f385f51d70d01e7cfc4630be0fb41145d927c169a90fb7495c7cd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_fat.v": "434473695d0ece084100dc1824c654dece90da5e551c3fa03830c030693fb6fa",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_font_fat.v": "089fae6fce450a1eaa6285cee0f51441c9270255ae1fcea12850a9ad9f299d41",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\sd_config\\TF\u5b57\u5e93\\FONTS.BIN": "d9b4ba441bf7951ea768dec17f5dc00c90d98f312be5e5baa1a04d8fce260f26"
+      }
+    },
+    {
+      "test": "missing",
+      "passed": true,
+      "bytes_compared": 0,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_font_fat.py": "f462731f5f9f385f51d70d01e7cfc4630be0fb41145d927c169a90fb7495c7cd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_fat.v": "434473695d0ece084100dc1824c654dece90da5e551c3fa03830c030693fb6fa",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_font_fat.v": "089fae6fce450a1eaa6285cee0f51441c9270255ae1fcea12850a9ad9f299d41",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\sd_config\\TF\u5b57\u5e93\\FONTS.BIN": "d9b4ba441bf7951ea768dec17f5dc00c90d98f312be5e5baa1a04d8fce260f26"
+      }
+    },
+    {
+      "test": "bad_chain",
+      "passed": true,
+      "bytes_compared": 0,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_font_fat.py": "f462731f5f9f385f51d70d01e7cfc4630be0fb41145d927c169a90fb7495c7cd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_fat.v": "434473695d0ece084100dc1824c654dece90da5e551c3fa03830c030693fb6fa",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_font_fat.v": "089fae6fce450a1eaa6285cee0f51441c9270255ae1fcea12850a9ad9f299d41",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\sd_config\\TF\u5b57\u5e93\\FONTS.BIN": "d9b4ba441bf7951ea768dec17f5dc00c90d98f312be5e5baa1a04d8fce260f26"
+      }
+    },
+    {
+      "test": "exfat",
+      "passed": true,
+      "bytes_compared": 0,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_font_fat.py": "f462731f5f9f385f51d70d01e7cfc4630be0fb41145d927c169a90fb7495c7cd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_fat.v": "434473695d0ece084100dc1824c654dece90da5e551c3fa03830c030693fb6fa",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_font_fat.v": "089fae6fce450a1eaa6285cee0f51441c9270255ae1fcea12850a9ad9f299d41",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\sd_config\\TF\u5b57\u5e93\\FONTS.BIN": "d9b4ba441bf7951ea768dec17f5dc00c90d98f312be5e5baa1a04d8fce260f26"
+      }
+    },
+    {
+      "test": "wrong_sector_size",
+      "passed": true,
+      "bytes_compared": 0,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_font_fat.py": "f462731f5f9f385f51d70d01e7cfc4630be0fb41145d927c169a90fb7495c7cd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_fat.v": "434473695d0ece084100dc1824c654dece90da5e551c3fa03830c030693fb6fa",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_font_fat.v": "089fae6fce450a1eaa6285cee0f51441c9270255ae1fcea12850a9ad9f299d41",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\sd_config\\TF\u5b57\u5e93\\FONTS.BIN": "d9b4ba441bf7951ea768dec17f5dc00c90d98f312be5e5baa1a04d8fce260f26"
+      }
+    },
+    {
+      "test": "fat32_high_cluster",
+      "passed": true,
+      "bytes_compared": 4096,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_font_fat.py": "f462731f5f9f385f51d70d01e7cfc4630be0fb41145d927c169a90fb7495c7cd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_fat.v": "434473695d0ece084100dc1824c654dece90da5e551c3fa03830c030693fb6fa",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_font_fat.v": "089fae6fce450a1eaa6285cee0f51441c9270255ae1fcea12850a9ad9f299d41",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\sd_config\\TF\u5b57\u5e93\\FONTS.BIN": "d9b4ba441bf7951ea768dec17f5dc00c90d98f312be5e5baa1a04d8fce260f26"
+      }
+    },
+    {
+      "test": "third_primary_partition",
+      "passed": true,
+      "bytes_compared": 4096,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_font_fat.py": "f462731f5f9f385f51d70d01e7cfc4630be0fb41145d927c169a90fb7495c7cd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_fat.v": "434473695d0ece084100dc1824c654dece90da5e551c3fa03830c030693fb6fa",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_font_fat.v": "089fae6fce450a1eaa6285cee0f51441c9270255ae1fcea12850a9ad9f299d41",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\sd_config\\TF\u5b57\u5e93\\FONTS.BIN": "d9b4ba441bf7951ea768dec17f5dc00c90d98f312be5e5baa1a04d8fce260f26"
+      }
+    },
+    {
+      "test": "mbr_boot_code",
+      "passed": true,
+      "bytes_compared": 4096,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_font_fat.py": "f462731f5f9f385f51d70d01e7cfc4630be0fb41145d927c169a90fb7495c7cd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_fat.v": "434473695d0ece084100dc1824c654dece90da5e551c3fa03830c030693fb6fa",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_font_fat.v": "089fae6fce450a1eaa6285cee0f51441c9270255ae1fcea12850a9ad9f299d41",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\sd_config\\TF\u5b57\u5e93\\FONTS.BIN": "d9b4ba441bf7951ea768dec17f5dc00c90d98f312be5e5baa1a04d8fce260f26"
+      }
+    },
+    {
+      "test": "over_64gib",
+      "passed": true,
+      "bytes_compared": 0,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_font_fat.py": "f462731f5f9f385f51d70d01e7cfc4630be0fb41145d927c169a90fb7495c7cd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_fat.v": "434473695d0ece084100dc1824c654dece90da5e551c3fa03830c030693fb6fa",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_font_fat.v": "089fae6fce450a1eaa6285cee0f51441c9270255ae1fcea12850a9ad9f299d41",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\sd_config\\TF\u5b57\u5e93\\FONTS.BIN": "d9b4ba441bf7951ea768dec17f5dc00c90d98f312be5e5baa1a04d8fce260f26"
+      }
+    }
+  ],
+  "slow_fat": [
+    {
+      "test": "slow_10_end_0",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_font_file_b.py": "cc50d70d8085f8e14a72c26430f191cfad81952f438a4b5e9ca0e0128c93a0af",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_font_fat.v": "089fae6fce450a1eaa6285cee0f51441c9270255ae1fcea12850a9ad9f299d41",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_font_fat.py": "f462731f5f9f385f51d70d01e7cfc4630be0fb41145d927c169a90fb7495c7cd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\sd_config\\TF\u5b57\u5e93\\FONTS.BIN": "d9b4ba441bf7951ea768dec17f5dc00c90d98f312be5e5baa1a04d8fce260f26",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\font_slow03\\slow.v": "3fcade3a2791137d3dd6e3064bda17bbc28898701d6139f8dd0b94a34c2d81eb",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_file_b.v": "42b7b497fc6f650e6771755b3bae61d8cf62d09fa7522f048dd6b15d9f5be7b2",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_fat.v": "434473695d0ece084100dc1824c654dece90da5e551c3fa03830c030693fb6fa",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\font_slow03\\lbas.hex": "14c444fa429d7e598fa925a0d554e7fe7163735831a5539a8fe44b0145f40874",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\font_slow03\\blocks.hex": "deb0ddeea06ceb7087b44afb045bb346c36f791c8ce7ab23775cf6600569d1cc",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\font_slow03\\requests.hex": "adaa6898689cc90fe336e0541a8180b41e96be6fbb82084e2b52b522902dcb60",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\font_slow03\\expected.hex": "9fa5880be24c17ebd844303f58ed83b4092110deb92d7a26285f1cda885bd065"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\font_slow03\\slow_10_end_0.log",
+      "log_sha256": "6b42fecaba66c27340cd26813a646ace84ac45f726f47f9ace3d12f5198d9d18",
+      "bytes_compared": 2048
+    },
+    {
+      "test": "slow_11_end_1",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_font_file_b.py": "cc50d70d8085f8e14a72c26430f191cfad81952f438a4b5e9ca0e0128c93a0af",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_font_fat.v": "089fae6fce450a1eaa6285cee0f51441c9270255ae1fcea12850a9ad9f299d41",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_font_fat.py": "f462731f5f9f385f51d70d01e7cfc4630be0fb41145d927c169a90fb7495c7cd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\sd_config\\TF\u5b57\u5e93\\FONTS.BIN": "d9b4ba441bf7951ea768dec17f5dc00c90d98f312be5e5baa1a04d8fce260f26",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\font_slow03\\slow.v": "3fcade3a2791137d3dd6e3064bda17bbc28898701d6139f8dd0b94a34c2d81eb",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_file_b.v": "42b7b497fc6f650e6771755b3bae61d8cf62d09fa7522f048dd6b15d9f5be7b2",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_fat.v": "434473695d0ece084100dc1824c654dece90da5e551c3fa03830c030693fb6fa",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\font_slow03\\lbas.hex": "14c444fa429d7e598fa925a0d554e7fe7163735831a5539a8fe44b0145f40874",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\font_slow03\\blocks.hex": "deb0ddeea06ceb7087b44afb045bb346c36f791c8ce7ab23775cf6600569d1cc",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\font_slow03\\requests.hex": "adaa6898689cc90fe336e0541a8180b41e96be6fbb82084e2b52b522902dcb60",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\font_slow03\\expected.hex": "9fa5880be24c17ebd844303f58ed83b4092110deb92d7a26285f1cda885bd065"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\font_slow03\\slow_11_end_1.log",
+      "log_sha256": "a5cf7a4b205ec5ac7f55cfbd3f2a07901e75105d70bf77b0b42b1703b4b1a2cf",
+      "bytes_compared": 2048
+    }
+  ],
+  "legacy_font_boot": [
+    {
+      "test": "typed_b_legacy_font_boot",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_boot_font_b.py": "5c44d67e6f2feb5e8a87296e08fee7ce55f18bccf2454ed98e1fd75d25b1f546",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_boot_catalog_status.v": "707a69fa20abfab0358bea349360e435c1e5da43da6d01b3653848611e527242",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\font_boot_b01\\boot_font.v": "6af78b054c07b780adc0783752fef5bb15e342d4f574aed83e865a4fc07957f6",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_typed_control_b.v": "598e9ad94a9560c4014297272a233bf2878e06a41e9b92f2d3c071ce673998ba",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_cached_control_a.v": "bd83d90eda4aa6c7b0a915c5131086816840d33cc3c48f90d7f2ceee90d68ca7",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_control.v": "65918b0e7894a3b2d028a380764c4deffe0c4d60ef6ef30d2ebc3d3f23e96646",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_uart.v": "99262aac12d6107353786166feeeef319ffa5a53e0bfb449734d9779f62d78f5",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\saixian_font_rom.v": "e062e76432b2040950ae07a0784aacc680b388e1d01c11c6bef58bd05853b834",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\title_font_ram_model.v": "5645c2efe210627dad2e9d131a1a400751b0794b31719ceb3d70b80c6b6e0e87"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\font_boot_b01\\boot_font.log",
+      "log_sha256": "14feddd65276793feb899a5e250a90328de79942d869bae20280255b461ae9a3"
+    }
+  ],
+  "bmp_bounds": [
+    {
+      "test": "boundaries",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_bmp_bounds.py": "7f053bc5e8092ef1bb35c39a079dca274c45abe4e5cab5c3c49fa8b4c0ee8edb",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_bmp_bounds.v": "1ce63d13d6cb96e1f80e159ea441ae55181a5c946058ddd99bae39baa975cad7",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_sd\\bmp_read.v": "6d0878b3323c8507d720ed1ba1fb172df516d12d82a7858841d35a47e2a92569",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_sd\\saixian_media_header.v": "f8092e34232ab7d5a379903b7f8602168ca3b89d5397d8a222c55ba45332271e",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_sd\\photo_dlt_header.v": "a68b4fea22cb09cf52bfa56f605ecae507caeabd171b335bc88a31af834b937c",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\native_unused_bram.v": "474955ae35b013d06212d6aacea1ac4b8233b2292992993f4a9024062f730463"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\bmp_flags01\\boundaries.log",
+      "log_sha256": "6ee548edfc12f9ff026d3374f16b71b42ef335d31815f6ad278e93a16cb7210e"
+    },
+    {
+      "test": "native_image",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_bmp_bounds.py": "7f053bc5e8092ef1bb35c39a079dca274c45abe4e5cab5c3c49fa8b4c0ee8edb",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_bmp.v": "f1b2a3304d54a3a25947e76c26179b9312334a2221e4396be04497303e436d61",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_sd\\bmp_read.v": "6d0878b3323c8507d720ed1ba1fb172df516d12d82a7858841d35a47e2a92569",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_sd\\saixian_media_header.v": "f8092e34232ab7d5a379903b7f8602168ca3b89d5397d8a222c55ba45332271e",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_sd\\photo_dlt_header.v": "a68b4fea22cb09cf52bfa56f605ecae507caeabd171b335bc88a31af834b937c",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\native_unused_bram.v": "474955ae35b013d06212d6aacea1ac4b8233b2292992993f4a9024062f730463"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\bmp_flags01\\native_image.log",
+      "log_sha256": "1455bd52fef7a3f9b6d7b0448ba1fc7f2c25517f8b52b3f065e6fee7ec5ef894"
+    }
+  ],
+  "audio_window": [
+    {
+      "test": "audio_sector_window",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_audio_stream_window.py": "06d5b4199c8f9bd9a789018eeca0ad7a508c0f42c136160be5b7ebfe745950c5",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_audio_stream_window.v": "a0d09f7c447ffee31fe653e1b8dd0baedcd56b9855ac735e995f0269e89ba880",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\reference\\audio_stream_before.v": "c443f875c18f5a68699f07d886f40d0bb22facb25d731cba11a1747cb86fed0c",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_sd_audio_stream.v": "06f7841f736a1f2b097e0e706551735040aacec966fe3946589c6067abe259fc"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\audio_window01\\audio_window.log",
+      "log_sha256": "a7c8b0b15ec4fb26239ba119437891e6f37b8ce02e6d937d74e6f22275b30d3b"
+    }
+  ],
+  "dlt_encoding": [
+    {
+      "test": "guard",
+      "passed": true,
+      "seconds": 0.64,
+      "inputs_sha256": {
+        "tests/tb_dlt_guard.v": "be98f6bb4195e5ac0590e1b5b62c8ef20e2c7eb81739b5b6af3663211a4ccb71",
+        "tests/dlt_guard_equivalence.v": "bbc028754a695b195fb05883b8448bced4a53af19e4ca97f26969c37add972f1",
+        "common/photo_sd/photo_dlt_reader.v": "bccbc45b5c20a6d54f5eb2a0c56186b14960ecf528caf739fa6f383fe1a3b94c",
+        "common/photo_sd/photo_dlt_header.v": "a68b4fea22cb09cf52bfa56f605ecae507caeabd171b335bc88a31af834b937c",
+        "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\dlt_onehot_f6\\reference_reader.v": "8e7fdfdcab586e5d8562a5e8f66a9cc9c0da39c35b6b62d25985c9a476c26dfd",
+        "tests/reference/photo_dlt_reader_f6.v": "b8b084efc84322b8200c22e8a498879c9d529dad02120dd64619019886338cc6",
+        "award_media/AWARD720.DLT": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5",
+        "tests/vectors/award_v5/award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+        "tools/test_audio_dlt_guard.py": "acea715c1f908e24cb509596dee2105b0582d9f02a200b0397b385f2296820f9"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\dlt_onehot_f6\\guard.log",
+      "log_sha256": "624cc9449d0d2b7fdeb1b84d5b15e63de54f036b1a175b2b0dee816ec5e88d7e",
+      "stimuli_sha256": {
+        "E:\\Codex\\Work\\dualboard-font-20261030\\dlt_onehot_f6\\award_file.hex": "055731d3803478b8955b4ab76cc11b447aad47ac67d908f47a0a06b40fb41077",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\dlt_onehot_f6\\award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4"
+      }
+    },
+    {
+      "test": "reader",
+      "passed": true,
+      "seconds": 500.48,
+      "inputs_sha256": {
+        "tests/tb_award_v5_reader.v": "36fec2c55fc5ae98f72defefa698693547efee23288a9d8a7b90960444ef5994",
+        "tests/dlt_guard_equivalence.v": "bbc028754a695b195fb05883b8448bced4a53af19e4ca97f26969c37add972f1",
+        "common/photo_sd/photo_dlt_reader.v": "bccbc45b5c20a6d54f5eb2a0c56186b14960ecf528caf739fa6f383fe1a3b94c",
+        "common/photo_sd/photo_dlt_header.v": "a68b4fea22cb09cf52bfa56f605ecae507caeabd171b335bc88a31af834b937c",
+        "common/photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\dlt_onehot_f6\\reference_reader.v": "8e7fdfdcab586e5d8562a5e8f66a9cc9c0da39c35b6b62d25985c9a476c26dfd",
+        "tests/reference/photo_dlt_reader_f6.v": "b8b084efc84322b8200c22e8a498879c9d529dad02120dd64619019886338cc6",
+        "award_media/AWARD720.DLT": "d82262a32a48915a6bb51c2fed2a7cae642a594eda0ce3af1b284ff04375a4a5",
+        "tests/vectors/award_v5/award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4",
+        "tools/test_audio_dlt_guard.py": "acea715c1f908e24cb509596dee2105b0582d9f02a200b0397b385f2296820f9"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\dlt_onehot_f6\\reader.log",
+      "log_sha256": "2092ac2b681de71ae0d24cf5d418250a1a99d3e3326321b451b6bc63c4d9075a",
+      "stimuli_sha256": {
+        "E:\\Codex\\Work\\dualboard-font-20261030\\dlt_onehot_f6\\award_file.hex": "055731d3803478b8955b4ab76cc11b447aad47ac67d908f47a0a06b40fb41077",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\dlt_onehot_f6\\award_expected.hex": "998765ac814938d0aa954ab0297371ccee13d5014abed3f91d986e1199912dc4"
+      }
+    }
+  ],
+  "slow_uart": [
+    {
+      "test": "native_font_engine_uart_fat_replay",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_font_engine_b.py": "777271fc04fe17fbc9efc9e6ecfea984e5abfd10bca8d70dedfa1d04fa065279",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_typed_text_slow.v": "9496159c8a0a92a06c25150ffca8978e94363e305ed4495ed0c5c16c967e7416",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_font_fat.py": "f462731f5f9f385f51d70d01e7cfc4630be0fb41145d927c169a90fb7495c7cd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\sd_config\\TF\u5b57\u5e93\\FONTS.BIN": "d9b4ba441bf7951ea768dec17f5dc00c90d98f312be5e5baa1a04d8fce260f26",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\font_engine04\\font_engine.v": "c17371b5810f9fca3d3911f5a74a9e1cf082c7e0fc966d74c6a6a28a84004591",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_engine_b.v": "28eddefd408ff6333f9bc1389acf3f221e5192fe8622a2e45a08fd3a01502e1f",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_file_b.v": "42b7b497fc6f650e6771755b3bae61d8cf62d09fa7522f048dd6b15d9f5be7b2",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_fat.v": "434473695d0ece084100dc1824c654dece90da5e551c3fa03830c030693fb6fa",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_text_crc.v": "6edf7f987cd9bdae50ce600a04824bb1f879e11db54f649f222ffea321ed9941",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_typed_text_a.v": "08c14ff5e4c66b5927dcf2a9c724fc3e1822a8e37eea3ab2c3bf9e5bf5e658fd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_typed_text_b.v": "bcdd4a72823cf1289b9bf7f6dd8421fa13ccf3a25f5eac588a79ff7f8463ed6c",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_typed_control_b.v": "598e9ad94a9560c4014297272a233bf2878e06a41e9b92f2d3c071ce673998ba",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_cached_control_a.v": "bd83d90eda4aa6c7b0a915c5131086816840d33cc3c48f90d7f2ceee90d68ca7",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_control.v": "65918b0e7894a3b2d028a380764c4deffe0c4d60ef6ef30d2ebc3d3f23e96646",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_uart.v": "99262aac12d6107353786166feeeef319ffa5a53e0bfb449734d9779f62d78f5",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\saixian_font_rom.v": "e062e76432b2040950ae07a0784aacc680b388e1d01c11c6bef58bd05853b834",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\title_font_ram_model.v": "5645c2efe210627dad2e9d131a1a400751b0794b31719ceb3d70b80c6b6e0e87",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\font_engine04\\lbas.hex": "88d61165c5c847394949290f050dcc03c2f6b0884f718202dc0c02a8e4961fe6",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\font_engine04\\blocks.hex": "336d05beebc2ce2f3d2f3fab8cd76eb7a514c1b37121b4eb0c4f8492bb702294",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\font_engine04\\font.hex": "b52655201add17b67821d2c056ccf6ee26ea6ca05e2e11022c3d00aec94b0d14"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\font_engine04\\font_engine.log",
+      "log_sha256": "f1405876f6831d931c8658f1a1820deb3fbd2e2a504b77f2bf00944c9ae1ce39",
+      "scope": "Independent 100/45.45MHz clocks, real UART, fragmented TF, 512 exact rows, CRC and ACK retry, session change at glyph word 10."
+    }
+  ],
+  "glyph_cache_vendor": [
+    {
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_typed_cache.py": "fdd882400a99e942224b283b8903563f673bcc6dd1969898275397aea10ec8ff",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\cache_slow_arch01\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_typed_cache_vendor.v": "0114683dd20198e0da8490b579c62183bd1d0b2ac95c63b4c4ab1b17c59272c5",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_typed_text_b.v": "bcdd4a72823cf1289b9bf7f6dd8421fa13ccf3a25f5eac588a79ff7f8463ed6c",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\cache_slow_arch01\\cache.log",
+      "log_sha256": "94a7c8d0872cd7769f4f1bc7dafd35f283518ba8e731b5233f8c340f4ba2e334"
+    }
+  ],
+  "controls": [
+    {
+      "test": "legacy_b",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_typed_controls.py": "08957ba40c407c715ec213b32fcb3a812c1e9e14100a2db2c933bec94c8496ec",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_typed_legacy_b.v": "373246d7c7a263e3ecdba11e88324f4e8e44af44f69b1a00f19bd1a7704949e2",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_typed_control_b.v": "598e9ad94a9560c4014297272a233bf2878e06a41e9b92f2d3c071ce673998ba",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_uart.v": "99262aac12d6107353786166feeeef319ffa5a53e0bfb449734d9779f62d78f5",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\controls_final07\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\controls_final07\\legacy_b.log",
+      "log_sha256": "3a1c8330f9d11c8044dd59d541a8e6271a649baf9c94f8b6540f200a65a8ab89",
+      "defines": []
+    },
+    {
+      "test": "hmi",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_typed_controls.py": "08957ba40c407c715ec213b32fcb3a812c1e9e14100a2db2c933bec94c8496ec",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_typed_hmi.v": "142c7c27402de99540d83dd078b789ea1b9e5969109df44c2319423255f60629",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_typed_text_a.v": "08c14ff5e4c66b5927dcf2a9c724fc3e1822a8e37eea3ab2c3bf9e5bf5e658fd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_text_crc.v": "6edf7f987cd9bdae50ce600a04824bb1f879e11db54f649f222ffea321ed9941",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\saixian_hmi_uart.v": "3b8c65376c533d73c494b04de05bfa25ae163fd1b3816c99c95d3b05a182a70c",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\controls_final07\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\controls_final07\\hmi.log",
+      "log_sha256": "ad6337f90814e6ff7a9c06eec072f7471611266165cc0165f06d739d6078eee2",
+      "defines": []
+    },
+    {
+      "test": "osd",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_typed_controls.py": "08957ba40c407c715ec213b32fcb3a812c1e9e14100a2db2c933bec94c8496ec",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_typed_osd.v": "1db0ca214ec5bb91431f3f069633705e4345dbb8a305862c07b0be74f0cb5be6",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\saixian_osd_overlay.v": "486b4173cb68b026bf916bc75f433530aadde64de723c7bdf25bdb227c86bdcf",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\controls_final07\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\controls_final07\\osd.log",
+      "log_sha256": "00dc885769fa5e3f4c354afaa5275a5cc5e76256760072e03a84515646cb610d",
+      "defines": []
+    },
+    {
+      "test": "arbiter",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_typed_controls.py": "08957ba40c407c715ec213b32fcb3a812c1e9e14100a2db2c933bec94c8496ec",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_font_sector_arbiter.v": "2b22a379ef26eabd92a645e2fa6e8a544095f0df2c30b9a781ab2ce7924cbc42",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_sd_cache.v": "e6b02f64072d2f92c737083c5394550f81686e092115f1cb9309c7c9ac28ba7e",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_audio_link.v": "7770c900e4b0b88a87deca5cdefa5af9502321ef55c8fdd22bcccda6ecfc9b6e",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_color_format.v": "6fcbca59f7a444fbef61dce706368f76615ca2d10789985f20bcb8ef6e0d3649",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_sd_audio_stream.v": "06f7841f736a1f2b097e0e706551735040aacec966fe3946589c6067abe259fc",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_sd\\bmp_read.v": "6d0878b3323c8507d720ed1ba1fb172df516d12d82a7858841d35a47e2a92569",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_sd\\photo_dlt_header.v": "a68b4fea22cb09cf52bfa56f605ecae507caeabd171b335bc88a31af834b937c",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_sd\\photo_dlt_reader.v": "bccbc45b5c20a6d54f5eb2a0c56186b14960ecf528caf739fa6f383fe1a3b94c",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_sd\\saixian_media_header.v": "f8092e34232ab7d5a379903b7f8602168ca3b89d5397d8a222c55ba45332271e",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_sd\\sd_card_cmd.v": "ee93ef4fce483306a204c8d0232f35418e4e4a6b94df7f11e912048f7d8aa46c",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_sd\\sd_card_sec_read_write.v": "2c51c66e347595d20ddd5d6b3a5cad9252fb308a754aa59140f739636b3d7dd6",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_sd\\sd_card_top.v": "96a83af8c155514f4fe8a802d207caea1577702d97bf362b0955bdc2f243214f",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_sd\\spi_master.v": "f3f04df5bc162fba03beff74fc506bace4038d2667505e498731a06f6b5a27e9",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\controls_final07\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\controls_final07\\arbiter.log",
+      "log_sha256": "67570a492919514a7d11013d78fe329e96711ebb59bdebaa7edf5fb63428ce11",
+      "defines": [
+        "ERAM_SIM"
+      ]
+    },
+    {
+      "test": "preview_guard",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_typed_controls.py": "08957ba40c407c715ec213b32fcb3a812c1e9e14100a2db2c933bec94c8496ec",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_thumbnail_overlay.v": "a669917f486e6c1e721d58c77621c3bb4bd998d5ae01b1cca9dc909218521c9d",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_thumbnail.v": "db61ad60ccaf3b9ecac50104fc19e841e0869b09b6d9288fff3800bd3b5a686b",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\controls_final07\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\controls_final07\\preview_guard.log",
+      "log_sha256": "fffb25583ec2e185384e2650151daa9b3cae033a2bb35a846d75d6c72cfa1026",
+      "defines": [
+        "THUMBNAIL_SIM"
+      ]
+    },
+    {
+      "test": "preview_cancel",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_typed_controls.py": "08957ba40c407c715ec213b32fcb3a812c1e9e14100a2db2c933bec94c8496ec",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_thumbnail_early_cancel.v": "83299089b27d56a27619947cec5c4ec166ad11005e70dcd3cc82ae8b0cc78610",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_thumbnail.v": "db61ad60ccaf3b9ecac50104fc19e841e0869b09b6d9288fff3800bd3b5a686b",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\controls_final07\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\controls_final07\\preview_cancel.log",
+      "log_sha256": "bfac24a02dc6ad3f2f3e37c157729770e7adef1776d10ab307f753767acbf66c",
+      "defines": [
+        "THUMBNAIL_SIM"
+      ]
+    },
+    {
+      "test": "preview_pixels",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_typed_controls.py": "08957ba40c407c715ec213b32fcb3a812c1e9e14100a2db2c933bec94c8496ec",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_thumbnail_phase.v": "66158ce1c756c3d3b031b4d2f49ec6a781a708c31362c977e851f1e399afaec9",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_thumbnail.v": "db61ad60ccaf3b9ecac50104fc19e841e0869b09b6d9288fff3800bd3b5a686b",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_raster_delay.v": "fb689150a24c2cbaad118219486bf7ecfe9c30f0fac7c654ad05c9e91d5a8795",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\controls_final07\\ip_init_map.vh": "7d22886987d538e080a01bc646725c5a413427461702f9d0885e97e2c7cdca0d"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\controls_final07\\preview_pixels.log",
+      "log_sha256": "1af03111797434afc6d52cba2dc263a8313659b7472499a54148ab97df58e00d",
+      "defines": [
+        "THUMBNAIL_SIM"
+      ]
+    }
+  ],
+  "music_sync": [
+    {
+      "passed": true,
+      "scope": "real top/settings/page event/SPI track logic; external hardware shells",
+      "inputs_sha256": {
+        "E:\\Codex\\Work\\dualboard-font-20261030\\music_sync_final02\\sync.v": "e152cb80609e119dcceffac58693b84a90375f06f23ef48b2d6d70855bea6baa",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\music_sync_final02\\hardware_shells.v": "9c65f8c955dcdb4116f50173924d2391aab7e8e2af9d53fdac6a875e23d94cff",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_text_crc.v": "6edf7f987cd9bdae50ce600a04824bb1f879e11db54f649f222ffea321ed9941",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_typed_text_a.v": "08c14ff5e4c66b5927dcf2a9c724fc3e1822a8e37eea3ab2c3bf9e5bf5e658fd",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\top_photo_a.v": "4b9b3ecbd16d0d16f80c0a54454f0d4a54206150f617e143fd15ac04a7541a3d",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_unified_settings_controller.v": "702fd7b38c3aae4b408041b05b70cd4feb00381b5c22192644b7aa98f77b2d14",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\saixian_hmi_uart.v": "3b8c65376c533d73c494b04de05bfa25ae163fd1b3816c99c95d3b05a182a70c",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_touchpad.v": "c29700dcfde3ef60713af7db8cfc1ae9fdfa44363cb2bf6d69c464062e0e54ca",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_audio_link.v": "7770c900e4b0b88a87deca5cdefa5af9502321ef55c8fdd22bcccda6ecfc9b6e",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784"
+      }
+    }
+  ],
+  "audio_flow": [
+    {
+      "test": "slow_audio_flow",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_audio_slow.py": "5633513e8b99f9deabeb5abcae9cae59b4301c912de0fd7857273e32cef0395f",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_pitch_flow.v": "25f99cce0a5a82b3079a448879758bd7857dfadc44e35751738a4ed797225eb6",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\audio_slow03\\flow.v": "185dbcb1af5b15f9b07e6d2e90767ae079c7d8f7c03324222b17be968da1b0e6",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_audio_link.v": "7770c900e4b0b88a87deca5cdefa5af9502321ef55c8fdd22bcccda6ecfc9b6e",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_audio_pitch_b.v": "995d8f4d92c4bd2dc74a6e44223f664b8c29234af158c368790ba2b81498fb8f",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\saixian_audio_pitch.v": "7f6a26c67f6b724e6f1e8bc7eb5fe1db60ee389b5e8d2fd4f6a3ffbca5ae12ea",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\photo_audio_cue_b.v": "1c1e6d0b5b6be241b95bc537d2fb9c8fca63b9c862b2732249951cb60725e167",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_file_b.v": "42b7b497fc6f650e6771755b3bae61d8cf62d09fa7522f048dd6b15d9f5be7b2"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\audio_slow03\\flow.log",
+      "log_sha256": "934d347ab5c786bdfe5f685158c77218f6f3206ba4fb832ed09a21d2d6411eda",
+      "max_service_100mhz_clocks": 1914,
+      "deadline_100mhz_clocks": 2083
+    }
+  ],
+  "audio_transport": [
+    {
+      "test": "slow_audio_transport",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_audio_slow.py": "5633513e8b99f9deabeb5abcae9cae59b4301c912de0fd7857273e32cef0395f",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_pitch_transport.v": "56dcfaef2c77ad76465b62f2fef9c33d728914044830a0c8d00122a42c58bd49",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\audio_slow03\\transport.v": "78c63eca122374be6d660ac6e880c5528562494c263a6d75bb997d8cd000c868",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_audio_link.v": "7770c900e4b0b88a87deca5cdefa5af9502321ef55c8fdd22bcccda6ecfc9b6e",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_audio_pitch_b.v": "995d8f4d92c4bd2dc74a6e44223f664b8c29234af158c368790ba2b81498fb8f",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\saixian_audio_pitch.v": "7f6a26c67f6b724e6f1e8bc7eb5fe1db60ee389b5e8d2fd4f6a3ffbca5ae12ea",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\photo_audio_cue_b.v": "1c1e6d0b5b6be241b95bc537d2fb9c8fca63b9c862b2732249951cb60725e167",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_font_file_b.v": "42b7b497fc6f650e6771755b3bae61d8cf62d09fa7522f048dd6b15d9f5be7b2"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\audio_slow03\\transport.log",
+      "log_sha256": "897546ff148bd0dcfeb57ccc6c439f9056865841c39bafd5c6b6596a7e69edea",
+      "max_service_100mhz_clocks": 1916,
+      "deadline_100mhz_clocks": 2083
+    }
+  ],
+  "audio_native": [
+    {
+      "test": "native_model",
+      "passed": true,
+      "seconds": 521.67,
+      "inputs_sha256": {
+        "E:\\Codex\\Work\\dualboard-font-20261030\\pitch_fir_pipe01\\native_model\\tb_pitch.v": "ba11d95f2dcb1947412689bb570ccb84c7ca207900d90f68051d2eb415264d3b",
+        "common/audio_ui/saixian_audio_pitch.v": "7f6a26c67f6b724e6f1e8bc7eb5fe1db60ee389b5e8d2fd4f6a3ffbca5ae12ea",
+        "tests/ip_vendor_ram_adapter.v": "20d1fdad21571257fbfba442c094205a2c59679f792223a7919e5ef9cb3eac52",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\ip\\depot\\AXI_Ethernet_Lite_1.0\\AXI_Ethernet_Lite\\RTL\\ram_infer.v": "3f797b70190b6f1a7f6e323de8f5191bb07e1cb282a4b40ffd7f0171e5a6ae95",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\pitch_fir_pipe01\\native_model\\vendor_dram.v": "955bb95168b4cf8a5f34c89b8f270719f50a7528fbf2e7a3d03bce07e0f43162",
+        "tests/reference/audio_pitch/tb_pitch.v": "e646e175bfbecf6b2a64e24214d4ee27bdc00a7604f7efabfce9a32be064dc38",
+        "tests/reference/audio_pitch/quality_model.py": "5067601e91e6d28af1bec4a185ce560ffa676eebec3cdad6709e0b1844a600f3",
+        "tools/test_audio_pitch_b.py": "344f0a5ebd5a635cb64eff6c31acd53483f931c4ffc8cf5d3629fe833881e33b",
+        "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\sim_release\\eg4\\eg_logic_dram.v": "b620cebfe67f8829df3b737d1f75072b5f42bae7a2396b36616e85aa3cc9ea1e"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\pitch_fir_pipe01\\native_model.log",
+      "log_sha256": "f90a32cde62df4de983a53b08d577a1db07d02075560f7c2293e3085ecde4451",
+      "measurements": {
+        "exact_stereo_frames": 10000,
+        "max_integer_error": 0,
+        "modes": 5,
+        "reference_commit": "c2d2df8008c93f9a89308007c882d9093a808e06",
+        "production_history_ram32_blocks": 6,
+        "dry_history_frames": 2048,
+        "filtered_history_frames": 4096,
+        "native_vendor_ram": true,
+        "clear_zero_frames": 2400
+      }
+    }
+  ],
+  "cue_equivalence": [
+    {
+      "test": "b_cue_cycle_equivalence",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tools\\test_b_cue.py": "6d4118a9bcd5884a670a7bd0e47ed555bf464b9dbc3504956e31eddfa1e9ba80",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\photo_audio_cue_b.v": "1c1e6d0b5b6be241b95bc537d2fb9c8fca63b9c862b2732249951cb60725e167",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_cue_equivalence.v": "28ec498fa7232b25a74525ff1785fc66c77e66a64578601eafc739dbca6b7828",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\cue_final01\\cue_candidate.v": "421fde0317f22e7b6f7f12fdc8f2d1e08bfa6d4c94585f9692157fe120ffcf27",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\cue_final01\\cue_reference.v": "ce18e24a657c70d6f602540ef53e91c8ece5d3ec06984719714ac2e1784307df"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\cue_final01\\cue.log",
+      "log_sha256": "a9f66d362353162c270043d1500c91ba419d91db732296c0bca979211bf0283f",
+      "scope": "Both PAGE_STYLES values, 11 page styles, 15 event codes, interruption, exact PCM and metadata every clock."
+    }
+  ],
+  "compact_spi": [
+    {
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_hmi_spi_compact.v": "97b0ddd954149d36a631a06d2479b1e0ac6771e4223211e7a1b6d2890d419f1b",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_hmi_remote.v": "3f70f215ef5a03e9adb87f0056949c61aa8eb5d51953ae47588e0a06dc6d96a6",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_audio_link.v": "7770c900e4b0b88a87deca5cdefa5af9502321ef55c8fdd22bcccda6ecfc9b6e",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_audio_spi_b_offload.v": "eddce5724930582ae737fce109d12e5289ff1f9288fbf274a19200b693f23a93",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_processing.v": "36660dc4fcefb1c592a150ef8d83bb3c2842ff0d8d0a0661ac8cdccee7032e35"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\spi_compact_final\\spi.log",
+      "log_sha256": "e4709ff4bbf05090242ed1d2719c5f4ee57ce43549ca272c46d2b37e9ebb5519"
+    }
+  ],
+  "late_catalog": [
+    {
+      "test": "delayed_catalog_typed_0",
+      "passed": true,
+      "inputs_sha256": {
+        "E:\\Codex\\Work\\dualboard-font-20261030\\poll_final\\poll_typed_0.v": "77dd0da6484ffc928924c4a65c311359a1d7b374c622f916d4699cb192998ca5",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_audio_link.v": "7770c900e4b0b88a87deca5cdefa5af9502321ef55c8fdd22bcccda6ecfc9b6e",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_boot_screen.v": "7e4ac12f6e9af29c46e2a950a4fe6da7cec41a60afa245a9229cbf3869d4ae0e"
+      }
+    },
+    {
+      "test": "delayed_catalog_typed_1",
+      "passed": true,
+      "inputs_sha256": {
+        "E:\\Codex\\Work\\dualboard-font-20261030\\poll_final\\poll_typed_1.v": "7b4189381e165da8a6667d81ad101c679c463c48c005ba788ba42e95ab336250",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_audio_link.v": "7770c900e4b0b88a87deca5cdefa5af9502321ef55c8fdd22bcccda6ecfc9b6e",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_boot_screen.v": "7e4ac12f6e9af29c46e2a950a4fe6da7cec41a60afa245a9229cbf3869d4ae0e"
+      }
+    }
+  ],
+  "audio_boot": [
+    {
+      "test": "tb_boot_audio_sync",
+      "passed": true,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_boot_audio_sync.v": "1bcac0451d9b86d1f16d95d34a92180e782a6c07f107633ba17ab615f4217c3d",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_boot_screen.v": "7e4ac12f6e9af29c46e2a950a4fe6da7cec41a60afa245a9229cbf3869d4ae0e",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_audio_link.v": "7770c900e4b0b88a87deca5cdefa5af9502321ef55c8fdd22bcccda6ecfc9b6e",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\audio_final\\tb_boot_audio_sync.log",
+      "log_sha256": "beea2fd678e2371923f2c518e25e76c7edb8c415c2532a2e5c20d6a036c977a1"
+    }
+  ],
+  "formatter": [
+    {
+      "test": "hmi_bytes",
+      "passed": true,
+      "inputs_sha256": {
+        "tests/tb_hmi_byte_stream.v": "af62666d81fd5803ecbbc2d10f1c506e467cbd6607969f87c6bd2fd188be3f15",
+        "common/photo_processing.v": "36660dc4fcefb1c592a150ef8d83bb3c2842ff0d8d0a0661ac8cdccee7032e35",
+        "tests/reference/hmi_formatter_before.v": "3ed11deb75786895b792d3cea04d474878946b38d3396b5b96abf845a604b31d"
+      }
+    }
+  ]
+}

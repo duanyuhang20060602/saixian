@@ -289,8 +289,9 @@ always @(posedge clk or posedge rst)begin
  end
 end
 localparam IDLE=0,TRANSFER=1;
+reg transfer_due;
 reg [1:0] state;reg [3:0] divider;reg [16:0] idle_wait;
-assign typed_launch=TYPED_PAGE && !change_audio && state==IDLE && idle_wait==0 && send_page;
+assign typed_launch=TYPED_PAGE && !change_audio && state==IDLE && idle_wait==0 && transfer_due && send_page;
 reg [31:0] tx_shift,rx_shift;reg [5:0] bit_index;reg [8:0] word_index,payload_words;
 reg finishing,header_magic,header_match;
 reg hmi_transfer;reg [63:0] hmi_snapshot;
@@ -307,6 +308,11 @@ wire choose_av=!(REMOTE_RELIEF && relief_enable) && EXTENDED_AV && meta_cadence=
 // FIFO overwrite, page event or epoch change is needed to refresh status.
 wire catalog_poll=STARTUP_SYNC && PAGE_CUE && held && !catalog_complete &&
  fifo_used>(1<<(FIFO_AW-1)) && !choose_av && !choose_relief;
+// Keep the metadata availability cone away from the physical SPI CS enable.
+// Selection still uses the current flags at launch; PCM has half-FIFO headroom.
+always @(posedge clk or posedge rst)
+ if(rst)transfer_due<=0;
+ else transfer_due<=send_page || catalog_poll || fifo_used<=(1<<(FIFO_AW-1)) || choose_av || choose_relief;
 wire [31:0] received_word={rx_shift[30:0],miso_sync};
 wire valid_status=received_word[31:24]==8'hb6 && (received_word[14:11]==0 || (PAGE_CUE && received_word[11])) && received_word[10:8]<=5;
 assign typed_pop=TYPED_PAGE && !change_audio && page_inflight && state==TRANSFER && divider==HALF_DIV-1 && !spi_sclk && bit_index==31 && word_index==0 && valid_status && received_word[11] && received_word[14:12]==page_seq;
@@ -325,7 +331,7 @@ always @(posedge clk or posedge rst)begin
   case(state)
    IDLE:begin
     if(idle_wait!=0)idle_wait<=idle_wait-1'b1;
-    else if(send_page || catalog_poll || fifo_used<=(1<<(FIFO_AW-1)) || choose_av || choose_relief)begin
+    else if(transfer_due)begin
      spi_cs<=0;spi_sclk<=0;spi_mosi<=1;divider<=0;
      hmi_transfer<=REMOTE_HMI && !send_page && !catalog_poll && !choose_relief && !choose_av;
      hmi_begin<=REMOTE_HMI && !send_page && !catalog_poll && !choose_relief && !choose_av;

@@ -6,7 +6,7 @@ def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def main():
  ap=argparse.ArgumentParser();ap.add_argument('--out',type=Path,required=True);a=ap.parse_args();out=a.out.resolve();assert out.drive.upper()=='E:';out.mkdir(parents=True,exist_ok=True)
  env=os.environ.copy();temp=Path('E:/Codex/Temp/audio-dlt-guard');temp.mkdir(parents=True,exist_ok=True);env.update(TEMP=str(temp),TMP=str(temp),TMPDIR=str(temp))
- reference=ROOT/'tests/reference/audio_pitch/photo_dlt_reader.v';old=reference.read_text().replace('module photo_dlt_reader #','module reference_photo_dlt_reader #');ref=out/'reference_reader.v';ref.write_text(old,encoding='utf-8')
+ reference=ROOT/'tests/reference/photo_dlt_reader_f6.v';old=reference.read_text().replace('module photo_dlt_reader #','module reference_photo_dlt_reader #');ref=out/'reference_reader.v';ref.write_text(old,encoding='utf-8')
  package=ROOT/'award_media/AWARD720.DLT';raw=package.read_bytes();words=struct.unpack('<'+'I'*(len(raw)//4),raw)
  (out/'award_file.hex').write_text(''.join(f'{v:08x}\n' for v in words),encoding='ascii')
  expected=ROOT/'tests/vectors/award_v5/award_expected.hex';(out/'award_expected.hex').write_bytes(expected.read_bytes())

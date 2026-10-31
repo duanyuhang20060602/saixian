@@ -141,6 +141,12 @@ wire changed=identity!=held;
 assign cancel=cancel_pending || !eligible || (pending && changed);
 wire show_allowed=!SEPARATE_DISPLAY || display_enable;
 assign visible=armed && ready && eligible && !changed && show_allowed;
+// The navigation guard above remains immediate. Pixel publication uses its
+// registered copy: RAM cannot be rewritten until the cancel/done handshake,
+// so clearing on the following clock cannot expose a partly replaced image.
+reg pixel_visible;
+always @(posedge clk or posedge rst)
+ if(rst)pixel_visible<=0;else pixel_visible<=visible;
 assign read_busy=pending || cancel_pending;
 reg [6:0] source_x;reg [5:0] source_y;reg [3:0] phase_x,phase_y;reg [12:0] row_address;
 wire advance_x=phase_x>=3;
@@ -197,5 +203,5 @@ wire [23:0] rgb={data[15:11],data[15:13],data[10:5],data[10:9],data[4:0],data[4:
 // Select the local colour before the single visibility gate. Explicit areas
 // preserve clipped/edge layouts as well as the production right-side panel.
 wire [23:0] panel_rgb=border ? 24'h52c4ff:heading ? (ink ? 24'hffffff:24'h10283c):rgb;
-assign rgb_out=visible && (border || heading || image_area) ? panel_rgb:rgb_in;
+assign rgb_out=pixel_visible && (border || heading || image_area) ? panel_rgb:rgb_in;
 endmodule

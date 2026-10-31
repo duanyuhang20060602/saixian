@@ -18,6 +18,7 @@ reg initialized;
 reg [31:0] current_sector;
 reg [31:0] bytes_remaining;
 reg [9:0] sector_byte_count;
+reg [9:0] sector_limit;
 reg [1:0] pcm_byte_index;
 
 always @(posedge clk or posedge rst) begin
@@ -26,6 +27,7 @@ always @(posedge clk or posedge rst) begin
         current_sector <= 32'd0;
         bytes_remaining <= 32'd0;
         sector_byte_count <= 10'd0;
+        sector_limit <= 10'd0;
         pcm_byte_index <= 2'd0;
         sd_sec_read <= 1'b0;
         sd_sec_read_addr <= 32'd0;
@@ -56,10 +58,13 @@ always @(posedge clk or posedge rst) begin
                 sd_sec_read_addr <= current_sector;
                 sector_byte_count <= 10'd0;
                 pcm_byte_index <= 2'd0;
+                // The PHY delivers exactly 512 bytes per sector. Resolve
+                // the wide file-length bound once, before any data arrives.
+                sector_limit <= bytes_remaining >= 512 ? 10'd512 : bytes_remaining[9:0];
             end
 
             if (sd_sec_read_data_valid &&
-                ({22'd0,sector_byte_count} < bytes_remaining)) begin
+                (sector_byte_count < sector_limit)) begin
                 sector_byte_count <= sector_byte_count + 10'd1;
                 case (pcm_byte_index)
                     2'd0: begin pcm_word[7:0] <= sd_sec_read_data; pcm_byte_index <= 2'd1; end

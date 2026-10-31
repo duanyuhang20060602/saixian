@@ -1,0 +1,64 @@
+[
+  {
+    "test": "tb_audio_transport_repair",
+    "earlier_integration_snapshot": {
+      "test": "tb_audio_transport_repair",
+      "passed": false,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_audio_transport_repair.v": "434ec0c3cebe69cce255cbcfe7f6d219a3aa1b1718740ff14a2bd02da08062ee",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_audio_link.v": "7770c900e4b0b88a87deca5cdefa5af9502321ef55c8fdd22bcccda6ecfc9b6e",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\audio_final\\tb_audio_transport_repair.log",
+      "log_sha256": "cf5f747276b463c952b9c5821a4ccca717445a0e43ab07c0caa63654298a174b"
+    },
+    "exact_f6_baseline": {
+      "test": "tb_audio_transport_repair",
+      "passed": false,
+      "source_sha256": {
+        "E:\\Codex\\Work\\dualboard-font-20261030\\baseline\\5.0project\\tests\\tb_audio_transport_repair.v": "434ec0c3cebe69cce255cbcfe7f6d219a3aa1b1718740ff14a2bd02da08062ee",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\baseline\\5.0project\\common\\photo_audio_link.v": "6b6c7d5d4028079768c08478a43c72a0124716934c0e7293f84af1fe6a345e46",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\baseline\\5.0project\\common\\photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\baseline\\5.0project\\common\\audio_ui\\saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\baseline\\5.0project\\common\\audio_ui\\photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\audio_baseline\\tb_audio_transport_repair.log",
+      "log_sha256": "e5f4021da79e8dc4b96dd19f2ee47901934f6134286438213ed1a3d58c630c6e"
+    },
+    "same_failure": "stale/corrupt PCM at 32 got 00000000 expected 03e803e8",
+    "scope": "Historical fixture comparison, not current-source regression validation."
+  },
+  {
+    "test": "tb_page_audio",
+    "earlier_integration_snapshot": {
+      "test": "tb_page_audio",
+      "passed": false,
+      "source_sha256": {
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\tests\\tb_page_audio.v": "22dfb975468eb69e6145e0f12618883d50fb8f72548fe52eed75edcdf2b2e041",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_audio_link.v": "7770c900e4b0b88a87deca5cdefa5af9502321ef55c8fdd22bcccda6ecfc9b6e",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+        "E:\\Codex\\Downloads\\qiansai\\5.0project\\common\\audio_ui\\photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\audio_final\\tb_page_audio.log",
+      "log_sha256": "932e6baf3fae7a67f328f9de0470db700ea6da7c03377ef498c942b51e8e0f87"
+    },
+    "exact_f6_baseline": {
+      "test": "tb_page_audio",
+      "passed": false,
+      "source_sha256": {
+        "E:\\Codex\\Work\\dualboard-font-20261030\\baseline\\5.0project\\tests\\tb_page_audio.v": "22dfb975468eb69e6145e0f12618883d50fb8f72548fe52eed75edcdf2b2e041",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\baseline\\5.0project\\common\\photo_audio_link.v": "6b6c7d5d4028079768c08478a43c72a0124716934c0e7293f84af1fe6a345e46",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\baseline\\5.0project\\common\\photo_audio_features.v": "30321ee3e6f88fb57d2ef08ff39d0eb273d698213accbde4202b0e47f2ec3784",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\baseline\\5.0project\\common\\audio_ui\\saixian_audio_repair.v": "0db4eb070fb41445f66ad466aa1517233f177b8d129d3f06223c8fa14e13355f",
+        "E:\\Codex\\Work\\dualboard-font-20261030\\baseline\\5.0project\\common\\audio_ui\\photo_audio_cue_samples.v": "2b1154c0b8707784798332437f65b66f9697f60ce0da057534e778d5d80480f1"
+      },
+      "log": "E:\\Codex\\Work\\dualboard-font-20261030\\audio_baseline\\tb_page_audio.log",
+      "log_sha256": "6eca6d07aef98bab5f65a58fb571f9da7ad11dda96028bb3edfe09412ca47483"
+    },
+    "same_failure": "stale/corrupt PCM at 32 got 00000000 expected 03e803e8",
+    "scope": "Historical fixture comparison, not current-source regression validation."
+  }
+]

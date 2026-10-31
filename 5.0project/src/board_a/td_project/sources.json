@@ -70,5 +70,7 @@
   "../../../common/photo_relief_tables_compact_a.v",
   "../../../common/photo_relief_decode_cache.v",
   "../../../common/photo_award_math_bank.v",
-  "../../../common/photo_hmi_remote.v"
+  "../../../common/photo_hmi_remote.v",
+  "../../../common/photo_text_crc.v",
+  "../../../common/photo_typed_text_a.v"
 ]

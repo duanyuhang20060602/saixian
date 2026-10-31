@@ -2,7 +2,7 @@
 // A keeps current, next, next+1 and next+2 in four independent SDRAM slots.
 // Link transactions finish when stored; display commits run independently.
 module photo_cached_control_a #(
- parameter CLK_HZ=75000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0,AWARD_LIGHTS=0,EARLY_THUMBNAIL=0,RELIEF_CONTROL=0,TITLE_SD=0,INDEPENDENT_TEXT=0,BOOT_STATUS=0,CONTROL_BAUD=115200
+ parameter TYPED_TEXT=0,CLK_HZ=75000000,TIMER_SCALE=1,FRAME_BYTES=1843200,CHECK_FRAME_CRC=0,SETTINGS_LINK=0,AWARD_CONTROL=0,FLUID=0,AWARD_LIGHTS=0,EARLY_THUMBNAIL=0,RELIEF_CONTROL=0,TITLE_SD=0,INDEPENDENT_TEXT=0,BOOT_STATUS=0,CONTROL_BAUD=115200
 )(
  output reg font_available,font_transfer_complete,
  output title_word_valid,output [6+INDEPENDENT_TEXT:0] title_word_index,output [31:0] title_word_data,output [4:0] title_word_length,
@@ -23,6 +23,7 @@ module photo_cached_control_a #(
  output reg [15:0] current_source_width,current_source_height,
  output reg timing_begin,timing_present,timing_commit,output timing_cancel,
  input thumbnail_read_busy,input [1:0] thumbnail_read_slot
+,input text_busy,input text_pending,input[159:0] text_message,output reg text_sent,output text_received,output[159:0] text_incoming
 ,output [31:0] hmi_session
 );
 
@@ -33,7 +34,10 @@ reg [18:0] applied_settings,sent_settings;reg refresh_pending;
 reg have_current,nav_pending,nav_right,display_pending,commit_seen;
 reg timing_pending,timing_display;
 reg [2:0] target;
-wire settings_dirty=SETTINGS_LINK && settings_state!=applied_settings;
+reg settings_dirty;
+always @(posedge clk or posedge rst)
+ if(rst)settings_dirty<=SETTINGS_LINK;
+ else settings_dirty<=SETTINGS_LINK && settings_state!=applied_settings;
 reg refresh_display,background_transaction;reg count_reply;
 reg [4:0] applied_context,sent_context;
 wire settings_focus=settings_mode || settings_dirty || refresh_pending || refresh_display || (display_pending && ready_immediate);
@@ -99,6 +103,7 @@ always @(posedge clk or posedge rst)
 // end REGISTERED_PACKET_KIND
 assign timing_cancel=award_toggle || relief_command || settings_dirty || refresh_pending || state_flags[FAILED] || (got && kind_match_q[10]);
 reg [31:0] session,uptime;
+assign text_received=TYPED_TEXT && got;assign text_incoming=incoming;
 assign hmi_session=session;reg [15:0] request_seq;
 // Encode a cleared timer with one registered bit. The control FSM drives
 // only this bit instead of a reset mux on all 32 counter bits. Reading
@@ -299,7 +304,7 @@ assign thumbnail_id=window_next_q;
 assign thumbnail_valid=have_current && next_hit[2] &&
  current_image<6 && image_count>1 && !settings_dirty && !refresh_pending &&
  (EARLY_THUMBNAIL ? (window_center_q==center && window_next_q==window_next && center<6 && !nav_pending):!busy);
-reg [25:0] plan_context;
+reg [25:0] plan_context,request_context;reg[2:0] request_preview;
 reg [2:0] plan_preview_context;
 // Stage one computes the window, stage two chooses the cache victim. Both
 // stages retain their context; stale decisions cannot launch a transfer.
@@ -314,7 +319,7 @@ always @(posedge clk or posedge rst)begin
 end
 always @(posedge clk or posedge rst)begin
  if(rst)begin
-  font_available<=0;font_transfer_complete<=0;title_expected<=0;title_ack_pending<=0;title_ack_index<=0;
+  text_sent<=0;font_available<=0;font_transfer_complete<=0;title_expected<=0;title_ack_pending<=0;title_ack_index<=0;
   session_changed<=0;timing_begin<=0;timing_present<=0;timing_commit<=0;timing_pending<=0;timing_display<=0;
   award_available<=0;relief_available<=0;selected_award<=6;award_scan_complete<=0;award_notice<=0;last_transfer_error<=0;award_selected<=0;award_wait<=0;return_photo<=0;
   count_reply<=0;applied_settings<={4'd4,4'd4,4'd4,2'd1,2'd1,1'b0,1'b0};sent_settings<=0;refresh_pending<=0;
@@ -324,10 +329,10 @@ always @(posedge clk or posedge rst)begin
   image_count<=0;current_image<=0;error<=0;debug_local_crc<=0;debug_remote_crc<=0;
   cache_valid<=0;have_current<=0;nav_pending<=0;nav_target<=0;nav_right<=1;
   display_pending<=0;display_target<=0;commit_seen<=0;
-  current_source_width<=0;current_source_height<=0;target_width<=0;target_height<=0;display_width<=0;display_height<=0;
+  request_context<=0;request_preview<=0;current_source_width<=0;current_source_height<=0;target_width<=0;target_height<=0;display_width<=0;display_height<=0;
   for(reset_index=0;reset_index<4;reset_index=reset_index+1)cache_id[reset_index]<=0;
  end else begin
-  session_changed<=0;uptime<=uptime+1'b1;timer_reset<=0;send<=0;
+  text_sent<=0;session_changed<=0;uptime<=uptime+1'b1;timer_reset<=0;send<=0;
   if(title_packet && (incoming[119:112]==title_expected ||
       (title_expected!=0 && incoming[119:112]==title_expected-1'b1)))begin
    title_ack_pending<=1;title_ack_index<=incoming[112+:7+INDEPENDENT_TEXT];
@@ -382,7 +387,7 @@ always @(posedge clk or posedge rst)begin
      send<=1;state_flags<=(16'd1<<WAIT_CONTEXT);timer_reset<=1;
     end
    end else if(idle_settings_dirty_q)begin
-    if(settings_quiet && settings_state==observed_settings && !transition_active && !display_pending && !tx_busy && !send)begin
+    if(settings_quiet && !transition_active && !display_pending && !tx_busy && !send)begin
      sent_settings<=settings_state;
      message<=packet(12,session,0,0,0,0,{13'd0,settings_state},0);send<=1;state_flags<=(16'd1<<WAIT_SETTINGS);timer_reset<=1;
     end
@@ -390,9 +395,11 @@ always @(posedge clk or posedge rst)begin
     if(!display_pending && !transition_active)begin
      refresh_display<=1;cache_valid<=0;nav_target<=have_current ? current_image:nav_target;nav_right<=1;nav_pending<=1;refresh_pending<=0;
     end
-   end else if(plan_needed && plan_ok && plan_context==fetch_context && plan_preview_context==preview_context && (nav_pending || !settings_focus))begin
-    background_transaction<=!nav_pending;target<=plan_target;direction<=nav_right;receive_slot<=plan_victim;cache_valid[plan_victim]<=0;
-    request_seq<=request_seq+1'b1;retries<=0;error<=0;state_flags<=(16'd1<<GET);timer_reset<=1;
+   end else if(TYPED_TEXT && text_pending && !tx_busy && !send)begin
+    message<=text_message;send<=1;text_sent<=1;
+   end else if((!TYPED_TEXT || !text_busy) && plan_needed && plan_ok && (nav_pending || !settings_focus))begin
+    background_transaction<=!nav_pending;target<=plan_target;direction<=nav_right;receive_slot<=plan_victim;request_context<=plan_context;request_preview<=plan_preview_context;
+    retries<=0;error<=0;state_flags<=(16'd1<<GET);timer_reset<=1;
    end
    end
    state_flags[WAIT_CONTEXT]:begin
@@ -409,9 +416,11 @@ always @(posedge clk or posedge rst)begin
      applied_settings<=sent_settings;refresh_pending<=1;state_flags<=(16'd1<<IDLE);timer_reset<=1;
     end else if(timeout1)begin applied_settings<=~settings_state;state_flags<=(16'd1<<IDLE);timer_reset<=1;end
    end
-   state_flags[GET]:if(SETTINGS_LINK && background_transaction && (settings_mode || settings_dirty))state_flags<=(16'd1<<IDLE);
+   state_flags[GET]:if(request_context!=fetch_context || request_preview!=preview_context)state_flags<=(16'd1<<IDLE);
+       else if(SETTINGS_LINK && background_transaction && (settings_mode || settings_dirty))state_flags<=(16'd1<<IDLE);
        else if(!tx_busy && !send)begin
-    message<=packet(3,session,request_seq,{5'd0,target},{1'b0,1'b0,receive_fluid,3'd0,1'b1,direction},frame_bytes,0,0);
+    cache_valid[receive_slot]<=0;request_seq<=request_seq+1'b1;
+    message<=packet(3,session,request_seq+16'd1,{5'd0,target},{1'b0,1'b0,receive_fluid,3'd0,1'b1,direction},frame_bytes,0,0);
     send<=1;state_flags<=(16'd1<<WAIT_BEGIN);timer_reset<=1;done_seen<=0;end_seen<=0;
    end
    state_flags[WAIT_BEGIN]:begin

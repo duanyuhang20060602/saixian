@@ -4,6 +4,19 @@ module top_photo_b(
  output link_clk,output [15:0] link_data,output link_valid,link_sof,link_eof,
  input link_ready,audio_sclk,audio_cs,audio_mosi,output audio_miso,output transfer_done,transfer_error,
  output [5:0] seg_sel,output [7:0] seg_data);
+wire sd_clk,mem_clk,mem_clk_sft,sys_lock,link_lock,rst_sd,rst_mem,rst_link;
+wire text_tick;photo_text_tick tick_1ms(.clk(sd_clk),.rst(rst_sd),.tick(text_tick));
+wire[31:0] hmi_session;
+wire text_pending,text_sent,text_received,text_boot_ready;wire[159:0] text_message,text_incoming;
+wire text_line_valid,text_line_ready;wire[255:0] text_line;
+wire text_word_pending,text_word_ack;wire[7:0] text_generation,text_index;wire[4:0] text_length;wire[31:0] text_data;wire[15:0] text_mask;
+wire font_read,font_valid,font_end,font_card_ready,font_request,font_byte_valid,font_finish;wire[31:0] font_sector,font_address;wire[7:0] font_data,font_byte;wire[3:0] font_error;wire font_ready,font_fault;
+wire font_slow_rst;
+dual_still_reset_sync font_reset_sync(.clk(mem_clk),.arst(rst_sd || rst_mem),.rst(font_slow_rst));
+photo_font_engine_b font_engine(.fast_clk(sd_clk),.fast_rst(rst_sd),.clk(mem_clk),.rst(font_slow_rst),.tick(text_tick),
+ .session(hmi_session),.received(text_received),.incoming(text_incoming),.pending(text_pending),.message(text_message),.sent(text_sent),.boot_ready(text_boot_ready),
+ .card_ready(font_card_ready),.font_ready(font_ready),.font_fault(font_fault),.read_sector(font_read),.sector(font_sector),
+ .byte_valid(font_valid),.byte_data(font_data),.sector_end(font_end));
 wire title_ready;wire [4:0] title_length;wire [7:0] title_address;wire [31:0] title_data;
 wire audio_packet_active,audio_request_valid,audio_switching,audio_fifo_read;
 wire audio_raw_read,audio_stream_reset;wire [7:0] requested_audio_epoch,active_audio_epoch;
@@ -12,7 +25,7 @@ wire award_available,award_scan_complete,relief_available;wire [3:0] award_decod
 
 
 
-wire sd_clk,mem_clk,mem_clk_sft,sys_lock,link_lock,rst_sd,rst_mem,rst_link;
+
 sys_pll u_sys_pll(.refclk(clk),.reset(1'b0),.clk0_out(sd_clk),.clk1_out(mem_clk),.clk2_out(mem_clk_sft),.locked(sys_lock));
 builtin_link_pll u_link_pll(.refclk(clk),.reset(1'b0),.clk0_out(link_clk),.locked(link_lock));
 dual_still_reset_sync rs(.clk(sd_clk),.arst(!sys_lock || !link_lock),.rst(rst_sd));
@@ -28,7 +41,7 @@ wire [2:0] requested_audio_track,active_audio_track,audio_count;wire [13:0] audi
 wire [13:0] pitch_fifo_used;wire [31:0] pitched_audio;
 wire [2:0] pitch_mode,pitch_active_mode;wire pitch_ready,pitch_overrun;
 photo_pitch_keys pitch_control(.clk(sd_clk),.rst(rst_sd),.key2_n(key2_n),.mode(pitch_mode));
-photo_audio_pitch_b pitch_processing(.clk(sd_clk),.rst(rst_sd),
+photo_audio_pitch_b #(.SLOW_COMPUTE(1)) pitch_processing(.compute_clk(mem_clk),.clk(sd_clk),.rst(rst_sd),
  .stream_clear(audio_stream_reset || !audio_bg_enabled),
  .enable(audio_count!=0 && !audio_switching),.repair_enable(audio_request_repair),
  .requested_mode(pitch_mode),.raw_used(audio_fifo_used),.raw_pcm(audio_fifo_data),.raw_read(audio_raw_read),
@@ -69,7 +82,7 @@ always @(posedge sd_clk or posedge rst_sd)
  else begin av_data_meta<=av_data;av_data_sync<=av_data_meta;end
 photo_av_metadata_b #(.EDGE_METADATA(1)) audio_analysis(.clk(mem_clk),.rst(av_analysis_rst),
  .pcm_sent(av_pcm_valid),.snapshot(av_snapshot_event),.pcm(av_pcm_sync),.address(av_address_sync),.data(av_data));
-wire [31:0] hmi_session,hmi_header;wire [52:0] hmi_status;
+wire [31:0] hmi_header;wire [52:0] hmi_status;
 wire [95:0] hmi_payload;wire hmi_enabled,hmi_ack_valid,hmi_restart;
 wire [7:0] hmi_ack_token,hmi_byte_data;wire hmi_byte_valid,hmi_byte_ready,hmi_command_done;
 // Register the session predicate before distributing the formatter reset.
@@ -121,11 +134,15 @@ always @(posedge sd_clk or posedge rst_sd)
  else if(request)media_request_settle<=4;
  else if(media_request_settle!=0)media_request_settle<=media_request_settle-1'b1;
 wire media_result_current=!request && media_request_settle==0;
+reg media_ready_q;reg[3:0] media_error_q;
+always @(posedge sd_clk or posedge rst_sd)
+ if(rst_sd)begin media_ready_q<=0;media_error_q<=0;end
+ else begin media_ready_q<=media_ready;media_error_q<=media_error;end
 wire [15:0] media_source_width,media_source_height;
 reg finish_toggle;
 always @(posedge mem_clk or posedge rst_mem)
  if(rst_mem)finish_toggle<=0;else if(finish)finish_toggle<=~finish_toggle;
-photo_sd_cache #(.INDEPENDENT_TEXT(1),.TITLE_SD(1),.FORWARD_ONLY(1),.DISPLAY_PIN(1),.EARLY_PREFETCH(1)) media(.title_ready(title_ready),.title_length(title_length),.title_address(title_address),.title_data(title_data),.audio_stream_reset(audio_stream_reset),.audio_packet_active(audio_packet_active),.audio_request_valid(audio_request_valid),.requested_audio_epoch(requested_audio_epoch),.requested_audio_track(requested_audio_track),
+photo_sd_cache #(.TYPED_TEXT(1),.INDEPENDENT_TEXT(1),.TITLE_SD(1),.FORWARD_ONLY(1),.DISPLAY_PIN(1),.EARLY_PREFETCH(1)) media(.font_read(font_read),.font_sector(font_sector),.font_valid(font_valid),.font_data(font_data),.font_end(font_end),.font_card_ready(font_card_ready),.title_ready(title_ready),.title_length(title_length),.title_address(title_address),.title_data(title_data),.audio_stream_reset(audio_stream_reset),.audio_packet_active(audio_packet_active),.audio_request_valid(audio_request_valid),.requested_audio_epoch(requested_audio_epoch),.requested_audio_track(requested_audio_track),
  .active_audio_epoch(active_audio_epoch),.active_audio_track(active_audio_track),.audio_count(audio_count),.audio_switching(audio_switching),
  .audio_scan_state(audio_scan_state),.audio_fifo_used(audio_fifo_used),.audio_fifo_data(audio_fifo_data),.audio_fifo_read(audio_raw_read),.display_valid(display_pin_valid),.display_image(display_pin_image),.prefetch_pause(prefetch_pause),.clk(sd_clk),.rst(rst_sd),.request(request),.target(target),.release_slot(release_slot),.cancel(cancel),
  .relief_available(relief_available),.award_available(award_available),.award_scan_complete(award_scan_complete),.award_decode_error(award_decode_error),
@@ -176,11 +193,11 @@ wire timing_begin,timing_ready,timing_send,timing_done,timing_cancel,timing_runn
 wire [19:0] timing_prepare_ms,timing_handshake_ms,timing_send_ms,timing_total_ms;
 wire [5:0] timing_seg_sel,base_seg_sel;wire [7:0] timing_seg_data,base_seg_data;
 photo_event_sync sd(.clk(sd_clk),.rst(rst_sd),.toggle(sent_toggle),.pulse(sent_sd));
-photo_control_b #(.CONTROL_BAUD(230400),.BOOT_STATUS(1),.INDEPENDENT_TEXT(1),.TITLE_SD(1),.CHECK_FRAME_CRC(0),.SEND_SOURCE_SIZE(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.RELIEF_CONTROL(1)) ctrl(.hmi_session(hmi_session),.title_ready(title_ready),.title_length(title_length),.title_data(title_data),.title_address(title_address),.clk(sd_clk),.rst(rst_sd),.uart_rx(control_rx),.uart_tx(control_tx),
+photo_typed_control_b #(.TYPED_TEXT(1),.CONTROL_BAUD(230400),.BOOT_STATUS(1),.INDEPENDENT_TEXT(1),.TITLE_SD(1),.CHECK_FRAME_CRC(0),.SEND_SOURCE_SIZE(1),.SETTINGS_LINK(1),.AWARD_CONTROL(1),.FLUID(1),.AWARD_LIGHTS(1),.RELIEF_CONTROL(1)) ctrl(.text_boot_ready(text_boot_ready),.text_pending(text_pending),.text_message(text_message),.text_sent(text_sent),.text_received(text_received),.text_incoming(text_incoming),.hmi_session(hmi_session),.title_ready(title_ready),.title_length(title_length),.title_data(title_data),.title_address(title_address),.clk(sd_clk),.rst(rst_sd),.uart_rx(control_rx),.uart_tx(control_tx),
  .timing_begin(timing_begin),.timing_ready(timing_ready),.timing_send(timing_send),.timing_done(timing_done),.timing_cancel(timing_cancel),
  .display_valid(display_pin_valid),.display_image(display_pin_image),.prefetch_pause(prefetch_pause),
  .relief_available(relief_available && directory_ready),.award_available(award_available && directory_ready),.award_scan_complete(award_scan_complete),
- .settings_state(settings_state),.image_count(directory_ready ? count:3'd0),.media_ready(media_ready && media_result_current),.media_slot(ready_slot),.media_error(media_result_current ? media_error:4'd0),
+ .settings_state(settings_state),.image_count(directory_ready ? count:3'd0),.media_ready(media_ready_q && media_result_current),.media_slot(ready_slot),.media_error(media_result_current ? media_error_q:4'd0),
  .media_source_width(media_source_width),.media_source_height(media_source_height),
  .media_request(request),.media_target(target),.media_release(release_slot),.media_cancel(cancel),
  .transmit_slot(transmit_slot),.start_toggle(start_toggle),.abort_toggle(abort_toggle),.tx_done(sent_sd),.tx_crc(tx_crc),

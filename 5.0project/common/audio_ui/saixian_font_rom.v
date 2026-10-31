@@ -1,5 +1,6 @@
 // 128 glyphs x 16 rows x 16 bits, stored in one EG4 32K block RAM.
-module saixian_font_rom #(parameter TITLE_SD=0,INDEPENDENT_TEXT=0)(
+module saixian_font_rom #(parameter TYPED_TEXT=0,TITLE_SD=0,INDEPENDENT_TEXT=0)(
+    input[15:0] typed_mask,
     input word_valid,input [6+INDEPENDENT_TEXT:0] word_index,input [31:0] word_data,input [4:0] word_length,
     input rst,frame_tick,output reg [4:0] title_length,output reg [4:0] ticker_length,
     input  wire        clk,
@@ -8,8 +9,19 @@ module saixian_font_rom #(parameter TITLE_SD=0,INDEPENDENT_TEXT=0)(
     output wire [15:0] bits
 );
 
-wire [10:0] font_addr = {glyph_id, row};
 reg pending,invalid;reg [1:0] complete;reg [6+INDEPENDENT_TEXT:0] low_index;reg [15:0] low_bits;
+wire[15:0] raw_bits;reg[5:0] flash_phase;reg[15:0] flash_mask,candidate_mask;reg hidden;
+assign bits=hidden ? 16'd0:raw_bits;
+always @(posedge clk or posedge rst)begin
+ if(rst)begin flash_phase<=0;flash_mask<=0;candidate_mask<=0;hidden<=0;end
+ else begin
+  if(frame_tick)begin flash_phase<=flash_phase+1'b1;if(complete[1])flash_mask<=candidate_mask;end
+  if(TYPED_TEXT && word_valid && word_index==128)candidate_mask<=typed_mask;
+  hidden<=TYPED_TEXT && glyph_id>=112 && flash_mask[glyph_id[3:0]] && flash_phase[5];
+ end
+end
+wire [10:0] font_addr = {glyph_id, row};
+
 reg [4:0] candidate_length,candidate_ticker_length;
 wire word_bank=INDEPENDENT_TEXT && word_index[6+INDEPENDENT_TEXT];
 wire low_bank=INDEPENDENT_TEXT && low_index[6+INDEPENDENT_TEXT];
@@ -27,7 +39,7 @@ always @(posedge clk or posedge rst)begin
    if(word_index[6:0]==0)begin
     if(word_bank)begin ticker_length<=0;candidate_ticker_length<=word_length;end
     else begin title_length<=0;candidate_length<=word_length;end
-    invalid<=word_length==0 || word_length>16;complete[word_bank]<=0;
+    invalid<=(word_length==0 && !(TYPED_TEXT && word_bank)) || word_length>16;complete[word_bank]<=0;
    end else if(word_length!=(word_bank ? candidate_ticker_length:candidate_length))invalid<=1;
   end
   if(pending && low_index[6:0]==127 && !invalid)complete[low_bank]<=1;
@@ -59,7 +71,7 @@ EG_LOGIC_BRAM #(
     .FILL_ALL("NONE"),
     .IMPLEMENT("32K")
 ) u_font_bram (
-    .doa(bits),
+    .doa(raw_bits),
     .dob(),
     .dia(16'd0),
     .dib(font_wd),

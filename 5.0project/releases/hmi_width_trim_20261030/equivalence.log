@@ -1,2 +1,0 @@
-PASS 100MHz formatter cycle equivalence: 1064 bytes, 40 commands, refresh wrap, five pages, maximum settings and random backpressure
-5.0project/tests/tb_formatter_width_equivalence.v:29: $finish called at 300050000 (1ps)

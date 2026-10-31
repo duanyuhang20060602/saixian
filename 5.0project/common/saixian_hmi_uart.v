@@ -4,11 +4,13 @@
 // recover from a byte slip without resetting the FPGA.
 module saixian_hmi_uart #(
     parameter integer CLK_FREQ_HZ = 25_000_000,
+    parameter integer TEXT_INPUT=0,
     parameter integer BAUD_RATE   = 115_200
 )(
     input  wire       clk,
     input  wire       rst,
     input  wire       uart_rx,
+    input text_capture,output raw_byte_valid,output[7:0] raw_byte_data,
     output reg award_mode_valid,award_mode_value,
     output reg touch_valid,output wire [9:0] touch_x,output wire [8:0] touch_y,
     output wire touch_down,output reg touch_mode_valid,touch_mode_value,
@@ -47,6 +49,7 @@ localparam [1:0] RX_START = 2'd1;
 localparam [1:0] RX_DATA  = 2'd2;
 localparam [1:0] RX_STOP  = 2'd3;
 
+reg [3:0] frame_index;
 reg [1:0]  rx_state;
 localparam integer RX_COUNT_BITS = CLKS_PER_BIT>1 ? $clog2(CLKS_PER_BIT):1;
 reg [RX_COUNT_BITS-1:0] rx_clock_count;
@@ -55,6 +58,7 @@ reg [7:0]  rx_shift;
 reg        rx_byte_valid;
 reg [7:0]  rx_byte;
 reg [1:0]  rx_sync;
+assign raw_byte_valid=rx_byte_valid && (!TEXT_INPUT || text_capture || frame_index==0);assign raw_byte_data=rx_byte;
 
 // UART input is asynchronous to the parameterized video clock.
 always @(posedge clk or posedge rst) begin
@@ -119,7 +123,7 @@ always @(posedge clk or posedge rst) begin
     end
 end
 
-reg [3:0] frame_index;
+
 reg [9:0] touch_frame_x;reg [8:0] touch_frame_y;
 reg touch_x_high_ok,touch_y_high_ok,touch_state_ok;
 reg touch_frame_state;reg [7:0] touch_sum;
@@ -251,7 +255,8 @@ always @(posedge clk or posedge rst) begin
             frame_error_pulse <= 1'b1;
         end else frame_idle <= frame_idle + 1'b1;
 
-        if (rx_byte_valid) begin
+        if (TEXT_INPUT && text_capture) frame_index<=0;
+        if (rx_byte_valid && (!TEXT_INPUT || (!text_capture && (frame_index!=0 || rx_byte!="@")))) begin
             case (frame_index)
                 3'd0: begin
                     if (rx_byte == 8'h55) frame_index <= 4'd1;

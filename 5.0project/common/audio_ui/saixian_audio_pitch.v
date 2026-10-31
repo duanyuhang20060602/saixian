@@ -18,7 +18,8 @@ localparam IDLE=0,F_WRITE=1,F_READ=2,F_GET=3,F_WAIT_L=4,F_SET_R=5,
     MAC_SET=12,MAC_WAIT=13,MAC_DONE=14,
     C_REF0=15,C_REF1=16,C_REF2=17,C_TGT0=18,C_TGT1=19,C_TGT2=20,
     I_COEFF=21,I_WAIT0=22,I_STEP0=23,I_WAIT1=24,I_STEP1=25,I_WAIT2=26,I_DONE=27,
-    C_ABS=28,C_SUM=29,C_SCORE=30,I_SELECT=31,I_PART=32,MAC_CLIP=33,MAC_SELECT=34,C_COMPARE=35;
+    C_ABS=28,C_SUM=29,C_SCORE=30,I_SELECT=31,I_PART=32,MAC_CLIP=33,MAC_SELECT=34,C_COMPARE=35,
+    F_ROUND=36,F_CLIP=37;
 reg [5:0] state;
 reg [5:0] fir_head,fir_anchor,tap;
 reg [6:0] fir_count;
@@ -551,8 +552,19 @@ always @(posedge clk or posedge rst) begin
             F_WAIT_R:state<=F_ACC;
             F_ACC:begin
                 accumulator_l<=fir_total_l;accumulator_r<=fir_total_r;
-                if(tap==62) begin filtered_l<=fir_clip(fir_total_l);filtered_r<=fir_clip(fir_total_r);state<=R_WRITE;end
+                if(tap==62)state<=F_ROUND;
                 else begin tap<=tap+1'b1;state<=F_READ;end
+            end
+            // The FIR accumulators are dead until the next F_WRITE. Reuse
+            // them for the exact signed rounded values, then saturate on a
+            // separate clock instead of routing sum -> round -> clip at once.
+            F_ROUND:begin
+                accumulator_l<=($signed(accumulator_l)+40'sd16384)>>>15;
+                accumulator_r<=($signed(accumulator_r)+40'sd16384)>>>15;
+                state<=F_CLIP;
+            end
+            F_CLIP:begin
+                filtered_l<=clip(accumulator_l);filtered_r<=clip(accumulator_r);state<=R_WRITE;
             end
             R_WRITE:begin
                 if(fill<4095) fill<=fill+1'b1;

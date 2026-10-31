@@ -186,8 +186,23 @@ function less_bytes;
                    (eq[3]&eq[2]&lt[1]) | (eq[3]&eq[2]&eq[1]&lt[0]);
     end
 endfunction
-wire payload_started = !less_bytes(bmp_len_cnt,pixel_offset);
-wire before_file_end = less_bytes(bmp_len_cnt,file_len);
+// Validated BMPs are at most 8 MiB. Header thresholds settle before loading.
+// Byte positions are monotonic: update two boundary flags once per valid
+// byte, instead of placing two wide order comparisons in every pixel enable.
+reg [22:0] prefix_last,file_last;
+reg payload_started,before_file_end;
+always @(posedge clk or posedge rst)begin
+ if(rst)begin prefix_last<=0;file_last<=0;payload_started<=0;before_file_end<=1;end
+ else if(op_abort)begin prefix_last<=0;file_last<=0;payload_started<=0;before_file_end<=1;end
+ else begin
+  prefix_last<=pixel_offset[22:0]-23'd1;file_last<=file_len[22:0]-23'd1;
+  if(state!=ST_LOAD_DATA)begin payload_started<=0;before_file_end<=1;end
+  else if(sd_sec_read_data_valid)begin
+   if(bmp_len_cnt[22:0]==prefix_last)payload_started<=1;
+   if(bmp_len_cnt[22:0]==file_last)before_file_end<=0;
+  end
+ end
+end
 assign bmp_data_valid = sd_sec_read_data_valid && payload_started && before_file_end;
 assign file_sector_count = (file_len == 32'd0) ? 32'd1 : ((file_len + 32'd511) >> 9);
 reg [31:0] scan_plus_one,audio_sector_count,audio_next,bmp_next;

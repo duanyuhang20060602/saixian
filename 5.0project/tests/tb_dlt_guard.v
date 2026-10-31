@@ -31,6 +31,6 @@ initial begin
   run(0,gap,overlap);run(1,gap,overlap);run(31,gap,overlap);
   run(511,gap,overlap);run(512,gap,overlap);run(513,gap,overlap);
  end
- $display("PASS %0d malformed/short/long DLT sectors, gaps and final-valid/end overlap, cycle-equivalent to 5.3",cases);$finish;
+ $display("PASS %0d malformed/short/long DLT sectors, gaps and final-valid/end overlap, cycle-equivalent to f6",cases);$finish;
 end
 endmodule

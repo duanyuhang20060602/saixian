@@ -1,0 +1,19 @@
+============================================================
+   Tang Dynasty, V6.2.168116
+   Copyright (c) 2012-2025 Anlogic Inc.
+   Executable = C:/Anlogic/TD_6.2.1_Engineer_6.2.168.116/bin/td.exe
+   Built at =   16:32:07 Jun 12 2025
+   Run by =     39742
+   Run Date =   Fri Oct 30 09:54:57 2026
+
+   Run on =     ¶ÎÓíº¼µÄµçÄÔ
+============================================================
+HDL-5007 WARNING: concatenation with an unsized literal will be treated as 32 bits in ../user_source/hdl_source/include/sdr_init_ref.enc.v(47)
+HDL-5007 WARNING: concatenation with an unsized literal will be treated as 32 bits in ../user_source/hdl_source/include/sdr_wrrd.enc.v(283)
+HDL-7225 CRITICAL-WARNING: 'hmi_session' is already implicitly declared on line 153 in ../../../common/top_photo_a.v(239)
+HDL-7201 CRITICAL-WARNING: overwrite current module 'photo_relief_row_cache' in ../../../common/photo_relief_remote.v(373)
+HDL-7307 CRITICAL-WARNING: previous definition of design element module 'photo_relief_row_cache' is here. This is because multiple modules(values) with the same name are defined. Please consider rewriting code in ../../../common/photo_relief_player.v(732)
+HDL-7201 CRITICAL-WARNING: overwrite current module 'photo_relief_burst_cache' in ../../../common/photo_relief_remote.v(388)
+HDL-7307 CRITICAL-WARNING: previous definition of design element module 'photo_relief_burst_cache' is here. This is because multiple modules(values) with the same name are defined. Please consider rewriting code in ../../../common/photo_relief_player.v(747)
+HDL-7201 CRITICAL-WARNING: overwrite current module 'photo_relief_directory_cache' in ../../../common/photo_relief_remote.v(403)
+HDL-7307 CRITICAL-WARNING: previous definition of design element module 'photo_relief_directory_cache' is here. This is because multiple modules(values) with the same name are defined. Please consider rewriting code in ../../../common/photo_relief_player.v(762)

@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 // Elaborate next to either real reader bench and compare every public output
-// and the original state/count sequence with the immutable 5.3 reader.
+// and the original state/count sequence with the immutable f6 reader.
 module equivalence;
 wire ready,done,write_req,pixel_valid,req;wire [3:0] error;
 wire [23:0] pixel;wire [31:0] sector;
@@ -12,7 +12,7 @@ always @(negedge tb.dut.clk)if(!tb.dut.rst)begin
  if({ready,done,error,write_req,pixel_valid,pixel,req,sector}!==
     {tb.dut.ready,tb.dut.done,tb.dut.error,tb.dut.write_req,tb.dut.pixel_valid,tb.dut.pixel,tb.dut.req,tb.dut.sector})
   $fatal(1,"DLT output changed at state %0d count %0d",tb.dut.state,tb.dut.count);
- if(golden.state!==tb.dut.state || golden.count!==tb.dut.count)
+ if(tb.dut.state!==(23'd1<<golden.state) || golden.count!==tb.dut.count)
   $fatal(1,"DLT state/count latency changed");
 end
 endmodule

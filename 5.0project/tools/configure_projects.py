@@ -48,9 +48,14 @@ for role,top in [('board_a','top_photo_a'),('board_b','top_photo_b')]:
     replacements={p.name for p in (ROOT/'common/photo_sd').glob('*.v')}
     for e in list(verilog):verilog.remove(e)
     paths=[p for p in paths if Path(p).name not in excluded | replacements]
+    if role=='board_b':
+        paths=[p for p in paths if Path(p).name!='photo_audio_cue_samples.v']
     shared=['photo_color_format.v','photo_uart.v','photo_link.v','photo_control.v','photo_status.v',top+'.v']
+    shared+=['photo_text_crc.v']
+    if role=='board_a':shared+=['photo_typed_text_a.v']
+    else:shared+=['photo_typed_control_b.v','photo_typed_text_b.v','photo_font_fat.v','photo_font_file_b.v','photo_font_engine_b.v']
     if role=='board_a':shared+=['photo_audio_link.v','photo_audio_features.v','audio_ui/photo_audio_cue_samples.v','audio_ui/saixian_event_controller.v','audio_ui/saixian_osd_overlay.v','audio_ui/saixian_font_rom.v','audio_vendor/audio_arc_calculate.v','audio_vendor/hdmi_1_4b_transmitter_core_wrapper.enc.v','photo_settings_overlay.v','photo_unified_settings_controller.v','photo_menu_font.v','photo_cached_control_a.v','saixian_transition.v','photo_processing.v','photo_display_pipe.v','saixian_hmi_uart.v','saixian_key_debounce.v','photo_auto_advance.v']
-    else:shared+=['photo_audio_link.v','photo_audio_features.v','audio_ui/photo_audio_cue_samples.v','photo_sd_audio_stream.v','photo_sd_cache.v','photo_sd_title_store.v','photo_processing.v','photo_b_processing.v']
+    else:shared+=['photo_audio_link.v','photo_audio_features.v','audio_ui/photo_audio_cue_b.v','photo_sd_audio_stream.v','photo_sd_cache.v','photo_sd_title_store.v','photo_processing.v','photo_b_processing.v']
     shared+=['photo_av_receiver.v' if role=='board_a' else 'photo_av_metadata.v']
     shared+=['photo_relief_remote.v','photo_relief_remote_tables.v']
     if role=='board_a':shared+=['photo_relief_player.v','photo_relief_motion.v','photo_relief_tables_compact_a.v','photo_relief_decode_cache.v','photo_award_math_bank.v']

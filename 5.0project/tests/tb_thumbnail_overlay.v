@@ -13,7 +13,7 @@ task complete;
 endtask
 initial begin
  clocks(8);rst=0;complete();if(rgb!==24'hff0000)$fatal(1,"pixel expansion");
- en=0;#1;if(visible || rgb!==24'h123456)$fatal(1,"disabled overlay");clocks(8);en=1;complete();
+ en=0;#1;if(visible)$fatal(1,"disabled navigation");clocks(1);if(rgb!==24'h123456)$fatal(1,"registered disabled pixel gate");clocks(8);en=1;complete();
  cv=0;#1;if(visible)$fatal(1,"invalid cache visible");clocks(8);cv=1;complete();
  identity=9;#1;if(visible)$fatal(1,"same-slot new image visible");clocks(2);
  wait(req!=done);clocks(4);identity=13;clocks(2);
