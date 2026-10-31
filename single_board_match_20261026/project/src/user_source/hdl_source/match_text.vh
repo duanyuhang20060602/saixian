@@ -1,0 +1,282 @@
+// Generated local font glyph lookup. No external text files at runtime.
+function [6:0] team_char;input [2:0] sel;input [5:0] p;begin
+ team_char=0;case(sel)
+ 0:case(p)
+  0:team_char=7'd7;
+  1:team_char=7'd8;
+  default:team_char=0;endcase
+ 1:case(p)
+  0:team_char=7'd9;
+  1:team_char=7'd8;
+  default:team_char=0;endcase
+ 2:case(p)
+  0:team_char=7'd10;
+  1:team_char=7'd11;
+  default:team_char=0;endcase
+ 3:case(p)
+  0:team_char=7'd12;
+  1:team_char=7'd13;
+  default:team_char=0;endcase
+ 4:case(p)
+  0:team_char=7'd14;
+  1:team_char=7'd15;
+  default:team_char=0;endcase
+ 5:case(p)
+  0:team_char=7'd16;
+  1:team_char=7'd17;
+  default:team_char=0;endcase
+ default:team_char=0;endcase end endfunction
+function [6:0] state_char;input [2:0] sel;input [5:0] p;begin
+ state_char=0;case(sel)
+ 0:case(p)
+  0:state_char=7'd1;
+  1:state_char=7'd18;
+  2:state_char=7'd19;
+  3:state_char=7'd20;
+  default:state_char=0;endcase
+ 1:case(p)
+  0:state_char=7'd1;
+  1:state_char=7'd18;
+  2:state_char=7'd21;
+  3:state_char=7'd22;
+  default:state_char=0;endcase
+ 2:case(p)
+  0:state_char=7'd23;
+  1:state_char=7'd1;
+  2:state_char=7'd24;
+  3:state_char=7'd25;
+  default:state_char=0;endcase
+ 3:case(p)
+  0:state_char=7'd23;
+  1:state_char=7'd1;
+  2:state_char=7'd26;
+  3:state_char=7'd27;
+  default:state_char=0;endcase
+ 4:case(p)
+  0:state_char=7'd23;
+  1:state_char=7'd1;
+  2:state_char=7'd28;
+  3:state_char=7'd29;
+  default:state_char=0;endcase
+ default:state_char=0;endcase end endfunction
+function [6:0] message_char;input [2:0] sel;input [5:0] p;begin
+ message_char=0;case(sel)
+ 0:case(p)
+  0:message_char=7'd30;
+  1:message_char=7'd31;
+  2:message_char=7'd32;
+  3:message_char=7'd33;
+  4:message_char=7'd34;
+  5:message_char=7'd23;
+  6:message_char=7'd1;
+  7:message_char=7'd35;
+  8:message_char=7'd36;
+  default:message_char=0;endcase
+ 1:case(p)
+  0:message_char=7'd37;
+  1:message_char=7'd38;
+  2:message_char=7'd39;
+  3:message_char=7'd40;
+  default:message_char=0;endcase
+ 2:case(p)
+  0:message_char=7'd23;
+  1:message_char=7'd1;
+  2:message_char=7'd24;
+  3:message_char=7'd25;
+  4:message_char=7'd41;
+  default:message_char=0;endcase
+ 3:case(p)
+  0:message_char=7'd26;
+  1:message_char=7'd27;
+  2:message_char=7'd41;
+  3:message_char=7'd0;
+  4:message_char=7'd42;
+  5:message_char=7'd43;
+  6:message_char=7'd44;
+  7:message_char=7'd23;
+  8:message_char=7'd6;
+  default:message_char=0;endcase
+ 4:case(p)
+  0:message_char=7'd45;
+  1:message_char=7'd46;
+  2:message_char=7'd0;
+  3:message_char=7'd32;
+  4:message_char=7'd33;
+  5:message_char=7'd47;
+  6:message_char=7'd48;
+  default:message_char=0;endcase
+ 5:case(p)
+  0:message_char=7'd49;
+  1:message_char=7'd50;
+  default:message_char=0;endcase
+ default:message_char=0;endcase end endfunction
+function [6:0] help_char;input [2:0] sel;input [5:0] p;begin
+ help_char=0;case(sel)
+ 0:case(p)
+  0:help_char=7'd51;
+  1:help_char=7'd52;
+  2:help_char=7'd0;
+  3:help_char=7'd53;
+  4:help_char=7'd8;
+  5:help_char=7'd0;
+  6:help_char=7'd0;
+  7:help_char=7'd51;
+  8:help_char=7'd54;
+  9:help_char=7'd0;
+  10:help_char=7'd55;
+  11:help_char=7'd8;
+  12:help_char=7'd0;
+  13:help_char=7'd0;
+  14:help_char=7'd51;
+  15:help_char=7'd56;
+  16:help_char=7'd0;
+  17:help_char=7'd35;
+  18:help_char=7'd36;
+  19:help_char=7'd0;
+  20:help_char=7'd0;
+  21:help_char=7'd51;
+  22:help_char=7'd57;
+  23:help_char=7'd0;
+  24:help_char=7'd39;
+  25:help_char=7'd40;
+  default:help_char=0;endcase
+ 1:case(p)
+  0:help_char=7'd58;
+  1:help_char=7'd59;
+  2:help_char=7'd30;
+  3:help_char=7'd31;
+  4:help_char=7'd32;
+  5:help_char=7'd33;
+  6:help_char=7'd0;
+  7:help_char=7'd0;
+  8:help_char=7'd60;
+  9:help_char=7'd61;
+  10:help_char=7'd62;
+  11:help_char=7'd63;
+  12:help_char=7'd64;
+  13:help_char=7'd65;
+  14:help_char=7'd66;
+  15:help_char=7'd67;
+  16:help_char=7'd68;
+  default:help_char=0;endcase
+ 2:case(p)
+  0:help_char=7'd51;
+  1:help_char=7'd52;
+  2:help_char=7'd69;
+  3:help_char=7'd51;
+  4:help_char=7'd54;
+  5:help_char=7'd0;
+  6:help_char=7'd58;
+  7:help_char=7'd59;
+  8:help_char=7'd70;
+  9:help_char=7'd6;
+  10:help_char=7'd0;
+  11:help_char=7'd36;
+  12:help_char=7'd59;
+  13:help_char=7'd71;
+  14:help_char=7'd6;
+  default:help_char=0;endcase
+ 3:case(p)
+  0:help_char=7'd51;
+  1:help_char=7'd56;
+  2:help_char=7'd0;
+  3:help_char=7'd26;
+  4:help_char=7'd27;
+  5:help_char=7'd72;
+  6:help_char=7'd73;
+  7:help_char=7'd74;
+  8:help_char=7'd0;
+  9:help_char=7'd0;
+  10:help_char=7'd36;
+  11:help_char=7'd59;
+  12:help_char=7'd51;
+  13:help_char=7'd57;
+  14:help_char=7'd75;
+  15:help_char=7'd18;
+  16:help_char=7'd28;
+  17:help_char=7'd29;
+  default:help_char=0;endcase
+ 4:case(p)
+  0:help_char=7'd56;
+  1:help_char=7'd0;
+  2:help_char=7'd54;
+  3:help_char=7'd0;
+  4:help_char=7'd52;
+  5:help_char=7'd0;
+  6:help_char=7'd76;
+  7:help_char=7'd77;
+  8:help_char=7'd78;
+  9:help_char=7'd39;
+  10:help_char=7'd40;
+  11:help_char=7'd23;
+  12:help_char=7'd1;
+  default:help_char=0;endcase
+ 5:case(p)
+  0:help_char=7'd36;
+  1:help_char=7'd59;
+  2:help_char=7'd51;
+  3:help_char=7'd57;
+  4:help_char=7'd79;
+  5:help_char=7'd80;
+  6:help_char=7'd0;
+  7:help_char=7'd0;
+  8:help_char=7'd81;
+  9:help_char=7'd82;
+  10:help_char=7'd1;
+  11:help_char=7'd18;
+  12:help_char=7'd19;
+  13:help_char=7'd20;
+  default:help_char=0;endcase
+ 6:case(p)
+  0:help_char=7'd51;
+  1:help_char=7'd57;
+  2:help_char=7'd0;
+  3:help_char=7'd81;
+  4:help_char=7'd82;
+  5:help_char=7'd19;
+  6:help_char=7'd20;
+  7:help_char=7'd0;
+  8:help_char=7'd39;
+  9:help_char=7'd40;
+  10:help_char=7'd83;
+  11:help_char=7'd84;
+  12:help_char=7'd85;
+  default:help_char=0;endcase
+ 7:case(p)
+  0:help_char=7'd86;
+  1:help_char=7'd85;
+  2:help_char=7'd28;
+  3:help_char=7'd87;
+  4:help_char=7'd88;
+  5:help_char=7'd89;
+  6:help_char=7'd90;
+  7:help_char=7'd0;
+  8:help_char=7'd0;
+  9:help_char=7'd45;
+  10:help_char=7'd46;
+  11:help_char=7'd91;
+  12:help_char=7'd92;
+  13:help_char=7'd50;
+  14:help_char=7'd33;
+  default:help_char=0;endcase
+ default:help_char=0;endcase end endfunction
+function [6:0] cell_glyph;input [5:0] col;input [4:0] row;reg [2:0] winner;begin
+cell_glyph=0;winner=sa>sb ? fa:fb;case(row)
+1:begin if(col>=2 && col<15)case(col-2)0:cell_glyph=7'd1;1:cell_glyph=7'd2;2:cell_glyph=7'd0;3:cell_glyph=7'd3;4:cell_glyph=7'd0;5:cell_glyph=7'd1;6:cell_glyph=7'd4;7:cell_glyph=7'd5;8:cell_glyph=7'd6;default:cell_glyph=0;endcase
+if(col>=30)cell_glyph=state_char(fs,col-30);end
+4:begin if(col>=4 && col<6)case(col-4)0:cell_glyph=7'd53;1:cell_glyph=7'd8;endcase if(col>=29 && col<31)case(col-29)0:cell_glyph=7'd55;1:cell_glyph=7'd8;endcase end
+5:begin if(col>=4 && col<8)cell_glyph=team_char(fa,col-4);if(col>=29 && col<33)cell_glyph=team_char(fb,col-29);end
+7:if(col>=16 && col<20 && fs!=1 && fs!=4)case(col-16)0:cell_glyph=7'd93;1:cell_glyph=7'd94;2:cell_glyph=7'd35;3:cell_glyph=7'd95;endcase
+14:begin if(col>=12 && col<28)begin
+if(fs==0)cell_glyph=message_char(0,col-12);else if(fs==1)cell_glyph=message_char(1,col-17);
+else if(fs==2)cell_glyph=message_char(2,col-16);else if(fs==3)cell_glyph=message_char(3,col-14);
+else if(sa==sb)cell_glyph=message_char(4,col-15);else begin
+if(col>=16 && col<18)cell_glyph=team_char(winner,col-16);if(col>=19 && col<21)cell_glyph=message_char(5,col-19);end end end
+16:begin if(fs==0)begin
+if(col>=13 && col<17)case(col-13)0:cell_glyph=7'd23;1:cell_glyph=7'd1;2:cell_glyph=7'd35;3:cell_glyph=7'd36;endcase
+case(col)18:cell_glyph=7'd100;19:cell_glyph=(dur==2 ? 7'd56:dur==3 ? 7'd101:dur==1 ? 7'd52:7'd100);20:cell_glyph=7'd106;21:cell_glyph=dur==0 ? 7'd56:7'd100;22:cell_glyph=7'd100;default:;endcase end
+else if(fs==2 && sec<=10 && col>=16 && col<20)case(col-16)0:cell_glyph=7'd96;1:cell_glyph=7'd76;2:cell_glyph=7'd63;3:cell_glyph=7'd64;endcase end
+18,20:if(col>=2)begin
+if(fs==0)cell_glyph=help_char(row==18 ? 0:1,col-2);else if(fs==1)cell_glyph=help_char(row==18 ? 4:5,col-2);
+else if(fs==4)cell_glyph=help_char(row==18 ? 6:7,col-2);else cell_glyph=help_char(row==18 ? 2:3,col-2);end
+default:cell_glyph=0;endcase end endfunction
